@@ -118,20 +118,21 @@ async function checkAgent(agent) {
   // Skip non-actionable shapes (e.g., archived agents from companies.<id>.agents listings)
   if (!agent || !agent.id) return;
   const state = await loadState(agent.id);
-  // Error state alert — fires once on transition to error, not every tick
-  const wasError = state.lastErrorState === true;
-  const isError = agent.status === "error";
-  state.lastErrorState = isError;
-  if (isError && !wasError) {
-    await alert(`🔴 Agent ${agent.urlKey ?? agent.id} (${agent.name ?? "unknown"}) entered error state — manual reset required`);
-  }
-  if (isError) {
+  if (state.paused || agent.status === "paused") {
+    state.paused = true;
     await saveState(agent.id, state);
     return;
   }
 
-  if (state.paused || agent.status === "paused") {
-    state.paused = true;
+  // Error state alert — fires once on transition to error, not on every tick
+  const wasError = state.lastErrorState === true;
+  const isError = agent.status === "error";
+  state.lastErrorState = isError;
+  if (isError && !wasError) {
+    await alert(`🔴 Agent ${agent.urlKey ?? agent.id} entered error state — manual reset may be required`);
+  }
+  // Don't continue monitoring if in error state (no point tracking crash loops)
+  if (isError) {
     await saveState(agent.id, state);
     return;
   }
@@ -203,6 +204,25 @@ async function checkAgent(agent) {
       state.paused = true;
     }
   }
+
+  // Zero-cost crash-loop guard: agent stuck on same issue with no token spend
+  const currentIssueId = (agent.activeTaskIds ?? agent.activeIssueIds ?? [])[0] ?? null;
+  const currentCost = agent.spentMonthlyCents ?? 0;
+  if (currentIssueId && currentIssueId === state.crashLoopIssueId) {
+    if ((currentCost - (state.lastCostSnapshot ?? 0)) < 1) {
+      state.crashLoopTicks += 1;
+      if (state.crashLoopTicks >= CRASH_LOOP_TICKS) {
+        await pauseAgent(agent.id, `Zero-cost crash loop on issue ${currentIssueId} for ${CRASH_LOOP_TICKS} ticks`);
+        state.paused = true;
+      }
+    } else {
+      state.crashLoopTicks = 0; // making progress
+    }
+  } else {
+    state.crashLoopIssueId = currentIssueId;
+    state.crashLoopTicks = 0;
+  }
+  state.lastCostSnapshot = currentCost;
 
   await saveState(agent.id, state);
 }
