@@ -70,35 +70,32 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN printf '#!/bin/sh\nexec node /app/cli/dist/index.js "$@"\n' > /usr/local/bin/paperclipai \
     && chmod +x /usr/local/bin/paperclipai
 
-# Koenig customization 2026-05-01: hermes-agent install for hermes_local adapter.
-# The host-side hermes binary is a Mach-O Python launcher that won't run in this
-# Linux container; install hermes-agent into a container-local venv and provide a
-# wrapper script. The hermes-agent SOURCE is bind-mounted at runtime via the
-# compose file (/paperclip/.hermes/hermes-agent/) — install from that path.
-# Runtime dep: the source must be present at /paperclip/.hermes/hermes-agent before
-# any hermes_local agent runs. The wrapper handles the case where it isn't yet.
-# 2026-05-01 (revised): venv create requires python3-venv apt package + build-essential
-# for editable installs. Install hermes-agent eagerly at build time so the wrapper
-# is just `exec /opt/hermes-venv/bin/hermes "$@"`. Bind-mount of host ~/.hermes is
-# still required at runtime (provides the editable source it was installed from).
+# Koenig customization 2026-05-02 (V3.6): Hermes Agent durable install from upstream git.
+# Replaces the prior lazy `hermes-py` wrapper that depended on a bind-mounted source tree.
+# The npm hermes-paperclip-adapter@0.2.0 expects bare `hermes` on PATH; we ship that here.
+# Auth + config still come from bind-mounted ~/.hermes (auth.json, .env, config.yaml,
+# sessions/state.db) — only the binary itself is now baked into the image so it survives
+# container recreate without ad-hoc reinstalls.
+ARG HERMES_AGENT_REF=v2026.4.23
 RUN apt-get update -qq \
     && apt-get install -y --no-install-recommends python3-venv python3-pip python3-dev build-essential \
     && rm -rf /var/lib/apt/lists/* \
     && python3 -m venv /opt/hermes-venv \
     && /opt/hermes-venv/bin/pip install --no-cache-dir --upgrade pip \
-    && chown -R ${USER_UID}:${USER_GID} /opt/hermes-venv
-# Hermes install happens at runtime via entrypoint (see scripts/docker-entrypoint.sh).
-# At build time we don't have the bind-mounted source yet, so we create the wrapper
-# that lazily installs hermes-agent on first invocation.
-RUN printf '#!/bin/sh\nset -e\nHERMES_SRC="${HERMES_SRC:-/paperclip/.hermes/hermes-agent}"\nif [ ! -d "$HERMES_SRC" ]; then\n  echo "hermes-agent source not found at $HERMES_SRC; bind-mount the host ~/.hermes into /paperclip/.hermes" >&2\n  exit 127\nfi\nif ! /opt/hermes-venv/bin/python -c "import hermes_agent" 2>/dev/null; then\n  /opt/hermes-venv/bin/pip install --quiet --no-cache-dir -e "$HERMES_SRC" >&2\nfi\nexec /opt/hermes-venv/bin/hermes "$@"\n' > /usr/local/bin/hermes-py \
-    && chmod +x /usr/local/bin/hermes-py \
-    && ln -sf /usr/local/bin/hermes-py /usr/local/bin/hermes-container
+    && /opt/hermes-venv/bin/pip install --no-cache-dir "git+https://github.com/NousResearch/hermes-agent.git@${HERMES_AGENT_REF}" \
+    && ln -sf /opt/hermes-venv/bin/hermes /usr/local/bin/hermes \
+    && chown -R ${USER_UID}:${USER_GID} /opt/hermes-venv \
+    && /usr/local/bin/hermes --version
+ENV HERMES_HOME=/paperclip/.hermes
 
-# Koenig customization 2026-05-01: cursor-agent Linux install for cursor adapter.
+# Koenig customization 2026-05-01 / 2026-05-02 update: cursor-agent Linux install.
 # The host's cursor-agent install is Mac arm64 only — bind-mounting it doesn't work
 # on Linux. Download the Linux build directly + create a wrapper that uses the
-# bundled node binary. Auth is API-key-based (CURSOR_API_KEY env var) since the
-# Linux build can't read Mac Keychain.
+# bundled node binary. AUTH UPDATE 2026-05-02: Composer 2 cannot be billed to a
+# CURSOR_API_KEY (Cursor explicitly errors with "custom models cannot be billed
+# to API key — use Pro/Business subscription"). So we bind-mount ~/.cursor from
+# the host (which holds cli-config.json with the Pro subscription token) and
+# explicitly set CURSOR_API_KEY="" in compose to override any .env.koenig value.
 ARG CURSOR_AGENT_VERSION=2026.04.30-4edb302
 RUN mkdir -p /opt/cursor-agent/versions/${CURSOR_AGENT_VERSION} \
     && curl -fsSL "https://downloads.cursor.com/lab/${CURSOR_AGENT_VERSION}/linux/arm64/agent-cli-package.tar.gz" \
