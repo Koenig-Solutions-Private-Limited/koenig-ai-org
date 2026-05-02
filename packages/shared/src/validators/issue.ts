@@ -131,6 +131,7 @@ const issueRequestDepthInputSchema = z
   .transform((value) => clampIssueRequestDepth(value));
 
 export const createIssueSchema = z.object({
+  metadata: z.record(z.unknown()).optional().nullable(),
   projectId: z.string().uuid().optional().nullable(),
   projectWorkspaceId: z.string().uuid().optional().nullable(),
   goalId: z.string().uuid().optional().nullable(),
