@@ -32,7 +32,11 @@ const payload = Buffer.from(JSON.stringify({
   sub: '$AGENT_ID',
   company_id: '$COMPANY_ID',
   adapter_type: 'watchdog',
-  run_id: 'watchdog-persistent-daemon',
+  // V4 (2026-05-02): no run_id claim — the previous literal
+  // 'watchdog-persistent-daemon' was treated as a UUID by Drizzle's
+  // heartbeat_runs.id UPDATE and triggered Postgres 500s + a server
+  // restart cascade. The auth.ts middleware now safeRunId()-guards
+  // this anyway, but dropping the claim entirely is the cleaner fix.
   iat: now, exp, iss: 'paperclip', aud: 'paperclip-api'
 })).toString('base64url');
 const sig = crypto.createHmac('sha256', secret).update(header+'.'+payload).digest('base64url');

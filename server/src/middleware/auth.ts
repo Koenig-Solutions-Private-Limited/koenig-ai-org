@@ -13,6 +13,15 @@ function hashToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
 }
 
+// V4 (2026-05-02): UUID guard for actor.runId to prevent slug strings like
+// `hb-<timestamp>` or `watchdog-persistent-daemon` reaching Drizzle UPDATE
+// where heartbeat_runs.id is uuid-typed. Postgres rejects the cast → 500 →
+// process panic → server restart cascade. This neutralises the bug at the
+// auth boundary so all downstream code stays safe.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const safeRunId = (v: string | null | undefined): string | undefined =>
+  typeof v === "string" && UUID_RE.test(v) ? v : undefined;
+
 interface ActorMiddlewareOptions {
   deploymentMode: DeploymentMode;
   resolveSession?: (req: Request) => Promise<BetterAuthSessionResult | null>;
@@ -33,7 +42,7 @@ export function actorMiddleware(db: Db, opts: ActorMiddlewareOptions): RequestHa
           }
         : { type: "none", source: "none" };
 
-    const runIdHeader = req.header("x-paperclip-run-id");
+    const runIdHeader = safeRunId(req.header("x-paperclip-run-id"));
 
     const authHeader = req.header("authorization");
     if (!authHeader?.toLowerCase().startsWith("bearer ")) {
@@ -153,7 +162,7 @@ export function actorMiddleware(db: Db, opts: ActorMiddlewareOptions): RequestHa
         agentId: claims.sub,
         companyId: claims.company_id,
         keyId: undefined,
-        runId: runIdHeader || claims.run_id || undefined,
+        runId: runIdHeader ?? safeRunId(claims.run_id),
         source: "agent_jwt",
       };
       next();

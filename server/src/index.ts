@@ -672,10 +672,13 @@ export async function startServer(): Promise<StartedServer> {
     const heartbeat = heartbeatService(db as any, { pluginWorkerManager });
     const routines = routineService(db as any, { pluginWorkerManager });
   
-    // Reap orphaned running runs at startup while in-memory execution state is empty,
-    // then resume any persisted queued runs that were waiting on the previous process.
+    // V4 (2026-05-02): give in-flight runs a 5-min grace before declaring them
+    // process_lost. Without this threshold, every server restart immediately
+    // marks every running heartbeat as lost — triggering the recovery service
+    // to create one ticket per stranded source (we saw 17 spurious tickets in
+    // a single restart cascade). 5 min matches the periodic-call signature.
     void heartbeat
-      .reapOrphanedRuns()
+      .reapOrphanedRuns({ staleThresholdMs: 5 * 60 * 1000 })
       .then(() => heartbeat.promoteDueScheduledRetries())
       .then(async (promotion) => {
         await heartbeat.resumeQueuedRuns();

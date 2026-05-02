@@ -1359,6 +1359,36 @@ export function recoveryService(db: Db, deps: { enqueueWakeup: RecoveryWakeup })
     const existing = await findOpenStrandedIssueRecoveryIssue(input.issue.companyId, input.issue.id);
     if (existing) return existing;
 
+    // V4 (2026-05-02): global burst circuit breaker. The per-source 60-min
+    // dampener below catches single-source ping-pong, but a server restart
+    // strands N distinct in-flight runs in one sweep and creates N recovery
+    // tickets (we saw 17 spurious tickets in one cascade). When ≥3 stranded-
+    // recovery tickets land company-wide in the last 5 min, that's almost
+    // certainly transient infra failure — suppress to avoid recovery loop.
+    const burstCutoff = new Date(Date.now() - 5 * 60 * 1000);
+    const recentBurstCount = await db
+      .select({ c: sql<number>`count(*)::int` })
+      .from(issues)
+      .where(
+        and(
+          eq(issues.companyId, input.issue.companyId),
+          eq(issues.originKind, STRANDED_ISSUE_RECOVERY_ORIGIN_KIND),
+          gte(issues.createdAt, burstCutoff),
+        ),
+      )
+      .then((rows) => rows[0]?.c ?? 0);
+    if (recentBurstCount >= 3) {
+      logger.warn(
+        {
+          recentBurstCount,
+          sourceIssueId: input.issue.id,
+          companyId: input.issue.companyId,
+        },
+        "stranded-issue-recovery suppressed — burst threshold (≥3 in 5min) exceeded; likely transient infra failure",
+      );
+      return null;
+    }
+
     // P0 #6 dampening — if a recovery for this source was created in the last
     // 60 min (even if since closed), don't spam a new one. Prevents the
     // "Recover stalled" ping-pong that caused chief-overload earlier.
