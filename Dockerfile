@@ -26,6 +26,11 @@ COPY packages/adapters/claude-local/package.json packages/adapters/claude-local/
 COPY packages/adapters/codex-local/package.json packages/adapters/codex-local/
 COPY packages/adapters/cursor-local/package.json packages/adapters/cursor-local/
 COPY packages/adapters/gemini-local/package.json packages/adapters/gemini-local/
+# V4 (2026-05-02): hermes-local was missing from deps stage — without its
+# package.json here, pnpm install never created the node_modules symlinks
+# linking @paperclipai/adapter-utils into hermes-local. Server build then
+# fails ERR_MODULE_NOT_FOUND at runtime.
+COPY packages/adapters/hermes-local/package.json packages/adapters/hermes-local/
 COPY packages/adapters/openclaw-gateway/package.json packages/adapters/openclaw-gateway/
 COPY packages/adapters/opencode-local/package.json packages/adapters/opencode-local/
 COPY packages/adapters/pi-local/package.json packages/adapters/pi-local/
@@ -42,6 +47,19 @@ COPY --from=deps /app /app
 COPY . .
 RUN pnpm --filter @paperclipai/ui build
 RUN pnpm --filter @paperclipai/plugin-sdk build
+# V4 (2026-05-02): build workspace deps in strict topological order so
+# downstream tsc finds upstream dist outputs. Server now depends on
+# @paperclipai/adapter-hermes-local (workspace:*) per V3.8 swap; the
+# adapter depends on @paperclipai/adapter-utils, which depends on
+# @paperclipai/shared. Without this sequencing the build sees
+# "Cannot find module @paperclipai/adapter-utils" because parallel
+# runs check types before the upstream dist is materialized.
+RUN pnpm --filter @paperclipai/shared build
+RUN pnpm --filter @paperclipai/db build || true
+RUN pnpm --filter @paperclipai/adapter-utils build
+# -r ensures topological order: hermes-local, claude-local, etc all wait for
+# adapter-utils dist to materialize before tsc runs against them.
+RUN pnpm -r --filter "@paperclipai/adapter-claude-local" --filter "@paperclipai/adapter-codex-local" --filter "@paperclipai/adapter-cursor-local" --filter "@paperclipai/adapter-gemini-local" --filter "@paperclipai/adapter-hermes-local" --filter "@paperclipai/adapter-openclaw-gateway" --filter "@paperclipai/adapter-opencode-local" --filter "@paperclipai/adapter-pi-local" run build
 RUN pnpm --filter @paperclipai/server build
 # Koenig customization 2026-04-30: also build the CLI so `paperclipai` is available inside the container.
 # The CLI package is published as `paperclipai` (not `@paperclipai/cli`) — pnpm filter must match.
@@ -107,6 +125,14 @@ RUN mkdir -p /opt/cursor-agent/versions/${CURSOR_AGENT_VERSION} \
     && chmod +x /usr/local/bin/cursor-agent \
     && ln -sf /usr/local/bin/cursor-agent /usr/local/bin/cursor \
     && ln -sf /usr/local/bin/cursor-agent /usr/local/bin/agent
+
+# V4 (2026-05-02): Pi (mariozechner/pi-coding-agent) — coding-agent harness.
+# Used with LM Studio + Qwen 3.6 27B-MLX-8bit on host for $0 local inference.
+# Container reaches host LM Studio via host.docker.internal (compose extra_hosts).
+# Pi config (auth.json + models.json) is bind-mounted from host ~/.pi.
+ARG PI_AGENT_VERSION=0.72.0
+RUN npm install --global --omit=dev @mariozechner/pi-coding-agent@${PI_AGENT_VERSION} \
+    && /usr/local/bin/pi --version
 
 ENV NODE_ENV=production \
   HOME=/paperclip \

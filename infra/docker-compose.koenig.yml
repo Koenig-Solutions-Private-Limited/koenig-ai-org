@@ -119,6 +119,14 @@ services:
       # The prior /Users/vardaankoenig/.local/share/cursor-agent mount has been
       # removed — no longer needed now that the binary is in the image.
       - /Users/vardaankoenig/.cursor:/paperclip/.cursor:rw
+      # Pi (mariozechner/pi-coding-agent): ~/.pi holds auth.json (subscriptions/
+      # API keys) + models.json (custom providers like LM Studio). The binary
+      # is baked durably into the image by the Dockerfile (npm install -g).
+      # The second mount overlays models.container.json onto the dir mount,
+      # giving the container an alternate models.json with host.docker.internal
+      # URL while the host file keeps localhost:1234 for host pi smoke tests.
+      - /Users/vardaankoenig/.pi:/paperclip/.pi:rw
+      - /Users/vardaankoenig/.pi/agent/models.container.json:/paperclip/.pi/agent/models.json:ro
       # Koenig project sources (live mount — agents read+write here)
       - /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org:/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org:rw
       # Sibling repo for skills referenced by absolute path
