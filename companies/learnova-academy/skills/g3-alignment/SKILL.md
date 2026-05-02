@@ -19,7 +19,24 @@ Used by `ceo`. Triggered when work hits `awaiting-g3` after passing earlier gate
 - Active company: `Koenig AI Academy` · companyId `2a77f89b-33f0-4133-a20c-77ddaac5e744`
 - Auth: bearer token (board API key) supplied via env `PAPERCLIP_BOARD_TOKEN` — DO NOT hardcode in comments
 
-The exact PATCH for PASS:
+## CRITICAL ROUTING RULE (LOCKED 2026-05-02 V4 — CEO must enforce)
+
+**Blogs NEVER go to G4.** Period. No exceptions. Per CLAUDE.md + V2.6-1 policy,
+all blog tickets auto-publish on G3 PASS. The G4 channel is COURSES ONLY,
+and only courses with `high_stakes: true` flag set at ticket creation.
+
+**Determining ticket kind (do this FIRST):**
+- `vault/blogs/...` path OR `metadata.content_type IN ('article','blog','post')` → **BLOG** (auto-publish on PASS, NEVER G4)
+- `vault/courses/...` path OR `metadata.content_type IN ('course','chapter','module')` → **COURSE** (G4 only if `metadata.high_stakes === true`)
+- Anything else → **CODE/ENGINEERING** (G3 done; no publish_state, no G4)
+
+If CEO routes a blog to G4 by mistake (KOEA-64 incident 2026-05-02), Vardaan
+gets unwanted approval emails AND the blog never auto-publishes. The fix
+to KOEA-64 was a manual unblock — don't repeat the mistake.
+
+## The exact PATCH for PASS (use ONE of these, depending on kind)
+
+**For BLOGS (default for any `vault/blogs/...` ticket):**
 ```bash
 curl -sX PATCH "http://localhost:3100/api/issues/$ISSUE_ID" \
   -H "Authorization: Bearer $PAPERCLIP_BOARD_TOKEN" \
@@ -27,13 +44,17 @@ curl -sX PATCH "http://localhost:3100/api/issues/$ISSUE_ID" \
   -d '{"status":"done","metadata":{"publish_state":"ready","g3_passed_at":"'"$(date -u +%FT%TZ)"'"}}'
 ```
 
-For high-stakes routing to G4:
+**For COURSES (default — non-high-stakes):**
+Same PATCH as above (publish_state=ready). Auto-publishes within 5 min.
+
+**For COURSES (only when `metadata.high_stakes === true`):**
 ```bash
 curl -sX PATCH "http://localhost:3100/api/issues/$ISSUE_ID" \
   -H "Authorization: Bearer $PAPERCLIP_BOARD_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"status":"in_review","metadata":{"publish_state":"awaiting-g4","g3_passed_at":"'"$(date -u +%FT%TZ)"'"}}'
 ```
+**ONLY USE THIS PATCH IF: `vault/courses/...` AND `metadata.high_stakes === true`. NEVER for blogs.**
 
 For BLOCK:
 ```bash
