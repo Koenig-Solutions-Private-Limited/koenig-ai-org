@@ -15,7 +15,11 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="$REPO_ROOT/.env.koenig"
 PAPERCLIP_URL="${PAPERCLIP_URL:-http://localhost:3100}"
-COMPANY_ID="${COMPANY_ID:-1ce472ae-c3fe-47cb-ae1c-99cd79a43b8d}"
+# Read KOENIG_COMPANY_ID from env file if COMPANY_ID not already set
+if [[ -z "${COMPANY_ID:-}" && -f "$REPO_ROOT/.env.koenig" ]]; then
+  COMPANY_ID="$(grep "^KOENIG_COMPANY_ID=" "$REPO_ROOT/.env.koenig" | cut -d= -f2- || true)"
+fi
+COMPANY_ID="${COMPANY_ID:-2a77f89b-33f0-4133-a20c-77ddaac5e744}"
 GH_DISPATCH_REPO="Koenig-Solutions-Private-Limited/learnovaBeast"
 PROD_URL="https://academy.kspl.tech"
 LOG_DIR="$HOME/.paperclip/logs"
