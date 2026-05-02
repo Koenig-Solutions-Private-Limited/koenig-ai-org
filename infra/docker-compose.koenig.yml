@@ -207,6 +207,25 @@ services:
         max-size: "5m"
         max-file: "3"
 
+  kokoro:
+    # Kokoro TTS — OpenAI-compatible /v1/audio/speech endpoint on port 8888.
+    # Primary TTS provider for generate-chapter-audio.mjs and meeting-attendee.
+    # Falls back to OpenAI when this container is down.
+    # Image: CPU-only (works on Apple Silicon Mac + x86 VPS, no GPU required).
+    image: ghcr.io/remsky/kokoro-fastapi-cpu:latest
+    container_name: koenig-kokoro
+    restart: unless-stopped
+    ports:
+      - "8888:8880"
+    environment:
+      # kokoro-fastapi default port is 8880; mapped to host:8888 (matches KOKORO_TTS_URL default)
+      PYTHONUNBUFFERED: "1"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   spend-tail:
     # Phase J workaround: tails postgres cost_events to /paperclip/spend.jsonl
     # so spend tracking is durable + greppable while the cost-events API endpoint
