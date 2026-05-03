@@ -43,6 +43,9 @@ agents:
         GH_TOKEN:
           kind: secret
           requirement: optional
+    runtimeConfig:
+      heartbeat:
+        maxConcurrentRuns: 1
 
   # ─────────────────────────── Chiefs (Sonnet 4.6 via Claude Code) ───────────────────────────
   chief-research:
@@ -77,6 +80,9 @@ agents:
         GH_TOKEN:
           kind: secret
           requirement: required
+    runtimeConfig:
+      heartbeat:
+        maxConcurrentRuns: 1
   chief-marketing:
     adapter:
       type: claude_local
@@ -105,6 +111,9 @@ agents:
         XAI_API_KEY:
           kind: secret
           requirement: optional
+    runtimeConfig:
+      heartbeat:
+        maxConcurrentRuns: 1
   researcher-openai:
     adapter:
       type: opencode_local
@@ -119,6 +128,9 @@ agents:
         TAVILY_API_KEY:
           kind: secret
           requirement: required
+    runtimeConfig:
+      heartbeat:
+        maxConcurrentRuns: 1
   researcher-google:
     adapter:
       type: opencode_local
@@ -133,6 +145,9 @@ agents:
         TAVILY_API_KEY:
           kind: secret
           requirement: required
+    runtimeConfig:
+      heartbeat:
+        maxConcurrentRuns: 1
   researcher-community:
     adapter:
       type: opencode_local
@@ -150,6 +165,9 @@ agents:
         XAI_API_KEY:
           kind: secret
           requirement: required   # community researcher uses Grok x_search heavily
+    runtimeConfig:
+      heartbeat:
+        maxConcurrentRuns: 1
   research-editor:
     adapter:
       type: claude_local
@@ -218,6 +236,38 @@ agents:
         TAVILY_API_KEY:
           kind: secret
           requirement: optional
+    runtimeConfig:
+      heartbeat:
+        maxConcurrentRuns: 1
+
+  blog-author:
+    adapter:
+      type: opencode_local
+      config:
+        model: openrouter/google/gemini-3-flash-preview
+        cwd: /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org
+    inputs:
+      env:
+        ACADEMY_AGENT_API_KEY: { kind: secret, requirement: required }
+        TAVILY_API_KEY: { kind: secret, requirement: optional }
+    runtimeConfig:
+      heartbeat:
+        maxConcurrentRuns: 1
+
+  course-author:
+    adapter:
+      type: opencode_local
+      config:
+        model: openrouter/google/gemini-3-flash-preview
+        cwd: /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org
+    inputs:
+      env:
+        ACADEMY_AGENT_API_KEY: { kind: secret, requirement: required }
+        TAVILY_API_KEY: { kind: secret, requirement: optional }
+    runtimeConfig:
+      heartbeat:
+        maxConcurrentRuns: 1
+
   content-reviewer:
     adapter:
       type: claude_local
@@ -239,7 +289,9 @@ agents:
       heartbeat:
         maxConcurrentRuns: 1
   voice-producer:
-    # Lightweight: orchestrates Kokoro CLI via Bash. Haiku 4.5 is sufficient.
+    # V5: paused (budget zeroed). NotebookLM via Slide+Audio Producer covers V1's
+    # narration lane. Adapter intact for V2 revival when custom intro/callout
+    # use case emerges.
     adapter:
       type: claude_local
       config:
@@ -259,6 +311,9 @@ agents:
       config:
         model: claude-opus-4-7
         cwd: /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org
+        # V5: hard cap context window — prevents V8 heap fragmentation on long
+        # planning runs (Opus 4.7 supports 1M but planner doesn't need it).
+        maxContextTokens: 90000
         extraArgs: ["--permission-mode", "plan"]
     runtimeConfig:
       heartbeat:
@@ -268,6 +323,9 @@ agents:
         GH_TOKEN:
           kind: secret
           requirement: required
+    runtimeConfig:
+      heartbeat:
+        maxConcurrentRuns: 1
   executor:
     adapter:
       type: claude_local
@@ -282,6 +340,9 @@ agents:
         GH_TOKEN:
           kind: secret
           requirement: required
+    runtimeConfig:
+      heartbeat:
+        maxConcurrentRuns: 1
   code-reviewer:
     adapter:
       type: codex_local
@@ -298,6 +359,9 @@ agents:
         GH_TOKEN:
           kind: secret
           requirement: required
+    runtimeConfig:
+      heartbeat:
+        maxConcurrentRuns: 1
   qa-verifier:
     adapter:
       type: claude_local
@@ -306,7 +370,7 @@ agents:
         cwd: /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org
     runtimeConfig:
       heartbeat:
-        maxConcurrentRuns: 1
+        maxConcurrentRuns: 2  # V5: A-tier health (100% success); Haiku low footprint; queue backed up
 
   # ─────────────────────────── Marketing/SEO ───────────────────────────
   seo-optimizer:
@@ -315,6 +379,9 @@ agents:
       config:
         model: claude-sonnet-4-6
         cwd: /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org
+    runtimeConfig:
+      heartbeat:
+        maxConcurrentRuns: 1
 
   # ─────────────────────────── G5 (post-publish) — Haiku 4.5 (lightweight URL fetches) ───────────────────────────
   publish-verifier:
@@ -334,6 +401,18 @@ agents:
       config:
         model: claude-sonnet-4-6
         cwd: /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org
+    runtimeConfig:
+      heartbeat:
+        maxConcurrentRuns: 1
+
+# V5: server-side idempotency belt + suspenders.
+# Window: 5 minutes (300s). Only applies to child tickets (parentIssueId IS NOT NULL).
+# Conflict mode: instead of erroring on duplicate, return the existing ticket id.
+# Pairs with the SQL constraint in server/src/db/migrations/202605030500_idempotency_constraint.sql.
+idempotency:
+  window_seconds: 300
+  apply_to_child_tickets_only: true
+  conflict_mode: return_existing_id
 
 # Per-agent monthly + per-task budgets (USD)
 budgets:
@@ -348,9 +427,11 @@ budgets:
   researcher-community:   { monthly: 20, perTask: 0.50 }
   research-editor:        { monthly: 20, perTask: 0.50 }
   content-author:         { monthly: 40, perTask: 1 }
+  blog-author:            { monthly: 40, perTask: 1 }
+  course-author:          { monthly: 50, perTask: 1.5 }
   content-reviewer:       { monthly: 20, perTask: 0.50 }
   slide-audio-producer:   { monthly: 20, perTask: 1 }
-  voice-producer:         { monthly: 10, perTask: 0.50 }
+  voice-producer:         { monthly: 0, perTask: 0 }   # V5: paused — NotebookLM covers narration; revive in V2
   planner:                { monthly: 30, perTask: 1 }
   executor:               { monthly: 30, perTask: 1 }
   code-reviewer:          { monthly: 30, perTask: 0.75 }
@@ -369,8 +450,10 @@ schedules:
     cron: "30 0 * * *"  # 06:30 IST
     agents: [research-editor]
   daily-triage:
-    cron: "30 1 * * *"  # 07:00 IST
+    cron: "30 1 * * *"  # 07:00 IST — V5 LOCKED via launchd
     agents: [ceo]
+    auto_retry: true
+    timeout_minutes: 30
   hourly-worker-dispatch:
     cron: "0 2-12 * * *"
     agents: [chief-content, chief-engineering, chief-marketing]
@@ -389,3 +472,24 @@ schedules:
   publish-verifier-poll:
     cron: "*/15 0-13 * * *"  # every 15 min during work hours UTC (covers IST work day)
     agents: [publish-verifier]
+
+  # ─── V5 routines ───
+  daily-vault-push:
+    cron: "0 0,6,12,18 * * *"  # every 6h UTC
+    agents: [vault-historian]
+    timeout_minutes: 10
+
+  weekly-competitor-audit:
+    cron: "30 3 * * 0"  # Sundays 09:00 IST
+    agents: [chief-marketing]
+    timeout_minutes: 60
+
+  monthly-schema-regression:
+    cron: "30 4 1 * *"  # 1st of month 10:00 IST
+    agents: [seo-optimizer]
+    timeout_minutes: 60
+
+  weekly-soul-evolution:
+    cron: "30 5 * * 1"  # Mondays 11:00 IST
+    agents: [chief-content, chief-engineering, chief-marketing, chief-research]
+    timeout_minutes: 90
