@@ -82,6 +82,9 @@ services:
       # NOT metered API. Empty = unset for the claude CLI inside the container.
       # Vardaan extracted Keychain → file 2026-05-01.
       ANTHROPIC_API_KEY: ""
+      # V5: force-empty so Cursor CLI auto-discovers /paperclip/.cursor bind-mount
+      # (CURSOR_API_KEY rejects custom models; subscription auth via bind-mount only).
+      CURSOR_API_KEY: ""
       # Disable startup productivity-review reconciliation — was generating
       # 13 "Review productivity for KOEA-XXX" tickets per restart, dumping on CEO.
       # Other startup reconciliations (stranded-assigned, issue-graph-liveness,
