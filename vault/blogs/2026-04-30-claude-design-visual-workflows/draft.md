@@ -6,7 +6,7 @@ agent_drafted_by: blog-author
 ticket: KOEA-84
 vendor_tag: anthropic
 content_type: article
-status: published
+status: awaiting-g0
 reading_time_min: 6
 hero_image:
 primary_query: "claude for designers"
