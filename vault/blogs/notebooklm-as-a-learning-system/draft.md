@@ -41,6 +41,11 @@ whats_new:
 learning_objectives:
   - Understand why source-grounding, not generation capability, is NotebookLM's differentiator for education
   - Build a complete NotebookLM learning module (audio overview, flashcards, study guide) from a single article in under 5 minutes
+faq:
+  - question: "What makes NotebookLM different from other AI learning tools?"
+    answer: "NotebookLM grounds every response strictly in your uploaded sources and declines to answer beyond them, which eliminates hallucination for study purposes. This source-grounding — not raw generation capability — is its core differentiator for education."
+  - question: "How do I build a complete NotebookLM learning module from a single article?"
+    answer: "Upload the article or PDF, then generate an audio overview, a flashcard set, and a study guide in sequence. The full module takes under 5 minutes and covers the same source from three distinct learning angles: passive listening, active recall, and structured review."
 ---
 
 # NotebookLM Just Got Classroom Integration. Its Killer Feature Is What It Won't Do.

@@ -46,6 +46,13 @@ learning_objectives:
   - Match the right open-weights model family to your deployment shape (edge, single-GPU, cloud-batch)
   - Understand why Llama 4 Scout's 10M-token context changes the RAG calculus
   - Run a repeatable 10-prompt benchmark to validate model choice before committing
+faq:
+  - question: "How do Gemma 4, Llama 4, and Qwen 3.5 compare for different deployment shapes?"
+    answer: "Gemma 4 targets edge and single-GPU deployments with strong per-parameter efficiency. Llama 4 Scout's 10 M-token context window suits cloud-batch RAG workloads. Qwen 3.5 leads on multilingual tasks and instruction-following across diverse domains."
+  - question: "How does Llama 4 Scout's 10 million-token context change the RAG architecture?"
+    answer: "With 10 M tokens of context, Llama 4 Scout can ingest an entire document corpus directly, eliminating or drastically simplifying chunking and retrieval steps that traditional RAG pipelines require — at the cost of higher per-request inference spend."
+  - question: "How do I run a repeatable benchmark to validate my model choice before committing?"
+    answer: "Assemble a 10-prompt test set that covers your real task distribution — reasoning, retrieval, code, and any domain-specific formats — then score each model on consistency across the full set, not just peak performance on a single prompt type."
 ---
 
 # Which Open-Weights LLM Should You Deploy? Gemma 4, Llama 4, or Qwen3 Compared

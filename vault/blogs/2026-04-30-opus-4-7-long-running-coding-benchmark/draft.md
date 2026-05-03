@@ -42,6 +42,11 @@ whats_new:
 learning_objectives:
   - Identify which Opus 4.7 improvements specifically target multi-step coding sessions and where gaps remain
   - Estimate the real token cost of upgrading an existing long-running agent workflow from Opus 4.6 to 4.7
+faq:
+  - question: "Which Opus 4.7 improvements most benefit multi-step coding sessions?"
+    answer: "Opus 4.7 shows the largest gains on tasks that require holding many files in context simultaneously — multi-file refactors, cross-service debugging, and incremental test-driven development — resolving roughly 3× more production-level tasks than 4.6 in those scenarios."
+  - question: "What is the real token cost of upgrading a long-running agent workflow from Opus 4.6 to 4.7?"
+    answer: "Opus 4.7's extended reasoning chains make 8-hour agentic sessions significantly more expensive per task than 4.6; benchmark your specific workflow before committing to a full migration, as cost uplift can outweigh quality gains on simpler repetitive tasks."
 ---
 
 # Opus 4.7 resolves 3× more production coding tasks than 4.6 — here's the catch for 8-hour sessions

@@ -41,6 +41,11 @@ whats_new:
 learning_objectives:
   - Understand how Bedrock's IAM/SigV4 auth differs from OpenAI's native bearer-token model in practice
   - Know when migrating to Bedrock-hosted OpenAI models pays off and when it adds complexity without benefit
+faq:
+  - question: "How does Bedrock's IAM and SigV4 auth differ from OpenAI's native bearer-token model?"
+    answer: "Bedrock requires AWS SigV4 request signing via IAM roles instead of a simple bearer token — adding infrastructure complexity but gaining enterprise access controls, audit logging, and VPC network isolation that OpenAI's direct API does not provide."
+  - question: "When does migrating to Bedrock-hosted OpenAI models make sense?"
+    answer: "Bedrock hosting pays off when you already run AWS infrastructure for compliance, need VPC isolation to keep model traffic off the public internet, or want to consolidate AI spend under AWS enterprise commitments. It adds meaningful friction for teams without existing AWS investment."
 ---
 
 # OpenAI on AWS Bedrock: IAM Auth Is the Real Engineering Work

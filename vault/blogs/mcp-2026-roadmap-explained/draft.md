@@ -42,6 +42,13 @@ learning_objectives:
   - Identify the four 2026 MCP priority areas and their concrete builder impact
   - Explain how DPoP (RFC 9449) token binding prevents token theft in MCP auth flows
   - Understand how the Working Group governance model changes who controls the MCP spec
+faq:
+  - question: "What are the four MCP priority areas for 2026?"
+    answer: "The MCP Working Group is focused on: (1) multi-agent auth hardening with DPoP token binding, (2) streaming and real-time transport improvements, (3) resource subscriptions for live data feeds, and (4) governance tooling for enterprise deployments."
+  - question: "How does DPoP token binding prevent token theft in MCP auth flows?"
+    answer: "DPoP (RFC 9449) cryptographically binds an access token to the requesting client's private key, so an intercepted token cannot be replayed from a different machine — closing the replay-attack vector that plain bearer tokens leave open in MCP."
+  - question: "Who controls the MCP specification going forward?"
+    answer: "The MCP Working Group — which includes representatives from major AI labs and enterprise adopters — now governs the spec through an IETF-style consensus process, moving control away from any single vendor."
 ---
 
 # MCP's 2026 Roadmap Hands Spec Control to Working Groups — Here's What Actually Changes for Builders

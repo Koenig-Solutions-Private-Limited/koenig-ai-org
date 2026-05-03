@@ -52,6 +52,11 @@ whats_new:
 learning_objectives:
   - "Identify which agent runtime fits interactive vs. automated workflows based on where loop control should live"
   - "Explain the harness stability tradeoff between server-side state persistence and BYOS loop control"
+faq:
+  - question: "What is the key architectural difference between Cursor 3.2 and Claude Code?"
+    answer: "Cursor 3.2 keeps the agent execution loop and state on its own servers, giving a polished IDE experience but limiting loop customization. Claude Code gives you a local harness where you fully own the loop, making it better for automated pipelines and custom tool integration."
+  - question: "Which tool fits interactive development versus automated workflows?"
+    answer: "Cursor 3.2 is optimized for interactive, human-in-the-loop development where fast UI feedback and IDE integration matter most. Claude Code suits automated workflows, batch jobs, and CI pipelines where the loop must run unattended and integrate with external systems."
 ---
 
 # Cursor 3.2 vs. Claude Code: Same Agent Runtime, Different Ergonomic Bet

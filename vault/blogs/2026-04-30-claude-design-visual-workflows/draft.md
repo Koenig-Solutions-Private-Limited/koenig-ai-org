@@ -34,6 +34,13 @@ learning_objectives:
   - Distinguish Claude's workflow-orchestration role from generative AI image tools
   - Use the Blender MCP connector to inspect and script 3D scenes via natural language
   - Bridge assets across Blender, Adobe CC, and Ableton in a single Claude-driven pipeline
+faq:
+  - question: "What is Claude's role in AI-assisted design and visual workflows?"
+    answer: "Claude acts as an orchestration layer — routing intent across tools like Blender, Adobe CC, and Ableton rather than generating images or audio itself. It bridges assets and automates handoffs between creative apps."
+  - question: "How does Claude differ from generative AI image tools for design work?"
+    answer: "Unlike Midjourney or DALL·E, Claude does not generate visuals. Instead it scripts and orchestrates existing creative tools via MCP connectors, making it suited for structured production pipelines rather than ideation."
+  - question: "Can Claude bridge assets across Blender, Adobe CC, and Ableton in one pipeline?"
+    answer: "Yes — with the appropriate MCP connectors active, Claude can export a 3D asset from Blender, pass it to an Adobe CC tool for compositing, then hand off timing data to Ableton, all in a single natural-language-driven session."
 ---
 
 # Orchestrate visual workflows with Claude — Blender, Adobe CC, and Ableton via MCP

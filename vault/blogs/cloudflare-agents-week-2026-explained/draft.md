@@ -52,6 +52,13 @@ references:
     title: "AI Platform — Cloudflare Blog"
     url: https://blog.cloudflare.com/ai-platform/
     retrieved: 2026-04-30
+faq:
+  - question: "What did Cloudflare ship during Agents Week 2026?"
+    answer: "Cloudflare shipped 22+ features in a single week to rebuild its infrastructure for AI agents — including agent-to-agent routing, durable task queues, Workers AI inference endpoints, and RFC 9728 support for standardized agent authentication."
+  - question: "How does RFC 9728 enable secure agent authentication on Cloudflare?"
+    answer: "RFC 9728 defines a standard discovery mechanism for OAuth 2.0 authorization servers, letting agents identify and authenticate with each other using published metadata rather than hardcoded credentials or manual key exchange."
+  - question: "Is Cloudflare Agents Week a feature release or a platform reorientation?"
+    answer: "It is a platform reorientation. Cloudflare is not adding AI features to its CDN — it is rebuilding core infrastructure primitives (routing, storage, auth, compute) around the assumption that agents, not browsers, are the primary clients of the web."
 ---
 
 # Cloudflare Agents Week 2026: every announcement explained

@@ -43,6 +43,13 @@ learning_objectives:
   - Compare Cartesia Sonic 3, Kokoro 82M, and GPT Realtime on TTFA, quality, and cost per million characters
   - Understand why streaming architecture matters more than raw TTFA for end-to-end voice agent latency
   - Choose the right TTS engine for paid-API, local-inference, or end-to-end streaming use cases
+faq:
+  - question: "How do Cartesia Sonic 3, Kokoro 82M, and GPT Realtime compare on latency and quality?"
+    answer: "Cartesia Sonic 3 leads on raw time-to-first-audio among paid APIs. Kokoro 82M matches its quality ELO score at zero cost for local inference. GPT Realtime delivers the lowest end-to-end latency for streaming-native pipelines where the audio never leaves OpenAI's infrastructure."
+  - question: "Why does streaming architecture matter more than raw TTFA for voice agent latency?"
+    answer: "Raw TTFA measures only the first audio chunk, but perceived latency depends on how subsequent chunks are buffered and delivered. A pipeline with slightly higher TTFA but true per-chunk streaming consistently feels faster than one with fast TTFA that batches the remaining audio."
+  - question: "How do I choose between Cartesia, Kokoro, and GPT Realtime for my voice agent?"
+    answer: "Use Cartesia Sonic 3 for production paid-API deployments needing consistent quality and low latency. Use Kokoro 82M for on-device or cost-free local inference. Use GPT Realtime when you need a fully managed, end-to-end streaming pipeline with no self-hosted components."
 ---
 
 # Cartesia Sonic 3 Has the Fastest TTS. GPT Realtime Feels Faster. Here's Why.

@@ -50,6 +50,13 @@ references:
     title: "CyberGym Benchmark — BenchLM"
     url: https://benchlm.ai/benchmarks/cyberGym
     retrieved: 2026-05-01
+faq:
+  - question: "What is the new multi-step reasoning architecture in GPT-5.5?"
+    answer: "GPT-5.5 introduces a reasoning architecture that chains sub-step planning before execution, paired with a 400 K-token context window in Codex Desktop (1 M via API), enabling it to hold an entire mid-size codebase in context for a single task."
+  - question: "What does the Codex Desktop v0.125.0 plugin ecosystem add?"
+    answer: "Codex v0.125.0 ships a plugin system that lets third-party tools register actions GPT-5.5 can invoke during an agentic session — extending the model beyond code editing to tasks like running tests, querying APIs, and managing CI pipelines."
+  - question: "What use cases benefit most from agentic planning in Codex?"
+    answer: "Multi-file refactors, debugging sessions that span several services, and scaffolding new features from a spec all benefit most — tasks where a human would normally issue many sequential commands are compressed into a single supervised session."
 ---
 
 # GPT-5.5 in Codex — what changed and why it matters

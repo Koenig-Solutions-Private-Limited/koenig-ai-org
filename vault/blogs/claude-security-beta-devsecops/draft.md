@@ -19,6 +19,11 @@ learning_objectives:
 slug: claude-security-beta-devsecops
 tags: [anthropic, devsecops, security, claude-security, opus-4-7, vulnerability-scanning]
 excerpt: "Claude Security beta ships with scan-to-patch in a single sitting — but the real story is Anthropic's Opus 4.7 embed into six major security platforms, building a DevSecOps moat most commentary missed."
+faq:
+  - question: "What does Claude Security beta provide for enterprise security teams?"
+    answer: "Claude Security provides zero-integration vulnerability scanning that finds bugs, explains them, and generates targeted patches in a single session — reducing what previously took days of engineer/security back-and-forth to one sitting."
+  - question: "How does Claude Security compare to existing SAST and DAST tools?"
+    answer: "Claude Security complements rather than replaces tools like Semgrep or Checkmarx. It excels at scan-to-patch in one session but currently lacks the rule customization and policy-as-code features governance-focused platforms provide."
 ---
 
 # Why Claude Security's partner moat matters more than its scanner

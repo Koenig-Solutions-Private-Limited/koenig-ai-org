@@ -35,6 +35,13 @@ references:
     title: "Blender Python API Reference"
     url: https://docs.blender.org/api/current/
     retrieved: 2026-05-01
+faq:
+  - question: "Which creative software tools now connect to Claude via MCP?"
+    answer: "Anthropic launched 9 new MCP connectors for creative apps including Blender, Adobe Creative Cloud tools, Ableton Live, and Resolume — letting Claude orchestrate 3D, audio, and design workflows via natural language."
+  - question: "How does the Blender MCP connector let Claude interact with 3D scenes?"
+    answer: "The Blender MCP connector exposes Blender's Python API to Claude, letting you inspect scene hierarchies, modify materials, and script animations using plain English instead of writing Python directly."
+  - question: "How do I map creative workflows across audio, 3D, and design tools with Claude?"
+    answer: "Claude acts as the orchestration layer: you describe the end goal in natural language, and it routes tasks across connected tools — for example, exporting a Blender render, applying an effect in Adobe CC, then syncing timing in Ableton."
 ---
 
 # How to use Anthropic’s 9 new creative connectors in your workflow

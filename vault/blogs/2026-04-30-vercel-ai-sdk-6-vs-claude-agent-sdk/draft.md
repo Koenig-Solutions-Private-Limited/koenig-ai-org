@@ -43,6 +43,13 @@ learning_objectives:
   - Identify whether your architecture needs portable orchestration or vendor-managed execution
   - Compare a 5-tool agent in both SDKs by line count, cost, and observability surface
   - Make a concrete pick based on who should own the execution loop
+faq:
+  - question: "Should I use Vercel AI SDK 6 or the Claude Agent SDK for my project?"
+    answer: "Use Vercel AI SDK 6 for interactive apps that need portability across AI providers and full control over each loop iteration. Choose the Claude Agent SDK when you want Anthropic to manage the execution loop, retries, and tool dispatch automatically."
+  - question: "How do a 5-tool agent's line count and observability compare between the two SDKs?"
+    answer: "Claude Agent SDK requires roughly 40% less boilerplate for a 5-tool agent, while Vercel AI SDK 6 surfaces every step of the loop for custom logging and cost tracking — making it better for compliance-heavy or cost-sensitive deployments."
+  - question: "Which SDK should own the agent execution loop in an automated pipeline?"
+    answer: "For automated CI/CD or batch pipelines where loop control belongs to your infrastructure, Vercel AI SDK 6 is the better fit. For product features where Anthropic-managed reliability and simpler code matter more, the Claude Agent SDK wins."
 ---
 
 # Vercel AI SDK 6 or Claude Agent SDK: The Decision Is Who Runs the Loop
