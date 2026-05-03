@@ -113,7 +113,11 @@ services:
       # launch, install the Python deps in the Dockerfile or run hermes_local on
       # the host only (do not mount).
       - /Users/vardaankoenig/.hermes:/paperclip/.hermes:rw
-      - /Users/vardaankoenig/.local/bin/hermes:/usr/local/bin/hermes:ro
+      # NOTE: do NOT bind-mount host's ~/.local/bin/hermes — its shebang points at
+      # the host's macOS Python venv which doesn't exist in the Linux container.
+      # The hermes binary is installed into /opt/hermes-venv at runtime by the
+      # entrypoint (pip install -e /paperclip/.hermes/hermes-agent), and exposed
+      # via /usr/local/bin/hermes symlink.
       # Cursor CLI: bind-mount the JS bundle + auth state. cursor-agent is a
       # bash wrapper that exec's a bundled Mac arm64 `node` — won't run as-is
       # in the Linux container. The Dockerfile installs a wrapper at

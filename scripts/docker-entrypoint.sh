@@ -34,14 +34,38 @@ gosu node git config --global user.email "246262476+Vardaan97@users.noreply.gith
 gosu node git config --global init.defaultBranch main 2>/dev/null || true
 gosu node git config --global --add safe.directory '*' 2>/dev/null || true
 
-# Koenig customization 2026-05-02 (KOEA-355): ensure hermes-py wrapper exists at /usr/local/bin.
-# The Dockerfile bakes this in, but running containers need this on restarts.
-# Running as root here so we can write to /usr/local/bin — idempotent.
-if [ ! -x /usr/local/bin/hermes-py ]; then
-    printf '#!/bin/sh\nexec /opt/hermes-venv/bin/hermes "$@"\n' > /usr/local/bin/hermes-py
-    chmod +x /usr/local/bin/hermes-py
-    ln -sf /usr/local/bin/hermes-py /usr/local/bin/hermes-container 2>/dev/null || true
-    echo "hermes-py wrapper created at /usr/local/bin/hermes-py"
+# Koenig customization 2026-05-03 (V5.1): install hermes-agent into the container venv
+# and expose `hermes` on PATH. Source is bind-mounted at /paperclip/.hermes/hermes-agent.
+# Idempotent — only installs if hermes_agent module is missing.
+HERMES_SRC="/paperclip/.hermes/hermes-agent"
+HERMES_VENV="/opt/hermes-venv"
+
+if [ -d "$HERMES_SRC" ]; then
+    # Install hermes-agent into venv if not already importable.
+    # Skip the editable install conflict by using regular install.
+    if ! "${HERMES_VENV}/bin/python" -c "import hermes_agent" 2>/dev/null; then
+        echo "Installing hermes-agent into ${HERMES_VENV}..."
+        # Use --no-deps if dependencies are already satisfied; full install otherwise.
+        "${HERMES_VENV}/bin/pip" install --quiet --no-cache-dir "${HERMES_SRC}" 2>&1 | tail -5 \
+            || echo "WARN: hermes-agent install failed — hermes_local agents will fail until fixed"
+    fi
+
+    # Expose hermes on PATH at /usr/local/bin/hermes.
+    # We force-recreate the symlink each boot to recover from any prior bind-mount mistakes.
+    if [ -x "${HERMES_VENV}/bin/hermes" ]; then
+        rm -f /usr/local/bin/hermes 2>/dev/null || true
+        ln -sf "${HERMES_VENV}/bin/hermes" /usr/local/bin/hermes
+        echo "hermes wrapper installed at /usr/local/bin/hermes -> ${HERMES_VENV}/bin/hermes"
+    fi
+
+    # hermes-py wrapper (legacy, kept for compatibility).
+    if [ ! -x /usr/local/bin/hermes-py ]; then
+        printf '#!/bin/sh\nexec %s/bin/hermes "$@"\n' "${HERMES_VENV}" > /usr/local/bin/hermes-py
+        chmod +x /usr/local/bin/hermes-py
+        ln -sf /usr/local/bin/hermes-py /usr/local/bin/hermes-container 2>/dev/null || true
+    fi
+else
+    echo "WARN: hermes-agent source not found at ${HERMES_SRC} — bind-mount ~/.hermes into /paperclip/.hermes"
 fi
 
 exec gosu node "$@"
