@@ -14,16 +14,7 @@ LOG="$LOG_DIR/triage.stdout.log"
 
 # Find triage-agent's id (handles both 'triage' and 'triage-agent' slugs)
 TRIAGE_ID="$(curl -s "$PAPERCLIP_URL/api/companies/$COMPANY_ID/agents" 2>/dev/null \
-  | /opt/homebrew/bin/python3.12 -c "
-import json, sys
-agents = json.load(sys.stdin)
-agents = agents if isinstance(agents, list) else agents.get('items', [])
-for a in agents:
-    slug = a.get('urlKey') or ''
-    if slug in ('triage', 'triage-agent'):
-        print(a.get('id', ''))
-        break
-")"
+  | jq -r '(if type == "array" then . else (.items // []) end) | map(select(.urlKey == "triage" or .urlKey == "triage-agent")) | .[0].id // ""')"
 
 if [[ -z "$TRIAGE_ID" ]]; then
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] triage-agent not found in roster; skipping" >> "$LOG"
@@ -32,12 +23,7 @@ fi
 
 # Count backlog items — skip wake if zero
 BACKLOG_COUNT="$(curl -s "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues" 2>/dev/null \
-  | /opt/homebrew/bin/python3.12 -c "
-import json, sys
-data = json.load(sys.stdin)
-items = data if isinstance(data, list) else data.get('items', [])
-print(sum(1 for i in items if i.get('status') == 'backlog'))
-")"
+  | jq '(if type == "array" then . else (.items // []) end) | map(select(.status == "backlog")) | length')"
 
 if [[ "$BACKLOG_COUNT" -eq 0 ]]; then
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] backlog empty; skipping triage wake (saves tokens)" >> "$LOG"
