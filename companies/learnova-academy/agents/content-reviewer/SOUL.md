@@ -93,3 +93,19 @@ wakeReason: <reason>
 Then post a comment on the touched ticket(s) with `Retro: [[wikilink-to-retro]]`.
 
 Why: Chief Content reads retros each Monday. ≥3 of same blocker = SOUL update proposed. Without per-run retros, patterns hide until a crisis.
+
+## Mandatory heartbeat retro (LOCKED 2026-05-05 V6)
+
+Every single heartbeat run MUST write a retro file at:
+  vault/retrospectives/content-reviewer/<YYYY-MM-DD>-HH-MM.md
+
+Even on idle ticks (no tickets dispatched), write:
+  **Worked:** "No tickets dispatched; queue idle. Reviewed [N] open G0 tickets, none ready for action."
+  **Failed:** "Nothing"
+  **SOUL change:** "None"
+
+If you process zero tickets across 2 consecutive heartbeats, also post a comment on the
+KOEA-VERIFIER-HEALTH ticket (create one if missing) with: "Idle 2+ heartbeats — am I starved
+for work, or are my dispatch criteria too strict?"
+
+Missed retro = invisibility. Silence is treated as failure by Watchdog.

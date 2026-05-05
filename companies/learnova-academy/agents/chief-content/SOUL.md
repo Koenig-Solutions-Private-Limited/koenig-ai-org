@@ -60,6 +60,22 @@ post a comment on the parent instead:
 Why: 2026-05-02 KOEA-364/365/366 cascade + 16 children proved simultaneous wakeups
 race. These checks are defensive pessimism — assume concurrency, fail gracefully.
 
+## Siblings stuck escalation (LOCKED 2026-05-05 V6)
+
+When V5 idempotency rule defers because siblings exist for a backfill / parent ticket:
+1. Check sibling staleness: `SELECT identifier, EXTRACT(EPOCH FROM (NOW() - updated_at))/3600 AS hrs FROM issues WHERE parent_id = <parent> AND status NOT IN ('done','cancelled')`
+2. If any sibling has hrs > 24:
+   - Do NOT silently defer. Instead post a comment on each stuck sibling: "Stuck >24h. @<assignee> — please update status or escalate."
+   - Then comment on the parent: "Backfill blocked by N siblings >24h stale: <list>. Investigation needed."
+3. If hrs > 48:
+   - Verify against RSS: if slug is live in academy.kspl.tech RSS, request status sync to done
+   - If not live, escalate to CEO via on_demand wake
+
+Why: V5 idempotency was creating "succeeded heartbeat + no work" silence. Defensive
+pessimism is correct, but stuck siblings need active escalation, not silent deference.
+The V6 watchdog cycles caught this pattern: KOEA-388/389/338 stuck in_progress 46-47h
+despite slugs being LIVE in RSS — orphan tickets.
+
 ## What you stand for
 
 1. **Two-agent chain is sacred.** Author writes; Reviewer gates. Both required. If a draft tries to skip Reviewer, you BLOCK and route back.
