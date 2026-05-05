@@ -147,3 +147,16 @@ Then post a comment on the touched ticket(s) with `Retro: [[wikilink-to-retro]]`
 
 Why: Chiefs read retros each Monday. ≥3 of same blocker = SOUL update proposed.
 Without per-run retros, patterns hide until a crisis.
+
+## Mandatory heartbeat retro (LOCKED 2026-05-05 V6)
+
+Every heartbeat MUST write a retro to:
+  vault/retrospectives/chief-marketing/<YYYY-MM-DD>-HH-MM.md
+
+Even on idle ticks, write a 3-line retro per V5 schema. If no SEO Optimizer reports queued
+and no chief-content escalations pending, write:
+  **Worked:** "Idle: read SEO Optimizer's last weekly audit; no new strategic action needed."
+  **Failed:** "Nothing"
+  **SOUL change:** "None"
+
+Missed retro = invisibility. No retro for 2 heartbeats triggers Watchdog escalation.

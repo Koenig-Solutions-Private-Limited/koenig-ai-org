@@ -747,8 +747,51 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     };
   };
 
+  // V6 (2026-05-05): retry-on-401-with-fresh-read.
+  // claude_local adapter holds the OAuth token in subprocess env; on the host
+  // launchd refreshes ~/.claude/.credentials.json roughly every 15 min. The
+  // bind-mount /paperclip/.claude/.credentials.json is the source of truth for
+  // the subprocess, but Docker Desktop's macOS file sharing has a brief
+  // propagation lag. When a heartbeat lands inside that window, claude exits
+  // with `requiresLogin` and we used to classify as terminal `claude_auth_required`.
+  // Now we retry up to 2 times with a 1500ms settle delay, then only fall
+  // through to the terminal classification if the fresh credentials still
+  // haven't propagated.
+  const MAX_AUTH_RETRIES = 2;
+  const AUTH_RETRY_SETTLE_MS = 1500;
+
+  const isAuthRequiredAttempt = (attempt: {
+    proc: RunProcessResult;
+    parsed: Record<string, unknown> | null;
+  }): boolean => {
+    if (attempt.proc.timedOut) return false;
+    if ((attempt.proc.exitCode ?? 0) === 0) return false;
+    const loginMeta = detectClaudeLoginRequired({
+      parsed: attempt.parsed,
+      stdout: attempt.proc.stdout,
+      stderr: attempt.proc.stderr,
+    });
+    return loginMeta.requiresLogin;
+  };
+
+  const runAttemptWithAuthRetry = async (resumeSessionId: string | null) => {
+    let attempt = await runAttempt(resumeSessionId);
+    for (let retry = 1; retry <= MAX_AUTH_RETRIES; retry++) {
+      if (!isAuthRequiredAttempt(attempt)) break;
+      await onLog(
+        "stderr",
+        `[paperclip] claude_auth_required → retrying with fresh credentials (attempt ${retry}/${MAX_AUTH_RETRIES}).\n`,
+      );
+      // Give Docker Desktop's bind-mount file sharing time to surface the
+      // freshly-rotated ~/.claude/.credentials.json the host launchd just wrote.
+      await new Promise((resolve) => setTimeout(resolve, AUTH_RETRY_SETTLE_MS));
+      attempt = await runAttempt(resumeSessionId);
+    }
+    return attempt;
+  };
+
   try {
-    const initial = await runAttempt(sessionId ?? null);
+    const initial = await runAttemptWithAuthRetry(sessionId ?? null);
     if (
       sessionId &&
       !initial.proc.timedOut &&
@@ -760,7 +803,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
         "stdout",
         `[paperclip] Claude resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
       );
-      const retry = await runAttempt(null);
+      const retry = await runAttemptWithAuthRetry(null);
       return toAdapterResult(retry, { fallbackSessionId: null, clearSessionOnMissingSession: true });
     }
 

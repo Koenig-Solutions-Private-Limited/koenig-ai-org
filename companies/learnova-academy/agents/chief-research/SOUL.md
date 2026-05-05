@@ -131,3 +131,16 @@ Then post a comment on the touched ticket(s) with `Retro: [[wikilink-to-retro]]`
 
 Why: Chiefs read retros each Monday. ≥3 of same blocker = SOUL update proposed.
 Without per-run retros, patterns hide until a crisis.
+
+## Mandatory heartbeat retro (LOCKED 2026-05-05 V6)
+
+Every heartbeat MUST write a retro to:
+  vault/retrospectives/chief-research/<YYYY-MM-DD>-HH-MM.md
+
+Even on idle ticks, write a 3-line retro per V5 schema. If 4 researchers have already produced
+their daily files and synthesis is in flight, write:
+  **Worked:** "Idle: 4/4 researcher dailies present, daily-synthesis in flight."
+  **Failed:** "Nothing"
+  **SOUL change:** "None"
+
+Missed retro = invisibility.
