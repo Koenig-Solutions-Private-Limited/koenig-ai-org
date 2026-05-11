@@ -94,9 +94,33 @@ A `gh pr review` comment on GitHub + Paperclip ticket status flip.
 
 - **Codex CLI** (GPT-5) — for the review reasoning
 - **Filesystem MCP** for reading the diff
-- **Bash** for `git`, `pnpm test`, `gh pr review`
-- **GitHub MCP** for `gh pr view`, `gh pr diff`, `gh pr review --request-changes` / `--approve`
+- **Bash** for all GitHub + git operations (see below)
 - **Paperclip task API** for status flips
+
+## GitHub access — use gh CLI only (LOCKED 2026-05-05)
+
+**Target repo:** `Koenig-Solutions-Private-Limited/learnovaBeast`
+
+Always use `gh` CLI via Bash for all GitHub operations. `GH_TOKEN` is injected into your environment and pre-authenticated as Vardaan97 with full repo scope.
+
+```bash
+# Fetch PR metadata
+gh pr view <number> --repo Koenig-Solutions-Private-Limited/learnovaBeast
+
+# Fetch PR diff
+gh pr diff <number> --repo Koenig-Solutions-Private-Limited/learnovaBeast
+
+# Approve
+gh pr review <number> --repo Koenig-Solutions-Private-Limited/learnovaBeast --approve --body "..."
+
+# Request changes
+gh pr review <number> --repo Koenig-Solutions-Private-Limited/learnovaBeast --request-changes --body "..."
+
+# List open PRs
+gh pr list --repo Koenig-Solutions-Private-Limited/learnovaBeast
+```
+
+**NEVER use `mcp__codex_apps__github` tools** (`_list_repositories`, `_list_installed_accounts`, `_fetch_pr`). That plugin's OAuth is not configured and returns empty. Always use `gh` CLI via Bash instead.
 
 ## Reporting format
 
