@@ -59,6 +59,8 @@ def clean_line(line: str) -> str:
     line = re.sub(r'\*\*(.+?)\*\*', r'\1', line)
     line = re.sub(r'\*(.+?)\*', r'\1', line)
     line = re.sub(r'`([^`]+)`', r'\1', line)
+    # Strip [[n]](url) footnote citations entirely (both ref and URL)
+    line = re.sub(r'\[\[\d+\]\]\([^\)]+\)', '', line)
     line = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', line)
     # Obsidian wikilinks: [[path|display]] → display;
     # [[course/slug]] → academy URL; other [[path]] refs omitted
@@ -80,39 +82,89 @@ def clean_line(line: str) -> str:
 
 
 def extract_sections(body: str):
-    """Return list of (h2_title, [bullet_str, ...])."""
-    sections = []
-    current_title = None
-    bullets: list[str] = []
+    """Return list of (slide_title, [bullet_str, ...]).
+
+    H2 sections with ≥4 H3 subsections are split into two slides so no
+    single slide covers more than half the subsections.
+    """
+    # First pass: build H2 → H3 hierarchy
+    raw: list[tuple] = []   # (h2_title, preamble_bullets, [(h3_title, [bullets])])
+
+    current_h2 = None
+    current_h3 = None
+    cur_h3_bullets = []
+    cur_h3_list = []
+    preamble = []
+
+    def _keep(cleaned):
+        return (cleaned
+                and len(cleaned) > 15
+                and not cleaned.startswith("|")
+                and not cleaned.startswith("```")
+                and not cleaned.startswith("!["))
+
+    def flush_h3():
+        nonlocal current_h3, cur_h3_bullets
+        if current_h3 is not None:
+            cur_h3_list.append((current_h3, list(cur_h3_bullets[:4])))
+            current_h3 = None
+            cur_h3_bullets = []
+
+    def flush_h2():
+        nonlocal current_h2
+        flush_h3()
+        raw.append((current_h2, list(preamble), list(cur_h3_list)))
+        current_h2 = None
+        del cur_h3_list[:]
+        del preamble[:]
 
     for raw_line in body.splitlines():
         if raw_line.startswith("## "):
-            if current_title is not None:
-                sections.append((current_title, bullets[:5]))
-            current_title = raw_line[3:].strip()
-            bullets = []
-        elif raw_line.startswith("### "):
-            # treat as sub-bullet header
-            sub = raw_line[4:].strip()
-            if sub:
-                bullets.append(sub[:100])
-        elif current_title is not None:
+            flush_h2()
+            current_h2 = raw_line[3:].strip()
+        elif raw_line.startswith("### ") and current_h2 is not None:
+            flush_h3()
+            current_h3 = raw_line[4:].strip()
+        elif not raw_line.startswith("#") and current_h2 is not None:
             cleaned = clean_line(raw_line)
-            if (cleaned
-                    and len(cleaned) > 15
-                    and not cleaned.startswith("|")
-                    and not cleaned.startswith("```")
-                    and not cleaned.startswith("![")):
-                bullets.append(cleaned[:120])
+            if _keep(cleaned):
+                if current_h3 is not None:
+                    cur_h3_bullets.append(cleaned[:120])
+                else:
+                    preamble.append(cleaned[:120])
+    flush_h2()
 
-    if current_title is not None:
-        sections.append((current_title, bullets[:5]))
+    # Second pass: convert to slides
+    slides = []
+    for h2_title, preamble_bullets, h3s in raw:
+        if h2_title is None:
+            continue  # pre-H2 preamble handled via frontmatter in generate()
+        if h2_title.lower() in SKIP_SECTIONS:
+            continue
 
-    # Filter skip sections
-    return [
-        (t, b) for t, b in sections
-        if t.lower() not in SKIP_SECTIONS and b
-    ]
+        if len(h3s) >= 4:
+            # Split dense H2: pair adjacent H3s into two slides
+            mid = (len(h3s) + 1) // 2
+            for group in (h3s[:mid], h3s[mid:]):
+                grp_bullets = []
+                for h3t, h3b in group:
+                    short = re.sub(r'^\d+\.\s+', '', h3t).split(':')[0].strip()
+                    grp_bullets.append(short[:80])
+                    grp_bullets.extend(h3b[:2])
+                if grp_bullets:
+                    parts = [re.sub(r'^\d+\.\s+', '', h3t).split(':')[0].strip()[:40]
+                             for h3t, _ in group]
+                    slides.append((' & '.join(parts), grp_bullets[:5]))
+        elif h3s:
+            all_bullets = list(preamble_bullets[:2])
+            for h3t, _ in h3s[:5]:
+                all_bullets.append(re.sub(r'^\d+\.\s+', '', h3t)[:80])
+            if all_bullets:
+                slides.append((h2_title, all_bullets[:5]))
+        elif preamble_bullets:
+            slides.append((h2_title, preamble_bullets[:5]))
+
+    return slides
 
 
 def _add_text(slide, text, left, top, width, height,
@@ -214,8 +266,15 @@ def generate(draft_path: Path) -> Path:
 
     make_title_slide(prs, title, date_str)
 
-    # Target 4-5 content slides so total is 5-7 with title + CTA
     content_count = 0
+
+    # Add "What You'll Learn" slide from learning_objectives when content is sparse
+    objectives = fm.get('learning_objectives') or []
+    if isinstance(objectives, list) and objectives and len(sections) < 5:
+        obj_bullets = [str(o)[:100] for o in objectives[:5]]
+        make_content_slide(prs, "What You'll Learn", obj_bullets)
+        content_count += 1
+
     for sec_title, bullets in sections:
         if content_count >= 5:
             break
