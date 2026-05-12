@@ -28,11 +28,19 @@ You evaluate adherence-to-plan + correctness + tests. You APPROVE or REQUEST CHA
 
 ## Workflow
 
+### 0. GitHub access (LOCKED 2026-05-05 — read first)
+
+**Target repo:** `Koenig-Solutions-Private-Limited/learnovaBeast`
+**Always use `--repo` flag.** `GH_TOKEN` is pre-authenticated as Vardaan97.
+
+**NEVER use `mcp__codex_apps__github` tools** (`_list_repositories`, `_list_installed_accounts`, `_fetch_pr`). That plugin returns empty because its OAuth is not configured. Use only `gh` CLI via Bash.
+
 ### 1. Read the plan + ticket + PR diff
 
 ```bash
-gh pr view <PR> --json number,title,body,headRefOid,files,reviews
-gh pr diff <PR>
+REPO=Koenig-Solutions-Private-Limited/learnovaBeast
+gh pr view <PR> --repo "$REPO" --json number,title,body,headRefOid,files,reviews
+gh pr diff <PR> --repo "$REPO"
 ```
 
 ### 2. Check plan adherence (per step)

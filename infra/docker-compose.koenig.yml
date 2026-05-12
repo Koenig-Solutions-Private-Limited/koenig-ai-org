@@ -131,6 +131,13 @@ services:
       - /Users/vardaankoenig/Documents/Paperclip/learnovaBeast:/Users/vardaankoenig/Documents/Paperclip/learnovaBeast:rw
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    # KOEA-862: codex_local uses bwrap for sandboxing; bwrap needs to create user namespaces.
+    # seccomp:unconfined lifts the Docker seccomp filter that blocks clone(CLONE_NEWUSER).
+    # user.max_user_namespaces raises the nested-namespace limit (0 by default in linuxkit).
+    security_opt:
+      - seccomp:unconfined
+    sysctls:
+      user.max_user_namespaces: "15000"
     depends_on:
       db:
         condition: service_healthy
