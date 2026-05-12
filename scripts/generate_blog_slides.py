@@ -60,6 +60,16 @@ def clean_line(line: str) -> str:
     line = re.sub(r'\*(.+?)\*', r'\1', line)
     line = re.sub(r'`([^`]+)`', r'\1', line)
     line = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', line)
+    # Obsidian wikilinks: [[path|display]] → display;
+    # [[course/slug]] → academy URL; other [[path]] refs omitted
+    line = re.sub(r'\[\[([^\]|]+)\|([^\]]+)\]\]', r'\2', line)
+    def _wikilink(m):
+        inner = m.group(1)
+        if inner.startswith('course/'):
+            return f"academy.kspl.tech/courses/{inner[len('course/'):]}"
+        return ''
+    line = re.sub(r'\[\[([^\]]+)\]\]', _wikilink, line)
+    line = re.sub(r'\s{2,}', ' ', line)  # collapse spaces from stripped refs
     line = re.sub(r'<[^>]+>', '', line)
     line = re.sub(r'^\s*[-*+]\s+', '', line)  # strip list markers
     line = re.sub(r'^\s*\d+\.\s+', '', line)  # strip numbered list
