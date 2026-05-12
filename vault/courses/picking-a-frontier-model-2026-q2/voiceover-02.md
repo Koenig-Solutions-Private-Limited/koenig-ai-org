@@ -22,7 +22,7 @@ That instability is tool-use determinism. And it's about to cost you a lot more 
 
 Let's do the math. Say each step in your pipeline has 90% determinism—meaning the output structure matches what you expect 9 out of 10 times. That's pretty good, right? Wrong.
 
-For a 5-step pipeline, you multiply: 0.9 to the fifth power equals 59%. Fifty-nine percent. That means *almost half your runs fail at least once* and need a retry. For an 8-step pipeline, it drops to 43%. At 85% per-step determinism on 5 steps, you're down to 44%. At Gemini's average of 81.9% on a 5-step pipeline—you're at 37%. That means 69% of runs require at least one retry or manual intervention.
+For a 5-step pipeline, you multiply: 0.9 to the fifth power equals 59%. Fifty-nine percent. That means *almost half your runs fail at least once* and need a retry. For an 8-step pipeline, it drops to 43%. At 85% per-step determinism on 5 steps, you're down to 44%. At Gemini's average of 81.9% on a 5-step pipeline—you're at 37%. That means 63% of runs require at least one retry or manual intervention.
 
 This is the multiplicative reliability trap. It compounds silently, and most builders don't see it until they hit production.
 
