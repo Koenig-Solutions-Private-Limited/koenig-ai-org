@@ -67,6 +67,8 @@ def clean_line(line: str) -> str:
         inner = m.group(1)
         if inner.startswith('course/'):
             return f"academy.kspl.tech/courses/{inner[len('course/'):]}"
+        if inner.startswith('research/'):
+            return 'the research note'
         return ''
     line = re.sub(r'\[\[([^\]]+)\]\]', _wikilink, line)
     line = re.sub(r'\s{2,}', ' ', line)  # collapse spaces from stripped refs
