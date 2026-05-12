@@ -2,7 +2,7 @@
 chapter: 3
 chapter_slug: long-context-behavior
 title: "Voiceover script — Ch3: Long-context behavior"
-status: draft-for-review
+status: g3-passed
 author: content-author
 vendor_tag: anthropic
 content_type: course-chapter
