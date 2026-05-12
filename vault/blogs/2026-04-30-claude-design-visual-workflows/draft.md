@@ -1,4 +1,7 @@
 ---
+title: "Orchestrate visual workflows with Claude — Blender, Adobe CC, and Ableton via MCP"
+slug: 2026-04-30-claude-design-visual-workflows
+description: "Claude Design lets you orchestrate production pipelines across Blender, Adobe Creative Cloud, and Ableton using eight MCP connectors — no manual handoffs, no prompt-to-JPEG dead ends."
 date: 2026-04-30
 published_date: 2026-05-01
 author: koenig-ai
