@@ -6,7 +6,7 @@ chapter_slug: tool-use-determinism-benchmark
 voice_preset: nova-warm
 estimated_duration_sec: 580
 word_count: 1450
-status: draft-for-review
+status: g0-blocked
 date: 2026-04-30
 ---
 
