@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-1252
 vendor_tag: openai
 content_type: article
-status: draft-for-review
+status: g0-blocked
 reading_time_min: 7
 primary_query: "openai realtime api for voice agents production patterns 2026"
 contrarian_angle: "The Realtime API is not mainly a latency trick. Its real production advantage is collapsing interruption handling, transport, telephony, and session state into one system you do not have to assemble yourself."

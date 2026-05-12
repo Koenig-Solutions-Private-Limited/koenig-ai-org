@@ -12,7 +12,7 @@ word_count: 450
 
 **[Intro — set the trap]**
 
-You've probably seen the pricing comparison: Claude Opus is five dollars per million input tokens. GPT-5.5 is ten dollars. Gemini is two dollars. That makes Gemini four times cheaper, right?
+You've probably seen the pricing comparison: Claude Opus 4.7 is five dollars per million input tokens. GPT-5.5 is ten dollars. Gemini 3.1 Pro is two dollars. That makes Gemini four times cheaper, right?
 
 Wrong.
 
@@ -34,7 +34,7 @@ Now stretch that to a ten-step pipeline. The retry multiplier scales exponential
 
 **[The inversion]**
 
-Here's where it gets truly contrarian. At ten steps with ambiguous input, Opus costs about twelve dollars per successful task. Gemini costs about eighteen dollars.
+Here's where it gets truly contrarian. At ten steps with ambiguous input, Opus costs about four dollars per successful task. Gemini costs about twelve-fifty.
 
 The model with the lowest per-token price now costs fifty percent more to actually complete the work.
 
