@@ -20,6 +20,8 @@ chapter_count: 8
 
 # Course outline
 
+The A2A (Agent-to-Agent) protocol is a standardized framework enabling autonomous AI agents to discover, communicate, negotiate, and collaborate with one another, regardless of their underlying vendor or implementation.
+
 ## Chapter 1: The A2A Protocol Architecture
 *Objective: Build mental model of agent-to-agent communication.*
 Understand the core tenets of the Agent-to-Agent protocol, contrasting it with traditional RPC/REST communication in distributed agent networks.
