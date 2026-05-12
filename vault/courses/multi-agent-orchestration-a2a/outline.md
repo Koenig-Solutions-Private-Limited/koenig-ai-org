@@ -1,7 +1,7 @@
 ---
 course_slug: multi-agent-orchestration-a2a
 title: "Multi-Agent Orchestration with A2A Protocol: A Deep Dive"
-status: outline-draft-for-review
+status: g0-passed
 author: course-author
 level: Advanced
 target_audience: "Engineers and developers building agentic systems who want to move beyond monolithic agents to multi-agent architectures."
