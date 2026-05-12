@@ -4,8 +4,12 @@ chapter_num: 3
 chapter_slug: tools-resources-prompts
 title: "Tools, Resources, Prompts — the three primitives and the decision rule"
 status: draft-for-review
-author: course-author
+author: vardaan-koenig
+agent_drafted_by: course-author
 date: 2026-04-30
+content_type: course-chapter
+vendor_tag: anthropic
+hero_image: "auto:flux"
 duration_min: 40
 prerequisites_chapters: [1, 2]
 learning_objectives:
@@ -20,9 +24,34 @@ sources:
   - https://spec.modelcontextprotocol.io/specification/2025-03-26/server/resources/
   - https://spec.modelcontextprotocol.io/specification/2025-03-26/server/prompts/
   - https://json-schema.org/specification
+  - https://www.rfc-editor.org/rfc/rfc6570
+references:
+  - title: "MCP Tools Specification"
+    url: https://spec.modelcontextprotocol.io/specification/2025-03-26/server/tools/
+  - title: "MCP Resources Specification"
+    url: https://spec.modelcontextprotocol.io/specification/2025-03-26/server/resources/
+  - title: "MCP Prompts Specification"
+    url: https://spec.modelcontextprotocol.io/specification/2025-03-26/server/prompts/
+  - title: "JSON Schema Specification"
+    url: https://json-schema.org/specification
+  - title: "RFC 6570 — URI Template (IETF)"
+    url: https://www.rfc-editor.org/rfc/rfc6570
 ---
 
 # Tools, Resources, Prompts — the three primitives and the decision rule
+
+**Tools, Resources, and Prompts** are the three primitive types defined by the [Model Context Protocol](https://modelcontextprotocol.io) (MCP), introduced by Anthropic in 2024. Each primitive represents a distinct pattern for how language model hosts, clients, and servers expose and consume capabilities: Tools for model-initiated operations that may have side effects, Resources for read-only data identified by URI, and Prompts for structured reusable message templates. Choosing the correct primitive for a given integration requirement is the primary design decision in MCP server development; conflating them is the most common source of correctness and performance problems.
+
+## Key facts
+
+1. MCP defines exactly three primitive types — Tools, Resources, and Prompts — each with a distinct initiation model, side-effect posture, and wire protocol.
+2. **Tools** are model-initiated operations that may have side effects; declared via `tools/list` and invoked via `tools/call`, with an `inputSchema` (JSON Schema) describing arguments.
+3. **Resources** are read-only data objects identified by URIs or RFC 6570 URI templates; listed via `resources/list` and fetched via `resources/read`; can support live subscriptions.
+4. **Prompts** are user-selected reusable message templates with named arguments; listed via `prompts/list` and rendered to a message sequence via `prompts/get`.
+5. The "who initiates / who controls / what mutates" decision rule provides a three-question test that correctly classifies any integration requirement into one of the three primitives.
+6. Conflating Tools and Resources is the most common MCP design mistake: using a zero-argument Tool where a Resource belongs wastes token budget on unnecessary tool-call round-trips and removes the host's ability to pre-load context.
+
+---
 
 > **Prerequisites**: [[01-why-mcp-exists|Chapter 1]] (the N×M problem and host/client/server triad) and [[02-wire-protocol|Chapter 2]] (the wire protocol). You should have the echo-server from [[02-wire-protocol|Chapter 2]] working.
 >

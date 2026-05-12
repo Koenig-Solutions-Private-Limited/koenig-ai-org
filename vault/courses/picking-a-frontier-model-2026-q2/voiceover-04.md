@@ -12,7 +12,7 @@ word_count: 450
 
 **[Intro — set the trap]**
 
-You've probably seen the pricing comparison: Claude Opus is fifteen dollars per million input tokens. GPT-5.5 is ten dollars. Gemini is three-fifty. That makes Gemini four times cheaper, right?
+You've probably seen the pricing comparison: Claude Opus is five dollars per million input tokens. GPT-5.5 is ten dollars. Gemini is two dollars. That makes Gemini four times cheaper, right?
 
 Wrong.
 
@@ -38,7 +38,7 @@ Here's where it gets truly contrarian. At ten steps with ambiguous input, Opus c
 
 The model with the lowest per-token price now costs fifty percent more to actually complete the work.
 
-This break-even occurs around eight to nine steps. If your agentic system has eight or more action steps on difficult inputs — and most production coding agents do — the pricing page is actively misleading you.
+This break-even occurs around four to five steps. If your agentic system has four or more action steps on difficult inputs — and most production coding agents do — the pricing page is actively misleading you.
 
 **[The lever you can control]**
 

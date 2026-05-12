@@ -1,0 +1,24 @@
+%%{init: {"theme": "base", "themeVariables": {"background": "#1e1e2e", "fontFamily": "Inter, sans-serif", "fontSize": "13px"}}}%%
+sankey-beta
+
+%% Source → Distribution Channel
+npm/PyPI, Agent Auto-Install, 19
+MCP Registry, MCP Auto-Register, 16
+IDE Extension, IDE Update Channel, 9
+npm/PyPI, IDE Update Channel, 3
+
+%% Distribution Channel → Trigger
+Agent Auto-Install, Code Exec (postinstall), 12
+Agent Auto-Install, Startup Hook (.pth), 7
+MCP Auto-Register, Tool Call Intercept, 14
+MCP Auto-Register, Startup Hook (stdio), 2
+IDE Update Channel, Code Exec (postinstall), 7
+IDE Update Channel, Tool Call Intercept, 5
+
+%% Trigger → Payload
+Code Exec (postinstall), RAT Deploy, 11
+Code Exec (postinstall), Credential Harvest, 8
+Startup Hook (.pth), Credential Harvest, 7
+Startup Hook (.pth), SSH/K8s Exfil, 2
+Tool Call Intercept, Repository Exfil, 13
+Tool Call Intercept, Token Theft, 6

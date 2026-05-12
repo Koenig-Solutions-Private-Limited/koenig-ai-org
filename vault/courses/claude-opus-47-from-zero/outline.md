@@ -17,7 +17,7 @@ learning_outcomes:
   - "Migrate from Opus 4.6 (or Sonnet 4.x) to Opus 4.7 with correct tokenizer expectations, effort tuning, and task-budget configuration"
   - "Deploy a Managed Agents session using the decoupled brain/hands architecture and recover from harness failures automatically"
   - "Configure Claude Code auto mode with custom block rules and environment trust boundaries for safe autonomous operation"
-  - "Wire creative MCP connectors (Blender, Adobe CC, Ableton) into a multi-tool agent pipeline and handle provider-outage failover"
+  - "Wire creative MCP connectors (Blender, Adobe for creativity, Ableton) into a multi-tool agent pipeline and handle provider-outage failover"
   - "Ship a production multi-modal agent that orchestrates tools, manages high-resolution vision tasks, and runs behind a resilience stack"
 total_duration_min: 280
 chapter_count: 7
@@ -47,6 +47,8 @@ A contrarian thread runs through every chapter: the defaults aren't always safe,
 
 ### Chapter 1: What Opus 4.7 changes — and what it costs
 
+Learn how Opus 4.7 redefines agentic substrates with new cost and effort tiers. Mastering these economic levers is essential to prevent unexpected token runaway costs.
+
 - **Duration**: 40 min
 - **Prerequisites**: course intro only
 - **Learning objectives**:
@@ -60,6 +62,8 @@ A contrarian thread runs through every chapter: the defaults aren't always safe,
 ---
 
 ### Chapter 2: Your first agent — from Messages API to Managed Agents
+
+Master the Managed Agents architecture, including the durable session log and harness failure recovery. This module ensures your agents remain operational even when runtime errors strike.
 
 - **Duration**: 45 min
 - **Prerequisites**: Chapter 1
@@ -75,6 +79,8 @@ A contrarian thread runs through every chapter: the defaults aren't always safe,
 
 ### Chapter 3: Auto mode — safe autonomy for long-running agents
 
+Configure Claude Code's auto-mode with custom environment trust boundaries to safely deploy autonomous long-running agents. This chapter teaches you to mitigate risks in agentic loops.
+
 - **Duration**: 45 min
 - **Prerequisites**: Chapter 1
 - **Learning objectives**:
@@ -88,6 +94,8 @@ A contrarian thread runs through every chapter: the defaults aren't always safe,
 ---
 
 ### Chapter 4: High-resolution vision and multi-modal agent workflows
+
+Process complex visual data using Opus 4.7's high-resolution vision capabilities and structured extraction pipelines. You'll learn how to balance image fidelity against token expense.
 
 - **Duration**: 40 min
 - **Prerequisites**: Chapter 1
@@ -103,19 +111,23 @@ A contrarian thread runs through every chapter: the defaults aren't always safe,
 
 ### Chapter 5: Creative MCP connectors — Claude for Creative Work
 
+Integrate creative MCP connectors for professional workflows, bridging local assets with AI orchestration. This chapter shows how to build end-to-end creative pipelines.
+
 - **Duration**: 45 min
 - **Prerequisites**: Chapters 1 and 2
 - **Learning objectives**:
   - Install and configure the Blender MCP connector and execute Python against a live Blender scene via Claude tool-use
-  - Build a multi-tool pipeline spanning Adobe Creative Cloud (Library search → Photoshop edit → Export) using MCP tool calls
+  - Build a multi-tool pipeline spanning Adobe for creativity (Library search → Photoshop edit → Export) using MCP tool calls
   - Navigate the Ableton, Affinity, and other creative connector ecosystems and choose the right connector for a creative task
   - Explain the local-first architecture: why creative assets stay on your machine while Claude sends structured commands
-- **Key concepts**: 9 creative connectors (Blender, Adobe CC, Ableton, Affinity, Autodesk Fusion, SketchUp, Resolume, Splice), `bpy` Python API, local MCP server architecture, `blender-mcp-server`, Adobe CC 50+ tools, paid vs free tiers, MCP connector naming (`mcp__<server>__<tool>`)
+- **Key concepts**: 9 creative connectors (Blender, Adobe for creativity, Ableton, Affinity, Autodesk Fusion, SketchUp, Resolume Arena, Resolume Wire, Splice), `bpy` Python API, local MCP server architecture, `blender-mcp-server`, Adobe for creativity, paid vs free tiers, MCP connector naming (`mcp__<server>__<tool>`)
 - **Hands-on exercise**: Build a product-launch pipeline: search Adobe Libraries for a hero image, apply a smart-object blur in Photoshop via MCP, and export as web-optimised JPEG — then connect the Blender connector to generate a 3D product mockup from a text description
 
 ---
 
 ### Chapter 6: Production resilience — trust, failover, and the HERMES lesson
+
+Build resilience into your agent stack by implementing provider failover, audit logging, and cost circuit breakers. These production patterns protect you from infrastructure failures and outages.
 
 - **Duration**: 40 min
 - **Prerequisites**: Chapters 2 and 3
@@ -130,6 +142,8 @@ A contrarian thread runs through every chapter: the defaults aren't always safe,
 ---
 
 ### Chapter 7: Capstone — ship a multi-modal research agent in production
+
+Combine vision, MCP orchestration, auto-mode, and resilience into a single multi-modal research agent. This capstone project proves your ability to deploy robust agents in production environments.
 
 - **Duration**: 25 min (guided setup) + 60 min (independent)
 - **Prerequisites**: Chapters 1–6

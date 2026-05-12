@@ -3,8 +3,9 @@ course_slug: picking-a-frontier-model-2026-q2
 chapter_num: 2
 chapter_slug: tool-use-determinism-benchmark
 title: "Tool-use determinism — our 10×3×5 benchmark"
+hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch02-hero.svg"
 status: draft-for-review
-author: editorial-team
+author: "Koenig AI Instructor"
 agent_drafted_by: ca965eff-ea59-4030-91de-47845d3600c6
 vendor_tag: koenig-ai-academy
 content_type: course-chapter
@@ -25,13 +26,13 @@ key_concepts:
   - variance decomposition
   - 10x3x5 benchmark design
 hands_on_exercise: "Run the benchmark script on 2 of your own prompts and record variance against the reference dataset"
-sources:
-  - https://www.anthropic.com/news
-  - https://help.openai.com/en/articles/9624314-model-release-notes
-  - https://ai.google.dev/gemini-api/docs/changelog
-  - /data/claude-tool-use-determinism/2026-Q2/
-  - https://arxiv.org/abs/2303.17580
-  - https://arxiv.org/abs/2307.03172
+references:
+  - "[^1]: Koenig AI Academy internal benchmark data, Q2 2026. /data/claude-tool-use-determinism/2026-Q2/."
+  - "[^2]: Anthropic. 'Prompt caching.' Claude API documentation. https://www.anthropic.com/news — model and caching release notes."
+  - "[^3]: OpenAI. 'Structured Outputs.' Model release notes. https://help.openai.com/en/articles/9624314-model-release-notes — GPT-5.5 strict JSON schema enforcement capabilities."
+  - "[^4]: Anthropic. 'Model temperature and sampling.' Claude model documentation. https://www.anthropic.com/news — temperature=0 behavior across API requests."
+  - "[^5]: Shen, Y. et al. (2023). 'HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in HuggingFace.' https://arxiv.org/abs/2303.17580."
+  - "[^6]: Google. 'Gemini API changelog.' https://ai.google.dev/gemini-api/docs/changelog — Gemini 3.1 Pro structured output and tool-use capability notes."
 tags:
   - course/picking-a-frontier-model-2026-q2
   - evaluation

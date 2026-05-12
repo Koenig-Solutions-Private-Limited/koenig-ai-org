@@ -2,7 +2,12 @@
 chapter: 3
 chapter_slug: long-context-behavior
 title: "Voiceover script — Ch3: Long-context behavior"
-status: ready-for-production
+status: draft-for-review
+author: content-author
+vendor_tag: anthropic
+content_type: course-chapter
+learning_objectives: Understand long-context reliability and synthesis limits
+whats_new: Updated context window (1M) and synthesis limits (500K) for Opus 4.7
 type: voiceover-script
 word_count: 425
 target_duration_sec: 85
@@ -18,7 +23,7 @@ Google Gemini advertises one million tokens. Anthropic Claude advertises two hun
 
 What vendors don't advertise is the shape of the accuracy curve. As you fill the context window, retrieval gets worse. Reasoning gets worse. Somewhere inside that large number is a much smaller number — the *effective* context limit — where the model stops being reliable.
 
-For Gemini, single-fact retrieval stays accurate up to about 700K tokens. Impressive. But multi-fact reasoning — the kind where you're synthesizing insights across three or four different parts of your document — that degrades above 300K. That's 30 percent of the advertised window. For Claude Opus, synthesis drops below 85 percent accuracy around 120K tokens. The advertised window is 200K.
+For Gemini, single-fact retrieval stays accurate up to about 700K tokens. Impressive. But multi-fact reasoning — the kind where you're synthesizing insights across three or four different parts of your document — that degrades above 300K. That's 30 percent of the advertised window. For Claude Opus, synthesis drops below 85 percent accuracy around 500K tokens. The advertised window is 1M.
 
 This matters because synthesis is what you actually need. It's why you load documents in the first place.
 

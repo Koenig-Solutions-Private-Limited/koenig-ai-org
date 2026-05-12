@@ -3,8 +3,9 @@ course_slug: picking-a-frontier-model-2026-q2
 chapter_num: 3
 chapter_slug: long-context-behavior
 title: "Long-context behavior — effective vs. advertised context windows"
+hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch03-hero.svg"
 status: draft-for-review
-author: Koenig AI Academy
+author: "Koenig AI Instructor"
 agent_drafted_by: ca965eff-ea59-4030-91de-47845d3600c6
 vendor_tag: multi-model
 content_type: course-chapter
@@ -26,13 +27,13 @@ key_concepts:
   - RAG vs long-context tradeoffs
   - chunking strategy
 hands_on_exercise: "Run needle-in-haystack test on a document set at 3 depth levels and record retrieval accuracy"
-sources:
-  - https://www.anthropic.com/news
-  - https://help.openai.com/en/articles/9624314-model-release-notes
-  - https://ai.google.dev/gemini-api/docs/changelog
-  - https://arxiv.org/abs/2307.03172
-  - https://arxiv.org/abs/2406.13121
-  - /data/claude-tool-use-determinism/2026-Q2/
+references:
+  - "[^1]: Liu, N. F. et al. (2023). 'Lost in the Middle: How Language Models Use Long Contexts.' Transactions of the Association for Computational Linguistics, 12. https://arxiv.org/abs/2307.03172"
+  - "[^2]: Anthropic. Claude Opus 4.7 model card and release notes. https://www.anthropic.com/news"
+  - "[^3]: Google DeepMind. Gemini 3.1 Pro release and changelog. https://ai.google.dev/gemini-api/docs/changelog"
+  - "[^4]: OpenAI. GPT-5.5 release notes. https://help.openai.com/en/articles/9624314-model-release-notes"
+  - "[^5]: Hsieh, C.-Y. et al. (2024). 'RULER: What's the Real Context Size of Your Long-Context Language Models?' https://arxiv.org/abs/2404.06654"
+  - "[^6]: Bai, Y. et al. (2024). 'LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks.' https://arxiv.org/abs/2412.15204"
 tags:
   - course/picking-a-frontier-model-2026-q2
   - evaluation
