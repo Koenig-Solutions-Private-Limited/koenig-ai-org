@@ -1,0 +1,45 @@
+%% NOTE: Mermaid does not support grid heatmaps natively.
+%% The canonical output is defense-heatmap.svg (hand-crafted SVG table).
+%% This file is kept as the authoritative data source for the heatmap.
+%%
+%% Matrix data (agent × mitigation):
+%%
+%% Agents: Claude Code | Cursor | Codex CLI | Gemini CLI | Goose | Aider | Copilot Workspace | Devin
+%%
+%% Mitigations:
+%%   A = Sandbox/Firecracker
+%%   B = Deny-list CLI
+%%   C = Least-priv tokens
+%%   D = MCP server allowlist
+%%   E = Registry age-gate
+%%   F = Prompt-injection guard
+%%
+%% Cell values: G=green(implemented) Y=yellow(partial) R=red(missing/unknown)
+%%
+%%            A  B  C  D  E  F
+%% Claude Code:  G  Y  Y  Y  R  Y
+%% Cursor:       R  Y  R  Y  R  R
+%% Codex CLI:    G  G  Y  R  R  Y
+%% Gemini CLI:   R  R  R  R  R  R
+%% Goose:        R  Y  R  R  R  R
+%% Aider:        R  Y  R  R  R  R
+%% Copilot WS:   G  Y  G  R  R  Y
+%% Devin:        G  G  G  R  R  Y
+%%
+%% Fallback quadrant chart (low fidelity but renders via mmdc):
+quadrantChart
+    title Agent Defense Coverage (quadrant = implementation maturity)
+    x-axis Low Mitigation Breadth --> High Mitigation Breadth
+    y-axis Low Isolation --> High Isolation
+    quadrant-1 Strong posture
+    quadrant-2 Isolated but open
+    quadrant-3 Exposed
+    quadrant-4 Broad but unsandboxed
+    Devin: [0.80, 0.85]
+    Copilot Workspace: [0.62, 0.75]
+    Claude Code: [0.58, 0.70]
+    Codex CLI: [0.50, 0.72]
+    Cursor: [0.30, 0.20]
+    Goose: [0.22, 0.18]
+    Aider: [0.20, 0.15]
+    Gemini CLI: [0.12, 0.12]

@@ -3,8 +3,9 @@ course_slug: picking-a-frontier-model-2026-q2
 chapter_num: 4
 chapter_slug: cost-per-task
 title: "Cost-per-task — pricing vs. actual bill on real workloads"
+hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch04-hero.svg"
 status: draft-for-review
-author: editorial-team
+author: "Koenig AI Instructor"
 agent_drafted_by: ca965eff-ea59-4030-91de-47845d3600c6
 vendor_tag: koenig-ai-academy
 content_type: course-chapter
@@ -26,13 +27,12 @@ key_concepts:
   - context caching
   - pricing surprises
 hands_on_exercise: "Fill in the cost estimator spreadsheet for your use case using real token counts from Chapter 2"
-sources:
-  - https://www.anthropic.com/pricing
-  - https://openai.com/pricing
-  - https://ai.google.dev/pricing
-  - https://www.anthropic.com/news
-  - https://help.openai.com/en/articles/9624314-model-release-notes
-  - https://ai.google.dev/gemini-api/docs/changelog
+references:
+  - "[^1]: Anthropic. 'Claude pricing.' https://www.anthropic.com/pricing — Opus 4.7 input/output/cache pricing as of Q2 2026. Also: 'Prompt caching.' https://www.anthropic.com/news."
+  - "[^2]: OpenAI. 'OpenAI API pricing.' https://openai.com/pricing — GPT-5.5 input/output/cached input pricing as of Q2 2026. Model release notes: https://help.openai.com/en/articles/9624314-model-release-notes."
+  - "[^3]: Google. 'Gemini API pricing.' https://ai.google.dev/pricing — Gemini 3.1 Pro input/output/context caching pricing as of Q2 2026. Changelog: https://ai.google.dev/gemini-api/docs/changelog."
+  - "[^4]: Koenig AI Academy internal cost model data, Q2 2026. Derived from 10×3×5 benchmark dataset (/data/claude-tool-use-determinism/2026-Q2/) with retry simulation applied at workload scale."
+  - "[^5]: Patil, S. et al. Berkeley Function-Calling Leaderboard (BFCL) V4. https://gorilla.cs.berkeley.edu/leaderboard.html — analysis of tool-call reliability impact on pipeline cost."
 tags:
   - course/picking-a-frontier-model-2026-q2
   - evaluation
@@ -93,7 +93,7 @@ cost_per_task = (
 ) × (1 / determinism_rate)^pipeline_steps
 ```
 
-The last factor — `(1 / determinism_rate)^pipeline_steps` — is the retry multiplier. It is the single biggest source of divergence between pricing page cost and actual bill.
+The last factor — `(1 / determinism_rate)^pipeline_steps` — is the retry multiplier. It is the single biggest source of divergence between pricing page cost and actual bill, as benchmarked across tool-use tasks [^5].
 
 ---
 
@@ -205,7 +205,7 @@ Each platform has rules that break caching in non-obvious ways:
 
 **Anthropic (Opus 4.7)**:
 - Cache TTL: 5 minutes. Calls more than 5 minutes apart from the same prompt restart the cache. For batch workloads with irregular timing, cache hit rate can be much lower than expected.
-- Minimum cacheable length: 1,024 tokens. Short system prompts don't qualify.
+- Minimum cacheable length: 4,096 tokens. Short system prompts don't qualify.
 - Cache is per-user/session: if you're building a multi-tenant system, you need to architect for per-tenant cache keys.
 
 **OpenAI (GPT-5.5)**:
@@ -387,4 +387,6 @@ For further reading on how these models perform on specific workloads, see [[blo
 [^3]: Google. "Gemini API pricing." https://ai.google.dev/pricing — Gemini 3.1 Pro input/output/context caching pricing as of Q2 2026. Changelog: https://ai.google.dev/gemini-api/docs/changelog.
 
 [^4]: Koenig AI Academy internal cost model data, Q2 2026. Derived from 10×3×5 benchmark dataset (`/data/claude-tool-use-determinism/2026-Q2/`) with retry simulation applied at workload scale.
+
+[^5]: Patil, S. et al. *Berkeley Function-Calling Leaderboard (BFCL) V4*. https://gorilla.cs.berkeley.edu/leaderboard.html — analysis of tool-call reliability impact on pipeline cost.
 

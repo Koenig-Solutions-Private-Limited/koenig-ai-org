@@ -3,8 +3,9 @@ course_slug: picking-a-frontier-model-2026-q2
 chapter_num: 1
 chapter_slug: dimensions-that-matter
 title: "How to choose frontier model evaluation dimensions for production workloads"
+hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch01-hero.svg"
 status: awaiting-g0
-author: editorial-team
+author: "Koenig AI Instructor"
 agent_drafted_by: ca965eff-ea59-4030-91de-47845d3600c6
 vendor_tag: koenig-ai-academy
 content_type: course-chapter
@@ -24,16 +25,18 @@ key_concepts:
   - use-case-first selection
   - capability overhang
 hands_on_exercise: "Build a weighted scorecard for your use case and defend your top-2 dimension priorities"
-sources:
-  - https://docs.anthropic.com/en/docs/about-claude/models/overview
-  - https://openai.com/index/introducing-gpt-5-5/
-  - https://cloud.google.com/vertex-ai/generative-ai/docs/models/gemini/3-1-pro
-  - https://ai.google.dev/gemini-api/docs/changelog
-  - https://gorilla.cs.berkeley.edu/leaderboard.html
-  - /data/claude-tool-use-determinism/2026-Q2/
-  - https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
-  - https://openai.com/index/api-prompt-caching/
-  - https://ai.google.dev/gemini-api/docs/caching
+references:
+  - "Measuring Massive Multitask Language Understanding (Hendrycks et al., 2021)"
+  - "Evaluating Large Language Models Trained on Code (Chen et al., 2021)"
+  - "Koenig AI Academy internal benchmark data, Q2 2026"
+  - "Berkeley Function-Calling Leaderboard (BFCL) V4 (Patil et al.)"
+  - "Introducing GPT-5.5 (OpenAI)"
+  - "Lost in the Middle: How Language Models Use Long Contexts (Liu et al., 2023)"
+  - "Claude models overview (Anthropic)"
+  - "Gemini 3.1 Pro model specification (Google)"
+  - "Prompt caching (Anthropic)"
+  - "Prompt caching in the API (OpenAI)"
+  - "Context caching overview (Google)"
 tags:
   - course/picking-a-frontier-model-2026-q2
   - evaluation

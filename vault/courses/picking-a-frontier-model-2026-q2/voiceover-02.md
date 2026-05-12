@@ -22,7 +22,7 @@ That instability is tool-use determinism. And it's about to cost you a lot more 
 
 Let's do the math. Say each step in your pipeline has 90% determinism—meaning the output structure matches what you expect 9 out of 10 times. That's pretty good, right? Wrong.
 
-For a 5-step pipeline, you multiply: 0.9 to the fifth power equals 59%. Fifty-nine percent. That means *almost half your runs fail at least once* and need a retry. For an 8-step pipeline, it drops to 43%. At 85% per-step determinism on 5 steps, you're down to 44%. At Gemini's average of 79% on a 5-step pipeline—you're at 31%. That means 69% of runs require at least one retry or manual intervention.
+For a 5-step pipeline, you multiply: 0.9 to the fifth power equals 59%. Fifty-nine percent. That means *almost half your runs fail at least once* and need a retry. For an 8-step pipeline, it drops to 43%. At 85% per-step determinism on 5 steps, you're down to 44%. At Gemini's average of 81.9% on a 5-step pipeline—you're at 37%. That means 69% of runs require at least one retry or manual intervention.
 
 This is the multiplicative reliability trap. It compounds silently, and most builders don't see it until they hit production.
 
@@ -58,7 +58,7 @@ Here's what the data shows.
 
 On simple schemas—categories one and two—all three models hit near 100%. Model choice on determinism grounds is irrelevant if your use case stays in this zone.
 
-Watch what happens as complexity rises. Opus 4.7 leads overall at 91.4% average. GPT-5.5 follows at 88%. Gemini 3.1 Pro at 79%. But those averages hide the real story.
+Watch what happens as complexity rises. Opus 4.7 leads overall at 91.4% average. GPT-5.5 follows at 88%. Gemini 3.1 Pro at 81.9%. But those averages hide the real story.
 
 On nested objects—category six—Opus holds at 88%. Gemini drops to 74%. That's a 14-point gap. On the multi-model handoff schema—category ten—Opus is at 80%, GPT-5.5 at 76%, Gemini at 68%. The complexity tier is the lever. Match your model to your schema complexity, not just your prompt complexity.
 

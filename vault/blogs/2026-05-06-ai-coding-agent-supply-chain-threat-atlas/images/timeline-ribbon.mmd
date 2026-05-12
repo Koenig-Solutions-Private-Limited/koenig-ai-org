@@ -1,0 +1,51 @@
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "primaryColor": "#ef4444",
+    "primaryTextColor": "#fff",
+    "primaryBorderColor": "#dc2626",
+    "secondaryColor": "#f97316",
+    "tertiaryColor": "#a855f7",
+    "background": "#1e1e2e",
+    "mainBkg": "#1e1e2e",
+    "nodeBorder": "#555",
+    "clusterBkg": "#2a2a3e",
+    "titleColor": "#e2e8f0",
+    "edgeLabelBackground": "#2a2a3e",
+    "fontFamily": "Inter, sans-serif",
+    "fontSize": "13px"
+  }
+}}%%
+gantt
+    title AI Coding Agent Supply Chain Attacks — Nov 2024 to May 2026
+    dateFormat  YYYY-MM-DD
+    axisFormat  %b '%y
+
+    section MCP  ● red
+    mcp-remote CVE-2025-6514 OAuth RCE           :crit, mcp1,  2025-03-01, 3d
+    GitHub MCP prompt-injection PAT exfil        :crit, mcp2,  2025-06-15, 3d
+    MCP sampling/createMessage token abuse       :      mcp3,  2025-08-10, 3d
+    Postmark-MCP v1.0.16 silent BCC exfil        :crit, mcp4,  2025-09-05, 3d
+    MCP StdioServerParameters RCE (design flaw)  :crit, mcp5,  2026-01-20, 3d
+    Trend Micro: 492 unauthenticated MCP servers :      mcp6,  2026-02-05, 3d
+    CVE-2026-30615 Windsurf STDIO RCE (150M DLs) :crit, mcp7,  2026-04-05, 3d
+    Anthropic labels STDIO RCE "expected behav." :      mcp8,  2026-04-08, 3d
+    30+ MCP CVEs in 60 days; 13 critical         :crit, mcp9,  2026-04-30, 3d
+
+    section npm / PyPI  ● orange
+    Axios maintainer-cred compromise — RAT       :crit, pkg1,  2024-11-20, 3d
+    authzed-py-client typosquat → CI/CD          :      pkg2,  2025-02-10, 3d
+    LiteLLM 1.82.8 .pth backdoor (95M installs)  :crit, pkg3,  2026-03-24, 3d
+    Axios 2026 re-compromise — agent postinstall :crit, pkg4,  2026-03-31, 3d
+
+    section IDE / CLI  ● purple
+    Gemini CLI "Comment and Control" via PR/issues:     ide1,  2025-10-15, 3d
+    Anthropic .mcpb Desktop Extension bypass     :      ide2,  2025-12-10, 3d
+    Antigravity IDE flag-injection RCE           :crit, ide3,  2026-04-15, 3d
+    Bitwarden CLI hijack — hunts Claude/Cursor creds:crit, ide4, 2026-04-22, 3d
+
+    section Tool-Poisoning  ● blue
+    Supabase Cursor MCP tool-poisoning + exfil   :crit, tp1,   2025-11-15, 3d
+    Microsoft Copilot Studio CVE-2026-21520 ShareLeak:crit, tp2, 2026-03-05, 3d
+    Salesforce Agentforce PipeLeak               :      tp3,   2026-04-20, 3d
+    SCADA-targeting via agentic tool manipulation:crit, tp4,   2026-05-02, 3d

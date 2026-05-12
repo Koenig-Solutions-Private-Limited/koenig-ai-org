@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: mcp-from-first-principles-to-production
 title: "Why MCP exists — the design problem it actually solves"
-status: awaiting-g0
+status: draft-for-review
 author: course-author
 ticket: KOE-36
 learning_objectives:
@@ -31,21 +31,20 @@ tags:
 
 # Why MCP exists — the design problem it actually solves
 
-The **Model Context Protocol (MCP)** is an open, vendor-neutral protocol introduced by Anthropic on 25 November 2024 for standardising how AI applications connect to external data sources and tools through a JSON-RPC 2.0 wire format over stdio or HTTP transports.[^1] By April 2026, the protocol had attracted integrations from multiple AI development platforms, with the official 2026 roadmap charting its trajectory for remote-server authentication and gateway discovery.[^2]
+The **Model Context Protocol (MCP)** standardises how AI applications connect to data sources and tools via JSON-RPC 2.0 over stdio or HTTP.[^1]
 
-Most tutorials start with a hello-world tool call and a five-line SDK import. That's fine for demos. It doesn't explain why the protocol is shaped the way it is, and without that, every 3 AM debugging session feels like archaeology. This chapter answers the *why*: what design constraint forced a specific set of decisions, what alternatives were rejected and for which precise reasons, and what problems MCP explicitly does not attempt to solve. Once that picture is clear, the rest of the specification reads like a logical consequence rather than a set of arbitrary choices.
+Most tutorials show basic SDK examples. This chapter explains *why* the protocol is shaped as it is: the design constraints, rejected alternatives, and explicit out-of-scope problems. Understanding the *why* turns the specification from an arbitrary list of choices into a logical, necessary framework.
 
 ---
 
 ## Key facts
 
-- **Announced**: 25 November 2024 by Anthropic; specification published at `spec.modelcontextprotocol.io`.[^1]
-- **Wire protocol**: JSON-RPC 2.0 (newline-delimited) over stdio or HTTP+SSE (Streamable HTTP); not REST, not WebSocket, not gRPC.[^1]
-- **Three primitives**: Tools (model-initiated side-effects), Resources (app-controlled read-only data), Prompts (user-initiated templates).[^1]
-- **LSP lineage**: Architecture is explicitly modelled on the Language Server Protocol, which solved the identical N×M problem for editors in 2016.[^3]
-- **Auth trajectory**: The 2026 roadmap targets OAuth 2.1 + DPoP token binding (SEP-1932, an active proposal) for remote-server authentication, plus gateway discovery via `.well-known` metadata.[^2]
-- **Adoption baseline (April 2026)**: Claude.ai ships MCP natively; multiple AI development platforms and IDEs have announced MCP-compatible integrations.[^1]
-- **Governance**: Specification is Apache 2.0. Anthropic chairs the working group but does not hold exclusive change authority.
+- **Announced**: 25 November 2024 by Anthropic.[^1]
+- **Wire protocol**: JSON-RPC 2.0 (newline-delimited) over stdio or HTTP+SSE.[^1]
+- **Primitives**: Tools, Resources, Prompts.[^1]
+- **LSP lineage**: Modelled on the Language Server Protocol.[^3]
+- **Auth trajectory**: OAuth 2.1 + DPoP token binding in roadmap.[^2]
+- **Governance**: Apache 2.0; Anthropic chairs, no exclusive authority.
 
 ---
 
@@ -71,29 +70,14 @@ The textbook fix for N×M proliferation is to insert a standard: instead of N×M
 
 The N×M framing explains *that* a protocol was needed. It doesn't explain why MCP looks the way it does. For that, you need to understand what was rejected and why.
 
-### Alternative 1: Custom REST adapters (the status quo before MCP)
-
-The simplest approach is no approach: each LLM application team writes its own integration layer, calling third-party REST APIs directly and shaping the response JSON however suits the model's context window. Most of the bespoke adapters that proliferated before MCP followed this pattern.
-
-**The specific failure mode**: REST APIs are designed for human-operated software clients with stable lifecycles. They assume: a long-lived HTTP connection, a client that can parse HTML error pages or inconsistent response schemas, retry logic calibrated to human workflows, and auth tokens whose expiry is handled by a logged-in user session. LLM tool calls have none of these properties. They're ephemeral (one inference pass), unbounded in concurrency (the model can call tools in parallel), and entirely programmatic — there's no human in the loop to re-authenticate when a token expires mid-task. Custom REST adapters fail silently under these conditions, and the failure only surfaces as a degraded model response that the user may not recognise as a tool failure.
-
-The deeper problem: no REST adapter is reusable across applications. If two teams are both querying the same GitHub API, they ship two adapters. Neither can benefit from the other's bug fixes.
+### Alternative 1: Custom REST adapters
+**Failure mode**: REST APIs assume long-lived HTTP, human-like error handling, and stable sessions. LLM tool calls are ephemeral, parallel, and programmatic — there's no human in the loop to re-authenticate when a token expires. Bespoke adapters fail silently, and code is never reusable across applications.
 
 ### Alternative 2: WebSocket hub
-
-A more architecturally sophisticated approach: build a central hub that all LLM applications connect to via WebSocket. The hub speaks to each third-party service and exposes a unified API to the models. This is roughly how several enterprise "AI middleware" products positioned themselves in 2023–2024.
-
-**The specific failure mode**: WebSocket connections are stateful. The hub must maintain a live socket per LLM application session, track which model is mid-task, and route responses back to the right session. Under load, this creates a complex multiplexed-session management problem that grows with the number of concurrent LLM calls. More critically: the hub becomes a single point of failure. If it goes down — or even experiences elevated latency — every LLM application it serves degrades simultaneously.
-
-There is a subtler problem for local development. WebSocket hubs require network reachability. An MCP server for a local tool (like a file system reader or a local database) runs as a child process on the developer's machine. A WebSocket hub requires that local process to expose a public network address, which is either a security hole or an operational headache. stdio sidesteps this entirely: the MCP server is a child process of the host application, communicating over a Unix pipe. No network, no auth surface, trivially restartable.
+**Failure mode**: WebSocket hubs are stateful and complex, becoming a single point of failure that degrades all connected applications simultaneously. They also require network reachability, which is a security and operational headache for local-process tools that stdio handles natively.
 
 ### Alternative 3: OpenAPI spec passthrough
-
-A third approach: standardise the *description format* for tools rather than the *transport*. Publish an OpenAPI 3.1 spec for each service, have the LLM read the spec, and generate API calls directly. Some LLM providers experimented with this in 2023.
-
-**The specific failure mode**: OpenAPI describes what an API does, not how an LLM should call it. The semantics of "what parameters to pass and when" are not representable in OpenAPI's schema layer — they require the kind of natural-language description that MCP's Tool definition carries in its `description` field. OpenAPI also provides no mechanism for streaming partial results back to the model (which matters enormously for long-running tool calls), no capability negotiation (so the model doesn't know which version of the tool is available), and no structured error typing that the model can reason about.
-
-More critically: OpenAPI passthrough gives the model direct access to an API with no mediation layer. If the model makes a malformed call — which LLMs do, especially with complex parameter schemas — the error comes back as a raw HTTP 422 or 500, which the model must parse without context. MCP's typed error responses (`error.code`, `error.message`, structured `data`) are designed precisely so that the model has enough signal to retry or escalate without human intervention.[^5]
+**Failure mode**: OpenAPI describes *what* an API does, not *how* an LLM should call it. It lacks semantics for streaming, capability negotiation, and structured error typing that LLMs need to reason about failures. Raw HTTP error codes provide no context for model-driven recovery.
 
 <RunPromptCell
   model="claude-sonnet-4-6"
@@ -139,7 +123,7 @@ MCP defines a precise three-way topology that almost every tutorial glosses over
 
 **Server** — The MCP server itself. A server exposes some combination of Tools, Resources, and Prompts, and it serves exactly one domain: a GitHub MCP server knows about repos and files; a Postgres MCP server knows about tables and queries. Servers are intentionally narrow.
 
-The key constraint: **the server never calls the host, and it never calls other servers**. Information flows in one direction: the client calls the server, the server returns results, the client passes them to the host, the host injects them into the model context. This unidirectional constraint is what makes MCP servers safe to run as untrusted third-party processes: a malicious server can return garbage, but it cannot initiate actions against the host or against other connected services.
+The key constraint: the server does not independently trigger host actions. Information flows in one direction: the client calls the server, the server returns results, the client passes them to the host, the host injects them into the model context. While MCP's sampling capability (`sampling/createMessage`) allows servers to request that the host perform model inference on their behalf, the server has no channel to independently trigger arbitrary host actions. This unidirectional constraint is what makes MCP servers safe to run as untrusted third-party processes: a server cannot independently initiate actions against the host or against other connected services.
 
 <Callout type="warning">
 **The unidirectional constraint has teeth.** If you design an MCP server that tries to call back into the host (e.g., to trigger another tool call), you have broken the security model. The server has no channel for this — and any workaround (e.g., embedding a callback URL in a tool result) should be treated as a red flag in code review. See [[courses/mcp-from-first-principles-to-production/02-json-rpc-wire-protocol]] for how the JSON-RPC framing enforces this at the wire level.
@@ -164,20 +148,15 @@ The key constraint: **the server never calls the host, and it never calls other 
 ---
 
 ## What MCP deliberately does NOT solve
+MCP is a narrow protocol for context injection. Problems it *excludes* are deferred to higher layers.
 
-This is the contrarian angle that almost every MCP post omits. MCP is not universal agent middleware. It is a narrow protocol for one specific job — standardised context injection into LLM inference — and its narrowness is what makes it deployable. Every problem MCP does *not* solve is a problem it deliberately deferred to a higher layer.
+- **Agent orchestration**: No flow control or branching logic. Orchestration (ReAct, plan-and-execute) belongs to the Host.
+- **Multi-agent coordination**: Agents cannot coordinate *through* MCP. They need separate channels.
+- **Session persistence**: State is gone when the process exits. Persistence is the Host's responsibility.
+- **Model routing**: Model selection and inference parameters are entirely outside MCP.
+- **Billing and rate limiting**: Raw MCP servers are stateless and unauthenticated. These belong to the Gateway/Infrastructure layer (Chapter 5).
 
-**Agent orchestration.** There is no flow control in MCP, no mechanism for a server to direct the model to call another tool, no branching logic. Orchestration (deciding which tool to call, in what order, with what retry logic) is the host's job. This is intentional: if the protocol encoded orchestration, every orchestration model (ReAct, plan-and-execute, tree-of-thought) would require a protocol extension. By leaving orchestration out, MCP can be used with any orchestration model without modification.[^2]
-
-**Multi-agent coordination.** Two MCP-enabled agents cannot coordinate through MCP itself. They would need a separate channel — a message queue, a shared database, or an orchestrator agent that calls both via its own MCP clients. The 2026 roadmap explicitly names multi-agent coordination as a future consideration, not a current feature.[^2]
-
-**Session memory and persistence.** When an MCP server process exits, its state is gone. Persistent memory (conversation history, user preferences, cross-session context) is the host's responsibility. Servers that want to persist state must use an external database and manage it themselves.
-
-**Model routing.** Which model gets called, at what temperature, with what context window budget — none of that is MCP's concern. MCP is below the model layer; it's the mechanism by which context reaches a model, not the mechanism by which a model is selected or invoked.
-
-**Billing and rate limiting at the server level.** A raw MCP server has no concept of who is calling it or how many times. That's what the gateway layer (Chapter 5) adds — RBAC, per-user rate limits, and audit trails. Running MCP servers without a gateway on a multi-user system is like running a database without connection pooling or access control.
-
-The deliberate narrowness is the design. A protocol that tried to solve all five of these problems would be so complex that no two implementations would be compatible. MCP's power comes from what it excludes.
+The deliberate narrowness is the design. A protocol solving everything would be too complex to be compatible.
 
 <RunPromptCell
   model="claude-sonnet-4-6"
@@ -348,35 +327,26 @@ Notice what is *not* in this server: no authentication, no rate limiting, no ses
 
 ---
 
-## Hands-on exercise: map your own integrations onto the MCP model
+## Hands-on exercise: map your own integrations
+Pick three integrations you maintain (APIs, databases, SDKs). For each, answer:
+1. **Assignment**: If this were an MCP server, what's its `name`? What does the Host own?
+2. **Primitive**: Is it a **Tool**, **Resource**, or **Prompt**?
+3. **Out-of-scope**: Identify one concern MCP leaves to your application (auth, rate limiting, etc.) and explain why.
 
-**Pick three integrations you have built or maintain** — REST API calls your application makes, database queries, file system reads, third-party SDKs. For each, answer:
-
-1. **Host / Client / Server assignment**: If this were an MCP server, which component would own the domain logic? What would the server's `name` be?
-
-2. **Primitive classification**: Is this primarily a **Tool** (model-initiated, side-effects acceptable), a **Resource** (app-controlled, read-only context), or a **Prompt** (user-triggered template)?
-
-3. **What MCP would NOT handle**: Identify one concern that MCP leaves to your application layer — auth, rate limiting, caching, session state — and name which layer owns it.
-
-Write three one-paragraph descriptions, one per integration, structured as: "This is an MCP [Tool/Resource/Prompt] exposed by a server named [X]. The host is [Y]. MCP handles [specific responsibility]. The [auth/rate-limit/etc.] concern belongs to [layer/component] because [reason]."
-
-**Success criteria**: If you can write all three paragraphs without hedging on the primitive classification, you've internalised the host/client/server separation well enough to proceed to the next chapter.
+Structure your answer: "This is an MCP [Tool/Resource/Prompt] exposed by a server named [X]. The host is [Y]. MCP handles [responsibility]. The [auth/rate-limit/etc.] concern belongs to [layer/component] because [reason]."
 
 ---
 
 ## What's next
+Chapter 2 covers the *how*. In [[courses/mcp-from-first-principles-to-production/02-json-rpc-wire-protocol]], you will dissect the JSON-RPC 2.0 envelope, implement the `initialize` lifecycle by hand, and build a 60-line Python server. You'll also learn the trade-offs between stdio and Streamable HTTP (HTTP+SSE).
 
-Chapter 1 answered the *why*. Chapter 2 answers the *how* — down to the byte level.
-
-In [[courses/mcp-from-first-principles-to-production/02-json-rpc-wire-protocol]] you will dissect the JSON-RPC 2.0 envelope frame by frame, implement the full `initialize → capabilities → request → response` lifecycle by hand (no SDK), and build the 60-line Python server that handles `tools/list` and `tools/call` over raw stdin/stdout. You'll also learn when stdio transport breaks down and why Streamable HTTP (HTTP+SSE) is the right choice for remote servers — including what you give up when you leave stdio behind.
-
-If you want context on where the protocol is heading before diving into wire-level details, [[blogs/mcp-2026-roadmap-explained]] covers the OAuth 2.1 + DPoP trajectory and the gateway discovery work planned for the second half of 2026.
+For roadmap context, [[blogs/mcp-2026-roadmap-explained]] details the OAuth 2.1 + DPoP trajectory and gateway discovery.
 
 ---
 
 ## References
 
-[^1]: Model Context Protocol Specification — https://spec.modelcontextprotocol.io/ · retrieved 2026-04-30
+[^1]: Model Context Protocol Specification — https://modelcontextprotocol.io/specification/ · retrieved 2026-04-30
 [^2]: MCP 2026 Roadmap (Official Blog) — https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/ · retrieved 2026-04-30
 [^3]: Language Server Protocol Specification 3.17 — https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/ · retrieved 2026-04-30
 [^4]: JSON-RPC 2.0 Specification — https://www.jsonrpc.org/specification · retrieved 2026-04-30

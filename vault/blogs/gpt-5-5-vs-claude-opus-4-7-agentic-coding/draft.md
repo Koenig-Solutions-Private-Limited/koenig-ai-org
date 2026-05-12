@@ -1,103 +1,165 @@
 ---
-date: 2026-05-01
-author: blog-author
-ticket: KOEA-255
-vendor_tag: anthropic
+date: 2026-05-11
+author: vardaan-koenig
+agent_drafted_by: blog-author
+ticket: KOEA-1036
+vendor_tag: openai
 content_type: article
-status: g0-blocked
+status: awaiting-g0
 reading_time_min: 7
 primary_query: "gpt 5.5 vs claude opus 4.7 agentic coding benchmark"
-contrarian_angle: "The benchmarks say Opus 4.7 wins coding and GPT-5.5 wins terminals — but the real differentiator is which model fails less often mid-workflow, and that's not on any leaderboard"
+contrarian_angle: "Bedrock removes vendor-procurement friction, but it does not remove model-routing decisions; the real split is task shape, not cloud provider"
 sources:
-  - https://openai.com/index/openai-on-aws/
-  - https://www.neowin.net/news/openais-frontier-ai-models-and-codex-now-available-on-amazon-bedrock/
-  - https://www.vellum.ai/blog/claude-opus-4-7-benchmarks-explained
-  - https://thenextweb.com/news/anthropic-claude-opus-4-7-coding-agentic-benchmarks-release
-  - https://www.digitalapplied.com/blog/gpt-5-5-vs-claude-opus-4-7-frontier-comparison
+  - https://openai.com/index/introducing-gpt-5-5/
+  - https://www.anthropic.com/news/claude-opus-4-7
+  - https://openai.com/index/openai-on-aws
+  - https://aws.amazon.com/about-aws/whats-new/2026/04/bedrock-openai-models-codex-managed-agents/
+  - https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started.html
+  - https://docs.aws.amazon.com/bedrock/latest/userguide/models-api-compatibility.html
+  - https://platform.claude.com/docs/en/about-claude/models/whats-new-claude-4-7
+hero_image: auto:flux
+references:
+  - n: 1
+    title: "Introducing GPT-5.5 - OpenAI"
+    url: https://openai.com/index/introducing-gpt-5-5/
+    retrieved: 2026-05-11
+  - n: 2
+    title: "Claude Opus 4.7 - Anthropic"
+    url: https://www.anthropic.com/news/claude-opus-4-7
+    retrieved: 2026-05-11
+  - n: 3
+    title: "OpenAI on AWS - OpenAI"
+    url: https://openai.com/index/openai-on-aws
+    retrieved: 2026-05-11
+  - n: 4
+    title: "Amazon Bedrock now offers OpenAI models, Codex, and Managed Agents in limited preview - AWS What's New"
+    url: https://aws.amazon.com/about-aws/whats-new/2026/04/bedrock-openai-models-codex-managed-agents/
+    retrieved: 2026-05-11
+  - n: 5
+    title: "Getting started with Amazon Bedrock - AWS Documentation"
+    url: https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started.html
+    retrieved: 2026-05-11
+  - n: 6
+    title: "Model API compatibility in Amazon Bedrock - AWS Documentation"
+    url: https://docs.aws.amazon.com/bedrock/latest/userguide/models-api-compatibility.html
+    retrieved: 2026-05-11
+  - n: 7
+    title: "What's new in Claude 4.7 - Anthropic Docs"
+    url: https://platform.claude.com/docs/en/about-claude/models/whats-new-claude-4-7
+    retrieved: 2026-05-11
 whats_new:
-  - "GPT-5.5 and Opus 4.7 now sit on the same Bedrock platform — and they fail in different places, which is more useful than one being 'better'"
+  - "The practical split is now clear: Opus 4.7 for repo-scale refactors, GPT-5.5 for terminal-heavy agents, with both routable through Bedrock"
 learning_objectives:
-  - Identify which model leads on SWE-bench Pro vs Terminal-Bench 2.0 and why that split matters for agent architecture
-  - Explain how the Bedrock multi-provider preview changes vendor lock-in for enterprise AI pipelines
-  - Choose between Opus 4.7 and GPT-5.5 for a specific agentic coding workload based on failure modes, not just benchmark scores
+  - Choose between Claude Opus 4.7 and GPT-5.5 based on official benchmark splits, not generic frontier-model branding
+  - Explain why Bedrock simplifies procurement while still requiring separate API and routing logic for Anthropic and OpenAI models
+faq:
+  - question: "Which model leads the official GPT-5.5 vs Claude Opus 4.7 coding benchmarks?"
+    answer: "OpenAI's April 23, 2026 comparison table shows Claude Opus 4.7 ahead on SWE-Bench Pro at 64.3% versus GPT-5.5 at 58.6%, while GPT-5.5 leads on Terminal-Bench 2.0 at 82.7% versus Opus 4.7 at 69.4%. The right default depends on whether your workload is repo-scale refactoring or terminal-heavy iteration."
+  - question: "Does Amazon Bedrock make GPT-5.5 and Claude Opus 4.7 interchangeable?"
+    answer: "No. Bedrock makes dual-vendor deployment easier by putting both model families under one AWS control plane, but AWS still exposes separate API families: OpenAI-compatible Chat Completions and Responses for GPT-5.5, and Anthropic Messages for Claude. Governance converges; routing logic does not."
+  - question: "When should an engineering team route work to Opus 4.7 instead of GPT-5.5?"
+    answer: "Route repo-wide refactors, multi-file issue resolution, and quality-first patch planning to Opus 4.7 because it leads SWE-Bench Pro and Anthropic optimized it for advanced software engineering. Route shell-heavy debugging, CI recovery loops, and computer-use style tasks to GPT-5.5 because it leads Terminal-Bench 2.0 and OSWorld-Verified."
 ---
 
-# Pick Opus 4.7 for refactors, GPT-5.5 for terminals — and run both on Bedrock
+# Route refactors to Opus 4.7 and terminal work to GPT-5.5 on Bedrock
 
-Claude Opus 4.7 leads GPT-5.5 on SWE-bench Pro (64.3% vs 58.6%) and MCP-Atlas tool orchestration (79.1% vs 75.3%), while GPT-5.5 leads Terminal-Bench 2.0 (82.7% vs 69.4%) and OSWorld-Verified computer use (78.7% vs 78.0%). Both models landed on Amazon Bedrock in late April 2026, making this the first time you can A/B-test two frontier coding models behind the same API gateway. The headline: neither model is strictly better — they break in different places, and that's what should drive your routing logic.
+GPT-5.5 vs Claude Opus 4.7 is a frontier-model routing decision defined less by vendor preference than by whether your agent spends most of its time in a terminal or inside a repo-wide refactor. On April 23, 2026, OpenAI published the cleanest public split in this matchup: GPT-5.5 leads Terminal-Bench 2.0 at 82.7%, while Claude Opus 4.7 leads SWE-Bench Pro at 64.3%.[1]
 
-Here's what most comparison posts miss: the benchmarks are close enough that **failure-mode distribution** matters more than top-line scores. Opus 4.7 produces a third fewer tool errors on multi-step workflows and is the first Claude model to pass implicit-need tests — it infers what tools are required without being told [(TNW)](https://thenextweb.com/news/anthropic-claude-opus-4-7-coding-agentic-benchmarks-release). GPT-5.5, meanwhile, excels at long-context retrieval (74.0% vs 32.2% on MRCR v2 at 512K–1M tokens) — it forgets less when you stuff the context window [(Digital Applied)](https://www.digitalapplied.com/blog/gpt-5-5-vs-claude-opus-4-7-frontier-comparison). These aren't marginal gaps. They're architectural signals.
+Most comparison posts stop at "both are frontier models." That is the wrong abstraction. AWS made both vendors easier to buy through one control plane on April 28, 2026, but Bedrock does not make their request contracts or workload fit interchangeable.[3][4][6]
 
-## Opus 4.7 owns multi-step refactors and MCP orchestration
+## Key facts
 
-On SWE-bench Pro — the benchmark that tests resolving real GitHub issues across multiple languages — Opus 4.7 scores 64.3%, up from 53.4% on Opus 4.6 and ahead of GPT-5.5 at 58.6% [(Vellum)](https://www.vellum.ai/blog/claude-opus-4-7-benchmarks-explained). That's a 5.7-point lead. Anthropic disclosed memorization concerns on a subset of SWE-bench problems and excluded affected items from scoring [(Digital Applied)](https://www.digitalapplied.com/blog/gpt-5-5-vs-claude-opus-4-7-frontier-comparison), so the gap is real but not as clean as the headline suggests.
+1. OpenAI's own launch table shows Claude Opus 4.7 ahead on SWE-Bench Pro, 64.3% to 58.6%, while GPT-5.5 leads on Terminal-Bench 2.0, 82.7% to 69.4%.[1]
+2. AWS added OpenAI models, Codex, and Managed Agents to Bedrock in limited preview on April 28, 2026, making dual-vendor deployment normal for AWS-first teams.[4]
+3. Bedrock still separates Anthropic `Messages` from OpenAI-compatible `ChatCompletions` and `Responses`, so model routing remains an application concern.[5][6]
+4. Anthropic says Opus 4.7 adds `xhigh` effort, adaptive thinking, and tokenizer changes that can raise text-token usage versus Opus 4.6, which matters for quality-first refactor workloads.[7]
 
-Where Opus 4.7 separates more clearly is tool orchestration. MCP-Atlas measures multi-turn tool-calling across complex workflows — the closest thing to a production agent benchmark. Opus 4.7 scores 79.1% vs GPT-5.5 at 75.3% [(Digital Applied)](https://www.digitalapplied.com/blog/gpt-5-5-vs-claude-opus-4-7-frontier-comparison). Anthropic introduced MCP and has the deeper integration story; if your agent stack is MCP-heavy, Opus 4.7 is the safer default.
+## Pick Opus 4.7 when the agent must hold a repo in working memory
 
-The quieter improvement: Opus 4.7 produces 14% fewer tool errors on complex multi-step workflows than Opus 4.6, and is the first Claude model to pass implicit-need tests — inferring required tools without explicit instruction [(TNW)](https://thenextweb.com/news/anthropic-claude-opus-4-7-coding-agentic-benchmarks-release). For autonomous agents running unsupervised, fewer mid-workflow failures is worth more than a 2-point benchmark edge.
+Claude Opus 4.7 is the safer default when the job is a multi-file code change that rewards patience, instruction fidelity, and long-horizon verification. Anthropic positions the release as a direct upgrade for advanced software engineering, and OpenAI's comparison table supports that claim with a 64.3% SWE-Bench Pro score versus GPT-5.5's 58.6%.[1][2]
 
-## GPT-5.5 dominates terminals and long-context retrieval
+That benchmark gap is not abstract leaderboard noise. It maps to the kind of [[glossary/coder-agent]] work where the model must preserve constraints across files, notice hidden coupling, and avoid declaring victory too early. If you are asking an agent to rename interfaces across a large codebase, update tests, and explain the migration path, Opus 4.7 is the more defensible first route.[1][2]
 
-Terminal-Bench 2.0 measures planning, iteration, and tool coordination in command-line environments. GPT-5.5 scores 82.7% vs Opus 4.7 at 69.4% — a 13.3-point lead [(Digital Applied)](https://www.digitalapplied.com/blog/gpt-5-5-vs-claude-opus-4-7-frontier-comparison). Note: this figure comes from OpenAI's eval harness; Anthropic hasn't published its own Terminal-Bench number. Treat the gap as directional, not absolute.
+There is a cost to that choice. Anthropic's model notes say Opus 4.7 introduces a new `xhigh` effort level for coding and agentic work, replaces the old extended-thinking mode with adaptive thinking, and may use roughly 1.0x to 1.35x as many text tokens as Opus 4.6 because of tokenizer changes.[7] That makes Opus a quality-first pick for [[glossary/agentic-loop]] workloads, not a universal default.
 
-The bigger architectural signal is long-context retrieval. On MRCR v2 8-needle at 512K–1M tokens, GPT-5.5 hits 74.0% vs Opus 4.7's 32.2% — a 41.8-point spread [(Digital Applied)](https://www.digitalapplied.com/blog/gpt-5-5-vs-claude-opus-4-7-frontier-comparison). If your agents reason over entire codebases or long trace logs, GPT-5.5 retrieves reliably at depths where Opus 4.7 degrades sharply. One caveat: Opus 4.7's new tokenizer consumes 1.0–1.35× more tokens than Opus 4.6 on the same input, so at 1M tokens the practical information capacity is closer to 750K-equivalent [(Vellum)](https://www.vellum.ai/blog/claude-opus-4-7-benchmarks-explained).
+## Pick GPT-5.5 when the loop lives in the terminal or browser
 
-On computer use, it's functionally a tie: OSWorld-Verified shows GPT-5.5 at 78.7% vs Opus 4.7 at 78.0% [(Digital Applied)](https://www.digitalapplied.com/blog/gpt-5-5-vs-claude-opus-4-7-frontier-comparison). But Opus 4.7's 3× vision resolution upgrade (2,576px / 3.75MP) and XBOW visual acuity jump from 54.5% to 98.5% make it the better pick for agents that read dense screenshots or technical diagrams [(Vellum)](https://www.vellum.ai/blog/claude-opus-4-7-benchmarks-explained).
+GPT-5.5 is the stronger default when the agent spends its time inspecting command output, recovering from tool friction, and continuing autonomously. OpenAI's launch post shows the biggest gap in the matchup on Terminal-Bench 2.0, where GPT-5.5 scores 82.7% and Opus 4.7 scores 69.4%.[1]
 
-## Bedrock ends the single-vendor era
+The same table gives GPT-5.5 smaller but still useful edges on OSWorld-Verified, 78.7% to 78.0%, and BrowseComp, 84.4% to 79.3%.[1] For teams building agents that mix shell work, browser investigation, and [[glossary/tool-use]], those numbers matter more than generic claims about "reasoning."
 
-On April 28, 2026, OpenAI models — including GPT-5.5 — landed on Amazon Bedrock in limited preview, sitting alongside Anthropic's Claude models on the same managed platform [(OpenAI)](https://openai.com/index/openai-on-aws/). Codex can now be powered by models served from Bedrock, with 4M+ weekly Codex users able to authenticate with AWS credentials and route inference through Bedrock infrastructure [(Neowin)](https://www.neowin.net/news/openais-frontier-ai-models-and-codex-now-available-on-amazon-bedrock/).
+This does not mean Opus is weak on long context or vision. Anthropic's docs say Opus 4.7 supports a 1M-token context window, 128K max output, and high-resolution image input up to 2576px or 3.75MP.[7] The practical split is narrower: GPT-5.5 looks better for fast-moving terminal loops, while Opus 4.7 looks better for repo reasoning that ends in a patch.
 
-This ends Microsoft's seven-year exclusive distribution lock on OpenAI models. For enterprise teams, the practical impact is straightforward: you can now A/B-test Opus 4.7 and GPT-5.5 behind a single Bedrock API gateway, with IAM-based access management, PrivateLink connectivity, guardrails, and CloudTrail logging applying uniformly to both [(Neowin)](https://www.neowin.net/news/openais-frontier-ai-models-and-codex-now-available-on-amazon-bedrock/). No separate vendor relationships, no separate billing, no separate compliance reviews.
+## Use Bedrock as the control plane, not as an excuse to collapse routing
 
-All three offerings — GPT-5.5, Codex on Bedrock, and Bedrock Managed Agents — are in limited preview with GA expected "within weeks" [(OpenAI)](https://openai.com/index/openai-on-aws/).
+Bedrock changes procurement and governance more than it changes model behavior. AWS says OpenAI models on Bedrock inherit enterprise controls teams already use there, including IAM, PrivateLink, guardrails, encryption, and CloudTrail logging, while OpenAI frames the launch as bringing frontier models, Codex, and Managed Agents onto AWS infrastructure.[3][4]
 
-## Route by failure mode, not by score
+The implementation detail most teams miss is that Bedrock still exposes different API families by vendor. AWS documents `OPENAI_BASE_URL=https://bedrock-mantle.<region>.api.aws/v1` for OpenAI-compatible APIs and `ANTHROPIC_BASE_URL=https://bedrock-mantle.<region>.api.aws/anthropic` for Claude's `Messages` API.[5] The compatibility matrix makes the same point in a different form: OpenAI models sit behind `ChatCompletions` and `Responses`, while Claude sits behind `Messages`.[6]
 
-The production decision isn't "which model is smarter." It's "which model fails in ways I can tolerate." Here's the routing matrix:
+That means Bedrock solves the governance half of [[glossary/agent-orchestration]] but not the routing half. One AWS account can host both vendors. Your application still needs to decide which request shape, benchmark profile, and failure mode belongs to which workload.
 
-| Workload | Route to | Why |
-|---|---|---|
-| Multi-language PR resolution | Opus 4.7 | SWE-bench Pro lead, fewer tool errors |
-| MCP-heavy tool orchestration | Opus 4.7 | 79.1% MCP-Atlas, implicit-need inference |
-| Command-line / DevOps agents | GPT-5.5 | 82.7% Terminal-Bench, long-context retrieval |
-| Whole-codebase reasoning | GPT-5.5 | 74.0% MRCR v2 at 512K–1M (vs 32.2%) |
-| Dense screenshot / diagram reading | Opus 4.7 | 3× vision resolution, 98.5% visual acuity |
-| Research-heavy web browsing | GPT-5.5 | BrowseComp 84.4% vs Opus 4.7's 79.3% |
+## Route by benchmark split, then normalize your app layer
 
-### Runnable example: A/B routing on Bedrock
+The useful routing table is already strong enough to act on. Send repo issue resolution and refactors to Opus 4.7 because it leads SWE-Bench Pro. Send shell-heavy debugging and CI loops to GPT-5.5 because it leads Terminal-Bench 2.0 by 13.3 points. Send browser-heavy operator tasks to GPT-5.5 unless you specifically need the visual reasoning or long-horizon code review shape where Opus earns its cost.[1][7]
+
+That policy is simple enough to encode in a small router and precise enough to defend to an engineering team. It also fits the broader evaluation framework in [[course/picking-a-frontier-model-2026-q2]], where the right question is not "which frontier model is best?" but "which benchmark dimension predicts my production workload?"
+
+### Runnable example: one Bedrock account, two model families
 
 ```bash
-# Route refactor tasks to Opus 4.7, terminal tasks to GPT-5.5
-# Both calls use the same Bedrock endpoint, same AWS auth
+export OPENAI_BASE_URL="https://bedrock-mantle.us-east-1.api.aws/v1"
+export ANTHROPIC_BASE_URL="https://bedrock-mantle.us-east-1.api.aws/anthropic"
 
-# Opus 4.7 — SWE-bench-style PR resolution
-curl -X POST "https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-opus-4-7/invoke" \
-  -H "Authorization: AWS4-HMAC-SHA256 Credential=$AWS_ACCESS_KEY_ID/20260501/us-east-1/bedrock/aws4_request" \
+export OPENAI_MODEL_ID="openai-model-id"
+export ANTHROPIC_MODEL_ID="anthropic-model-id"
+
+curl -X POST "$OPENAI_BASE_URL/chat/completions" \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
   -d '{
-    "anthropic_version": "bedrock-2023-05-31",
-    "max_tokens": 4096,
-    "messages": [{"role": "user", "content": "Fix the race condition in src/queue.py: the worker pool drains before the supervisor thread signals completion. Add a barrier sync."}]
+    "model": "'"$OPENAI_MODEL_ID"'",
+    "messages": [
+      {"role": "developer", "content": "You are a terminal-heavy debugging agent."},
+      {"role": "user", "content": "Investigate why the staging pod is CrashLoopBackOff and list the first three commands you would run."}
+    ]
   }'
 
-# GPT-5.5 — Terminal-Bench-style DevOps agent
-curl -X POST "https://bedrock-runtime.us-east-1.amazonaws.com/model/openai.gpt-5-5/invoke" \
-  -H "Authorization: AWS4-HMAC-SHA256 Credential=$AWS_ACCESS_KEY_ID/20260501/us-east-1/bedrock/aws4_request" \
+curl -X POST "$ANTHROPIC_BASE_URL/v1/messages" \
   -H "Content-Type: application/json" \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
   -d '{
-    "model": "gpt-5.5",
-    "max_tokens": 4096,
-    "messages": [{"role": "user", "content": "Debug why the Kubernetes pod in staging is CrashLoopBackOff: check logs, describe the pod, and identify the failing probe."}]
+    "model": "'"$ANTHROPIC_MODEL_ID"'",
+    "max_tokens": 1024,
+    "messages": [
+      {"role": "user", "content": "Review a multi-file Python refactor and propose the patch plan before writing code."}
+    ]
   }'
 ```
 
-**Expected output:** Opus 4.7 returns a multi-file patch with barrier sync added to `src/queue.py` and corresponding test updates. GPT-5.5 returns a step-by-step terminal diagnostic with `kubectl logs` and `kubectl describe` commands and a root-cause identification.
+Expected output: the GPT-5.5 call should return an action-first debugging plan centered on shell inspection, while the Opus 4.7 call should return a structured refactor plan that foregrounds file relationships, constraints, and verification.[5][6]
 
-### Knowledge Check
+<KnowledgeCheck
+  question="Your Bedrock-based agent platform has two dominant workloads: multi-file repo refactors and failing CI investigations from terminal output. Which default routing policy best matches the official benchmark split?"
+  options={[
+    "Route both to GPT-5.5 because one model is simpler operationally",
+    "Route both to Opus 4.7 because SWE-Bench Pro is the most famous benchmark",
+    "Route refactors to Opus 4.7 and terminal-heavy debugging to GPT-5.5",
+    "Randomize between them because Bedrock normalizes the APIs"
+  ]}
+  correctIdx={2}
+  explanation="OpenAI's published table shows Opus 4.7 ahead on SWE-Bench Pro and GPT-5.5 ahead on Terminal-Bench 2.0. Bedrock reduces procurement friction, but it does not erase the workload split.[1][6]"
+/>
 
-**Question:** Your agentic pipeline resolves GitHub issues across a Python/TypeScript monorepo and also runs DevOps commands in CI. Both Opus 4.7 and GPT-5.5 are available on Bedrock. Which model should handle each task, and what single benchmark number justifies each choice?
+The practical answer to "GPT-5.5 vs Claude Opus 4.7?" is not to crown a winner. Keep one AWS control plane, route repo-scale refactors to Opus 4.7, and send terminal-heavy loops to GPT-5.5. For the full evaluation framework behind that router, start with [[course/picking-a-frontier-model-2026-q2]].
 
----
+See also the original research grounding in [[research/openai/2026-05-01]] and [[research/anthropic/2026-05-01]].
 
-The right architecture for agentic coding in 2026 isn't single-vendor — it's a routing layer that sends refactors to Opus 4.7 and terminal work to GPT-5.5, with both models accessible through the same Bedrock gateway. If you want to learn how to build that routing layer and optimize model selection for production agent pipelines, start with [[course/agentic-coding-with-frontier-models]].
+## References
+
+[1] Introducing GPT-5.5 - OpenAI — https://openai.com/index/introducing-gpt-5-5/ · retrieved 2026-05-11
+[2] Claude Opus 4.7 - Anthropic — https://www.anthropic.com/news/claude-opus-4-7 · retrieved 2026-05-11
+[3] OpenAI on AWS - OpenAI — https://openai.com/index/openai-on-aws · retrieved 2026-05-11
+[4] Amazon Bedrock now offers OpenAI models, Codex, and Managed Agents in limited preview - AWS What's New — https://aws.amazon.com/about-aws/whats-new/2026/04/bedrock-openai-models-codex-managed-agents/ · retrieved 2026-05-11
+[5] Getting started with Amazon Bedrock - AWS Documentation — https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started.html · retrieved 2026-05-11
+[6] Model API compatibility in Amazon Bedrock - AWS Documentation — https://docs.aws.amazon.com/bedrock/latest/userguide/models-api-compatibility.html · retrieved 2026-05-11
+[7] What's new in Claude 4.7 - Anthropic Docs — https://platform.claude.com/docs/en/about-claude/models/whats-new-claude-4-7 · retrieved 2026-05-11
