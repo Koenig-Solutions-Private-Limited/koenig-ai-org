@@ -3,7 +3,7 @@ course_slug: production-agents-claude-agent-sdk-mcp-connector
 chapter_num: 2
 chapter_slug: managed-agents-when-to-use
 title: "Managed Agents beta — when to use it, when to roll your own"
-status: draft-for-review
+status: g0-blocked
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30

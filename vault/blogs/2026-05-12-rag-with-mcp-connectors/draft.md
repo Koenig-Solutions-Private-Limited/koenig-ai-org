@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-1341
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: g0-blocked
 reading_time_min: 7
 primary_query: "production RAG with MCP connectors"
 contrarian_angle: "MCP connectors do not replace retrieval architecture; they turn retrieval into a controlled interface so you stop re-implementing auth, discovery, and context plumbing in every app"

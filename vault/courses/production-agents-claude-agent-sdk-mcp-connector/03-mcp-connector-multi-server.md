@@ -3,7 +3,7 @@ course_slug: production-agents-claude-agent-sdk-mcp-connector
 chapter_num: 3
 chapter_slug: mcp-connector-multi-server
 title: "MCP connector: orchestrating multi-server agents"
-status: draft-for-review
+status: g0-blocked
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30

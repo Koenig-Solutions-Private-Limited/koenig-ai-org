@@ -34,11 +34,11 @@ Now stretch that to a ten-step pipeline. The retry multiplier scales exponential
 
 **[The inversion]**
 
-Here's where it gets truly contrarian. At ten steps with ambiguous input, Opus costs about twelve dollars per successful task. Gemini costs about eighteen dollars.
+Here's where it gets truly contrarian. At ten steps with ambiguous input, Opus costs about four dollars per successful task. Gemini costs about twelve dollars.
 
-The model with the lowest per-token price now costs fifty percent more to actually complete the work.
+The model with the lowest per-token price now costs three times more to actually complete the work.
 
-This break-even occurs around four to five steps. If your agentic system has four or more action steps on difficult inputs — and most production coding agents do — the pricing page is actively misleading you.
+This break-even occurs around four to five steps. If your agentic system has five or more action steps on difficult inputs — and most production coding agents do — the pricing page is actively misleading you.
 
 **[The lever you can control]**
 

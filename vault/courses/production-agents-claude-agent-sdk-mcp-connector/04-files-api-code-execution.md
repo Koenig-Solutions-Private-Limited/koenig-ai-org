@@ -3,7 +3,7 @@ course_slug: production-agents-claude-agent-sdk-mcp-connector
 chapter_num: 4
 chapter_slug: files-api-code-execution
 title: "Files API + code execution: the complete agent IO surface"
-status: draft-for-review
+status: g0-blocked
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30

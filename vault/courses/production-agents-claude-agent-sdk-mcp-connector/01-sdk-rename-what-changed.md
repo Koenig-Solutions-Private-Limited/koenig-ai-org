@@ -3,7 +3,7 @@ course_slug: production-agents-claude-agent-sdk-mcp-connector
 chapter_num: 1
 chapter_slug: sdk-rename-what-changed
 title: "What changed when Claude Code SDK became Claude Agent SDK"
-status: draft-for-review
+status: g0-blocked
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30

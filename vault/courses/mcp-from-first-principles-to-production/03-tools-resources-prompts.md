@@ -3,7 +3,7 @@ course_slug: mcp-from-first-principles-to-production
 chapter_num: 3
 chapter_slug: tools-resources-prompts
 title: "Tools, Resources, Prompts — the three primitives and the decision rule"
-status: draft-for-review
+status: g0-blocked
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30

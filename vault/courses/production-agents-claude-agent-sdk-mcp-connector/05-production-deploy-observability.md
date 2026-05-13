@@ -3,7 +3,7 @@ course_slug: production-agents-claude-agent-sdk-mcp-connector
 chapter_num: 5
 chapter_slug: production-deploy-observability
 title: "Production: deploy + observability + cost controls"
-status: draft-for-review
+status: g0-blocked
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30

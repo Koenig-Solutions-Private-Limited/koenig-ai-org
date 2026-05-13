@@ -19,7 +19,7 @@ date: 2026-04-30
 
 Here's the uncomfortable truth: a one-million-token context window is not the same as a one-million-token working memory.
 
-Google Gemini advertises one million tokens. Anthropic Claude advertises two hundred thousand. OpenAI GPT advertises a hundred and twenty-eight thousand. These numbers look like a straightforward ranking: bigger is better. They're not.
+Google Gemini advertises one million tokens. Anthropic Claude Opus also advertises one million tokens. OpenAI GPT advertises a hundred and twenty-eight thousand. These numbers look like a straightforward ranking: bigger is better. They're not.
 
 What vendors don't advertise is the shape of the accuracy curve. As you fill the context window, retrieval gets worse. Reasoning gets worse. Somewhere inside that large number is a much smaller number — the *effective* context limit — where the model stops being reliable.
 
