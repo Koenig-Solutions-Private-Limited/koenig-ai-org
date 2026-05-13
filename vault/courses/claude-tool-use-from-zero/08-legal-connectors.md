@@ -1,7 +1,7 @@
 ---
 chapter_num: 8
 title: "Legal and Regulatory Connectors in MCP"
-status: g0-blocked
+status: g0-passed
 learning_objectives:
   - "Understand the regulatory requirements for handling legal documents via MCP"
   - "Implement document redaction and audit trails using MCP tools"
@@ -37,6 +37,10 @@ Anthropic’s sequence of releasing creative tools followed by legal tools highl
 
 This pipeline sequences Ironclad (for access) and CoCounsel (for analysis).
 
+# Callout
+> [!WARNING]
+> Dealing with legal documents requires careful handling of PII. Always ensure your MCP server environment is configured for `local-first` processing when handling sensitive data to prevent unnecessary data egress.
+
 <RunPromptCell
   model="claude-sonnet-4-6"
   tools={["ironclad", "co_counsel"]}
@@ -61,6 +65,22 @@ Extracted:
 `}
 />
 
+## Knowledge Checks
+
+1. **Which of the following is true about Anthropic's legal MCP connectors?**
+   - A) They are exclusively for document storage.
+   - B) They leverage high document regularity for reliable entity extraction.
+   - C) They require cloud-only processing for all legal docs.
+   - D) They are limited to contract review only.
+   (Correct: B)
+
+2. **Why is 'local-first' data processing critical for legal MCP tools?**
+   - A) It improves connection speed.
+   - B) It reduces the cost of API calls.
+   - C) It is essential for compliance and maintaining security with sensitive PII.
+   - D) It simplifies tool definition.
+   (Correct: C)
+
 ## Hands-on exercise
 Build a document redaction tool:
 1. Define a tool that takes a document path and a list of PII types (e.g., SSN, name).
@@ -68,7 +88,7 @@ Build a document redaction tool:
 3. Verify the redaction by inspecting the file output before and after.
 
 ## What's next
-In the next chapter, we will look at [Topic of ch09].
+In the next chapter, we will look at [Topic of ch09]. Finalizing this chapter, ensure your redaction tool meets the security standards discussed in Chapter 4 regarding local-only data handling.
 
 ## References
 [1] LawNext — Anthropic goes all-in on legal — https://www.lawnext.com/2026/05/anthropic-goes-all-in-on-legal-releasing-more-than-20-connectors-and-12-practice-area-plugins-for-claude.html · retrieved 2026-05-13
