@@ -49,7 +49,7 @@ The downside is also GitHub-shaped. Copilot is strongest when the unit of work i
 
 ## Pick Cursor when the agent should keep working after you close the editor
 
-Cursor is the strongest choice when you want background execution to be a product feature, not a side effect. Cursor's product surface now spans the editor, CLI, web, mobile, and integrations, and the company describes its agents as using their own computers rather than borrowing your active terminal session.[9] That is why Cursor feels different in practice: it is optimized for delegated implementation that keeps moving while you review another PR, leave the IDE, or hand work off to a teammate.
+Cursor is the strongest choice when you want background execution to be a product feature, not a side effect. Cursor's product surface now spans the editor, CLI, web, mobile, and integrations, including access to cloud agents from the browser, phone, GitHub, Slack, Linear, and JetBrains IDEs.[9] That is why Cursor feels different in practice: it is optimized for delegated implementation that keeps moving while you review another PR, leave the IDE, or hand work off to a teammate.
 
 Bugbot makes the same design choice visible in code review. Cursor says Bugbot runs in the background on new PRs and that more than 70% of its flags are resolved before merge; it can also send fixes back through the editor or a Background Agent.[6] That is a meaningful workflow distinction from tools that stop at inline suggestions. Cursor is not only helping write code; it is trying to become a standing review and remediation layer around the PR itself.[6]
 
