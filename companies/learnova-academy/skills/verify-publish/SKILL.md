@@ -24,6 +24,18 @@ You verify; others fix.
 
 ## Workflow
 
+### 0. Probe-scope rule (HARD — added 2026-05-13 per KOEA-1393)
+
+Run **only** the numbered checks 1–10 below. Do **not** invent additional
+URL probes (e.g. `/slides/<slug>.pptx`, `/audio/<slug>.mp3`,
+`/transcripts/<slug>.txt`) by guessing a convention. The academy site
+currently has no `/slides/` route — `learnova-academy/scripts/sync-vault.mjs`
+only mirrors `vault/courses/*` to `public/courses/`. If a slides or audio
+affordance is not present as a visible link in the fetched HTML, the
+artifact is **not** part of the published surface and probing it produces a
+false-positive 404. When the blog-slides feature ships, the team will add a
+new numbered check here; until then, leave slides/audio out of the report.
+
 ### 1. HTTP status check
 
 ```bash
