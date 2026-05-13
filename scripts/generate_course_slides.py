@@ -92,6 +92,18 @@ def _get_paragraphs(lines: list[str]) -> list[str]:
     return paragraphs
 
 
+MAX_BULLET_CHARS = 80
+
+
+def _truncate_bullet(text: str) -> str:
+    """Truncate at word boundary to MAX_BULLET_CHARS, appending ellipsis."""
+    if len(text) <= MAX_BULLET_CHARS:
+        return text
+    snippet = text[:MAX_BULLET_CHARS - 1]
+    last_sp = snippet.rfind(' ')
+    return (snippet[:last_sp] + '…') if last_sp > MAX_BULLET_CHARS // 2 else snippet + '…'
+
+
 def _extract_bullets(lines: list[str]) -> list[str]:
     """Extract 3-5 slide bullets, preferring headings/lists over prose sentences."""
     structured: list[str] = []
@@ -99,11 +111,11 @@ def _extract_bullets(lines: list[str]) -> list[str]:
         if raw.startswith('### '):
             sub = clean_line(raw[4:].strip())
             if sub and len(sub) > 3:
-                structured.append(sub[:90])
+                structured.append(_truncate_bullet(sub))
         elif re.match(r'^\s*[-*+]\s+', raw) or re.match(r'^\s*\d+\.\s+', raw):
             cleaned = clean_line(raw)
             if cleaned and len(cleaned) > 5:
-                structured.append(cleaned[:110])
+                structured.append(_truncate_bullet(cleaned))
         if len(structured) >= 5:
             break
 
@@ -120,10 +132,7 @@ def _extract_bullets(lines: list[str]) -> list[str]:
             # Skip very short fragments and intro-style fragments ending with ':'
             if len(sent) <= 20 or sent.endswith(':'):
                 continue
-            if len(sent) > 90:
-                snippet = sent[:88]
-                last_sp = snippet.rfind(' ')
-                sent = (snippet[:last_sp] + '…') if last_sp > 40 else snippet + '…'
+            sent = _truncate_bullet(sent)
             if sent not in bullets:
                 bullets.append(sent)
 
@@ -348,19 +357,26 @@ def generate(draft_path: Path, out_dir: Path) -> Path:
 
     make_title_slide(prs, title, chapter_num, course_slug, date_str)
 
+    # Reserve content slots for objectives/concepts so total stays 5-7 slides
+    max_content = 5
     if objectives:
         make_objectives_slide(prs, objectives)
-
+        max_content -= 1
     if concepts:
         make_concepts_slide(prs, concepts)
+        max_content -= 1
 
+    content_count = 0
     for sec_title, bullets in sections:
+        if content_count >= max_content:
+            break
         make_content_slide(prs, sec_title, bullets)
+        content_count += 1
 
     make_cta_slide(prs, chapter_num, chapter_num + 1)
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    out = out_dir / "slides.pptx"
+    out = out_dir / f"ch{chapter_num:02d}-slides.pptx"
     prs.save(str(out))
     return out
 

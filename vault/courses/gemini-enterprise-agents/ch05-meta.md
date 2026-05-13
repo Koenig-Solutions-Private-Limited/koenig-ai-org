@@ -9,7 +9,7 @@ slides_generated: true
 audio_generated: false
 assets_generated: true
 slide_count: 7
-tool: generate_blog_slides.py
+tool: generate_course_slides.py
 produced_at: 2026-05-13
 slides_generated_at: 2026-05-13
 audio_note: "Blocked: notebooklm auth not configured. Run 'notebooklm login' then regenerate audio."
