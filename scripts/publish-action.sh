@@ -35,6 +35,27 @@ tg_alert() {
   fi
 }
 
+sanitize_guard_reason() {
+  local input_file="$1"
+  python3 - "$input_file" <<'PY'
+import re
+import sys
+
+path = sys.argv[1]
+try:
+    raw = open(path, "rb").read(4096)
+except Exception:
+    raw = b""
+
+text = raw.decode("utf-8", errors="replace")
+text = "".join(ch if ch == "\n" or ch == "\t" or ord(ch) >= 32 else " " for ch in text)
+text = re.sub(r"(?i)(bearer\s+)[^\s\"']+", r"\1[REDACTED]", text)
+text = re.sub(r"(?i)((?:token|api[_-]?key|password|secret)[\"'\s:=]+)[^\"'\s,}]+", r"\1[REDACTED]", text)
+text = re.sub(r"\s+", " ", text).strip()
+print((text or "empty-response")[:240])
+PY
+}
+
 GUARD_API_ERROR=0
 GUARD_ISSUE_CACHE=""
 BLOCKED_FILES=()
@@ -52,26 +73,39 @@ fetch_issues_by_slug() {
   fi
 
   GUARD_ISSUE_CACHE="$LOG_DIR/.issue-cache.$$.json"
+  local endpoint="/api/companies/$COMPANY_ID/issues?limit=2000"
   local auth_args=()
   if [ -n "${PAPERCLIP_API_KEY:-}" ]; then
     auth_args=(-H "Authorization: Bearer ${PAPERCLIP_API_KEY}")
   fi
 
-  if ! curl -sf "${auth_args[@]}" \
-    "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues?limit=2000" \
-    -o "$GUARD_ISSUE_CACHE"; then
+  local curl_err http_status reason
+  curl_err="$(mktemp)"
+  if ! http_status="$(curl -sS "${auth_args[@]}" \
+    -o "$GUARD_ISSUE_CACHE" \
+    -w "%{http_code}" \
+    "$PAPERCLIP_URL$endpoint" 2>"$curl_err")"; then
     GUARD_API_ERROR=1
+    reason="$(sanitize_guard_reason "$curl_err")"
     if [ -z "${PAPERCLIP_API_KEY:-}" ]; then
-      log "guard:no-auth → block"
-    else
-      log "guard:api-error"
+      log "guard:no-auth block endpoint=$endpoint http_status=curl-failed reason=$reason"
     fi
+    log "guard:api-error endpoint=$endpoint http_status=curl-failed reason=$reason"
+    rm -f "$curl_err"
+    return 1
+  fi
+  rm -f "$curl_err"
+
+  if [[ ! "$http_status" =~ ^2 ]]; then
+    GUARD_API_ERROR=1
+    reason="$(sanitize_guard_reason "$GUARD_ISSUE_CACHE")"
+    log "guard:api-error endpoint=$endpoint http_status=$http_status reason=$reason"
     return 1
   fi
 
   if [ ! -s "$GUARD_ISSUE_CACHE" ]; then
     GUARD_API_ERROR=1
-    log "guard:api-error empty issue response"
+    log "guard:api-error endpoint=$endpoint http_status=$http_status reason=empty-response"
     return 1
   fi
 
@@ -121,7 +155,7 @@ slug_to_publish_state() {
 create_guard_watchdog_issue() {
   [ "${#BLOCKED_FILES[@]}" -gt 0 ] || return 0
 
-  local hash sentinel description_file payload_file response_file issue_id
+  local hash sentinel description_file payload_file response_file error_file issue_id
   hash="$(printf '%s\n' "${BLOCKED_FILES[@]}" | sort | shasum -a 256 | awk '{print $1}')"
   sentinel="$LOG_DIR/.guard-issue-${hash}.created"
   if [ -s "$sentinel" ]; then
@@ -137,6 +171,7 @@ create_guard_watchdog_issue() {
   description_file="$(mktemp)"
   payload_file="$(mktemp)"
   response_file="$(mktemp)"
+  error_file="$(mktemp)"
 
   {
     echo "publish-action Phase 0 blocked pending-G4 status flips."
@@ -169,10 +204,14 @@ payload = {
 print(json.dumps(payload))
 PY
 
-  if curl -sf -X POST "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues" \
+  local endpoint="/api/companies/$COMPANY_ID/issues"
+  local http_status reason
+  if http_status="$(curl -sS -X POST "$PAPERCLIP_URL$endpoint" \
     -H "Authorization: Bearer ${PAPERCLIP_API_KEY}" \
     -H "Content-Type: application/json" \
-    --data @"$payload_file" > "$response_file"; then
+    --data @"$payload_file" \
+    -o "$response_file" \
+    -w "%{http_code}" 2>"$error_file")" && [[ "$http_status" =~ ^2 ]]; then
     issue_id="$(python3 - "$response_file" <<'PY'
 import json
 import sys
@@ -186,13 +225,21 @@ print(data.get("identifier") or data.get("id") or "created")
 PY
 )"
     echo "$issue_id" > "$sentinel"
-    rm -f "$description_file" "$payload_file" "$response_file"
+    rm -f "$description_file" "$payload_file" "$response_file" "$error_file"
     echo "$issue_id"
     return 0
   fi
 
-  rm -f "$description_file" "$payload_file" "$response_file"
-  log "guard:watchdog-issue-create-failed"
+  if [ -s "$response_file" ]; then
+    reason="$(sanitize_guard_reason "$response_file")"
+  else
+    reason="$(sanitize_guard_reason "$error_file")"
+  fi
+  if [ -z "${http_status:-}" ] || [ "$http_status" = "000" ]; then
+    http_status="curl-failed"
+  fi
+  log "guard:watchdog-issue-create-failed endpoint=$endpoint http_status=$http_status reason=$reason"
+  rm -f "$description_file" "$payload_file" "$response_file" "$error_file"
   return 1
 }
 
@@ -327,7 +374,9 @@ Dirs: $CHANGED_DIRS
 
 Auto-committed by publish-action.sh V3.0.
 Co-Authored-By: Paperclip-Agents <agents@kspl.tech>"
-  if git commit -m "$COMMIT_MSG" 2>&1 | tee -a "$LOG"; then
+  if [ "$STAGED_COUNT" = "0" ]; then
+    log "Phase 0 guard: all staged vault changes excluded; continuing without commit"
+  elif git commit -m "$COMMIT_MSG" 2>&1 | tee -a "$LOG"; then
     log "Phase 0: commit succeeded; pushing origin/$CURRENT_BRANCH"
     if git push origin "$CURRENT_BRANCH" 2>&1 | tee -a "$LOG"; then
       log "Phase 0: push succeeded ✓"
