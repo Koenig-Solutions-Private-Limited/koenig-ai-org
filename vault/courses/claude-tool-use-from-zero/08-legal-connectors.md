@@ -1,6 +1,7 @@
 ---
 chapter_num: 8
 title: "Legal and Regulatory Connectors in MCP"
+status: g0-blocked
 learning_objectives:
   - "Understand the regulatory requirements for handling legal documents via MCP"
   - "Implement document redaction and audit trails using MCP tools"

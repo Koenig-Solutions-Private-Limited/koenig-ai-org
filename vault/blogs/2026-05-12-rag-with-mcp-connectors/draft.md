@@ -1,10 +1,13 @@
 ---
+title: "Build production RAG by putting MCP connectors in front of retrieval, not inside every app"
+slug: rag-with-mcp-connectors
+description: "Production RAG improves when MCP becomes the control plane around retrieval. Use Resources for read-heavy access, keep vector storage behind one protocol boundary, and budget connector latency before you tune embeddings."
 date: 2026-05-12
 author: blog-author
 ticket: KOEA-1341
 vendor_tag: community
 content_type: article
-status: g0-blocked
+status: awaiting-g0
 reading_time_min: 7
 primary_query: "production RAG with MCP connectors"
 contrarian_angle: "MCP connectors do not replace retrieval architecture; they turn retrieval into a controlled interface so you stop re-implementing auth, discovery, and context plumbing in every app"

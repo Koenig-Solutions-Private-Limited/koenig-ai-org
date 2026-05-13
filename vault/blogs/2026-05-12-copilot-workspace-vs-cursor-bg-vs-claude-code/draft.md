@@ -107,9 +107,9 @@ faq:
 
 # Choose Copilot for GitHub-native planning, Cursor for background throughput, and Claude Code for programmable control
 
-GitHub Copilot cloud agent, Cursor Background Agents, and Claude Code are agentic coding products for planning, editing, and reviewing software, but they place the execution loop in three different places. If you need the short answer, choose Copilot when your team wants research, planning, review, and billing to stay inside GitHub; choose Cursor when you want unattended implementation and PR hygiene running in the background; choose Claude Code when you want the loop inside your terminal, hooks, and scripts instead of a vendor UI.[1][3][6][11][12]
+GitHub Copilot cloud agent, Cursor Background Agents, and Claude Code are agentic coding products for planning, editing, and reviewing software, but they place the execution loop in different places. Choose Copilot when your team wants research, planning, review, and billing to stay inside GitHub; choose Cursor when you want unattended implementation and PR hygiene running in the background; choose Claude Code when you want the loop inside your terminal, hooks, and scripts.[1][3][6][11][12]
 
-Most comparison posts flatten these tools into a model shootout. That misses the part that hurts or helps once a task goes sideways: where the agent keeps state at hour two, who can inspect it, and how much of the recovery logic your team owns. Copilot keeps that inside GitHub. Cursor keeps it in a vendor-managed background workflow. Claude Code gives it to your own [[glossary/agent-harness]].[1][6][11][12]
+Most comparison posts flatten these tools into a model shootout. The harder question is where the agent keeps state when a task stalls and how much of the recovery logic your team owns. Copilot keeps that inside GitHub. Cursor keeps it in a vendor-managed background workflow. Claude Code gives it to your own [[glossary/agent-harness]].[1][6][11][12]
 
 ## Key facts
 
@@ -129,11 +129,11 @@ The tradeoff is scope. Copilot is strongest when your work stays inside GitHub's
 
 ## Pick Cursor when the agent should keep working after you close the editor
 
-Cursor is the best fit when background execution is the feature, not a workaround. Its product surface now stretches across the editor, CLI, web, mobile, and integrations including GitHub, Slack, Linear, and JetBrains, all tied back to cloud agents.[9] In practice, that means Cursor is built for delegated work that keeps moving while you review another PR, leave the IDE, or hand the task to someone else.
+Cursor is the best fit when background execution is the feature, not a workaround. Its product surface spans the editor, CLI, web, mobile, and integrations including GitHub, Slack, Linear, and JetBrains, all tied back to cloud agents.[9] In practice, Cursor is built for delegated work that keeps moving while you review another PR or leave the IDE.
 
-Bugbot makes that philosophy obvious. Cursor says Bugbot runs in the background on new PRs, that more than 70% of its flags are resolved before merge, and that fixes can flow back through the editor or a Background Agent.[6] That is a different promise from simple inline suggestion tools. Cursor is trying to become a standing review-and-repair layer around the PR itself.
+Bugbot makes that philosophy obvious. Cursor says Bugbot runs in the background on new PRs, that more than 70% of its flags are resolved before merge, and that fixes can flow back through the editor or a Background Agent.[6] Cursor is trying to become a standing review-and-repair layer around the PR itself.
 
-The benchmark story points in the same direction. Cursor's Composer 2 technical report claims 61.3 on CursorBench, 73.7 on SWE-bench Multilingual, and 61.7 on Terminal-Bench, while the CursorBench write-up argues that real coding tasks are multi-file, underspecified, and increasingly saturated on public leaderboards.[7][8] These are vendor-run evals, so they are not neutral. Still, they match the product strategy: Cursor is built for large messy tasks that benefit from background throughput and parallel execution.[7][8][9]
+The benchmark story points in the same direction. Cursor's Composer 2 technical report claims 61.3 on CursorBench, 73.7 on SWE-bench Multilingual, and 61.7 on Terminal-Bench, while the CursorBench write-up argues that real coding tasks are multi-file and underspecified.[7][8] These are vendor-run evals, but they do match the product strategy: Cursor is built for large messy tasks that benefit from background throughput and parallel execution.[7][8][9]
 
 ## Pick Claude Code when you want to own the loop, tools, and logs
 
@@ -145,9 +145,9 @@ The pricing tells the same story. Anthropic includes Claude Code in the $20/mont
 
 ## Compare billing and governance before you compare demos
 
-The decision here is partly technical, but it is also about spend control and operational ownership. GitHub is reworking Copilot around usage-based billing because agentic sessions need budgets and admin controls.[4] Cursor's paid tiers scale with more cloud-agent usage, frontier-model access, and Bugbot-style review capacity.[10] Anthropic's Pro plan starts at the same $20/month entry point as Cursor Pro, but the value proposition is different: you are buying access to a terminal-native control plane that can plug into hooks and [[blog/mcp-2026-roadmap-explained|MCP-era]] tooling, not just more background PR automation.[10][11][13]
+The decision here is partly technical, but it is also about spend control and operational ownership. GitHub is reworking Copilot around usage-based billing because agentic sessions need budgets and admin controls.[4] Cursor's paid tiers scale with more cloud-agent usage, frontier-model access, and Bugbot review capacity.[10] Anthropic's Pro plan starts at the same $20/month entry point as Cursor Pro, but the value proposition is different: you are buying access to a terminal-native control plane that can plug into hooks and [[blog/mcp-2026-roadmap-explained|MCP-era]] tooling.[10][11][13]
 
-That is why there is no single winner. Copilot is the better default when your organization wants agent use audited and governed inside GitHub. Cursor is the better default when you want unattended implementation and review to keep running in the background. Claude Code is the better default when your team wants to own the execution loop itself, even if that takes more engineering effort up front.[1][4][6][10][11][13]
+There is no single winner. Copilot is the better default when your organization wants agent use audited and governed inside GitHub. Cursor is the better default when you want unattended implementation and review to keep running in the background. Claude Code is the better default when your team wants to own the execution loop itself, even if that takes more engineering effort up front.[1][4][6][10][11][13]
 
 ### Runnable example: route a ticket to the right agent surface
 
