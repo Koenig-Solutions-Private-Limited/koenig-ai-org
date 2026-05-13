@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-1342
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: g3-passed
 reading_time_min: 7
 primary_query: "github copilot workspace vs cursor background agents vs claude code"
 contrarian_angle: "The real decision is not which coding agent is smartest; it is where the execution loop lives — inside GitHub, inside a vendor-managed background agent, or inside your own terminal and scripts."

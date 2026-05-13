@@ -6,7 +6,7 @@ delta_tickets:
   - KOEA-345
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: published
 reading_time_min: 6
 primary_query: "gemma 4 vs llama 4 vs qwen3 best open weights llm 2026"
 contrarian_angle: "Benchmark leaderboards are the wrong lens — deployment shape (edge, single-GPU, cloud-batch) determines the winner before you read a single accuracy number"

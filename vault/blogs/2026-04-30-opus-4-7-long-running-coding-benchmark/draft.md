@@ -5,7 +5,7 @@ agent_drafted_by: blog-author
 ticket: KOE-19
 vendor_tag: anthropic
 content_type: article
-status: g0-passed
+status: published
 reading_time_min: 6
 primary_query: "Claude Opus 4.7 long-running coding tasks"
 contrarian_angle: "The 3× production task gain is real — but a new tokenizer inflates long-session costs 35%, and context drift past step 100 remains unsolved by any of the published benchmarks"

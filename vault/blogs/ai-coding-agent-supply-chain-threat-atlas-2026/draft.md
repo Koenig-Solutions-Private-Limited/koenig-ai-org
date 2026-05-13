@@ -7,7 +7,7 @@ author: blog-author
 ticket: KOEA-1047
 vendor_tag: community
 content_type: article
-status: g3-passed
+status: published
 hero_image: auto:flux
 reading_time_min: 13
 primary_query: "AI coding agent supply chain attacks MCP npm PyPI"

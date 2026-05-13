@@ -5,7 +5,7 @@ agent_drafted_by: blog-author
 ticket: KOE-94
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: published
 reading_time_min: 6
 primary_query: "vercel ai sdk 6 vs claude agent sdk which to pick"
 contrarian_angle: "Most comparisons focus on syntax parity — the actual decision is who owns the execution loop, which determines your entire cost, portability, and observability architecture."
