@@ -37,6 +37,9 @@ references:
   - "Prompt caching (Anthropic)"
   - "Prompt caching in the API (OpenAI)"
   - "Context caching overview (Google)"
+slides: courses/picking-a-frontier-model-2026-q2/ch01-slides.pptx
+audio: courses/picking-a-frontier-model-2026-q2/ch01-audio.mp3
+voiceover_script: courses/picking-a-frontier-model-2026-q2/voiceover-01.md
 tags:
   - course/picking-a-frontier-model-2026-q2
   - evaluation
@@ -58,8 +61,8 @@ Frontier model evaluation is the practice of measuring AI model capabilities alo
 
 1. **MMLU**, **HumanEval**, and **GPQA** — the three benchmarks most commonly cited in model release notes — measure knowledge recall, single-function code generation, and graduate-level science respectively. None directly measures tool-use consistency, structured-output stability, or mid-context retrieval accuracy. [1][2]
 2. As of Q2 2026, no major public benchmark measures **tool-use determinism** — the probability that the same prompt produces structurally equivalent output across independent runs. Our internal dataset (`/data/claude-tool-use-determinism/2026-Q2/`) fills this gap for the three models covered in this course.
-3. Opus 4.7's published context window is **1M tokens** [7]; Gemini 3.1 Pro's is **1M tokens** [8]. Empirically measured retrieval accuracy at 80% of each model's advertised limit tells a different story — covered in [[courses/picking-a-frontier-model-2026-q2/03-long-context-behavior|Chapter 3]].
-4. **Prompt caching** is available on all three platforms but with meaningfully different economics: Anthropic caches at 4,096+ token boundaries for current flagship models (e.g., Claude Opus 4.7; the minimum drops to 1,024 tokens for older models such as Sonnet 4.5 and Opus 4.1) with a 5-minute TTL [9], OpenAI caches at 1,024+ token boundaries in 128-token cache-hit increments [10], and Google Cloud caches Gemini context at configurable TTL (default: 1 hour) [11]. The cost implications for agentic workloads are non-trivial — [[courses/picking-a-frontier-model-2026-q2/04-cost-per-task|Chapter 4]] quantifies them.
+3. Opus 4.7's published context window is **1M tokens** [7]; Gemini 3.1 Pro's is **1M tokens** [8]. Empirically measured retrieval accuracy at 80% of each model's advertised limit tells a different story — covered in [Chapter 3](/learn/picking-a-frontier-model-2026-q2/03-long-context-behavior).
+4. **Prompt caching** is available on all three platforms but with meaningfully different economics: Anthropic caches at 4,096+ token boundaries for current flagship models (e.g., Claude Opus 4.7; the minimum drops to 1,024 tokens for older models such as Sonnet 4.5 and Opus 4.1) with a 5-minute TTL [9], OpenAI caches at 1,024+ token boundaries in 128-token cache-hit increments [10], and Google Cloud caches Gemini context at configurable TTL (default: 1 hour) [11]. The cost implications for agentic workloads are non-trivial — [Chapter 4](/learn/picking-a-frontier-model-2026-q2/04-cost-per-task) quantifies them.
 5. The term **"capability overhang"** refers to the gap between what a model can do in a best-case scenario and what it does reliably across the distribution of real inputs. Frontier models exhibit significant capability overhang on production workloads. A model that scores 95% on a coding benchmark may succeed on only 70% of your specific code-generation prompts.
 6. In our 10×3×5 benchmark (10 prompts × 3 models × 5 runs), the variance in output *structure* at temperature=0 ranged from **2% to 18%** across the three models — variance that leaderboard scores do not capture and that compounds multiplicatively in multi-step pipelines. [3]
 7. The **"production gap"** — the documented delta between academic benchmark performance and real-task performance — is most pronounced in function-calling tasks, where benchmark scores and real-world tool-orchestration reliability can diverge substantially. Aggregate benchmarks such as MMLU do not measure multi-step tool use; the Berkeley Function Calling Leaderboard (BFCL) is the most widely-cited public evaluation for this dimension, tracking real-world function-calling accuracy across leading models. [4]
@@ -96,7 +99,7 @@ Based on our internal benchmark data across 12 months of production AI workloads
 
 The probability that the same prompt, at the same temperature, produces structurally equivalent tool calls or JSON output across independent runs. For agentic pipelines where model output feeds into downstream code, a 10% variance in output structure compounds dramatically. A three-step pipeline where each step has 90% structural stability has only a 73% end-to-end success rate. Five steps: 59%. Determinism is the foundational reliability metric for any agentic workload.
 
-This is covered in depth in [[courses/picking-a-frontier-model-2026-q2/02-tool-use-determinism-benchmark|Chapter 2]].
+This is covered in depth in [Chapter 2](/learn/picking-a-frontier-model-2026-q2/02-tool-use-determinism-benchmark).
 
 ### 2. Context fidelity at depth
 
@@ -112,7 +115,7 @@ Not average latency — your 95th or 99th percentile latency under realistic con
 
 ### 5. Cost-per-task (not cost-per-token)
 
-The true cost to complete one unit of your workload, accounting for retry rates, prompt caching hit rates, and tool-call overhead. A cheaper model with higher retry rates can easily cost more per task than an expensive model with near-perfect reliability. Covered in [[courses/picking-a-frontier-model-2026-q2/04-cost-per-task|Chapter 4]].
+The true cost to complete one unit of your workload, accounting for retry rates, prompt caching hit rates, and tool-call overhead. A cheaper model with higher retry rates can easily cost more per task than an expensive model with near-perfect reliability. Covered in [Chapter 4](/learn/picking-a-frontier-model-2026-q2/04-cost-per-task).
 
 <Callout type="warn">
 **Don't conflate output length with output quality.** A model that produces verbose responses to fill its context window may score better on human preference evaluations (more detail looks more helpful) while performing *worse* on structured tasks (more tokens = more surface area for schema violations). Always filter preference benchmarks by task type before using them to inform production decisions.
@@ -212,7 +215,7 @@ If your use case maps cleanly to one of these archetypes, you already know your 
 
 Chapter 1 gave you the framework: five production dimensions, three benchmarks to deprioritize, and a scorecard template for your workload. You now have a hypothesis about which dimensions matter most for your use case — but a hypothesis is not evidence.
 
-In [[courses/picking-a-frontier-model-2026-q2/02-tool-use-determinism-benchmark|Chapter 2]], you'll run the 10×3×5 benchmark that measures the dimension most commonly overlooked in public comparisons: tool-use determinism. You'll run it across Opus 4.7, GPT-5.5, and Gemini 3.1 Pro on a reference prompt set — and optionally add 2 prompts from your own use case.
+In [Chapter 2](/learn/picking-a-frontier-model-2026-q2/02-tool-use-determinism-benchmark), you'll run the 10×3×5 benchmark that measures the dimension most commonly overlooked in public comparisons: tool-use determinism. You'll run it across Opus 4.7, GPT-5.5, and Gemini 3.1 Pro on a reference prompt set — and optionally add 2 prompts from your own use case.
 
 ---
 

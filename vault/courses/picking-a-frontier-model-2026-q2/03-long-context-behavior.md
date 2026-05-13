@@ -34,6 +34,9 @@ references:
   - "[^4]: OpenAI. GPT-5.5 release notes. https://help.openai.com/en/articles/9624314-model-release-notes"
   - "[^5]: Hsieh, C.-Y. et al. (2024). 'RULER: What's the Real Context Size of Your Long-Context Language Models?' https://arxiv.org/abs/2404.06654"
   - "[^6]: Bai, Y. et al. (2024). 'LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks.' https://arxiv.org/abs/2412.15204"
+slides: courses/picking-a-frontier-model-2026-q2/ch03-slides.pptx
+audio: courses/picking-a-frontier-model-2026-q2/voiceover-03.mp3
+voiceover_script: courses/picking-a-frontier-model-2026-q2/voiceover-03.md
 tags:
   - course/picking-a-frontier-model-2026-q2
   - evaluation
@@ -44,7 +47,7 @@ tags:
 
 # Long-context behavior — effective vs. advertised context windows
 
-> **Prerequisites**: [[courses/picking-a-frontier-model-2026-q2/01-dimensions-that-matter|Chapter 1]] — you understand the concept of "effective context window" as distinct from the advertised limit. [[courses/picking-a-frontier-model-2026-q2/02-tool-use-determinism-benchmark|Chapter 2]] is recommended but not required.
+> **Prerequisites**: [Chapter 1](/learn/picking-a-frontier-model-2026-q2/01-dimensions-that-matter) — you understand the concept of "effective context window" as distinct from the advertised limit. [Chapter 2](/learn/picking-a-frontier-model-2026-q2/02-tool-use-determinism-benchmark) is recommended but not required.
 >
 > **Time**: 50 minutes
 >
@@ -226,7 +229,7 @@ The practical takeaway: **if your workload is primarily synthesis, use RAG.** If
 
 You now have empirical data on both determinism (Chapter 2) and context fidelity (Chapter 3). Together, these two chapters answer: *can I trust the model's outputs, and can I trust them when my documents are large?*
 
-The final question is: **what does reliable output actually cost?** In [[courses/picking-a-frontier-model-2026-q2/04-cost-per-task|Chapter 4]], you'll build a cost-per-task model that accounts for retry rates, context caching, and tool-call overhead — and discover why the cheapest model on the pricing page is often not the cheapest model in your bill.
+The final question is: **what does reliable output actually cost?** In [Chapter 4](/learn/picking-a-frontier-model-2026-q2/04-cost-per-task), you'll build a cost-per-task model that accounts for retry rates, context caching, and tool-call overhead — and discover why the cheapest model on the pricing page is often not the cheapest model in your bill.
 
 ---
 
