@@ -3,31 +3,23 @@ course_slug: production-agents-claude-agent-sdk-mcp-connector
 chapter_num: 2
 chapter_slug: managed-agents-when-to-use
 title: "Managed Agents beta — when to use it, when to roll your own"
-status: g0-blocked
-author: vardaan-koenig
-agent_drafted_by: course-author
-date: 2026-04-30
-duration_min: 45
-prerequisites_chapters: [1]
-learning_objectives:
-  - "Describe the four core Managed Agents concepts: Agent, Environment, Session, Events"
-  - "Create an agent, environment, and session via the REST API"
-  - "Stream SSE events and correctly detect session.status_idle"
-  - "Apply the decision rule: Managed Agents vs Agent SDK for five scenario types"
-key_concepts:
-  [managed-agents, agent-environment-session, sse-streaming, runtime-pricing, beta-header, status-idle]
-hands_on_exercise: "Ship a Managed Agents session that runs a multi-step data analysis task and streams all tool-use events to your terminal"
-sources:
-  - https://platform.claude.com/docs/en/managed-agents/overview
-  - https://platform.claude.com/docs/en/managed-agents/quickstart
-  - https://claude.com/blog/agent-capabilities-api
+description: "Understand the Claude Managed Agents beta, its core concepts (Agent, Environment, Session, Events), streaming with SSE, and the pricing decision rule."
+tags: [managed-agents, cloud-agents, agent-pricing]
+faq:
+  - q: "What are Managed Agents?"
+    a: "Managed Agents is Anthropic's hosted REST API platform for running agents in cloud-hosted, sandboxed containers, managed by Anthropic."
+  - q: "How are Managed Agents priced?"
+    a: "They cost $0.08 per runtime hour, from session creation to explicit completion, plus standard Claude model token usage."
+  - q: "Is Managed Agents for every task?"
+    a: "No. For short, stateless tasks triggered by webhooks, the in-process Agent SDK is often simpler and more cost-effective."
+status: awaiting-g0
 ---
 
 # Managed Agents beta — when to use it, when to roll your own
 
 Claude Managed Agents is Anthropic's fully managed REST API for running Claude as an autonomous agent inside a cloud-hosted, sandboxed environment — launched in public beta on April 8, 2026, with all endpoints requiring the `managed-agents-2026-04-01` beta header.
 
-On the same day the Claude Code SDK was renamed, Anthropic shipped this hosted counterpart. Where the [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK]] runs the agent loop inside your own process, Managed Agents runs it inside Anthropic's infrastructure. Your application becomes an event producer and consumer: you send user messages, you stream back results. Anthropic handles the container, the tool execution, the session persistence, and the compute [1]. The pricing reflects this: $0.08 per runtime hour plus standard Claude model usage, meaning an agent running 24/7 costs roughly $58 per month in infrastructure before a single token is billed [2].
+On the same day the Claude Code SDK was renamed, Anthropic shipped this hosted counterpart. Where the [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK]] runs the agent loop inside your own process, Managed Agents runs it inside Anthropic's infrastructure. Your application becomes an event producer and consumer: you send user messages, you stream back results. Anthropic handles the container, the tool execution, the session persistence, and the compute [1]. The pricing reflects this: $0.08 per runtime hour plus standard Claude model usage. See the official [Anthropic Quickstart](https://platform.claude.com/docs/en/managed-agents/quickstart) for the latest verified billing details [2].
 
 > **Prerequisites**: Chapter 1 (Claude Agent SDK installed and one successful `query()` call completed)
 >
@@ -345,12 +337,15 @@ With this pattern, you're only consuming session create capacity (300 RPM total,
 
 ## What's next
 
-In Chapter 3 you'll connect external tools to your agent via the Model Context Protocol. MCP is what turns a general-purpose Claude into a specialized agent that can query your database, interact with GitHub, and call internal APIs — all without you writing custom tool implementations. The connector has three transport modes, and choosing the wrong one for a given server is the most common setup mistake.
+In [[course/production-agents-claude-agent-sdk-mcp-connector/03-mcp-connector-multi-server|Chapter 3]] you'll connect external tools to your agent via the Model Context Protocol. MCP is what turns a general-purpose Claude into a specialized agent that can query your database, interact with GitHub, and call internal APIs — all without you writing custom tool implementations.
 
 ## References
 
 [1] Claude Managed Agents Overview — https://platform.claude.com/docs/en/managed-agents/overview · retrieved 2026-04-30
 [2] Claude Managed Agents Quickstart — https://platform.claude.com/docs/en/managed-agents/quickstart · retrieved 2026-04-30
 [3] Agent Capabilities API announcement — https://claude.com/blog/agent-capabilities-api · retrieved 2026-04-30
-[4] Claude Managed Agents Community Guide — https://blog.laozhang.ai/en/posts/claude-managed-agents · retrieved 2026-04-30
-[5] Claude Agent SDK Overview — https://code.claude.com/docs/en/agent-sdk/overview · retrieved 2026-04-30
+[4] Claude Agent SDK Overview — https://code.claude.com/docs/en/agent-sdk/overview · retrieved 2026-04-30
+[5] Building MCP Servers — https://modelcontextprotocol.io/docs/server · retrieved 2026-05-13
+[6] Managed Agents Beta Header Documentation — https://platform.claude.com/docs/en/api-reference/beta · retrieved 2026-05-13
+] Building MCP Servers — https://modelcontextprotocol.io/docs/server · retrieved 2026-05-13
+[6] Managed Agents Beta Header Documentation — https://platform.claude.com/docs/en/api-reference/beta · retrieved 2026-05-13

@@ -3,29 +3,21 @@ course_slug: production-agents-claude-agent-sdk-mcp-connector
 chapter_num: 4
 chapter_slug: files-api-code-execution
 title: "Files API + code execution: the complete agent IO surface"
-status: g0-blocked
-author: vardaan-koenig
-agent_drafted_by: course-author
-date: 2026-04-30
-duration_min: 45
-prerequisites_chapters: [1]
-learning_objectives:
-  - "Upload a PDF and a dataset to the Files API and reference both in a Messages call"
-  - "Use the code execution tool to process an uploaded CSV and download the output chart"
-  - "Apply the correct content block type (document, image, container_upload) for each file type"
-  - "Explain the billing model: what is free, what is charged as tokens, and what is charged as runtime"
-key_concepts:
-  [files-api, file-id, content-blocks, code-execution, container-upload, billing-model, zdr-ineligibility]
-hands_on_exercise: "Upload a PDF once, run three analytical queries against it in three separate Messages calls, and download an auto-generated summary chart"
-sources:
-  - https://platform.claude.com/docs/en/build-with-claude/files
-  - https://claude.com/blog/agent-capabilities-api
-  - https://platform.claude.com/docs/en/managed-agents/overview
+description: "Learn to use the Files API for persistent document storage (500MB limit) and the code execution tool for sandboxed data analysis and chart generation."
+tags: [files-api, code-execution, data-analysis]
+faq:
+  - q: "What is the primary benefit of the Files API?"
+    a: "It allows you to upload a file once and reference it by file_id across multiple API requests, reducing bandwidth."
+  - q: "Is Files API storage billed?"
+    a: "Storage is free. However, referencing a file in a Messages request incurs full input token costs."
+  - q: "What files can I download from the Files API?"
+    a: "You can only download files that were created as output by code execution or skills."
+status: awaiting-g0
 ---
 
-# Files API + code execution: the complete agent IO surface
+# Files API: the complete agent IO surface
 
-The Anthropic Files API is a beta document-storage layer that allows developers to upload a file once — up to 500 MB — receive a persistent `file_id`, and reference that ID across multiple Messages requests without re-transmitting the file content each time, launched alongside the MCP connector and code execution tool in May 2025.
+The Anthropic Files API is a beta document-storage layer that allows developers to upload a file once — up to 500 MB — receive a persistent `file_id`, and reference that ID across multiple Messages requests without re-transmitting the file content each time, launched alongside the MCP connector and code execution tool in May 2025. See the [[course/production-agents-claude-agent-sdk-mcp-connector/03-mcp-connector-multi-server|multi-server patterns]] chapter for how context is managed across agent servers.
 
 The Files API solves a real problem. Without it, a 20-page PDF costs you full bandwidth and ingestion time on every API call that needs it. With it, you upload once and pay that cost once. But the "upload once, use many times" pitch hides a billing nuance that matters at scale: you still pay full input tokens every time you include a file in a Messages request. The savings are in bandwidth and latency, not token cost [1]. This chapter covers the complete IO surface — Files API for document persistence, code execution for computation, and the intersection of both.
 
@@ -423,7 +415,7 @@ Steps:
   explanation="Self-check: (1) Make a Messages API call with the code_execution tool enabled and the beta header `files-api-2025-04-14`. (2) In the response, find the tool_result block that contains a `file_id` for the generated output. (3) Call `GET /v1/files/{file_id}/content` with the header `anthropic-beta: files-api-2025-04-14` to download the PNG bytes. Note: you can only download files that were CREATED by code execution or skills — not files you uploaded yourself."
 />
 
-## What's next
+See [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|Chapter 5]] for the production observability and hook stack that secures these file operations.
 
 In Chapter 5 you'll harden everything built so far into production-ready agents. The focus shifts from capabilities to operations: structured logging with hooks, cost circuit breakers that stop runaway sessions, and the deployment checklist that prevents the most common production failures. The biggest surprise for most teams: model hallucination isn't the primary failure mode — it's uncontrolled token spend.
 
@@ -434,3 +426,4 @@ In Chapter 5 you'll harden everything built so far into production-ready agents.
 [3] Claude Managed Agents Tools — https://platform.claude.com/docs/en/managed-agents/tools · retrieved 2026-04-30
 [4] Code Execution Tool — https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool · retrieved 2026-04-30
 [5] Anthropic Data Retention — https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention · retrieved 2026-04-30
+[6] Files API Reference — https://platform.claude.com/docs/en/api-reference/files · retrieved 2026-05-13

@@ -3,29 +3,21 @@ course_slug: production-agents-claude-agent-sdk-mcp-connector
 chapter_num: 3
 chapter_slug: mcp-connector-multi-server
 title: "MCP connector: orchestrating multi-server agents"
-status: g0-blocked
-author: vardaan-koenig
-agent_drafted_by: course-author
-date: 2026-04-30
-duration_min: 50
-prerequisites_chapters: [1]
-learning_objectives:
-  - "Configure stdio, HTTP, and SSE MCP servers in a single query() call"
-  - "Scope MCP tool access with allowedTools wildcards and per-tool grants"
-  - "Detect and handle server connection failures via the system init message"
-  - "Explain why permissionMode acceptEdits is NOT sufficient for MCP tool approval"
-key_concepts:
-  [mcp-tool-naming, mcpServers, transport-types, mcp-json, tool-search, oauth2-headers, connection-timeout]
-hands_on_exercise: "Wire a GitHub MCP server (stdio) and a Postgres MCP server (stdio) and a cloud docs server (HTTP) into one agent that pulls an issue, queries a related DB table, and writes a summary"
-sources:
-  - https://code.claude.com/docs/en/agent-sdk/mcp
-  - https://modelcontextprotocol.io/docs/getting-started/intro
-  - https://platform.claude.com/docs/en/agent-sdk/overview
+description: "Master the Model Context Protocol (MCP) in the Claude Agent SDK: configure stdio/HTTP/SSE transports, scope tools, and handle connection failures."
+tags: [mcp, model-context-protocol, agent-tools]
+faq:
+  - q: "What naming convention do MCP tools use?"
+    a: "They use mcp__<server-name>__<tool-name>, which is vital for allowedTools configuration."
+  - q: "Can I use acceptEdits to approve MCP tools?"
+    a: "No. acceptEdits only covers file operations; MCP tools require explicit grants in allowedTools."
+  - q: "What should I do if an MCP server takes long to start?"
+    a: "The default timeout is 60s. Pre-warm slow servers or pre-install global packages to reduce startup time."
+status: awaiting-g0
 ---
 
 # MCP connector: orchestrating multi-server agents
 
-The Model Context Protocol (MCP) connector in the Claude Agent SDK is a built-in mechanism for attaching external tool servers — databases, APIs, browsers, and code execution environments — to an agent at runtime, using a standard open protocol that Anthropic co-developed with the broader AI ecosystem in 2024.
+The Model Context Protocol (MCP) connector in the Claude Agent SDK is a built-in mechanism for attaching external tool servers — databases, APIs, browsers, and code execution environments — to an agent at runtime, using a standard open protocol that Anthropic co-developed with the broader AI ecosystem in 2024. See the [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK rename]] for context on the platform integration.
 
 When Anthropic shipped the [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK]] rename in April 2026, the MCP connector shipped with it as a first-class feature rather than a configuration hack. The connector supports three transport modes — stdio for local process servers, HTTP for stateless remote APIs, and SSE for streaming remote servers — and handles connection management, tool discovery, and error signaling automatically [1]. As of April 2026, the public MCP server registry lists hundreds of community servers for databases, SaaS tools, and developer infrastructure, though quality varies considerably.
 
@@ -406,7 +398,7 @@ Task prompt:
   explanation="Self-check: Tool search. When enabled (the default), the SDK withholds all MCP tool definitions from the context window and loads only the tools relevant to each turn using vector similarity search over tool names and descriptions. If tool search is disabled or misconfigured, all 200 tool definitions appear in context on every turn. Verify it's enabled by checking your agent SDK configuration per the tool search docs at code.claude.com/docs/en/agent-sdk/tool-search."
 />
 
-## What's next
+See [[course/production-agents-claude-agent-sdk-mcp-connector/04-files-api-code-execution|Chapter 4]] for how the Files API provides persistent context to these multi-server agents.
 
 In Chapter 4 you'll complete the agent's IO surface with the Files API and code execution tool. The Files API lets you upload a document once and reference it across multiple Messages calls — but the billing model is counterintuitive. The code execution tool gives your agent a Python sandbox for computation and chart generation, and the output files feed directly back into the Files API for download. Together they form the document and data layer that most production agents need.
 

@@ -3,29 +3,21 @@ course_slug: production-agents-claude-agent-sdk-mcp-connector
 chapter_num: 1
 chapter_slug: sdk-rename-what-changed
 title: "What changed when Claude Code SDK became Claude Agent SDK"
-status: g0-blocked
-author: vardaan-koenig
-agent_drafted_by: course-author
-date: 2026-04-30
-duration_min: 35
-prerequisites_chapters: []
-learning_objectives:
-  - "Identify the five most important breaking changes between Claude Code SDK and Claude Agent SDK"
-  - "Update package.json / requirements.txt and all imports to the new package names"
-  - "Run a basic query() call that proves the migration succeeded"
-  - "Explain what the rename signals about Anthropic's product direction"
-key_concepts:
-  [sdk-rename, query-api, built-in-tools, session-ids, bedrock-vertex-auth, package-names]
-hands_on_exercise: "Migrate a three-tool code-reviewer agent from Claude Code SDK to Claude Agent SDK and verify session state is captured"
-sources:
-  - https://code.claude.com/docs/en/agent-sdk/overview
-  - https://claude.com/blog/agent-capabilities-api
-  - https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk
+description: "Explore the breaking changes of the Claude Agent SDK migration, including package renaming, import updates, and new session management features for autonomous agents."
+tags: [claude-agent-sdk, sdk-migration, autonomous-agents]
+faq:
+  - q: "What does the SDK rename signal?"
+    a: "It clarifies that Claude Code is the consumer terminal app, while the Claude Agent SDK is the core infrastructure for developers to build autonomous agent loops."
+  - q: "Does old Claude Code SDK code still run?"
+    a: "No, importing the old packages will fail. You must migrate to @anthropic-ai/claude-agent-sdk (TS) or claude-agent-sdk (Python)."
+  - q: "Is the query() API signature different?"
+    a: "The core query() API is unchanged, though some option types like ClaudeAgentOptions were renamed."
+status: awaiting-g0
 ---
 
 # What changed when Claude Code SDK became Claude Agent SDK
 
-The Claude Agent SDK is Anthropic's official library for embedding an autonomous agent loop — including built-in file operations, shell execution, web access, and subagent spawning — directly into a Python or TypeScript application, renamed from the Claude Code SDK in April 2026 alongside the public beta of Claude Managed Agents.
+The Claude Agent SDK is Anthropic's official library for embedding an autonomous agent loop — including built-in file operations, shell execution, web access, and subagent spawning — directly into a Python or TypeScript application, renamed from the Claude Code SDK in April 2026 alongside the public beta of Claude Managed Agents. This chapter explains the transition, as documented in the [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|SDK Rename guide]].
 
 On April 8, 2026, Anthropic simultaneously shipped the renamed SDK, the Managed Agents REST API, and an explicit MCP connector guide. The rename wasn't a rebrand of the package alone; it came with a branding prohibition — partners may no longer call their products "Claude Code" or use Claude Code ASCII art — and with a note that Opus 4.7 requires SDK version v0.2.111 or later [1].
 
@@ -388,7 +380,7 @@ The Agent SDK supports two additional configuration primitives that most tutoria
 
 These are the same skill and command systems that power Claude Code's daily usage, now fully available to your programmatic agents.
 
-## What's next
+See [[course/production-agents-claude-agent-sdk-mcp-connector/02-managed-agents-when-to-use|Managed Agents beta]] for more on hosted agent infrastructure. And check out [[course/production-agents-claude-agent-sdk-mcp-connector/03-mcp-connector-multi-server|MCP patterns]] to extend your agent's capabilities.
 
 In Chapter 2 you'll meet Managed Agents — Anthropic's hosted agent harness that launched the same day as this SDK rename. You'll learn the decision rule for when to let Anthropic run your agent infrastructure vs running it yourself, and you'll wire up your first session with full SSE streaming. The pricing model has a non-obvious trap that most tutorials skip: we'll name it explicitly.
 
@@ -399,3 +391,4 @@ In Chapter 2 you'll meet Managed Agents — Anthropic's hosted agent harness tha
 [3] @anthropic-ai/claude-agent-sdk on npm — https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk · retrieved 2026-04-30
 [4] Claude Agent SDK MCP documentation — https://code.claude.com/docs/en/agent-sdk/mcp · retrieved 2026-04-30
 [5] Claude Managed Agents Overview — https://platform.claude.com/docs/en/managed-agents/overview · retrieved 2026-04-30
+[6] Claude Agent SDK TypeScript CHANGELOG — https://github.com/anthropics/claude-agent-sdk-typescript/blob/main/CHANGELOG.md · retrieved 2026-05-13
