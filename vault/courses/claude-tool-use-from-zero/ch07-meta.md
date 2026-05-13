@@ -15,4 +15,6 @@ duration_audio_sec: 728
 slide_count: 11
 produced_at: 2026-05-13
 audio_note: "Cartesia out of credits (255 remaining); used OpenAI TTS (alloy voice, tts-1) as fallback. Re-run with Cartesia/Kokoro when credits restored."
+status: g0-blocked
+g0_reviewed_at: 2026-05-13
 ---
