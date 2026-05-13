@@ -24,7 +24,7 @@ sources:
   - https://www.anthropic.com/pricing
   - https://www.anthropic.com/news/claude-opus-4-7
 whats_new:
-  - GitHub, Cursor, and Anthropic now represent three distinct control-plane bets for coding agents: GitHub-native governance, background-agent throughput, and programmable terminal ownership.
+  - "GitHub, Cursor, and Anthropic now represent three distinct control-plane bets for coding agents: GitHub-native governance, background-agent throughput, and programmable terminal ownership."
 learning_objectives:
   - Choose between Copilot, Cursor, and Claude Code based on where you want agent state, review flow, and recovery logic to live
   - Explain how pricing and governance differ once coding assistants become long-running agents rather than autocomplete tools
