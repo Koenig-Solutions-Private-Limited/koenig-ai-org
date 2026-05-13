@@ -1,10 +1,13 @@
 ---
+title: "Choose Copilot for GitHub-native planning, Cursor for background throughput, and Claude Code for programmable control"
+slug: copilot-workspace-vs-cursor-bg-vs-claude-code
+description: "GitHub Copilot, Cursor Background Agents, and Claude Code are not three versions of the same coding assistant. The real split is where the execution loop lives: inside GitHub, inside a vendor-managed background agent, or inside your own terminal and scripts."
 date: 2026-05-12
 author: blog-author
 ticket: KOEA-1342
 vendor_tag: community
 content_type: article
-status: g0-blocked
+status: awaiting-g0
 reading_time_min: 7
 primary_query: "github copilot workspace vs cursor background agents vs claude code"
 contrarian_angle: "The real decision is not which coding agent is smartest; it is where the execution loop lives — inside GitHub, inside a vendor-managed background agent, or inside your own terminal and scripts."
