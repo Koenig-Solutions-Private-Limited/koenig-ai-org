@@ -6,7 +6,7 @@ prerequisites_chapters: []
 duration_min: 40
 reading_time_min: 40
 date: 2026-04-30
-status: draft-for-review
+status: g0-blocked
 author: "Koenig AI Academy"
 agent_drafted_by: course-author
 content_type: course-chapter
