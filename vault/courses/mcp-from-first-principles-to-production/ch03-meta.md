@@ -1,9 +1,9 @@
 ---
-course_slug: picking-a-frontier-model-2026-q2
+course_slug: mcp-from-first-principles-to-production
 chapter_num: 3
-chapter_slug: long-context-behavior
-title: "Long-context behavior — effective vs. advertised context windows"
-slides_path: "vault/courses/picking-a-frontier-model-2026-q2/ch03-slides.pptx"
+chapter_slug: tools-resources-prompts
+title: "Tools, Resources, and Prompts — the MCP primitives"
+slides_path: "vault/courses/mcp-from-first-principles-to-production/ch03-slides.pptx"
 audio_path: null
 slides_generated: true
 audio_generated: false
