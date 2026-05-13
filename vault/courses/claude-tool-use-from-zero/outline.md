@@ -1,0 +1,76 @@
+---
+course_slug: claude-tool-use-from-zero
+title: "Claude Tool Use from Zero: From Basics to Production Connectors"
+status: g0-passed
+author: course-author
+level: Builder
+target_audience: "Developers who want to master Claude's tool use capabilities, from simple function calling to building robust specialized MCP servers."
+prerequisites:
+  - "Fundamental understanding of LLMs"
+  - "Basic Python or TypeScript"
+learning_outcomes:
+  - "Understand and implement Claude's native tool use"
+  - "Build, test, and deploy compliant MCP servers"
+  - "Design secure, observable tool connectors for real-world domains"
+  - "Debug complex tool interaction and authorization issues"
+  - "Implement structured logging and audit trails for tool operations"
+total_duration_min: 480
+chapter_count: 8
+---
+
+# Course outline: Claude Tool Use from Zero
+
+## Chapter 1: Introduction to Claude's Tool Use
+- Learning objectives: Understand the tool use pattern, configure initial setup, execute basic function calling.
+- Duration: 40 min
+- Key concepts: Claude architecture, function definitions, response parsing.
+- Hands-on exercise: Set up a basic script that allows Claude to query a current stock price.
+
+## Chapter 2: Beyond Function Calling — Understanding MCP
+- Learning objectives: Grasp the Model Context Protocol, compare MCP to native tool integrations.
+- Duration: 50 min
+- Key concepts: MCP specifications, resources, prompts, tools.
+- Hands-on exercise: Connect to an existing MCP server using the Claude CLI.
+
+## Chapter 3: Building Your First MCP Server
+- Learning objectives: Scaffold a server, define custom tools, manage state.
+- Duration: 60 min
+- Key concepts: MCP SDK, tool lifecycle, error handling in tools.
+- Hands-on exercise: Build a server that provides a file system browsing tool.
+
+## Chapter 4: Handling Advanced Data and Resources
+- Learning objectives: Implement MCP resource transport, serve structured data as context.
+- Duration: 60 min
+- Key concepts: Resources, resource templates, Binary support.
+- Hands-on exercise: Create a resource tool that serves localized configuration files.
+
+## Chapter 5: Observability and Logging in MCP
+- Learning objectives: Add structured logging, log tool calls, implement auditing.
+- Duration: 60 min
+- Key concepts: Instrumentation, logs, tracing tool executions.
+- Hands-on exercise: Add structured logging to your file browser server and verify it in logs.
+
+## Chapter 6: Security and Authentication
+- Learning objectives: Understand transport security, implement basic authentication, handle authorization.
+- Duration: 60 min
+- Key concepts: Auth patterns, Principle of Least Privilege, secure transport.
+- Hands-on exercise: Add a decorator for authorization to your tool definitions.
+
+## Chapter 7: Creative Connectors
+- Learning objectives: Apply tool use to creative domains, managing non-textual tool inputs.
+- Duration: 50 min
+- Key concepts: Tool parameters for creative tasks, state persistence for generative output.
+- Hands-on exercise: Build a "style guide" tool that maintains persistent visual preferences.
+
+## Chapter 8: Legal and Regulatory Connectors
+- Learning objectives: Understand regulatory requirements for legal data, implement redaction, ensure compliance.
+- Duration: 60 min
+- Key concepts: Confidentiality, audit trails, data residency, PII redaction.
+- Hands-on exercise: Extend your MCP server with a document redaction tool.
+
+## Capstone Project
+- Build a production-ready MCP "Agentic Connector" that bridges a secure corporate system (e.g., medical or legal) to Claude. It must include:
+  - Custom tool definitions for data retrieval and modification.
+  - Full observability (structured logs of all calls).
+  - Implemented authorization per-tool call.
+  - A documented compliance and audit trail configuration.
