@@ -92,7 +92,7 @@ def _get_paragraphs(lines: list[str]) -> list[str]:
     return paragraphs
 
 
-MAX_BULLET_CHARS = 80
+MAX_BULLET_CHARS = 200
 
 
 def _truncate_bullet(text: str) -> str:
@@ -106,6 +106,18 @@ def _truncate_bullet(text: str) -> str:
 
 def _extract_bullets(lines: list[str]) -> list[str]:
     """Extract 3-5 slide bullets, preferring headings/lists over prose sentences."""
+    # For sections that are structured as multiple named subsections (≥3 H3 headings,
+    # e.g. "The four pillars"), return only the H3 titles so every subsection appears
+    # on the slide instead of being crowded out by sub-bullets from the first one.
+    h3_heads = []
+    for raw in lines:
+        if raw.startswith('### '):
+            sub = clean_line(raw[4:].strip())
+            if sub and len(sub) > 3:
+                h3_heads.append(sub)
+    if len(h3_heads) >= 3:
+        return h3_heads[:5]
+
     structured: list[str] = []
     for raw in lines:
         if raw.startswith('### '):
