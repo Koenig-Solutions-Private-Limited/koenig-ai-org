@@ -161,6 +161,8 @@ grep -oP '\[\d+\]' vault/blogs/<date>-<slug>/draft.md | wc -l
 - Both checks must pass. Record the count in the handoff comment (see step 6).
 - Confirm `hero_image` is present and is either a valid HTTPS URL OR the sentinel `auto:flux`.
 - Confirm `references:` has ≥3 entries and `len(references) == len(sources)`.
+- Every body-level `![](...)` and `<img>` must have descriptive alt text (10-150 chars) describing what the image conveys. Decorative-only images use `alt=""` PLUS a comment line `<!-- decorative -->` immediately above OR a frontmatter `decorative: true` on the surrounding image block.
+- Any hand-written `hero_image` or `inline_images` frontmatter (not `auto:flux` sentinels) must include descriptive alt text (10-150 chars).
 
 ### 6. Hand off to G0
 
