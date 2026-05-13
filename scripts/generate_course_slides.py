@@ -30,7 +30,11 @@ ATTRIBUTION = "academy.kspl.tech | Koenig AI Academy"
 SKIP_SECTIONS = {
     "references cited", "references", "further reading",
     "related content", "notes", "acknowledgements",
+    "what's next", "hands-on exercise",
 }
+
+# JSX/MDX component tags to skip entirely (content belongs in speaker notes)
+JSX_TAGS = {'KnowledgeCheck', 'Callout', 'Quiz', 'Warning', 'Info', 'Note', 'Tip'}
 
 
 def parse_frontmatter(text: str):
@@ -69,44 +73,113 @@ def clean_line(line: str) -> str:
     return line
 
 
+def _get_paragraphs(lines: list[str]) -> list[str]:
+    """Group content lines into prose paragraphs (skip headings/tables/images)."""
+    paragraphs = []
+    current: list[str] = []
+    for raw in lines:
+        stripped = raw.strip()
+        if not stripped:
+            if current:
+                paragraphs.append(' '.join(current))
+                current = []
+        elif not raw.startswith('#') and not stripped.startswith('|') and not stripped.startswith('!['):
+            cleaned = clean_line(stripped)
+            if cleaned:
+                current.append(cleaned)
+    if current:
+        paragraphs.append(' '.join(current))
+    return paragraphs
+
+
+def _extract_bullets(lines: list[str]) -> list[str]:
+    """Extract 3-5 slide bullets, preferring headings/lists over prose sentences."""
+    structured: list[str] = []
+    for raw in lines:
+        if raw.startswith('### '):
+            sub = clean_line(raw[4:].strip())
+            if sub and len(sub) > 3:
+                structured.append(sub[:90])
+        elif re.match(r'^\s*[-*+]\s+', raw) or re.match(r'^\s*\d+\.\s+', raw):
+            cleaned = clean_line(raw)
+            if cleaned and len(cleaned) > 5:
+                structured.append(cleaned[:110])
+        if len(structured) >= 5:
+            break
+
+    if len(structured) >= 3:
+        return structured[:5]
+
+    # Fallback: extract sentences from prose paragraphs
+    bullets = list(structured)
+    for para in _get_paragraphs(lines):
+        for sent in re.split(r'(?<=\.)\s+', para):
+            if len(bullets) >= 5:
+                break
+            sent = sent.strip()
+            # Skip very short fragments and intro-style fragments ending with ':'
+            if len(sent) <= 20 or sent.endswith(':'):
+                continue
+            if len(sent) > 90:
+                snippet = sent[:88]
+                last_sp = snippet.rfind(' ')
+                sent = (snippet[:last_sp] + '…') if last_sp > 40 else snippet + '…'
+            if sent not in bullets:
+                bullets.append(sent)
+
+    return bullets[:5]
+
+
 def extract_sections(body: str):
-    """Return list of (h2_title, [bullet_str, ...]) skipping boilerplate."""
+    """Return list of (h2_title, [bullet_str, ...]) skipping boilerplate sections."""
     sections = []
-    current_title = None
-    bullets: list[str] = []
+    current_title: str | None = None
+    raw_lines: list[str] = []
     in_code_block = False
+    in_jsx_block = False
+    jsx_tag: str | None = None
+
+    def flush() -> None:
+        if current_title is None:
+            return
+        if current_title.lower() not in SKIP_SECTIONS:
+            bullets = _extract_bullets(raw_lines)
+            if bullets:
+                sections.append((current_title, bullets))
 
     for raw_line in body.splitlines():
-        if raw_line.startswith("```"):
+        stripped = raw_line.strip()
+
+        # JSX/MDX component blocks — skip entirely (KnowledgeCheck, Callout, etc.)
+        if not in_jsx_block:
+            m = re.match(r'^<(\w+)', stripped)
+            if m and m.group(1) in JSX_TAGS:
+                in_jsx_block = True
+                jsx_tag = m.group(1)
+                if stripped.endswith('/>'):  # self-closing on same line
+                    in_jsx_block = False
+                continue
+        else:
+            closing_tag = rf'^</{re.escape(jsx_tag)}\b' if jsx_tag else r'^</\w+'
+            if stripped == '/>' or stripped.endswith('/>') or re.match(closing_tag, stripped):
+                in_jsx_block = False
+            continue
+
+        if raw_line.startswith('```'):
             in_code_block = not in_code_block
             continue
         if in_code_block:
             continue
 
-        if raw_line.startswith("## "):
-            if current_title is not None:
-                sections.append((current_title, bullets[:5]))
+        if raw_line.startswith('## '):
+            flush()
             current_title = raw_line[3:].strip()
-            bullets = []
-        elif raw_line.startswith("### "):
-            sub = clean_line(raw_line[4:].strip())
-            if sub:
-                bullets.append(sub[:110])
+            raw_lines = []
         elif current_title is not None:
-            cleaned = clean_line(raw_line)
-            if (cleaned
-                    and len(cleaned) > 20
-                    and not cleaned.startswith("|")
-                    and not cleaned.startswith("![")):
-                bullets.append(cleaned[:120])
+            raw_lines.append(raw_line)
 
-    if current_title is not None:
-        sections.append((current_title, bullets[:5]))
-
-    return [
-        (t, b) for t, b in sections
-        if t.lower() not in SKIP_SECTIONS and b
-    ]
+    flush()
+    return sections
 
 
 def _add_text(slide, text, left, top, width, height,

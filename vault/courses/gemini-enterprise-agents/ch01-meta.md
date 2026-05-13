@@ -8,9 +8,10 @@ audio_path: null
 slides_generated: true
 audio_generated: false
 assets_generated: true
-slide_count: 11
+slide_count: 9
 tool: generate_course_slides.py
 produced_at: 2026-05-13
 slides_generated_at: 2026-05-13
+slides_g0_fix: "KOEA-1538 — stripped KnowledgeCheck JSON, removed What's next slide, rewrote prose bullets"
 audio_note: "Blocked: notebooklm auth not configured. Run 'notebooklm login' then regenerate audio."
 ---
