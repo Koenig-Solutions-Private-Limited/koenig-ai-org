@@ -16,7 +16,7 @@ whats_new:
   - GPT-5.5 model with 400K token context window in Codex (1M via API; API access announced as "coming very soon").
   - Major plugin ecosystem overhaul in Codex Desktop.
   - Native reasoning controls and multi-agent tracing.
-status: g0-passed
+status: published
 reading_time_min: 7
 primary_query: "GPT-5.5 Codex features and changes"
 contrarian_angle: "The plugin ecosystem is OpenAI's real moat, not the reasoning architecture"

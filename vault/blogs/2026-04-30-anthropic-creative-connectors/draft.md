@@ -18,7 +18,7 @@ whats_new:
   - Standardized "Adobe for creativity" branding
   - Fixed broken Academy course links
   - Rev 5: Resolume Wire connector #9 corrected — now describes Wire's node-based visual programming domain instead of incorrectly claiming Arena/Avenue control
-status: g0-passed
+status: published
 reading_time_min: 4
 sources:
   - https://www.anthropic.com/news/claude-for-creative-work

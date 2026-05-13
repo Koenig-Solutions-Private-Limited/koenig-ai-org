@@ -20,6 +20,7 @@ function resolveOpenCodeCommand(input: unknown): string {
 }
 
 const discoveryCache = new Map<string, { expiresAt: number; models: AdapterModel[] }>();
+const inflightDiscovery = new Map<string, Promise<AdapterModel[]>>();
 const VOLATILE_ENV_KEY_PREFIXES = ["PAPERCLIP_", "npm_", "NPM_"] as const;
 const VOLATILE_ENV_KEY_EXACT = new Set(["PWD", "OLDPWD", "SHLVL", "_", "TERM_SESSION_ID", "HOME"]);
 
@@ -147,6 +148,8 @@ export async function discoverOpenCodeModels(input: {
   return sortModels(parseModelsOutput(result.stdout));
 }
 
+let runDiscoveryForCached: typeof discoverOpenCodeModels = discoverOpenCodeModels;
+
 function distinctProviderCount(models: AdapterModel[]): number {
   const providers = new Set<string>();
   for (const m of models) {
@@ -170,15 +173,30 @@ export async function discoverOpenCodeModelsCached(input: {
   const cached = discoveryCache.get(key);
   if (cached && cached.expiresAt > now) return cached.models;
 
-  const models = await discoverOpenCodeModels({ command, cwd, env });
-  // Cache hardening: only cache discovery results that look complete.
-  // The flicker bug was caching a partial list (nvidia-only, missing openrouter)
-  // for 60s, locking out grok-4.1-fast for researchers. If discovery returned
-  // ≥2 providers we trust it; otherwise return uncached so the next call retries.
-  if (distinctProviderCount(models) >= 2) {
-    discoveryCache.set(key, { expiresAt: now + MODELS_CACHE_TTL_MS, models });
-  }
-  return models;
+  const existing = inflightDiscovery.get(key);
+  if (existing) return existing;
+
+  const pending = (async () => {
+    const models = await runDiscoveryForCached({ command, cwd, env });
+    // Cache hardening: only cache discovery results that look complete.
+    // The flicker bug was caching a partial list (nvidia-only, missing openrouter)
+    // for 60s, locking out grok-4.1-fast for researchers. If discovery returned
+    // ≥2 providers we trust it; otherwise return uncached so the next call retries.
+    if (distinctProviderCount(models) >= 2) {
+      discoveryCache.set(key, { expiresAt: Date.now() + MODELS_CACHE_TTL_MS, models });
+    }
+    return models;
+  })();
+
+  inflightDiscovery.set(key, pending);
+  pending
+    .finally(() => {
+      // Failures are shared by current callers, then cleared for the next retry.
+      inflightDiscovery.delete(key);
+    })
+    .catch(() => {});
+
+  return pending;
 }
 
 export async function ensureOpenCodeModelConfiguredAndAvailable(input: {
@@ -235,4 +253,9 @@ export async function listOpenCodeModels(): Promise<AdapterModel[]> {
 
 export function resetOpenCodeModelsCacheForTests() {
   discoveryCache.clear();
+  inflightDiscovery.clear();
+}
+
+export function __setDiscoveryImplForTests(fn: typeof discoverOpenCodeModels | null) {
+  runDiscoveryForCached = fn ?? discoverOpenCodeModels;
 }
