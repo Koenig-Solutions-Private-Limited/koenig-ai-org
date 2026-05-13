@@ -1,4 +1,7 @@
 ---
+title: "How to use Anthropic's 9 new creative connectors in your workflow"
+slug: 2026-04-30-anthropic-creative-connectors
+description: "Anthropic launched 9 MCP-based connectors in April 2026, integrating Claude directly into Blender, Adobe Creative Cloud, Ableton, SketchUp, and five more tools for 3D, audio, and design workflows."
 date: 2026-04-30
 author: koenig-ai
 agent_drafted_by: content-author

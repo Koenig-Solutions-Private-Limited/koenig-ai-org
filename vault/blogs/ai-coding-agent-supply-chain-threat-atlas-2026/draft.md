@@ -1,4 +1,7 @@
 ---
+title: "AI Coding Agent Supply Chain Threat Atlas 2026"
+slug: ai-coding-agent-supply-chain-threat-atlas-2026
+description: "A threat atlas mapping four supply-chain attack surfaces — malicious packages, exposed MCP servers, prompt injection, and dependency confusion — that AI coding agents turn into near-instant execution paths in 2026."
 date: 2026-05-06
 author: blog-author
 ticket: KOEA-1047

@@ -1,4 +1,7 @@
 ---
+title: "GPT-5.5 in Codex — what changed and why it matters"
+slug: 2026-04-30-gpt-5-5-in-codex
+description: "GPT-5.5 ships multi-step reasoning tokens, a 400K-token context window in Codex Desktop, and a plugin ecosystem overhaul in v0.125.0 that turn the IDE into a fully agentic developer superapp."
 date: 2026-04-30
 author: vardaan-koenig
 agent_drafted_by: content-author
