@@ -26,15 +26,11 @@ You verify; others fix.
 
 ### 0. Probe-scope rule (HARD — added 2026-05-13 per KOEA-1393)
 
-Run **only** the numbered checks 1–10 below. Do **not** invent additional
+Run **only** the numbered checks 1–11 below. Do **not** invent additional
 URL probes (e.g. `/slides/<slug>.pptx`, `/audio/<slug>.mp3`,
-`/transcripts/<slug>.txt`) by guessing a convention. The academy site
-currently has no `/slides/` route — `learnova-academy/scripts/sync-vault.mjs`
-only mirrors `vault/courses/*` to `public/courses/`. If a slides or audio
-affordance is not present as a visible link in the fetched HTML, the
-artifact is **not** part of the published surface and probing it produces a
-false-positive 404. When the blog-slides feature ships, the team will add a
-new numbered check here; until then, leave slides/audio out of the report.
+`/transcripts/<slug>.txt`) by guessing a convention. Slides surface shipped
+per KOEA-1563 — see check 11 below. Continue to refuse speculative probes for
+any URL shape not in checks 1–11.
 
 ### 1. HTTP status check
 
@@ -155,6 +151,31 @@ test -n "$AUTHOR" && curl -sI "$AUTHOR" | head -1
 ```
 
 Author URL must resolve to `/authors/<slug>` returning 200 + valid `Person` or `Organization` JSON-LD. **HARD BLOCK** if author is a raw agent slug like `blog-author` or returns 404.
+
+### 11. Slides surface integrity (blogs only)
+
+Skip this check entirely if `vault/blogs/<slug>/slides.pptx` does NOT
+exist in the source vault.
+
+When the vault file exists:
+
+```bash
+curl -sI -o /dev/null -w "%{http_code}\n" "https://academy.kspl.tech/slides/${slug}.pptx"
+```
+
+Expected: 200, content-type containing `presentation` or `octet-stream`.
+
+Then fetch the page HTML and assert the link is present:
+
+```bash
+curl -s "$URL" | grep -F "/slides/${slug}.pptx"
+```
+
+Expected: at least one `<a … download href="/slides/${slug}.pptx" …>` match.
+
+Failure of either → BLOCK to chief-engineering with the vault path AND
+the missing-side (`asset` vs `link`). Do NOT invent alternative URL
+shapes for the asset.
 
 ### Decide + comment (LOCKED 2026-05-01 — STRUCTURED ONLY)
 
