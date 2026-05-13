@@ -28,17 +28,17 @@ Gemini 3.1 Pro, at the same three-step task, has determinism of 84 percent. That
 
 You need 1.2 runs of Opus to complete one successful task. You need 1.69 runs of Gemini.
 
-When you factor that retry amplification into the cost model, Gemini's cost advantage compresses from four times cheaper to three-point-six times cheaper. Still cheaper — but the gap is closing.
+When you factor that retry amplification into the cost model, Gemini's cost advantage compresses from about two-point-three times cheaper to about one-point-seven times cheaper. Still cheaper — but the gap is closing.
 
 Now stretch that to a ten-step pipeline. The retry multiplier scales exponentially: one over determinism to the power of n. A fourteen-point determinism gap — Opus at 78 percent, Gemini at 64 percent — produces a seven-point-two times difference in expected runs to success.
 
 **[The inversion]**
 
-Here's where it gets truly contrarian. At ten steps with ambiguous input, Opus costs about twelve dollars per successful task. Gemini costs about eighteen dollars.
+Here's where it gets truly contrarian. At ten steps with ambiguous input, Opus costs about four dollars per successful task. Gemini costs about twelve dollars.
 
-The model with the lowest per-token price now costs fifty percent more to actually complete the work.
+The model with the lowest per-token price now costs three times more to actually complete the work.
 
-This break-even occurs around four to five steps. If your agentic system has four or more action steps on difficult inputs — and most production coding agents do — the pricing page is actively misleading you.
+This break-even occurs at five or more steps. If your agentic system has five or more action steps on difficult inputs — and most production coding agents do — the pricing page is actively misleading you.
 
 **[The lever you can control]**
 
