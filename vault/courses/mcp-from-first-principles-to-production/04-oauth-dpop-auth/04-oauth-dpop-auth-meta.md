@@ -6,11 +6,14 @@ course_slug: mcp-from-first-principles-to-production
 assets_generated:
   - slides.pptx
   - audio.mp3
-tool: openai-tts
-tool_fallback_reason: "notebooklm-py not installed; open-notebook server not running; used OpenAI TTS (tts-1/alloy) directly"
+tool: generate_course_audio.py
+tool_fallback_reason: "notebooklm-py not installed; open-notebook server not running; used OpenAI TTS (tts-1/alloy) via generate_course_audio.py"
 slide_count: 13
+duration_audio_sec: 412
+audio_size_kb: 6443
 audio_lufs: "not normalized (ffmpeg unavailable in this environment)"
-produced_at: "2026-05-13T00:00:00Z"
+produced_at: "2026-05-13T05:54:00Z"
+assets_generated_flag: true
 status: awaiting-qa
 ---
 
