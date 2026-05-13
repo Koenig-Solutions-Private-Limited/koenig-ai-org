@@ -33,6 +33,8 @@ references:
   - "[^4]: Anthropic. 'Model temperature and sampling.' Claude model documentation. https://www.anthropic.com/news — temperature=0 behavior across API requests."
   - "[^5]: Shen, Y. et al. (2023). 'HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in HuggingFace.' https://arxiv.org/abs/2303.17580."
   - "[^6]: Google. 'Gemini API changelog.' https://ai.google.dev/gemini-api/docs/changelog — Gemini 3.1 Pro structured output and tool-use capability notes."
+slides: courses/picking-a-frontier-model-2026-q2/ch02-slides.pptx
+voiceover_script: courses/picking-a-frontier-model-2026-q2/voiceover-02.md
 tags:
   - course/picking-a-frontier-model-2026-q2
   - evaluation
@@ -43,13 +45,13 @@ tags:
 
 # Tool-use determinism — our 10×3×5 benchmark
 
-> **Prerequisites**: [[courses/picking-a-frontier-model-2026-q2/01-dimensions-that-matter|Chapter 1]] — you should have a scorecard with your top-priority dimensions and understand why tool-use determinism matters for your workload.
+> **Prerequisites**: [Chapter 1](/learn/picking-a-frontier-model-2026-q2/01-dimensions-that-matter) — you should have a scorecard with your top-priority dimensions and understand why tool-use determinism matters for your workload.
 >
 > **Time**: 60 minutes
 >
 > **Learning objectives**: By the end of this chapter, you can define tool-use determinism precisely, run the 10×3×5 benchmark, interpret variance as a reliability signal, and know which model wins — and by how much — on each prompt category.
 
-Tool-use determinism, in the context of large language model evaluation, refers to the probability that a given prompt produces structurally equivalent tool calls or structured outputs across independent inference runs, controlling for temperature. Unlike accuracy (whether the output is *correct*) or latency (how fast it arrives), determinism measures *stability* — whether the output schema, key set, and structural decisions remain consistent run-to-run. As of Q2 2026, no major public benchmark measures this property. The 10×3×5 dataset (`/data/claude-tool-use-determinism/2026-Q2/`) is the basis for Chapters 2 and [[courses/picking-a-frontier-model-2026-q2/04-cost-per-task|Chapter 4]] of this course, and this chapter walks through the benchmark design, methodology, results, and a reproducible runner script.
+Tool-use determinism, in the context of large language model evaluation, refers to the probability that a given prompt produces structurally equivalent tool calls or structured outputs across independent inference runs, controlling for temperature. Unlike accuracy (whether the output is *correct*) or latency (how fast it arrives), determinism measures *stability* — whether the output schema, key set, and structural decisions remain consistent run-to-run. As of Q2 2026, no major public benchmark measures this property. The 10×3×5 dataset (`/data/claude-tool-use-determinism/2026-Q2/`) is the basis for Chapters 2 and [Chapter 4](/learn/picking-a-frontier-model-2026-q2/04-cost-per-task) of this course, and this chapter walks through the benchmark design, methodology, results, and a reproducible runner script.
 
 ## Key facts
 
@@ -303,7 +305,7 @@ Apply these thresholds to your *specific prompt categories*, not to the average.
 
 ## What's next
 
-You now have empirical determinism scores for your prompts — and an understanding of why simple schemas are robust while complex schemas are fragile. In [[courses/picking-a-frontier-model-2026-q2/03-long-context-behavior|Chapter 3]], we shift from width (structural consistency) to depth (context fidelity). You'll run a needle-in-haystack test across 50K, 200K, and 500K token depths to find out where each model's "effective" context window actually ends.
+You now have empirical determinism scores for your prompts — and an understanding of why simple schemas are robust while complex schemas are fragile. In [Chapter 3](/learn/picking-a-frontier-model-2026-q2/03-long-context-behavior), we shift from width (structural consistency) to depth (context fidelity). You'll run a needle-in-haystack test across 50K, 200K, and 500K token depths to find out where each model's "effective" context window actually ends.
 
 ---
 

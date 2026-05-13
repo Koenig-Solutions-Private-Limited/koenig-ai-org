@@ -14,6 +14,9 @@ whats_new:
   - Major plugin ecosystem overhaul in Codex Desktop.
   - Native reasoning controls and multi-agent tracing.
 status: g0-passed
+title: "GPT-5.5 in Codex — what changed and why it matters"
+slug: "2026-04-30-gpt-5-5-in-codex"
+description: "GPT-5.5, released April 23 2026, introduces native multi-step reasoning tokens, a 400K-token context window in Codex Desktop, and a major plugin ecosystem overhaul for software engineering."
 reading_time_min: 7
 primary_query: "GPT-5.5 Codex features and changes"
 contrarian_angle: "The plugin ecosystem is OpenAI's real moat, not the reasoning architecture"

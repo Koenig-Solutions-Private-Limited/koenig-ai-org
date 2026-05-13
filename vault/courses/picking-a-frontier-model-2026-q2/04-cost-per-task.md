@@ -33,6 +33,9 @@ references:
   - "[^3]: Google. 'Gemini API pricing.' https://ai.google.dev/pricing — Gemini 3.1 Pro input/output/context caching pricing as of Q2 2026. Changelog: https://ai.google.dev/gemini-api/docs/changelog."
   - "[^4]: Koenig AI Academy internal cost model data, Q2 2026. Derived from 10×3×5 benchmark dataset (/data/claude-tool-use-determinism/2026-Q2/) with retry simulation applied at workload scale."
   - "[^5]: Patil, S. et al. Berkeley Function-Calling Leaderboard (BFCL) V4. https://gorilla.cs.berkeley.edu/leaderboard.html — analysis of tool-call reliability impact on pipeline cost."
+slides: courses/picking-a-frontier-model-2026-q2/ch04-slides.pptx
+audio: courses/picking-a-frontier-model-2026-q2/voiceover-04.mp3
+voiceover_script: courses/picking-a-frontier-model-2026-q2/voiceover-04.md
 tags:
   - course/picking-a-frontier-model-2026-q2
   - evaluation
@@ -43,7 +46,7 @@ tags:
 
 # Cost-per-task — pricing vs. actual bill on real workloads
 
-> **Prerequisites**: [[courses/picking-a-frontier-model-2026-q2/01-dimensions-that-matter|Chapter 1]] required; Chapters 2 and 3 recommended for the best practical grounding. You should have token counts from at least one benchmark run.
+> **Prerequisites**: [Chapter 1](/learn/picking-a-frontier-model-2026-q2/01-dimensions-that-matter) required; Chapters 2 and 3 recommended for the best practical grounding. You should have token counts from at least one benchmark run.
 >
 > **Time**: 50 minutes
 >
@@ -222,7 +225,7 @@ Each platform has rules that break caching in non-obvious ways:
 
 ## The three workload archetypes, costed
 
-Applying the full cost model to the three archetypes from [[courses/picking-a-frontier-model-2026-q2/01-dimensions-that-matter|Chapter 1]]:
+Applying the full cost model to the three archetypes from [Chapter 1](/learn/picking-a-frontier-model-2026-q2/01-dimensions-that-matter):
 
 ### Archetype A: Coding agent (multi-step, tool-heavy)
 
@@ -374,7 +377,7 @@ You have now completed all four analytical chapters. You have:
 
 The capstone project synthesizes all four into a **model selection memo** — a 500–800 word document your engineering manager could read and act on. The memo format is in `vault/courses/picking-a-frontier-model-2026-q2/outline.md`.
 
-For further reading on how these models perform on specific workloads, see [[blogs/opus-4-7-long-running-coding-benchmark]] and [[blogs/gpt-5-5-in-codex]] in the Academy vault.
+For further reading on how these models perform on specific workloads, see [Opus 4.7 long-running coding benchmark](/blog/opus-4-7-long-running-coding-benchmark) and [GPT-5.5 in Codex](/blog/gpt-5-5-in-codex) in the Academy vault.
 
 ---
 

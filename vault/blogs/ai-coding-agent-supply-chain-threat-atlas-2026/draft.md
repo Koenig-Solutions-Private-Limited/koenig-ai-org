@@ -5,6 +5,9 @@ ticket: KOEA-1047
 vendor_tag: community
 content_type: article
 status: g3-passed
+title: "Treat AI coding agents as software supply chains with keyboards"
+slug: "ai-coding-agent-supply-chain-threat-atlas-2026"
+description: "AI coding agents collapse the pause between tool retrieval and execution — turning ordinary supply-chain risks in MCP servers, npm, and PyPI into near-immediate attack paths. Here are the four threat surfaces and concrete mitigations."
 hero_image: auto:flux
 reading_time_min: 13
 primary_query: "AI coding agent supply chain attacks MCP npm PyPI"

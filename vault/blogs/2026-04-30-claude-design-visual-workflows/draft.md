@@ -7,6 +7,16 @@ ticket: KOEA-84
 vendor_tag: anthropic
 content_type: article
 status: published
+title: "How Claude Design orchestrates visual workflows across Blender, Adobe CC, and Ableton via MCP"
+slug: "2026-04-30-claude-design-visual-workflows"
+description: "Claude Design and eight MCP connectors let designers build end-to-end creative pipelines across Blender, Adobe Creative Cloud, and Ableton from a single Claude conversation — eliminating manual handoffs between tools."
+tags:
+  - claude
+  - mcp
+  - design
+  - blender
+  - workflow-automation
+  - adobe
 reading_time_min: 6
 hero_image:
 primary_query: "claude for designers"
