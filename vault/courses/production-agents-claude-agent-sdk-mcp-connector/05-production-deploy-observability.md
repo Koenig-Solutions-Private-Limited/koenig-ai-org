@@ -3,29 +3,21 @@ course_slug: production-agents-claude-agent-sdk-mcp-connector
 chapter_num: 5
 chapter_slug: production-deploy-observability
 title: "Production: deploy + observability + cost controls"
-status: g0-blocked
-author: vardaan-koenig
-agent_drafted_by: course-author
-date: 2026-04-30
-duration_min: 45
-prerequisites_chapters: [1, 2, 3, 4]
-learning_objectives:
-  - "Implement four production hooks: audit logging (PostToolUse), cost circuit breaker (Stop), session initialization (SessionStart), and prompt sanitization (UserPromptSubmit)"
-  - "Configure structured JSON logging for every tool call"
-  - "Apply the five-step deployment checklist before taking an agent to production"
-  - "Explain why bypassPermissions is dangerous and what to use instead"
-key_concepts:
-  [hooks, hooksystem, postToolUse, circuit-breaker, structured-logging, settingSources, langfuse, permissionMode]
-hands_on_exercise: "Add the production hook stack to an existing agent, add a cost cap, and verify that a simulated runaway session terminates before hitting budget"
-sources:
-  - https://code.claude.com/docs/en/agent-sdk/overview
-  - https://platform.claude.com/docs/en/managed-agents/overview
-  - https://platform.claude.com/docs/en/build-with-claude/files
+description: "Implement a production-grade agent lifecycle with hooks: audit logs, cost circuit breakers, session initialization, and prompt sanitization."
+tags: [observability, hooks, cost-control, deployment]
+faq:
+  - q: "What is the primary production failure mode for agents?"
+    a: "It is uncontrolled token spend and runaway sessions, not model hallucination."
+  - q: "What's the difference between PreToolUse and PostToolUse?"
+    a: "PreToolUse runs before the tool call executes, allowing you to block it. PostToolUse runs after for logging/auditing."
+  - q: "Can I use bypassPermissions in production?"
+    a: "No. It disables all safety checks. Use allowedTools and acceptEdits instead."
+status: awaiting-g0
 ---
 
 # Production: deploy + observability + cost controls
 
-The Claude Agent SDK's hook system is a lifecycle callback framework — inspired by HTTP middleware — that lets you attach arbitrary Python or TypeScript functions to key agent events (PreToolUse, PostToolUse, Stop, SessionStart, SessionEnd, UserPromptSubmit) to implement audit logging, cost enforcement, and prompt sanitization without modifying the agent's core logic.
+The Claude Agent SDK's hook system is a lifecycle callback framework — inspired by HTTP middleware — that lets you attach arbitrary Python or TypeScript functions to key agent events (PreToolUse, PostToolUse, Stop, SessionStart, SessionEnd, UserPromptSubmit) to implement audit logging, cost enforcement, and prompt sanitization without modifying the agent's core logic. See the [[course/production-agents-claude-agent-sdk-mcp-connector/04-files-api-code-execution|Files API]] chapter for integrating data handling into this production-ready lifecycle.
 
 Most teams discover the need for this the hard way: an agent that works perfectly in development starts generating surprise API bills in production, or silently modifies files it shouldn't touch, or loops on a subtask for 40 minutes. The [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK]] includes a hook system specifically for these scenarios [1]. The biggest production failure mode is not model hallucination — it's cost runaway. This chapter gives you the four hooks you need before any agent goes live, and the deployment checklist that ties everything together.
 

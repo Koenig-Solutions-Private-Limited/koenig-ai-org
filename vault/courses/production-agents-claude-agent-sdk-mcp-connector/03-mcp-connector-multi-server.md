@@ -3,8 +3,8 @@ course_slug: production-agents-claude-agent-sdk-mcp-connector
 chapter_num: 3
 chapter_slug: mcp-connector-multi-server
 title: "MCP connector: orchestrating multi-server agents"
-description: "Master the Model Context Protocol (MCP) in the Claude Agent SDK: configure stdio/HTTP/SSE transports, scope tools, and handle connection failures."
-tags: [mcp, model-context-protocol, agent-tools]
+description: "Integrate specialized tools to perform multi-server operations with GitHub and Postgres using pre-configured MCP Servers."
+tags: [mcp, multi-agent, data-integration]
 faq:
   - q: "What naming convention do MCP tools use?"
     a: "They use mcp__<server-name>__<tool-name>, which is vital for allowedTools configuration."
