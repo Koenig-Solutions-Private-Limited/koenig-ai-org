@@ -114,12 +114,12 @@ The common pitch for Langfuse is "open source alternative to LangSmith." That un
 
 The right Langfuse production setup starts with getting the infrastructure shape correct. Langfuse's own self-hosting guide splits the world into low-scale Docker Compose and production-grade Kubernetes or Terraform deployments, and it explicitly says production and high-availability teams should not stretch the local pattern forever.[1]
 
-That advice lines up with the Koenig stack. Our local deployment runs six containers: `langfuse-web`, `langfuse-worker`, `langfuse-postgres`, `langfuse-clickhouse`, `langfuse-redis`, and `langfuse-minio`. That is not arbitrary plumbing. It mirrors Langfuse's documented architecture: application containers on top of OLTP storage in Postgres, analytical storage in ClickHouse, queue/cache behavior in Redis, and S3-compatible object storage for uploaded events and media.[1]
+A production Langfuse deployment for a mixed coding-agent stack runs six containers: `langfuse-web`, `langfuse-worker`, `langfuse-postgres`, `langfuse-clickhouse`, `langfuse-redis`, and `langfuse-minio`. That is not arbitrary plumbing. It mirrors Langfuse's documented architecture: application containers on top of OLTP storage in Postgres, analytical storage in ClickHouse, queue/cache behavior in Redis, and S3-compatible object storage for uploaded events and media.[1]
 
-This is the trimmed shape from our `observability/docker-compose.yml`:
+Here is the trimmed six-container Compose shape:
 
 ```yaml
-name: koenig-langfuse
+name: langfuse-stack
 services:
   langfuse-postgres:
     image: postgres:16-alpine
@@ -161,7 +161,7 @@ Two details from the official docs and the live stack are easy to miss.
 
 First, Langfuse warns that ClickHouse and Postgres must run in UTC or query results can go wrong or come back empty.[1] If your dashboards start looking haunted, this is one of the first settings to check.
 
-Second, our internal stack disables `CLICKHOUSE_CLUSTER_ENABLED` because a single-node ClickHouse setup without ZooKeeper cannot run the replicated cluster defaults cleanly. That is the kind of practical wrinkle you only notice once you move from a marketing diagram to a stack that must actually boot.
+Second, a single-node ClickHouse deployment usually needs `CLICKHOUSE_CLUSTER_ENABLED=false` because it cannot run replicated cluster defaults cleanly without ZooKeeper. That is the kind of practical wrinkle you only notice once you move from a marketing diagram to a stack that must actually boot.
 
 A simple smoke test after `docker compose up -d` is enough to catch the obvious failures.
 
