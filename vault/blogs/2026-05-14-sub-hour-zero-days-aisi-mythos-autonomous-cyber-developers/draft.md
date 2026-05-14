@@ -4,11 +4,17 @@ author: blog-author
 ticket: KOEA-2090
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: awaiting-g0
 title: "Ship fixes faster than Mythos-speed exploit chains can arrive"
-slug: "sub-hour-zero-days-aisi-mythos-autonomous-cyber-developers"
+slug: "2026-05-14-sub-hour-zero-days-aisi-mythos-autonomous-cyber-developers"
 description: "AISI's Claude Mythos and GPT-5.5 cyber evaluations crossed a practical developer threshold: the bottleneck is no longer finding vulnerabilities, but safely shipping fixes before exploit chains compress to hours."
 hero_image: auto:flux
+tags:
+  - cybersecurity
+  - autonomous-cyber
+  - aisi
+  - gpt-5-5
+  - claude-mythos
 reading_time_min: 11
 primary_query: "AISI Claude Mythos GPT-5.5 autonomous cyber benchmark developers"
 contrarian_angle: "The model benchmark is not the point; remediation speed is now the defensive bottleneck."
@@ -30,6 +36,19 @@ learning_objectives:
   - Distinguish isolated CTF scores from end-to-end cyber-range completion in the AISI evaluation.
   - Convert the Mythos/GPT-5.5 threshold into a 0-30, 31-60, and 61-90 day engineering response plan.
   - Explain why GPT-5.5-Cyber is the more accessible defensive tool path for most teams today.
+faq:
+  - question: "What did AISI's Claude Mythos evaluation show?"
+    answer: "AISI reported that Claude Mythos Preview completed The Last Ones, a 32-step simulated corporate network attack, end to end in 3 of 10 attempts and averaged 22 of 32 steps, while the tested Claude Opus 4.6 baseline did not complete the full range."
+    source: https://www.aisi.gov.uk/blog/our-evaluation-of-claude-mythos-previews-cyber-capabilities
+    retrieved: 2026-05-14
+  - question: "Did GPT-5.5 also complete the AISI cyber range?"
+    answer: "Yes. AISI and Axios reported that GPT-5.5 completed the same 32-step simulated corporate attack in 2 of 10 attempts, making the threshold crossing broader than one Anthropic model."
+    source: https://www.axios.com/2026/05/07/openai-gpt-55-cybersecurity-model
+    retrieved: 2026-05-14
+  - question: "What should developers change first after the Mythos and GPT-5.5 results?"
+    answer: "The immediate developer response is to improve safe remediation speed: assign owners for internet-facing services, drill emergency patch and rollback paths, and create constrained approval lanes for high-confidence security fixes."
+    source: https://softwareanalyst.substack.com/p/the-cybersecurity-implications-of
+    retrieved: 2026-05-14
 references:
   - n: 1
     title: "Our evaluation of Claude Mythos Preview's cyber capabilities -- AISI"
@@ -183,4 +202,4 @@ correct_answer: 1
 explanation: "The operative threshold is chained completion. CTF scores show isolated skill; TLO completion shows that a model can sometimes carry a multi-step attack path to the end in a vulnerable environment."
 </KnowledgeCheck>
 
-The next 90 days are not about replacing developers with cyber agents. They are about making developer-controlled remediation fast enough that AI-assisted discovery does not drown the organization in unshipped fixes. For a deeper path through secure tool permissions, agent boundaries, and production guardrails, continue with [[course/mcp-from-first-principles-to-production]].
+The next 90 days are not about replacing developers with cyber agents. They are about making developer-controlled remediation fast enough that AI-assisted discovery does not drown the organization in unshipped fixes. For a deeper path through secure tool permissions, agent boundaries, and production guardrails, continue with [[course/mcp-from-first-principles-to-production]], then pair it with [[course/secure-coding-with-claude]] and [[course/production-agents-claude-agent-sdk-mcp-connector]] for secure review and deployment patterns.
