@@ -12,7 +12,7 @@ content_type: chapter
 chapter: 6
 parent_course: gemini-enterprise-agents
 ticket: KOEA-25
-status: awaiting-g0
+status: g0-blocked
 vendor_tag: google
 learning_objectives:
   - "Wire Cloud Trace and Cloud Logging into a deployed GEAP agent using OpenTelemetry"
