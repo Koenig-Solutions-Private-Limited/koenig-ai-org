@@ -14,31 +14,123 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="$REPO_ROOT/.env.koenig"
-PAPERCLIP_URL="${PAPERCLIP_URL:-http://localhost:3100}"
-COMPANY_ID="${COMPANY_ID:-1ce472ae-c3fe-47cb-ae1c-99cd79a43b8d}"
+CANONICAL_COMPANY_ID="2a77f89b-33f0-4133-a20c-77ddaac5e744"
 GH_DISPATCH_REPO="Koenig-Solutions-Private-Limited/learnovaBeast"
 PROD_URL="https://academy.kspl.tech"
 LOG_DIR="$HOME/.paperclip/logs"
 mkdir -p "$LOG_DIR"
 LOG="$LOG_DIR/publish-action.log"
+PUBLISH_ACTION_DRY_RUN="${PUBLISH_ACTION_DRY_RUN:-0}"
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG"; }
 
+env_value() {
+  local key="$1"
+  local value="${!key:-}"
+  if [[ -z "$value" && -f "$ENV_FILE" ]]; then
+    value="$(grep -E "^${key}=" "$ENV_FILE" | tail -n1 | cut -d= -f2- || true)"
+    value="${value%\"}"
+    value="${value#\"}"
+    value="${value%\'}"
+    value="${value#\'}"
+  fi
+  printf '%s' "$value"
+}
+
+sanitize_response() {
+  python3 -c '
+import re, sys
+import os
+text = sys.stdin.read()[:500]
+for secret in (os.environ.get("PAPERCLIP_BOARD_TOKEN"), os.environ.get("GH_PAT_DISPATCH")):
+    if secret:
+        text = text.replace(secret, "[REDACTED]")
+text = re.sub(r"Bearer\s+[A-Za-z0-9._~+/=-]+", "Bearer [REDACTED]", text)
+text = re.sub(r"(?i)(token|api[_-]?key|authorization|secret)[\"'"'"']?\s*[:=]\s*[\"'"'"']?[^\"'"'"'\s,}]+", r"\1=[REDACTED]", text)
+print(text.replace("\n", " ")[:240])
+'
+}
+
+paperclip_request() {
+  local method="$1"
+  local endpoint="$2"
+  local body="${3:-}"
+  local tmp
+  local http
+  tmp="$(mktemp)"
+  if [[ "$method" != "GET" && "$PUBLISH_ACTION_DRY_RUN" == "1" ]]; then
+    log "DRY-RUN would $method Paperclip $endpoint"
+    rm -f "$tmp"
+    return 0
+  fi
+
+  if [[ "$method" == "GET" ]]; then
+    http="$(curl -sS -o "$tmp" -w "%{http_code}" \
+      "$PAPERCLIP_URL$endpoint" \
+      -H "Authorization: Bearer $PAPERCLIP_BOARD_TOKEN")"
+  else
+    http="$(curl -sS -o "$tmp" -w "%{http_code}" -X "$method" \
+      "$PAPERCLIP_URL$endpoint" \
+      -H "Authorization: Bearer $PAPERCLIP_BOARD_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d "$body")"
+  fi
+
+  if [[ "$http" =~ ^2 ]]; then
+    cat "$tmp"
+    rm -f "$tmp"
+    return 0
+  fi
+
+  local summary
+  summary="$(sanitize_response < "$tmp")"
+  log "Paperclip API FAILED method=$method endpoint=$endpoint status=$http reason=$summary"
+  rm -f "$tmp"
+  return 1
+}
+
+paperclip_get() { paperclip_request GET "$1"; }
+paperclip_patch() { paperclip_request PATCH "$1" "$2"; }
+paperclip_post() { paperclip_request POST "$1" "$2"; }
+
 if [[ ! -f "$ENV_FILE" ]]; then
-  log "ERROR: $ENV_FILE not found. Skipping publish-action run."
+  log "WARN: $ENV_FILE not found. Continuing with process environment only."
+fi
+
+PAPERCLIP_URL="$(env_value PAPERCLIP_API_URL)"
+if [[ -z "$PAPERCLIP_URL" ]]; then
+  PAPERCLIP_URL="$(env_value PAPERCLIP_URL)"
+fi
+PAPERCLIP_URL="${PAPERCLIP_URL:-http://localhost:3100}"
+COMPANY_ID="$(env_value PAPERCLIP_COMPANY_ID)"
+if [[ -z "$COMPANY_ID" ]]; then
+  COMPANY_ID="$(env_value COMPANY_ID)"
+fi
+COMPANY_ID="${COMPANY_ID:-}"
+PAPERCLIP_BOARD_TOKEN="$(env_value PAPERCLIP_BOARD_TOKEN)"
+GH_PAT_DISPATCH="$(env_value GH_PAT_DISPATCH)"
+export PAPERCLIP_BOARD_TOKEN GH_PAT_DISPATCH
+
+if [[ "$COMPANY_ID" != "$CANONICAL_COMPANY_ID" ]]; then
+  log "ERROR: PAPERCLIP_COMPANY_ID/COMPANY_ID must be canonical Koenig company id. Skipping publish-action run."
   exit 0
 fi
 
-GH_PAT_DISPATCH="$(grep "^GH_PAT_DISPATCH=" "$ENV_FILE" | cut -d= -f2- || true)"
+if [[ -z "$PAPERCLIP_BOARD_TOKEN" ]]; then
+  log "ERROR: PAPERCLIP_BOARD_TOKEN missing. Skipping publish-action run before any mutation-capable phase."
+  exit 0
+fi
+log "Paperclip config OK: url=$PAPERCLIP_URL company_id=$COMPANY_ID board_token=present dry_run=$PUBLISH_ACTION_DRY_RUN"
+
 if [[ -z "$GH_PAT_DISPATCH" ]]; then
-  log "WARN: GH_PAT_DISPATCH missing in $ENV_FILE — Phase 1 and Phase 2 will be skipped."
+  log "WARN: GH_PAT_DISPATCH missing in environment/$ENV_FILE — Phase 1 and Phase 2 will be skipped."
 fi
 
 # ── Phase 1: g4-approved → repository_dispatch ───────────────────────────────
 
 log "Phase 1: scanning for publish_state=g4-approved issues..."
 
-G4_ISSUES_JSON="$(curl -s "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues" | python3 -c "
+G4_ISSUES_JSON="$(paperclip_get "/api/companies/$COMPANY_ID/issues" | python3 -c "
 import json, sys
 items = json.load(sys.stdin)
 if isinstance(items, dict): items = items.get('items', [])
@@ -58,19 +150,23 @@ elif [[ -z "$GH_PAT_DISPATCH" ]]; then
 else
   while IFS=$'\t' read -r ISSUE_ID SLUG; do
     log "Phase 1: dispatching publish-ready for issue=$ISSUE_ID slug=$SLUG"
-    DISPATCH_HTTP="$(curl -s -o /dev/null -w "%{http_code}" -X POST \
-      "https://api.github.com/repos/$GH_DISPATCH_REPO/dispatches" \
-      -H "Authorization: Bearer $GH_PAT_DISPATCH" \
-      -H "Accept: application/vnd.github+json" \
-      -H "X-GitHub-Api-Version: 2022-11-28" \
-      -d "$(python3 -c "import json; print(json.dumps({'event_type':'publish-ready','client_payload':{'issue_id':'$ISSUE_ID','slug':'$SLUG'}}))")")"
+    if [[ "$PUBLISH_ACTION_DRY_RUN" == "1" ]]; then
+      log "DRY-RUN would dispatch publish-ready for issue=$ISSUE_ID slug=$SLUG"
+      DISPATCH_HTTP="204"
+    else
+      DISPATCH_HTTP="$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+        "https://api.github.com/repos/$GH_DISPATCH_REPO/dispatches" \
+        -H "Authorization: Bearer $GH_PAT_DISPATCH" \
+        -H "Accept: application/vnd.github+json" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        -d "$(python3 -c "import json; print(json.dumps({'event_type':'publish-ready','client_payload':{'issue_id':'$ISSUE_ID','slug':'$SLUG'}}))")")"
+    fi
     if [[ "$DISPATCH_HTTP" == "204" ]]; then
       DISPATCHED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
       log "Phase 1: dispatch accepted (204) for $ISSUE_ID — setting dispatching at $DISPATCHED_AT"
-      curl -sX PATCH "$PAPERCLIP_URL/api/issues/$ISSUE_ID" \
-        -H "Content-Type: application/json" \
-        -d "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'dispatching','dispatched_at':'$DISPATCHED_AT'}}))")" \
-        -o /dev/null
+      paperclip_patch "/api/issues/$ISSUE_ID" \
+        "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'dispatching','dispatched_at':'$DISPATCHED_AT'}}))")" \
+        >/dev/null
     else
       log "Phase 1: dispatch FAILED (HTTP $DISPATCH_HTTP) for $ISSUE_ID"
     fi
@@ -86,7 +182,7 @@ fi
 
 log "Phase 2: scanning for publish_state=dispatching issues..."
 
-DISPATCHING_JSON="$(curl -s "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues" | python3 -c "
+DISPATCHING_JSON="$(paperclip_get "/api/companies/$COMPANY_ID/issues" | python3 -c "
 import json, sys
 items = json.load(sys.stdin)
 if isinstance(items, dict): items = items.get('items', [])
@@ -110,7 +206,7 @@ else
     -H "Accept: application/vnd.github+json" \
     -H "X-GitHub-Api-Version: 2022-11-28" > "$GH_RUNS_TMP"
 
-  PV_AGENT_ID="$(curl -s "$PAPERCLIP_URL/api/companies/$COMPANY_ID/agents" | python3 -c "
+  PV_AGENT_ID="$(paperclip_get "/api/companies/$COMPANY_ID/agents" | python3 -c "
 import json, sys
 data = json.load(sys.stdin)
 agents = data if isinstance(data, list) else data.get('items', [])
@@ -142,7 +238,7 @@ for r in runs:
         created_at = datetime.fromisoformat((r.get('created_at') or '').replace('Z', '+00:00'))
     except ValueError:
         continue
-    if run_name == f"publish-{issue_id}" and created_at >= boundary:
+    if run_name == 'publish-' + issue_id and created_at >= boundary:
         match = r
         break
 if match:
@@ -154,24 +250,21 @@ else:
     case "$RUN_STATUS" in
       success)
         log "Phase 2: marking $ISSUE_ID published url=$PROD_URL"
-        curl -sX PATCH "$PAPERCLIP_URL/api/issues/$ISSUE_ID" \
-          -H "Content-Type: application/json" \
-          -d "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'published','published_url':'$PROD_URL','published_at':'$(date -u +%Y-%m-%dT%H:%M:%SZ)'}}))")" \
-          -o /dev/null
+        paperclip_patch "/api/issues/$ISSUE_ID" \
+          "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'published','published_url':'$PROD_URL','published_at':'$(date -u +%Y-%m-%dT%H:%M:%SZ)'}}))")" \
+          >/dev/null
         if [[ -n "$PV_AGENT_ID" ]]; then
           log "Phase 2: triggering publish-verifier (G5) for $ISSUE_ID"
-          curl -sX POST "$PAPERCLIP_URL/api/agents/$PV_AGENT_ID/heartbeat/invoke" \
-            -H "Content-Type: application/json" \
-            -d "$(python3 -c "import json; print(json.dumps({'context':{'issue_id':'$ISSUE_ID'}}))")" \
-            -o /dev/null
+          paperclip_post "/api/agents/$PV_AGENT_ID/heartbeat/invoke" \
+            "$(python3 -c "import json; print(json.dumps({'context':{'issue_id':'$ISSUE_ID'}}))")" \
+            >/dev/null
         fi
         ;;
       failure|cancelled|timed_out|action_required|startup_failure)
         log "Phase 2: marking $ISSUE_ID dispatch_failed (run_status=$RUN_STATUS)"
-        curl -sX PATCH "$PAPERCLIP_URL/api/issues/$ISSUE_ID" \
-          -H "Content-Type: application/json" \
-          -d "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'dispatch_failed','dispatch_failure_reason':'GH Actions run status: $RUN_STATUS'}}))")" \
-          -o /dev/null
+        paperclip_patch "/api/issues/$ISSUE_ID" \
+          "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'dispatch_failed','dispatch_failure_reason':'GH Actions run status: $RUN_STATUS'}}))")" \
+          >/dev/null
         ;;
       not_found|in_progress|queued|waiting|pending)
         log "Phase 2: run not yet complete ($RUN_STATUS) for $ISSUE_ID — will re-check next poll"
