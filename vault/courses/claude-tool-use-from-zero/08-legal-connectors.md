@@ -19,7 +19,7 @@ duration_min: 60
 description: "Master the integration of Claude with specialized legal technology using MCP, covering 20+ enterprise connectors and 12 practice-area plugins for compliant, secure legal workflows."
 faq:
   - q: "Can Claude access confidential case data without moving it to the cloud?"
-    a: "Yes, by using local MCP servers that query systems of record like iManage or Relativity and redact sensitive data before it reaches the LLM."
+    a: "Yes, by using local MCP servers that query systems of record like iManage or Relativity."
   - q: "What is the difference between an MCP connector and a practice-area plugin?"
     a: "Connectors provide the technical bridge to data sources (e.g., DocuSign), while plugins provide domain-specific prompts, guardrails, and playbooks (e.g., IP Legal)."
   - q: "Does Anthropic offer programmatic access to legal plugins?"
@@ -28,44 +28,44 @@ faq:
 
 # Chapter 8: Legal and Regulatory Connectors in MCP
 
-Legal technology ("LegalTech") represents one of the most high-stakes environments for the Model Context Protocol (MCP). In May 2026, Anthropic significantly expanded its footprint in this sector, releasing over 20 specialized MCP connectors and 12 practice-area plugins for **Claude Cowork**, making legal professionals one of the most engaged segments of the agentic desktop ecosystem [1].
+Legal technology ("LegalTech") represents one of the most high-stakes environments for the Model Context Protocol (MCP). In May 2026, Anthropic released over 20 specialized MCP connectors and 12 practice-area plugins for **Claude Cowork**, enabling legal professionals to interact with documents, communications, and records tied to specific matters [1][3].
 
 ## Why Legal Connectors Matter
 
-The legal industry operates under strict requirements for confidentiality, data residency, and attorney-client privilege. Traditional AI deployments often require moving data into unsecured or general-purpose environments, which can break the "circle of confidentiality" required by legal ethics [2].
+Legal work runs on a specific technology stack: contract lifecycle systems, research platforms, document management, and e-discovery. MCP connectors bring this data into Claude without requiring bulk exports or custom integrations, ensuring that work stays within governed environments [3].
 
-MCP addresses these challenges by keeping data at the source and respecting existing permissions. Tools handling legal documents must be explicit about their data bounds, ensuring that sensitive information is stripped locally before egress.
+Tools handling legal documents must be explicit about their data bounds. For example, a redaction tool can be implemented within an MCP server to ensure sensitive information is stripped before it reaches the LLM [4].
 
 ## Connector Inventory
 
-Anthropic's May 2026 expansion covers virtually every segment of the legal technology market. These connectors allow Claude to interact with sensitive data through established security boundaries [1].
+Anthropic's May 2026 expansion includes connectors that link Claude to industry-standard software while respecting existing security and access policies [3].
 
 - **Contract & CLM**: Ironclad, DocuSign, Definely, Airwallex.
 - **E-discovery & Litigation**: Relativity, Everlaw, Consilio.
 - **Document Management**: iManage, NetDocuments, Box, Datasite.
 - **Legal Research**: Thomson Reuters CoCounsel (bidirectional), Midpage, Trellis, Legal Data Hunter.
-- **IP & Specialized**: Harvey, Solve Intelligence (Patent work).
-- **Access to Justice**: Courtroom5, BoardWise, Free Law Project.
+- **IP & Specialized**: Harvey, Solve Intelligence.
+- **Public Service**: Courtroom5, BoardWise, Free Law Project, Descrybe.
 
-The Thomson Reuters integration is particularly significant: it is a bidirectional interface where CoCounsel runs on Claude, and Claude can simultaneously call CoCounsel as a tool for verified legal research [1].
+The Thomson Reuters integration allows Claude to call CoCounsel Legal as a tool, grounding outputs in Westlaw primary law and Practical Law guidance [3].
 
 ## Practice-Area Plugins
 
-Moving beyond generic contract review, Anthropic's 12 legal plugins bundle pre-configured prompts, guardrails, and "setup interviews" that learn a team's specific playbooks, risk calibration, and house style [1].
+Anthropic's 12 legal plugins bundle pre-configured prompts and "setup interviews" that learn a team's specific playbooks, escalation chains, and risk calibration [1][3].
 
 ### The 12 Specialized Domains
-1. **Commercial Legal**: NDA triage and vendor compliance.
-2. **Corporate Legal**: M&A diligence and closing checklists.
-3. **Employment Legal**: Workforce compliance and policy review.
-4. **Privacy Legal**: Breach notification and regulatory mapping.
-5. **Product Legal**: Launch reviews and terms-of-service alignment.
-6. **Regulatory Legal**: Compliance monitoring.
-7. **AI Governance Legal**: Policy audit and AI risk assessment.
-8. **IP Legal**: Prior art search and filing automation.
-9. **Litigation Legal**: Matter-specific search across discovery tools.
-10. **Law Students**: Research and study assistance.
-11. **Legal Clinics**: Case intake for pro-bono work.
-12. **Legal Builder Hub**: Repository for community-built skills.
+- **Commercial Legal**: Reviews vendor agreements and NDAs against playbooks and routes escalations.
+- **Corporate Legal**: Handles M&A diligence, disclosure schedules, and closing checklists.
+- **Employment Legal**: Covers hires, terminations, and leave deadlines; drafts policies.
+- **Privacy Legal**: Reviews DPAs and PIAs; prepares DSAR responses.
+- **Product Legal**: Runs launch reviews and checks marketing claims.
+- **Regulatory Legal**: Monitors regulatory developments and compares rules against policy libraries.
+- **AI Governance Legal**: Triages AI use cases and runs impact assessments.
+- **IP Legal**: Conducts trademark clearance and drafts cease-and-desist letters.
+- **Litigation Legal**: Manages matter intake, legal holds, and privilege logs.
+- **Law Student**: Provides Socratic drilling and IRAC grading.
+- **Legal Clinic**: Manages client intake and case memos.
+- **Legal Builder Hub**: Repository for community-built legal skills.
 
 ## Designing Compliance-First Tool Definitions
 
@@ -92,37 +92,35 @@ Tools handling legal documents must behave deterministically. A "redact" tool, f
 </RunPromptCell>
 
 [KnowledgeCheck]
-1. Why must PII redaction occur *before* data leaves the MCP server?
-2. [Free-form] How would you design an audit log to ensure it remains tamper-proof?
+1. How do MCP connectors help maintain data governance in legal workflows?
+2. [Free-form] Why is the "setup interview" important for practice-area plugins?
 
 [Callout type="warning"]
-**Never log raw PII.** Even if your audit logs are secure, they should store *that a file was accessed* (meta-context), not the *contents* of the file.
+**Never log raw PII.** Audit trails should store *meta-context* (e.g., "User A accessed File B") rather than the sensitive contents of the file itself.
 [/Callout]
 
-## Implementation Walkthrough: Commercial Contract Review
+## Implementation Walkthrough: E-Discovery Search
 
-In a commercial workflow, an MCP connector for **Ironclad** or **DocuSign** enables Claude to pull a contract, check it against a company's "Gold Standard" playbook, and flag deviations.
+In a litigation context, an MCP connector for a platform like **Everlaw** or **Relativity** allows a legal team to search across case data using natural language queries while enforcing existing access policies [3].
 
-### <RunPromptCell> Example: Ironclad Contract Analysis
+### <RunPromptCell> Example: E-Discovery Search
 > [!note] Illustrative API — verify against Anthropic docs when published
 
-```python
-# MCP Tool: ironclad_analyze_contract
-# Queries a specific contract and compares it to the team playbook.
+```json
 {
-    "name": "ironclad_analyze_contract",
-    "description": "Retrieves contract text and flags deviations from the standard playbook.",
+    "name": "search_everlaw_matter",
+    "description": "Searches for relevant documents within a specific Everlaw matter.",
     "inputSchema": {
         "type": "object",
         "properties": {
-            "contract_id": {"type": "string"},
-            "playbook_id": {"type": "string", "description": "ID of the 'Gold Standard' playbook"}
+            "matter_id": {"type": "string"},
+            "query": {"type": "string", "description": "Natural language query"}
         },
-        "required": ["contract_id", "playbook_id"]
+        "required": ["matter_id", "query"]
     }
 }
 ```
-**Expected Output**: A structured summary of deviations (e.g., "Indemnity clause exceeds $1M cap").
+**Expected Output**: JSON-RPC tool registration for an e-discovery search tool.
 </RunPromptCell>
 
 ## Hands-on exercise

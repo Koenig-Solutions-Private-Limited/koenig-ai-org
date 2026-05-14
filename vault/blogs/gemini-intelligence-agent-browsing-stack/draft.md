@@ -16,14 +16,14 @@ tags:
   - project-mariner
   - computer-use
 status: g0-blocked
-reading_time_min: 9
+reading_time_min: 8
 primary_query: "gemini intelligence browser agent vs openai operator browser-use 2026"
 contrarian_angle: "Project Mariner didn't fail — it was absorbed on purpose; Google's actual developer bet is Gemini 2.5 Computer Use API at $1.25/M input, the most underpriced flagship agent model in the stack"
 faq:
   - q: "What replaced Project Mariner?"
     a: "Project Mariner was shut down May 4, 2026. Its technology moved into three products: Gemini Agent (AI Pro/Ultra), AI Mode (enhanced search), and Chrome Auto Browse (desktop now, mobile late June 2026)."
   - q: "How does Gemini Intelligence compare to OpenAI Operator?"
-    a: "GPT-5.5 Pro scores 90.1 on BenchLM agentic benchmarks — the highest published agentic score in this stack. Gemini Intelligence's consumer layer has no published equivalent benchmark. Gemini leads on ecosystem integration (Android/Chrome/Workspace); Operator leads on standalone task reliability."
+    a: "GPT-5.5 Pro scores 90.1 on BenchLM agentic benchmarks — the highest published model score cited in this stack. Gemini Intelligence's consumer layer has no published equivalent benchmark. Gemini leads on ecosystem integration (Android/Chrome/Workspace); Operator product reliability is not benchmarked here."
   - q: "Is Gemini 2.5 Computer Use free?"
     a: "No. The Gemini 2.5 Computer Use Preview model is paid-only — $1.25/M input tokens for prompts under 200k tokens. There is no free tier."
 sources:
@@ -95,7 +95,7 @@ Gemini Intelligence's Chrome surface (DOM-integrated) and Gemini 2.5 Computer Us
 
 **browser-use** (MIT, Python) achieves [89.1% on WebVoyager](https://aimultiple.com/open-source-web-agents) — the highest accuracy of any open-source framework in AI Multiple's May 2026 roundup (retrieved 2026-05-14). It is infrastructure, not a product: LLM-agnostic, proxy-ready, CAPTCHA-capable. It enables any developer to wire any model to any browser, which Gemini Intelligence's walled garden cannot match. The tradeoff: no persistent memory across sessions, no consumer UI, and no Workspace integration.
 
-**OpenAI Operator** leads on production maturity for discrete web tasks. [GPT-5.5 Pro scores 90.1 on BenchLM's agentic benchmark](https://benchlm.ai/llm-agent-benchmarks) — the highest published model score in this comparison set (retrieved 2026-05-14). That is a model benchmark, not an end-to-end Operator product benchmark. Separately, GPT-5.5 API input pricing at $5.00/M is 4x the Gemini 2.5 Computer Use Preview input rate for teams building their own Operator-style browser agents. Gemini Intelligence occupies Chrome/Android while active — it is not a background process.
+[GPT-5.5 Pro scores 90.1 on BenchLM's agentic benchmark](https://benchlm.ai/llm-agent-benchmarks) — the highest published model score in this comparison set (retrieved 2026-05-14). That is a model benchmark, not an end-to-end Operator product benchmark. Separately, GPT-5.5 API input pricing at $5.00/M is 4x the Gemini 2.5 Computer Use Preview input rate for teams building their own Operator-style browser agents. Treat Operator as a product surface and GPT-5.5 pricing as API economics; do not collapse them into one number.
 
 For a direct model benchmark breakdown across frontier agent workloads, see [[course/picking-a-frontier-model-2026-q2]].
 
@@ -132,11 +132,11 @@ The four players serve meaningfully different use cases. Here is how to route a 
 
 **If you are a consumer user on Android or Pixel:** Gemini Intelligence is the natural choice. It is already integrated into your device, your Google account, and Chrome — no API key required. The June 2026 Android rollout for Chrome Auto Browse makes this the lowest-friction consumer agent for routine tasks (form-filling, subscriptions, simple purchases). The limitation: it requires Pro at minimum and does not run in the background while you use other apps. Chrome Auto Browse also cannot monitor a page for a state change — checking when a sold-out item returns to stock, watching for a price drop — without you actively supervising it. For long-running monitoring use cases, a server-side agent is still the right path.
 
-**If you need production-grade, standalone web task completion today:** OpenAI Operator is the most mature product in this list. GPT-5.5 Pro's 90.1 BenchLM score is the highest published agentic model benchmark in the stack, and ChatGPT's plugin ecosystem is wider than any Google surface. For API builders, GPT-5.5 input pricing is higher ($5.00/M input vs $1.25/M for Gemini Computer Use). Operator product access is a separate ChatGPT Pro or Enterprise surface, not a raw API endpoint. Real-world Operator performance also reflects the product's tool-calling layer, retry logic, and session management on top of the model — which is why published model benchmarks and deployed-product reliability are not the same number.
+**If you need a managed web-task product rather than an API primitive:** keep the Operator evaluation separate from model pricing. GPT-5.5 Pro's 90.1 BenchLM score is the highest published agentic model benchmark in the stack. For API builders, GPT-5.5 input pricing is higher ($5.00/M input vs $1.25/M for Gemini Computer Use), but that pricing comparison applies to model-backed agent systems you build yourself. Real-world Operator performance also reflects the product's tool-calling layer, retry logic, and session management on top of the model — which is why published model benchmarks and deployed-product reliability are not the same number.
 
 **If you are a developer who wants LLM flexibility and low vendor lock-in:** browser-use is the correct starting point. MIT license, Python, Playwright-backed, and compatible with any model — Gemini, Claude, GPT-5.5, or local models. Its 89.1% WebVoyager score comes with no ongoing per-token cost beyond your LLM provider. The downside is operational overhead: you run the infrastructure, manage anti-bot profiles, handle CAPTCHA, and build your own memory layer. The practical entry point is three commands: `pip install browser-use playwright && playwright install chromium`. You then configure a `BrowserAgent`, attach your preferred LLM client, and call `agent.run("your task description")`. See [[course/multi-agent-orchestration-a2a]] if you are assessing how to coordinate browser tasks across multiple agents.
 
-**If you need to automate desktop applications, not just browser tasks:** Anthropic Computer Use is currently the only production API in this group that controls the full OS environment — keyboard, mouse, file system — not just a browser window. This matters when the target is a native app, a legacy enterprise tool, or any workflow that moves between browser and desktop. The trade-off is isolation: running Computer Use safely requires a Docker sandbox or equivalent, which adds operational complexity.
+**If you need to automate desktop applications, not just browser tasks:** Anthropic Computer Use is the OS-level option in this group: keyboard, mouse, file system, and browser window. That matters when the target is a native app, a legacy enterprise tool, or any workflow that moves between browser and desktop. The trade-off is isolation: safe Computer Use deployments typically need a sandbox, which adds operational complexity.
 
 **If you are building an agent API layer and API cost is the primary constraint:** Gemini 2.5 Computer Use Preview at $1.25/M input is the lowest-cost hosted model for screenshot-driven browser control in this comparison. At production scale, the 4× pricing gap over GPT-5.5 compounds quickly. The model is still in preview, so factor in the possibility of API changes before Google I/O announcements.
 

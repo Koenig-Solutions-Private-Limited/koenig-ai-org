@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-1297
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: g0-blocked
 reading_time_min: 6
 primary_query: "cartesia sonic 3 voice cloning production tutorial"
 contrarian_angle: "Cartesia's hard production choice is not whether voice cloning works; it is whether instant cloning is good enough or whether the voice is valuable enough to justify a 1M-credit Pro Voice Clone."
