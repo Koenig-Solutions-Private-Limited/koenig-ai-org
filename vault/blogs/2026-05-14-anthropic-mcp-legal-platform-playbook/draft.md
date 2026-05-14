@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-1391
 vendor_tag: anthropic
 content_type: article
-status: draft-for-review
+status: g0-blocked
 reading_time_min: 6-8
 primary_query: "anthropic mcp legal connectors"
 contrarian_angle: "Anthropic didn't build a legal product — they built a protocol that made every legal software vendor beg to integrate, capturing the vertical without owning a single data silo"

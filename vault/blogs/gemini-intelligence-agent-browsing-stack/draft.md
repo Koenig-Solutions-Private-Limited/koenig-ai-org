@@ -15,7 +15,7 @@ tags:
   - google-io-2026
   - project-mariner
   - computer-use
-status: g0-pending
+status: g0-blocked
 reading_time_min: 9
 primary_query: "gemini intelligence browser agent vs openai operator browser-use 2026"
 contrarian_angle: "Project Mariner didn't fail — it was absorbed on purpose; Google's actual developer bet is Gemini 2.5 Computer Use API at $1.25/M input, the most underpriced flagship agent model in the stack"
@@ -38,6 +38,7 @@ sources:
   - https://www.tomsguide.com/ai/google-just-unlocked-agent-mode-for-gemini-3-1-here-are-7-things-it-can-now-do-for-you
   - https://benchlm.ai/llm-agent-benchmarks
   - https://io.google/2026/
+  - https://blog.google/innovation-and-ai/technology/developers-tools/io-2026-save-the-date/
 whats_new:
   - "Project Mariner shut down May 4; Gemini Intelligence launched May 12 — Google's agent browsing is now an OS feature, not a lab experiment, and the $1.25/M Gemini 2.5 Computer Use API quietly undercuts every competitor"
 learning_objectives:
@@ -49,7 +50,7 @@ learning_objectives:
 
 # Gemini Intelligence vs. the Agent Browsing Stack: A Pre-I/O Scorecard
 
-Google's standalone browser agent, Project Mariner, was [shut down on May 4, 2026](https://www.theverge.com/tech/925559/google-project-mariner-shut-down). Eight days later, at The Android Show, Google announced Gemini Intelligence — a unified AI suite for premium Android that includes Chrome Auto Browse, cross-app orchestration, and Workspace integration. With [Google I/O 2026](https://io.google/2026/) scheduled for May 19, here is where the four main agent browsing players stand as of today: Google's Gemini stack, OpenAI Operator, open-source browser-use, and Anthropic Computer Use.
+Google's standalone browser agent, Project Mariner, was [shut down on May 4, 2026](https://www.theverge.com/tech/925559/google-project-mariner-shut-down). Eight days later, at The Android Show, Google announced Gemini Intelligence — a unified AI suite for premium Android that includes Chrome Auto Browse, cross-app orchestration, and Workspace integration. With [Google I/O 2026 confirmed for May 19](https://blog.google/innovation-and-ai/technology/developers-tools/io-2026-save-the-date/) ([io.google/2026/](https://io.google/2026/)), here is where the four main agent browsing players stand as of today: Google's Gemini stack, OpenAI Operator, open-source browser-use, and Anthropic Computer Use.
 
 The non-obvious read: Project Mariner wasn't killed — it was absorbed. The technology moved into three production surfaces (Gemini Agent, AI Mode, Chrome Auto Browse) precisely because a $249.99/month standalone lab experiment was never going to scale. Meanwhile, the quietly launched [Gemini 2.5 Computer Use Preview API](https://ai.google.dev/gemini-api/docs/pricing) at **$1.25/M input tokens** is the most underpriced flagship agent model in the stack — cheaper than GPT-5.5 ($5.00/M) and Claude Opus 4.6 ($5.00/M).
 
@@ -57,7 +58,7 @@ The non-obvious read: Project Mariner wasn't killed — it was absorbed. The tec
 
 Project Mariner launched in December 2024 as a DeepMind experiment: a browser agent that processed screenshots in real time to click buttons, fill forms, and navigate sites, available only to Google AI Ultra subscribers at $249.99/month. At its peak it handled 10 parallel tasks. The shutdown page is blunt: *"Thank you for using Project Mariner. It was shut down on May 4th, 2026 and its technology voyaged to other Google products."*
 
-The tell-tale was a Wired report from March: Google had begun [reassigning Mariner staffers](https://www.theverge.com/tech/925559/google-project-mariner-shut-down) months before the shutdown (retrieved 2026-05-14). Industry observers and Android Authority analysis noted that screenshot-based browser agents — the architecture Mariner and Anthropic Computer Use both use — appear to lose ground to approaches that combine DOM parsing with vision, or that run below the browser surface entirely; Google's consolidation into product surfaces reflects this trend.
+The tell-tale was a Wired report from March: Google had begun [reassigning Mariner staffers](https://www.theverge.com/tech/925559/google-project-mariner-shut-down) months before the shutdown (retrieved 2026-05-14). The official shutdown page offers no technical rationale — it simply notes that the technology "voyaged to other Google products." Reading across the published benchmark data in this piece, a pattern emerges: pure screenshot-based browser agents (the architecture Mariner used) consistently benchmark below hybrid DOM+vision approaches or frameworks that operate at the browser API level. Google's consolidation of Mariner's capabilities into Chrome's DevTools-integrated surface is consistent with that architectural direction, though Google has made no public statement linking the shutdown to architecture choices.
 
 What absorbed Mariner's tech:
 - **Gemini Agent** — the "24/7 digital partner" for AI Pro/Ultra subscribers, now with Workspace integration (Gmail, Calendar, Drive) and a "require human review" toggle
@@ -77,7 +78,7 @@ The consumer positioning is deliberate: Google's [official Gemini Intelligence a
 | | Google Gemini | OpenAI Operator | browser-use | Anthropic Computer Use |
 |---|---|---|---|---|
 | **Architecture** | DOM + OS-level Chrome/Android integration | GPT-5.5 browser agent | Playwright + LLM (hybrid DOM/vision) | Screenshot + keyboard/mouse (API primitive) |
-| **Benchmark** | Not published (consumer UI) | [90.1 BenchLM](https://benchlm.ai/llm-agent-benchmarks) (GPT-5.5 Pro) | 89.1% WebVoyager | Not publicly benchmarked |
+| **Benchmark** | Not published (consumer UI) | GPT-5.5 Pro model: [90.1 on BenchLM](https://benchlm.ai/llm-agent-benchmarks) (no published Operator product score) | 89.1% WebVoyager | Not publicly benchmarked |
 | **API access** | Gemini 2.5 Computer Use Preview ($1.25/M) | GPT-5.5 ($5.00/M) | Open source (self-host free) | Claude API ($5.00/M Opus 4.6) |
 | **Best for** | Consumer Android/Chrome tasks | Production-ready discrete web tasks | Developer infrastructure, any LLM | Desktop-level OS automation in sandboxes |
 | **Ecosystem** | Gmail, Calendar, Drive, Android, Chrome | ChatGPT, Plugin ecosystem | Any LLM via LangChain | Claude agents, Docker sandboxes |
@@ -130,7 +131,7 @@ The four players serve meaningfully different use cases. Here is how to route a 
 > C) Google AI Pro ($19.99/month)  
 > D) Google AI Ultra ($249.99/month)
 >
-> **Answer: C** — Per Google's Chrome on Android announcement, Chrome Auto Browse agentic capabilities require Google AI Pro at minimum. Ultra adds the full Gemini Agent Mode with Workspace integration and purchasing flows.
+> **Answer: C** — Per [Google's Chrome on Android announcement](https://blog.google/products-and-platforms/products/chrome/bringing-chrome-ai-to-android/) (retrieved 2026-05-14), Chrome Auto Browse agentic capabilities require Google AI Pro at minimum. Ultra adds the full Gemini Agent Mode with Workspace integration and purchasing flows.
 
 ## What to Watch at Google I/O (May 19, 2026)
 
@@ -140,4 +141,4 @@ The current read: Google holds the largest consumer distribution advantage — A
 
 ---
 
-Ready to evaluate which model tier fits your agent stack before committing to an API? The [[picking-a-frontier-model-2026-q2/outline]] course covers the benchmark dimensions that matter for agentic workloads — including Computer Use tiers — with hands-on exercises. For building multi-agent systems that coordinate browser tasks in parallel, see [[multi-agent-orchestration-a2a/outline]].
+Ready to evaluate which model tier fits your agent stack before committing to an API? The [[picking-a-frontier-model-2026-q2/outline]] course covers the benchmark dimensions that matter for agentic workloads — including Computer Use tiers — with hands-on exercises. For building multi-agent systems that coordinate browser tasks in parallel, see [[multi-agent-orchestration-a2a/outline]]. If Gemini's enterprise integration is your primary interest — Workspace agents, cross-app orchestration, Android deployment — [[gemini-enterprise-agents/outline]] covers the full production stack.
