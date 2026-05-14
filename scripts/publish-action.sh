@@ -46,41 +46,105 @@ BLOCKED_STATES=()
 BLOCKED_ISSUES=()
 GUARD_ALLOWED_COUNT=0
 
-fetch_issues_by_slug() {
+fetch_all_issues() {
   if [ -n "${GUARD_ISSUE_CACHE:-}" ] && [ -s "$GUARD_ISSUE_CACHE" ]; then
     return 0
   fi
 
   GUARD_ISSUE_CACHE="$LOG_DIR/.issue-cache.$$.json"
+  local aggregate_tmp page_tmp normalized_tmp
+  local offset=0
+  local page_size=1000
   local auth_args=()
   if [ -n "${PAPERCLIP_API_KEY:-}" ]; then
     auth_args=(-H "Authorization: Bearer ${PAPERCLIP_API_KEY}")
   fi
 
-  if ! curl -sf "${auth_args[@]}" \
-    "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues?limit=2000" \
-    -o "$GUARD_ISSUE_CACHE"; then
-    GUARD_API_ERROR=1
-    if [ -z "${PAPERCLIP_API_KEY:-}" ]; then
-      log "guard:no-auth → block"
-    else
-      log "guard:api-error"
-    fi
-    return 1
-  fi
+  aggregate_tmp="$(mktemp)"
+  echo "[]" > "$aggregate_tmp"
 
-  if [ ! -s "$GUARD_ISSUE_CACHE" ]; then
-    GUARD_API_ERROR=1
-    log "guard:api-error empty issue response"
-    return 1
-  fi
+  while true; do
+    page_tmp="$(mktemp)"
+    normalized_tmp="$(mktemp)"
+    if ! curl -sf "${auth_args[@]}" \
+      "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues?limit=${page_size}&offset=${offset}" \
+      -o "$page_tmp"; then
+      rm -f "$aggregate_tmp" "$page_tmp" "$normalized_tmp"
+      GUARD_API_ERROR=1
+      if [ -z "${PAPERCLIP_API_KEY:-}" ]; then
+        log "guard:no-auth → block"
+      else
+        log "guard:api-error"
+      fi
+      return 1
+    fi
+
+    if ! python3 - "$page_tmp" > "$normalized_tmp" 2>/dev/null <<'PY'
+import json
+import sys
+
+path = sys.argv[1]
+with open(path, "r", encoding="utf-8") as fh:
+    data = json.load(fh)
+items = data.get("items", data) if isinstance(data, dict) else data
+if not isinstance(items, list):
+    raise ValueError("issue list payload must be an array or object with items[]")
+print(json.dumps(items))
+PY
+    then
+      rm -f "$aggregate_tmp" "$page_tmp" "$normalized_tmp"
+      GUARD_API_ERROR=1
+      log "guard:api-error invalid issue response payload"
+      return 1
+    fi
+
+    if ! python3 - "$aggregate_tmp" "$normalized_tmp" > "$GUARD_ISSUE_CACHE" 2>/dev/null <<'PY'
+import json
+import sys
+
+aggregate_path, page_path = sys.argv[1], sys.argv[2]
+with open(aggregate_path, "r", encoding="utf-8") as fh:
+    aggregate = json.load(fh)
+with open(page_path, "r", encoding="utf-8") as fh:
+    page = json.load(fh)
+if not isinstance(aggregate, list) or not isinstance(page, list):
+    raise ValueError("normalized payload is not an array")
+aggregate.extend(page)
+print(json.dumps(aggregate))
+PY
+    then
+      rm -f "$aggregate_tmp" "$page_tmp" "$normalized_tmp" "$GUARD_ISSUE_CACHE"
+      GUARD_API_ERROR=1
+      log "guard:api-error failed to merge issue pages"
+      return 1
+    fi
+
+    mv "$GUARD_ISSUE_CACHE" "$aggregate_tmp"
+    local page_count
+    page_count="$(python3 - "$normalized_tmp" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], "r", encoding="utf-8") as fh:
+    data = json.load(fh)
+print(len(data))
+PY
+)"
+    rm -f "$page_tmp" "$normalized_tmp"
+    if [ "$page_count" -lt "$page_size" ]; then
+      break
+    fi
+    offset=$((offset + page_size))
+  done
+
+  mv "$aggregate_tmp" "$GUARD_ISSUE_CACHE"
 
   return 0
 }
 
 slug_to_issue_info() {
   local slug="$1"
-  fetch_issues_by_slug || {
+  fetch_all_issues || {
     echo -e "api-error\tapi-error"
     return 0
   }
@@ -344,17 +408,22 @@ fi
 
 log "Phase 1: scanning for publish_state=g4-approved issues..."
 
-G4_ISSUES_JSON="$(curl -s -H "Authorization: Bearer ${PAPERCLIP_API_KEY}" "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues?limit=2000" | python3 -c "
+if ! fetch_all_issues; then
+  G4_ISSUES_JSON="[]"
+else
+  G4_ISSUES_JSON="$(python3 - "$GUARD_ISSUE_CACHE" <<'PY'
 import json, sys
-items = json.load(sys.stdin)
-if isinstance(items, dict): items = items.get('items', [])
+with open(sys.argv[1], "r", encoding="utf-8") as fh:
+    items = json.load(fh)
 result = []
 for i in items:
     md = i.get('metadata') or {}
     if i.get('status') == 'done' and md.get('publish_state') == 'g4-approved':
         result.append({'id': i['id'], 'slug': md.get('slug', i['id'])})
 print(json.dumps(result))
-")"
+PY
+)"
+fi
 
 if [[ -z "$G4_ISSUES_JSON" ]] || [[ "$G4_ISSUES_JSON" == "[]" ]]; then
   log "Phase 1: no g4-approved issues found."
@@ -391,17 +460,22 @@ fi
 
 log "Phase 2: scanning for publish_state=dispatching issues..."
 
-DISPATCHING_JSON="$(curl -s -H "Authorization: Bearer ${PAPERCLIP_API_KEY}" "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues?limit=2000" | python3 -c "
+if ! fetch_all_issues; then
+  DISPATCHING_JSON="[]"
+else
+  DISPATCHING_JSON="$(python3 - "$GUARD_ISSUE_CACHE" <<'PY'
 import json, sys
-items = json.load(sys.stdin)
-if isinstance(items, dict): items = items.get('items', [])
+with open(sys.argv[1], "r", encoding="utf-8") as fh:
+    items = json.load(fh)
 result = []
 for i in items:
     md = i.get('metadata') or {}
     if md.get('publish_state') == 'dispatching':
         result.append({'id': i['id'], 'dispatched_at': md.get('dispatched_at', '')})
 print(json.dumps(result))
-")"
+PY
+)"
+fi
 
 if [[ -z "$DISPATCHING_JSON" ]] || [[ "$DISPATCHING_JSON" == "[]" ]]; then
   log "Phase 2: no dispatching issues found."
