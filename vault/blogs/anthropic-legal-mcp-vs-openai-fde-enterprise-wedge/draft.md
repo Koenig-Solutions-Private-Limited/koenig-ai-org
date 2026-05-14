@@ -22,16 +22,18 @@ faq:
   - q: "What are Anthropic's legal MCP connectors?"
     a: "Anthropic shipped 20+ Model Context Protocol connectors for the legal vertical, linking Claude to Ironclad, DocuSign, Relativity, Everlaw, Thomson Reuters CoCounsel, iManage, Harvey, and others — plus 12 practice-area plugins (corporate M&A, litigation, IP, employment, etc.) and 4 managed agents."
   - q: "What is OpenAI's Deployment Company?"
-    a: "The OpenAI Deployment Company (launched May 2026, ~$4B funded by TPG/Bain/Brookfield) acquired Tomoro to embed 150 Forward Deployed Engineers directly inside enterprise clients, redesigning workflows and maintaining bespoke AI integrations on a per-client basis."
+    a: "The OpenAI Deployment Company (launched May 2026, ~$4B funded by TPG, Bain Capital, and Brookfield) acquired Tomoro to embed 150 Forward Deployed Engineers directly inside enterprise clients, redesigning workflows and maintaining bespoke AI integrations on a per-client basis."
   - q: "Which approach is better for enterprise AI — MCP protocol or FDE model?"
     a: "Depends on the buyer's risk tolerance. MCP gives independence (swap models, self-host), audit trails, and faster deployment across standard tooling. FDE gives bespoke depth, model-lock, and a human accountability layer for high-stakes decisions. In regulated verticals (legal, finance, healthcare), MCP's native auditability is a structural advantage."
 sources:
   - https://www.lawnext.com/2026/05/anthropic-goes-all-in-on-legal-releasing-more-than-20-connectors-and-12-practice-area-plugins-for-claude.html
   - https://techcrunch.com/2026/05/12/the-ai-legal-services-industry-is-heating-up-anthropic-is-getting-in-on-the-action/
   - https://openai.com/index/openai-launches-the-deployment-company/
+  - https://www.techwyse.com/news/business/openai-deployment-company-launch-tomoro-acquisition
   - https://www.anthropic.com/news/finance-agents
   - https://claude.com/solutions/healthcare
   - https://www.anthropic.com/partners/mcp
+  - https://stacknovahq.com/mcp-97-million-installs-2026
 whats_new:
   - "Anthropic shipped 20+ legal MCP connectors + 12 plugins the same week OpenAI launched a $4B FDE services company — the two moves reveal opposite theories of enterprise AI integration"
 learning_objectives:
@@ -44,7 +46,7 @@ learning_objectives:
 
 In the same week — May 11–13, 2026 — two frontier AI labs made opposite bets on how enterprise software adoption actually happens.
 
-**OpenAI** announced the [OpenAI Deployment Company](https://openai.com/index/openai-launches-the-deployment-company) (retrieved 2026-05-13): a $4 billion services entity backed by TPG, Bain Capital Ventures, and Brookfield, built around an acquisition of Tomoro and its 150 Forward Deployed Engineers. The pitch is human-intensive: embed OpenAI engineers directly inside your organization, redesign your workflows from the inside, and maintain those integrations indefinitely.
+**OpenAI** announced the [OpenAI Deployment Company](https://openai.com/index/openai-launches-the-deployment-company) ([TechWyse coverage](https://www.techwyse.com/news/business/openai-deployment-company-launch-tomoro-acquisition), retrieved 2026-05-14): a $4 billion services entity led by TPG, with Bain Capital and Brookfield as co-lead founding partners, built around an acquisition of Tomoro and its 150 Forward Deployed Engineers. The pitch is human-intensive: embed OpenAI engineers directly inside your organization, redesign your workflows from the inside, and maintain those integrations indefinitely.
 
 **Anthropic** released [20+ MCP connectors and 12 practice-area plugins for Claude's legal vertical](https://www.lawnext.com/2026/05/anthropic-goes-all-in-on-legal-releasing-more-than-20-connectors-and-12-practice-area-plugins-for-claude.html) (LawNext, retrieved 2026-05-13) — no embedded engineers required. The connectors plug directly into Ironclad, DocuSign, Relativity, Everlaw, Thomson Reuters CoCounsel, iManage, NetDocuments, Harvey, and others. Any firm running Claude Cowork can wire up contract lifecycle, e-discovery, and legal research in hours, not quarters.
 
@@ -75,9 +77,9 @@ Plugins are not connectors — they are bundled playbooks for specific legal dom
 
 Pre-configured autonomous agents — one for each major practice area (commercial, corporate, litigation, product) — that can execute multi-step legal workflows with a human review gate before filing, sending, or signing.
 
-The architecture is additive. A firm starts with connectors (data access), adds plugins (domain context), and optionally promotes to managed agents (workflow execution) as their trust in the system grows. Each step has an audit trail — every action Claude takes through an MCP connector is logged, attributable, and reversible. That audit trail is not a nice-to-have in legal: it is a regulatory requirement.
+The architecture is additive. A firm starts with connectors (data access), adds plugins (domain context), and optionally promotes to managed agents (workflow execution) as their trust in the system grows. Each step has an audit trail — every action Claude takes through an MCP connector is logged and attributable. That audit trail is not a nice-to-have in legal: it is a regulatory requirement.
 
-TechCrunch [framed the risk correctly](https://techcrunch.com/2026/05/12/the-ai-legal-services-industry-is-heating-up-anthropic-is-getting-in-on-the-action/) (retrieved 2026-05-13): the legal profession has already seen AI sanctions for citing non-existent cases. Anthropic's response to "AI slop" risk is structural — MCP logs the reasoning chain, not just the output.
+TechCrunch [framed the risk correctly](https://techcrunch.com/2026/05/12/the-ai-legal-services-industry-is-heating-up-anthropic-is-getting-in-on-the-action/) (retrieved 2026-05-13): the legal profession has already seen AI sanctions for citing non-existent cases. Anthropic's response to "AI slop" risk is structural — MCP logs tool call inputs and outputs alongside the final response, creating a traceable record of what the model retrieved and acted on.
 
 ## The OpenAI Counter: FDE as the Integration Layer
 
@@ -94,8 +96,8 @@ The FDE model's advantages are real:
 The FDE model's disadvantages are equally real:
 
 - **Scale ceiling.** 150 FDEs serving Fortune 500 enterprises means each client gets finite attention. A standard MCP connector, once built, serves every Claude Cowork customer simultaneously.
-- **Cost.** FDE-led enterprise integration is priced accordingly — into the millions per year for substantial deployments.
-- **Model lock.** FDE integrations are built for GPT-5.5. When GPT-6 ships (or when a client wants to evaluate Claude or Gemini), the integration work does not transfer.
+- **Cost.** FDE-led enterprise integration is priced as a high-touch services contract — significantly more expensive than SaaS API consumption at comparable capability.
+- **Model lock.** FDE integrations are built and optimized for the current deployed model. When OpenAI ships a new generation, or when a client wants to evaluate Claude or Gemini, the custom integration work does not automatically transfer.
 
 Anthropic's MCP answer to the last point is architectural: because MCP is an open protocol, the same connector works with any MCP-compliant model. A firm that builds on MCP today can swap the underlying model without rebuilding their integration layer.
 
@@ -103,7 +105,7 @@ Anthropic's MCP answer to the last point is architectural: because MCP is an ope
 
 Anthropic did not pick legal at random. Regulated verticals share three properties that make MCP particularly compelling:
 
-**1. Documentation chain requirements.** Legal, finance, and healthcare all require that AI-assisted decisions be auditable. An MCP connector that logs every tool call, every retrieved document, and every Claude response satisfies this requirement structurally — the audit trail is the protocol output, not a bolt-on compliance layer.
+**1. Documentation chain requirements.** Legal, finance, and healthcare all require that AI-assisted decisions be auditable. An MCP connector that logs every tool call, every retrieved document, and every Claude response supports this requirement structurally — the audit trail is the protocol output, not a bolt-on compliance layer.
 
 **2. Existing system-of-record fragmentation.** A large law firm might run Relativity for e-discovery, iManage for document management, Thomson Reuters for research, and DocuSign for execution — four systems with four APIs. MCP connectors make Claude the integration hub without replacing any of them. The firm keeps its existing vendor relationships.
 
@@ -117,11 +119,11 @@ The playbook is explicit in Anthropic's architecture: legal is not the destinati
 
 **Finance.** Anthropic's [finance agents release](https://www.anthropic.com/news/finance-agents) (retrieved 2026-05-13) follows the same three-layer structure: 10 reference workflow templates (Pitch Builder, Earnings Reviewer, Credit Memo, etc.), plus connectors to Moody's MCP App, Dun & Bradstreet, Guidepoint, Third Bridge, IBISWorld, SS&C Intralinks, FactSet, S&P Capital IQ, and PitchBook. Microsoft 365 deep integration is included.
 
-The customers are named: Citadel, FIS, and Walleye Capital have provided testimonials. These are not pilot customers — Citadel runs one of the largest quantitative hedge funds in the world. Their willingness to be cited publicly signals that MCP-based integration has passed internal security review at institutions with some of the most demanding data governance requirements in finance.
+The customers are named: Citadel, FIS, and Walleye Capital have provided testimonials — financial institutions operating at significant scale with demanding data governance requirements.
 
 **Healthcare.** [Claude for Healthcare](https://claude.com/solutions/healthcare) (retrieved 2026-05-13) connects to CMS Coverage Database, ICD-10, NPI Registry, PubMed, and clinical partners Elation Health (61% reduction in chart review time), Carta Healthcare (66% faster data processing, 99% accuracy), and Commure. The use cases — prior authorization review, insurance claims and appeals, ambient scribing — are administrative workflows where AI can compress hours of work into minutes without making the clinical decisions that require physician judgment.
 
-The MCP directory ([anthropic.com/partners/mcp](https://www.anthropic.com/partners/mcp), retrieved 2026-05-13) lists 50+ connectors across all verticals, with 8,500+ community-contributed servers and 97 million SDK downloads. The ecosystem is not Anthropic's alone — it is an open standard that OpenAI and Google have also begun contributing to, which means the connector library grows faster than any single vendor can staff.
+The MCP directory ([anthropic.com/partners/mcp](https://www.anthropic.com/partners/mcp), retrieved 2026-05-13) lists 50+ connectors across all verticals. As of March 2026, the broader MCP ecosystem had crossed [97 million monthly SDK downloads and 10,000+ public servers](https://stacknovahq.com/mcp-97-million-installs-2026) (retrieved 2026-05-14). The ecosystem is not Anthropic's alone — it is an open standard that OpenAI and Google have also begun contributing to, which means the connector library grows faster than any single vendor can staff.
 
 ## Building with MCP: A Working Example
 

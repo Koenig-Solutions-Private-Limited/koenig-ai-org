@@ -12,7 +12,7 @@ word_count: 450
 
 **[Intro — set the trap]**
 
-You've probably seen the pricing comparison: Claude Opus is five dollars per million input tokens. GPT-5.5 is ten dollars. Gemini is two dollars. That makes Gemini four times cheaper, right?
+You've probably seen the pricing comparison: Claude Opus is five dollars per million input tokens. GPT-5.5 is ten dollars. Gemini is two dollars. That makes Gemini two-point-five times cheaper, right?
 
 Wrong.
 
