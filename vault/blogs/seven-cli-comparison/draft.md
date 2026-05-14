@@ -7,14 +7,14 @@ author: blog-author
 ticket: KOEA-2240
 vendor_tag: community
 content_type: article
-status: g0-blocked
+status: draft-for-review
 reading_time_min: 14
 tags: [ai-coding-tools, cli-agents, claude-code, codex, opencode]
 primary_query: "best AI coding CLI 2026"
 contrarian_angle: "The useful 2026 comparison is not which CLI has the smartest model; it is which failure mode you can tolerate when the agent starts changing a real repository."
 sources:
   - https://blakecrosley.com/blog/claude-code-quickstart
-  - https://petronellatech.com/blog/claude-code-cli-guide/
+  - https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview
   - https://github.com/openai/codex
   - https://simonwillison.net/2026/Apr/30/codex-goals/
   - https://cursor.com/docs/cli/overview
@@ -22,7 +22,7 @@ sources:
   - https://opencode.ai/download
   - https://github.com/anomalyco/opencode
   - https://openrouter.ai/apps/hermes-agent
-  - https://medium.com/@rosgluk/hermes-agent-cli-cheat-sheet-commands-flags-and-slash-shortcuts-011b38cf437a
+  - https://hermes-agent.nousresearch.com/docs/getting-started/installation/
   - https://www.llmreference.com/agent/pi
   - https://parallel.ai/blog/free-CLI-agent
   - https://kilo.ai/cli
@@ -46,9 +46,9 @@ references:
     url: https://blakecrosley.com/blog/claude-code-quickstart
     retrieved: 2026-05-12
   - n: 2
-    title: "Claude Code CLI Guide"
-    url: https://petronellatech.com/blog/claude-code-cli-guide/
-    retrieved: 2026-05-12
+    title: "Claude Code overview"
+    url: https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview
+    retrieved: 2026-05-14
   - n: 3
     title: "openai/codex: Lightweight coding agent that runs in your terminal"
     url: https://github.com/openai/codex
@@ -78,9 +78,9 @@ references:
     url: https://openrouter.ai/apps/hermes-agent
     retrieved: 2026-05-12
   - n: 10
-    title: "Hermes Agent CLI cheat sheet"
-    url: https://medium.com/@rosgluk/hermes-agent-cli-cheat-sheet-commands-flags-and-slash-shortcuts-011b38cf437a
-    retrieved: 2026-05-12
+    title: "Hermes Agent installation"
+    url: https://hermes-agent.nousresearch.com/docs/getting-started/installation/
+    retrieved: 2026-05-14
   - n: 11
     title: "Pi Harness CLI"
     url: https://www.llmreference.com/agent/pi
@@ -127,7 +127,7 @@ For most teams, the right first pass is not a seven-way bakeoff. Pick one polish
 
 Claude Code is still the safest default recommendation because it optimizes for the thing working engineers notice first: the CLI feels coherent. The install path is simple, the auth story is familiar, and the workflow is designed around terminal-native repo changes rather than a generic chat product bolted onto a shell [1].
 
-The synthesis points to Claude Code’s broader agentic depth: it can read files, write code, run shell commands, spawn subagents, and manage git workflows autonomously according to the cited 2026 guide [2]. That does not mean you should hand it production credentials or skip review. It means Claude Code is the lowest-friction place to begin if your team wants one CLI that can traverse a codebase, edit multiple files, and work with project conventions.
+Anthropic’s own docs point to Claude Code’s broader agentic depth: it can edit files, run commands, create commits, and use MCP-connected developer tooling [2]. That does not mean you should hand it production credentials or skip review. It means Claude Code is the lowest-friction place to begin if your team wants one CLI that can traverse a codebase, edit multiple files, and work with project conventions.
 
 Claude Code’s practical advantage is the “fewest decisions” path. Teams can define project memory, keep conventions close to the repo, and make the CLI part of daily refactor work. The default experience is opinionated enough that individual developers do not have to assemble a harness from providers, local models, prompt files, and shell wrappers before getting value [1][2].
 
@@ -167,7 +167,7 @@ For teams building Academy-style labs, OpenCode is also useful pedagogically. It
 
 Hermes, Pi, and Kilo should not be evaluated as weaker versions of Claude Code. They represent a different direction: coding CLIs as broader agent systems. That is why they can look less obvious in a standard “which one writes the best patch?” comparison and more important when the task is repeatable automation.
 
-Hermes is the strongest example. OpenRouter positions Hermes Agent as an open-source, self-improving AI agent by Nous Research, and the synthesis notes persistent memory, skills, subagents, scheduled automation, and 40+ built-in tools [9]. The Hermes CLI cheat sheet provides an install path through the NousResearch script and describes a command-oriented surface for agent work [10].
+Hermes is the strongest example. OpenRouter positions Hermes Agent as an open-source, self-improving AI agent by Nous Research, and the synthesis notes persistent memory, skills, subagents, scheduled automation, and 40+ built-in tools [9]. The official Hermes installation docs provide the NousResearch install script and describe the per-user Hermes configuration directory [10].
 
 That makes Hermes interesting for teams that want reusable internal workflows. A normal coding CLI helps one developer complete one task. A programmable agent harness can encode “how this organization investigates CI failures,” “how we prepare a release note,” or “how we triage a dependency bump.” The failure mode is obvious: if governance is weak, persistent memory plus broad tool access becomes hard to audit. Hermes should be tested with strict scope boundaries, not with open-ended access to a production repo [9][10].
 
@@ -219,7 +219,7 @@ The recommendation is simple: choose Claude Code if you need the least friction,
 ## References
 
 [1] Claude Code CLI Setup 2026: 5-Minute Quickstart — https://blakecrosley.com/blog/claude-code-quickstart · retrieved 2026-05-12
-[2] Claude Code CLI Guide — https://petronellatech.com/blog/claude-code-cli-guide/ · retrieved 2026-05-12
+[2] Claude Code overview — https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview · retrieved 2026-05-14
 [3] openai/codex: Lightweight coding agent that runs in your terminal — https://github.com/openai/codex · retrieved 2026-05-12
 [4] Codex CLI 0.128.0 adds /goal — https://simonwillison.net/2026/Apr/30/codex-goals/ · retrieved 2026-05-12
 [5] Cursor CLI overview — https://cursor.com/docs/cli/overview · retrieved 2026-05-12
@@ -227,7 +227,7 @@ The recommendation is simple: choose Claude Code if you need the least friction,
 [7] OpenCode download — https://opencode.ai/download · retrieved 2026-05-12
 [8] anomalyco/opencode: The open source coding agent — https://github.com/anomalyco/opencode · retrieved 2026-05-12
 [9] Hermes Agent | OpenRouter — https://openrouter.ai/apps/hermes-agent · retrieved 2026-05-12
-[10] Hermes Agent CLI cheat sheet — https://medium.com/@rosgluk/hermes-agent-cli-cheat-sheet-commands-flags-and-slash-shortcuts-011b38cf437a · retrieved 2026-05-12
+[10] Hermes Agent installation — https://hermes-agent.nousresearch.com/docs/getting-started/installation/ · retrieved 2026-05-14
 [11] Pi Harness CLI — https://www.llmreference.com/agent/pi · retrieved 2026-05-12
 [12] Parallel AI free CLI agent — https://parallel.ai/blog/free-CLI-agent · retrieved 2026-05-12
 [13] Kilo CLI — https://kilo.ai/cli · retrieved 2026-05-12
