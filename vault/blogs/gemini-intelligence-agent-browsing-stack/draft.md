@@ -7,7 +7,7 @@ author: blog-author
 ticket: KOEA-2021
 vendor_tag: google
 content_type: article
-status: g0-pending
+status: g0-blocked
 reading_time_min: 6
 primary_query: "gemini intelligence browser agent vs openai operator browser-use 2026"
 contrarian_angle: "Project Mariner didn't fail — it was absorbed on purpose; Google's actual developer bet is Gemini 2.5 Computer Use API at $1.25/M input, the most underpriced flagship agent model in the stack"
