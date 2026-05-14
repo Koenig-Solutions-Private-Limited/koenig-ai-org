@@ -66,7 +66,7 @@ There's also a contrarian thread running through each chapter: the defaults aren
   - Create an agent, environment, and session via the REST API
   - Stream SSE events and correctly detect `session.status_idle`
   - Apply the decision rule: Managed Agents vs Agent SDK for five scenario types
-- **Key concepts**: `managed-agents-2026-04-01` beta header, `agent_toolset_20260401`, SSE streaming, runtime pricing ($0.08/hr), rate limits, `session.status_idle`
+- **Key concepts**: `managed-agents-2026-04-01` beta header, `agent_toolset_20260401`, SSE streaming, runtime pricing verification, rate limits, `session.status_idle`
 - **Hands-on exercise**: Ship a Managed Agents session that runs a multi-step data analysis task and streams all tool-use events to your terminal
 
 ---

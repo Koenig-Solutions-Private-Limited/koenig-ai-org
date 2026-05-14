@@ -12,7 +12,7 @@ content_type: chapter
 chapter: 7
 parent_course: gemini-enterprise-agents
 ticket: KOEA-25
-status: g0-passed
+status: g3-passed
 vendor_tag: google
 learning_objectives:
   - "Choose between Provisioned Throughput and on-demand pricing using a measured workload"

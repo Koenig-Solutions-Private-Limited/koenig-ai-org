@@ -12,7 +12,7 @@ faq:
     a: "No. acceptEdits covers file edits; MCP tools still need explicit allowedTools grants."
   - q: "Which MCP transport should I use first?"
     a: "Use stdio for local server processes, HTTP for stateless remote APIs, and SSE when the server needs streaming."
-status: g0-blocked
+status: awaiting-g0
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30

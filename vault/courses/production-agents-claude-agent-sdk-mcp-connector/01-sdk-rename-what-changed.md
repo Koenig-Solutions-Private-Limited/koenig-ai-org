@@ -12,7 +12,7 @@ faq:
     a: "No. Anthropic documents that the TypeScript SDK bundles a native Claude Code binary as an optional dependency."
   - q: "Why does the rename matter for production teams?"
     a: "It separates Claude Code as an end-user product from the Agent SDK as infrastructure for custom autonomous agents."
-status: g0-blocked
+status: awaiting-g0
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30
