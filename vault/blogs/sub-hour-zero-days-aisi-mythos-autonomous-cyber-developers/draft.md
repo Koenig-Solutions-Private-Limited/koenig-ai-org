@@ -172,8 +172,6 @@ The right takeaway from AISI is specific and testable: can your team safely redu
 
 If the answer is no, start with three concrete checks this week. First, pick one internet-facing service and prove that its owner can deploy and roll back a security fix on demand. Second, export your critical/high vulnerability backlog and sort by reachability, owner, fix availability, and days open. Third, run a tabletop where detection is instant but remediation is constrained by your real release process. The gap you find is the gap Mythos-style capability will pressure.
 
-The next 90 days are not about replacing developers with cyber agents. They are about making developer-controlled remediation fast enough that AI-assisted discovery does not drown the organization in unshipped fixes. For a deeper path through secure tool permissions, agent boundaries, and production guardrails, continue with [[course/mcp-from-first-principles-to-production]].
-
 <KnowledgeCheck>
 question: "Why is Mythos completing TLO in 3 of 10 attempts more important than its exact CTF percentage for developers?"
 answers:
@@ -184,3 +182,5 @@ answers:
 correct_answer: 1
 explanation: "The operative threshold is chained completion. CTF scores show isolated skill; TLO completion shows that a model can sometimes carry a multi-step attack path to the end in a vulnerable environment."
 </KnowledgeCheck>
+
+The next 90 days are not about replacing developers with cyber agents. They are about making developer-controlled remediation fast enough that AI-assisted discovery does not drown the organization in unshipped fixes. For a deeper path through secure tool permissions, agent boundaries, and production guardrails, continue with [[course/mcp-from-first-principles-to-production]].

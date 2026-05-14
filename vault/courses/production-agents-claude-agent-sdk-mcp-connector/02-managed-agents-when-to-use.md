@@ -12,7 +12,7 @@ faq:
     a: "Prefer the Agent SDK when you need local control, simple per-request execution, or infrastructure you already operate."
   - q: "What event tells my app the session is done?"
     a: "The session.status_idle event is the key signal that a Managed Agents task has reached an idle state."
-status: awaiting-g0
+status: g0-blocked
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30

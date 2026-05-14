@@ -1,7 +1,7 @@
 ---
 course_slug: openai-agents-sdk-mastery
 title: "OpenAI Agents SDK Mastery: Build Autonomous Agents"
-status: outline-draft-for-review
+status: awaiting-g0
 author: course-author
 level: Builder
 target_audience: "Developers comfortable with Python who have used OpenAI APIs and want to build autonomous agentic systems."

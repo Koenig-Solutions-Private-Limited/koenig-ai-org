@@ -1,7 +1,7 @@
 ---
 course_slug: cursor-composer-2
 title: "Cursor Composer 2 — IDE-First AI Engineering"
-status: outline-draft-for-review
+status: awaiting-g0
 author: course-author
 level: Advanced
 target_audience: "Software engineers looking to master AI-driven development workflows in Cursor."
