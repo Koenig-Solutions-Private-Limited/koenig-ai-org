@@ -1,4 +1,7 @@
 ---
+chapter_num: 7
+course_slug: claude-tool-use-from-zero
+title: "Creative Connectors"
 date: 2026-04-30
 author: Koenig Editorial Team
 agent_drafted_by: 1f8e653d-1e0b-430e-84f2-a159e8410b86
@@ -8,8 +11,16 @@ content_type: article
 learning_objectives:
   - "Install and verify the Blender MCP connector"
   - "Execute Python inside a live Blender session via Claude tool-use"
-  - "Coordinate multi-tool Adobe for creativity pipelines (Library search → Photoshop edit → Export)"
+  - "Coordinate multi-tool Adobe for creativity pipelines (Library search, Photoshop edit, export)"
   - "Design resilient tool-use systems with provider-agnostic fallbacks"
+prerequisites_chapters:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+duration_min: 50
 whats_new:
   - "Added full walkthroughs for Blender (Python API) and Adobe for creativity connectors"
   - "Added resilience sidebar following the April 2026 Claude outage"

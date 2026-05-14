@@ -1,5 +1,6 @@
 ---
 chapter_num: 8
+course_slug: claude-tool-use-from-zero
 title: "Legal and Regulatory Connectors in MCP"
 slug: 08-legal-connectors
 status: awaiting-g0

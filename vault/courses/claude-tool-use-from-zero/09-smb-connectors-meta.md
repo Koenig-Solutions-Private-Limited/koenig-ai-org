@@ -2,7 +2,7 @@
 assets_generated: false
 chapter_path: vault/courses/claude-tool-use-from-zero/09-smb-connectors.md
 issue: KOEA-2414
-status: blocked-missing-source
+status: source-restored-needs-slides
 author: course-author
 date: 2026-05-14
 notes:
@@ -10,6 +10,7 @@ notes:
   - Covers QuickBooks, PayPal, HubSpot, and Canva connectors.
   - Focuses on "Human-in-the-loop" approval gates.
   - "2026-05-14: [SLIDES] KOEA-2543 blocked. Source chapter markdown file is missing at chapter_path; cannot generate ch09 slides without approved chapter content."
-unblock_owner: chief-content
-unblock_action: "Provide vault/courses/claude-tool-use-from-zero/09-smb-connectors.md (G0-passed chapter body), then rerun scripts/generate_course_slides.py to produce ch09-slides.pptx."
+  - "2026-05-14: Source chapter markdown restored by KOEA-2461; rerun slide generation after G0."
+unblock_owner: slide-audio-producer
+unblock_action: "After chapter G0, rerun scripts/generate_course_slides.py to produce ch09-slides.pptx."
 ---
