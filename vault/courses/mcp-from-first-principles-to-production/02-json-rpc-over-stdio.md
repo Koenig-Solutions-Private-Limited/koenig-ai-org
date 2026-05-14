@@ -3,7 +3,7 @@ course_slug: mcp-from-first-principles-to-production
 chapter_num: 2
 chapter_slug: json-rpc-over-stdio
 title: "JSON-RPC over stdio — the wire protocol explained"
-status: draft-for-review
+status: g3-passed
 author: course-author
 date: 2026-04-30
 duration_min: 45

@@ -4,6 +4,6 @@ assets_generated: true
 tool: python-pptx
 duration_audio_sec: null
 slide_count: 8
-produced_at: 2026-05-14T05:31:07Z
+produced_at: 2026-05-14T12:13:47Z
 status: awaiting-g0
 ---

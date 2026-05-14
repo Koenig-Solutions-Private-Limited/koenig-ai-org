@@ -3,7 +3,7 @@ course_slug: mcp-from-first-principles-to-production
 chapter_num: 5
 chapter_slug: gateways-audit-logs
 title: "Gateways, audit logs, and shipping to a 1,000-user team"
-status: draft-for-review
+status: g3-passed
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30

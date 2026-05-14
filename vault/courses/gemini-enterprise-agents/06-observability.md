@@ -13,6 +13,8 @@ chapter: 6
 parent_course: gemini-enterprise-agents
 ticket: KOEA-2633
 status: awaiting-g0
+review_target: content-reviewer
+revision_note: "KOEA-2633 G0 fixes complete: unsupported auto-instrumentation, metric, OTel status, Model Monitoring, pricing, retention, and OTLP claims removed or replaced with sourced Agent Runtime observability and Agent Platform evaluation guidance."
 vendor_tag: google
 learning_objectives:
   - "Configure OpenTelemetry-backed tracing and logging for an ADK agent on Agent Runtime"

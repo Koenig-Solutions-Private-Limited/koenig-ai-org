@@ -3,7 +3,7 @@ course_slug: mcp-from-first-principles-to-production
 chapter_num: 4
 chapter_slug: oauth-dpop-auth
 title: "OAuth 2.1 + DPoP — production auth for MCP servers"
-status: draft-for-review
+status: g3-passed
 author: Koenig Solutions
 agent_drafted_by: claude-sonnet-4-6
 vendor_tag: anthropic

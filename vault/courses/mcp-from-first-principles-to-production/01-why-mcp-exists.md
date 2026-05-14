@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: mcp-from-first-principles-to-production
 title: "Why MCP exists — the design problem it actually solves"
-status: draft-for-review
+status: g3-passed
 author: course-author
 ticket: KOE-36
 learning_objectives:
