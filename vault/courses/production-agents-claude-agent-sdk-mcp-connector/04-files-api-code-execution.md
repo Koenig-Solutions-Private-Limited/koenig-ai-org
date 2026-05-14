@@ -3,7 +3,16 @@ course_slug: production-agents-claude-agent-sdk-mcp-connector
 chapter_num: 4
 chapter_slug: files-api-code-execution
 title: "Files API + code execution: the complete agent IO surface"
-status: draft-for-review
+description: "Use the Anthropic Files API and code execution tool to upload documents once, reference file IDs, process data, and download generated outputs."
+tags: [files-api, code-execution, agent-io]
+faq:
+  - q: "Does the Files API reduce token costs?"
+    a: "No. It reduces retransmission and latency, but referenced file content is still billed as input tokens."
+  - q: "Can I download uploaded files?"
+    a: "No. Anthropic documents downloads for files created by code execution or skills, not files you uploaded yourself."
+  - q: "Which beta header does the Files API use?"
+    a: "Use the files-api-2025-04-14 beta header on Files API requests."
+status: awaiting-g0
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30
@@ -21,11 +30,14 @@ sources:
   - https://platform.claude.com/docs/en/build-with-claude/files
   - https://claude.com/blog/agent-capabilities-api
   - https://platform.claude.com/docs/en/managed-agents/overview
+  - https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool
+  - https://platform.claude.com/docs/en/api-reference/files
+  - https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention
 ---
 
 # Files API + code execution: the complete agent IO surface
 
-The Anthropic Files API is a beta document-storage layer that allows developers to upload a file once — up to 500 MB — receive a persistent `file_id`, and reference that ID across multiple Messages requests without re-transmitting the file content each time, launched alongside the MCP connector and code execution tool in May 2025.
+The Anthropic Files API is a beta document-storage layer that allows developers to upload a file once — up to 500 MB — receive a persistent `file_id`, and reference that ID across multiple Messages requests without re-transmitting the file content each time, launched alongside the MCP connector and code execution tool in May 2025. It extends the context strategy from [[course/production-agents-claude-agent-sdk-mcp-connector/03-mcp-connector-multi-server|multi-server MCP agents]] and feeds the operational controls in [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|production deployment]].
 
 The Files API solves a real problem. Without it, a 20-page PDF costs you full bandwidth and ingestion time on every API call that needs it. With it, you upload once and pay that cost once. But the "upload once, use many times" pitch hides a billing nuance that matters at scale: you still pay full input tokens every time you include a file in a Messages request. The savings are in bandwidth and latency, not token cost [1]. This chapter covers the complete IO surface — Files API for document persistence, code execution for computation, and the intersection of both.
 
@@ -425,7 +437,7 @@ Steps:
 
 ## What's next
 
-In Chapter 5 you'll harden everything built so far into production-ready agents. The focus shifts from capabilities to operations: structured logging with hooks, cost circuit breakers that stop runaway sessions, and the deployment checklist that prevents the most common production failures. The biggest surprise for most teams: model hallucination isn't the primary failure mode — it's uncontrolled token spend.
+In [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|Chapter 5]] you'll harden everything built so far into production-ready agents. The focus shifts from capabilities to operations: structured logging with hooks, cost circuit breakers that stop runaway sessions, and the deployment checklist that prevents the most common production failures. Review [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|the SDK migration chapter]] if your local examples are still using old package names.
 
 ## References
 
@@ -433,4 +445,6 @@ In Chapter 5 you'll harden everything built so far into production-ready agents.
 [2] Agent Capabilities API announcement — https://claude.com/blog/agent-capabilities-api · retrieved 2026-04-30
 [3] Claude Managed Agents Tools — https://platform.claude.com/docs/en/managed-agents/tools · retrieved 2026-04-30
 [4] Code Execution Tool — https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool · retrieved 2026-04-30
+[5] Files API Reference — https://platform.claude.com/docs/en/api-reference/files · retrieved 2026-05-14
+[6] Anthropic API and data retention — https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention · retrieved 2026-05-14
 [5] Anthropic Data Retention — https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention · retrieved 2026-04-30

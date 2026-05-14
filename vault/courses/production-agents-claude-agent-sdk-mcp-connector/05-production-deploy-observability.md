@@ -3,7 +3,16 @@ course_slug: production-agents-claude-agent-sdk-mcp-connector
 chapter_num: 5
 chapter_slug: production-deploy-observability
 title: "Production: deploy + observability + cost controls"
-status: draft-for-review
+description: "Ship Claude Agent SDK workloads with hooks, structured logging, cost circuit breakers, permission controls, and deployment guardrails."
+tags: [observability, hooks, cost-control]
+faq:
+  - q: "What is the safest alternative to bypassPermissions?"
+    a: "Use explicit allowedTools grants and acceptEdits for file editing instead of disabling all permission checks."
+  - q: "When should I use PreToolUse instead of PostToolUse?"
+    a: "Use PreToolUse when you need to block a risky call before it executes; use PostToolUse for logging after execution."
+  - q: "What should every production agent log?"
+    a: "Log tool name, session ID, file or resource target, result status, and cumulative cost or token usage where available."
+status: awaiting-g0
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30
@@ -21,11 +30,14 @@ sources:
   - https://code.claude.com/docs/en/agent-sdk/overview
   - https://platform.claude.com/docs/en/managed-agents/overview
   - https://platform.claude.com/docs/en/build-with-claude/files
+  - https://code.claude.com/docs/en/agent-sdk/hooks
+  - https://code.claude.com/docs/en/agent-sdk/permissions
+  - https://code.claude.com/docs/en/agent-sdk/costs
 ---
 
 # Production: deploy + observability + cost controls
 
-The Claude Agent SDK's hook system is a lifecycle callback framework — inspired by HTTP middleware — that lets you attach arbitrary Python or TypeScript functions to key agent events (PreToolUse, PostToolUse, Stop, SessionStart, SessionEnd, UserPromptSubmit) to implement audit logging, cost enforcement, and prompt sanitization without modifying the agent's core logic.
+The Claude Agent SDK's hook system is a lifecycle callback framework — inspired by HTTP middleware — that lets you attach arbitrary Python or TypeScript functions to key agent events (PreToolUse, PostToolUse, Stop, SessionStart, SessionEnd, UserPromptSubmit) to implement audit logging, cost enforcement, and prompt sanitization without modifying the agent's core logic. This chapter turns the [[course/production-agents-claude-agent-sdk-mcp-connector/03-mcp-connector-multi-server|MCP tool layer]] and [[course/production-agents-claude-agent-sdk-mcp-connector/04-files-api-code-execution|Files API IO layer]] into deployable production behavior.
 
 Most teams discover the need for this the hard way: an agent that works perfectly in development starts generating surprise API bills in production, or silently modifies files it shouldn't touch, or loops on a subtask for 40 minutes. The [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK]] includes a hook system specifically for these scenarios [1]. The biggest production failure mode is not model hallucination — it's cost runaway. This chapter gives you the four hooks you need before any agent goes live, and the deployment checklist that ties everything together.
 

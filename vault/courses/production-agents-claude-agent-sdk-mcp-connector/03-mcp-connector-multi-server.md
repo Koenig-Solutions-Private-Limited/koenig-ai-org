@@ -3,7 +3,16 @@ course_slug: production-agents-claude-agent-sdk-mcp-connector
 chapter_num: 3
 chapter_slug: mcp-connector-multi-server
 title: "MCP connector: orchestrating multi-server agents"
-status: draft-for-review
+description: "Configure multi-server MCP tool access in the Claude Agent SDK while controlling transport choices, permission grants, and startup failures."
+tags: [mcp, tool-permissions, multi-server-agents]
+faq:
+  - q: "How are MCP tools named in the Agent SDK?"
+    a: "They use the mcp__server-name__tool-name pattern, which is also what you grant in allowedTools."
+  - q: "Does acceptEdits approve MCP calls?"
+    a: "No. acceptEdits covers file edits; MCP tools still need explicit allowedTools grants."
+  - q: "Which MCP transport should I use first?"
+    a: "Use stdio for local server processes, HTTP for stateless remote APIs, and SSE when the server needs streaming."
+status: awaiting-g0
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30
@@ -25,7 +34,7 @@ sources:
 
 # MCP connector: orchestrating multi-server agents
 
-The Model Context Protocol (MCP) connector in the Claude Agent SDK is a built-in mechanism for attaching external tool servers — databases, APIs, browsers, and code execution environments — to an agent at runtime, using a standard open protocol that Anthropic co-developed with the broader AI ecosystem in 2024.
+The Model Context Protocol (MCP) connector in the Claude Agent SDK is a built-in mechanism for attaching external tool servers — databases, APIs, browsers, and code execution environments — to an agent at runtime, using a standard open protocol that Anthropic co-developed with the broader AI ecosystem in 2024. It builds on the [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK migration]] and prepares the tool layer used later by [[course/production-agents-claude-agent-sdk-mcp-connector/04-files-api-code-execution|Files API workflows]] and [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|production controls]].
 
 When Anthropic shipped the [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK]] rename in April 2026, the MCP connector shipped with it as a first-class feature rather than a configuration hack. The connector supports three transport modes — stdio for local process servers, HTTP for stateless remote APIs, and SSE for streaming remote servers — and handles connection management, tool discovery, and error signaling automatically [1]. As of April 2026, the public MCP server registry lists hundreds of community servers for databases, SaaS tools, and developer infrastructure, though quality varies considerably.
 
@@ -408,7 +417,7 @@ Task prompt:
 
 ## What's next
 
-In Chapter 4 you'll complete the agent's IO surface with the Files API and code execution tool. The Files API lets you upload a document once and reference it across multiple Messages calls — but the billing model is counterintuitive. The code execution tool gives your agent a Python sandbox for computation and chart generation, and the output files feed directly back into the Files API for download. Together they form the document and data layer that most production agents need.
+In [[course/production-agents-claude-agent-sdk-mcp-connector/04-files-api-code-execution|Chapter 4]] you'll complete the agent's IO surface with the Files API and code execution tool. The Files API lets you upload a document once and reference it across multiple Messages calls — but the billing model is counterintuitive. The code execution tool gives your agent a Python sandbox for computation and chart generation, and the output files feed directly back into the Files API for download. Together they form the document and data layer that most production agents need.
 
 ## References
 
