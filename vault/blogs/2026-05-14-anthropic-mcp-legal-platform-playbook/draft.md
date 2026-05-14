@@ -81,7 +81,7 @@ whats_new:
   - Anthropic's May 12, 2026 legal release bundled 20+ MCP connectors with 12 practice-area plugins, making Claude a protocol layer across incumbent legal platforms instead of a replacement legal database.
 learning_objectives:
   - Explain why MCP connectors are a vertical platform strategy, not just integration plumbing.
-  - Identify the three-layer pattern in Anthropic's legal release: connectors, practice-area plugins, and open-source customization material.
+  - "Identify the three-layer pattern in Anthropic's legal release: connectors, practice-area plugins, and open-source customization material."
   - Apply the same MCP platform pattern to another regulated vertical without forcing data migration.
 ---
 
