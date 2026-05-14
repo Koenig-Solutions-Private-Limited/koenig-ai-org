@@ -1,14 +1,14 @@
 ---
 title: "Use Google A2A for cross-agent delegation, not as an MCP replacement"
 description: "Google A2A matters in 2026 because it standardizes durable task state, auth interruptions, and artifact exchange across agents, while MCP still handles tools and context inside each agent."
-slug: google-a2a-protocol-2026
+slug: 2026-05-13-google-a2a-protocol
 date: 2026-05-13
 author: vardaan-koenig
 agent_drafted_by: blog-author
-ticket: KOEA-1465
+ticket: KOEA-1597
 vendor_tag: google
 content_type: article
-status: g0-blocked
+status: awaiting-g0
 reading_time_min: 14
 primary_query: "google a2a protocol explained"
 contrarian_angle: "A2A is not winning by replacing MCP; it is winning by standardizing the state, auth, and resume layer that cross-agent systems kept rebuilding badly."
@@ -42,7 +42,9 @@ faq:
     answer: "Yes. A2A is vendor-neutral at the protocol layer, so the client talks to an Agent Card and task interface rather than a model-specific API shape."
   - question: "Where does AGNTCY fit?"
     answer: "AGNTCY sits above raw delegation and aims at a fuller internet-of-agents stack with discovery, identity, messaging, and observability, while A2A stays narrower."
-hero_image: auto:flux
+hero_image:
+  url: images/hero.png
+  alt: "A2A protocol layer connecting autonomous agent task cards across a network"
 references:
   - n: 1
     title: "Announcing the Agent2Agent Protocol (A2A)"
@@ -149,7 +151,7 @@ Then v1.0.0 landed on March 12, 2026 under the Linux Foundation-hosted `a2aproje
 
 The roadmap page, last updated March 10, 2026, reinforces the same story. Near-term work is no longer "prove the idea exists." It is validation, compatibility kits, SDK breadth across five languages, and community best practices [8]. That is what mature infrastructure projects talk about when they expect real deployments.
 
-Google's surrounding platform story also changed in spring 2026. The Gemini Enterprise Agent Platform announcement on April 22, 2026 positioned A2A inside a larger runtime, registry, gateway, identity, and governance system for enterprise agents [11]. The related Gemini Enterprise platform post the same day described A2A and MCP as complementary protocols inside one broader agent platform, with agent runtime, observability, and centralized governance now part of the platform pitch rather than separate afterthoughts [12]. One day later, Google announced partner-built agents from the marketplace landing directly inside Gemini Enterprise, with Adobe, Salesforce, ServiceNow, Workday, and others showing up in the agent gallery and procurement flow [13].
+Google's surrounding platform story also changed in spring 2026. The Gemini Enterprise Agent Platform announcement on April 22, 2026 positioned A2A inside a larger runtime, registry, gateway, identity, and governance system for enterprise agents [11]. The related Gemini Enterprise platform post the same day described an agent development platform that uses open protocols like A2A and MCP alongside runtime, observability, and centralized governance, without making the stronger claim that the post itself labels those protocols "complementary" [12]. One day later, Google announced partner-built agents from the marketplace landing directly inside Gemini Enterprise, with Adobe, Salesforce, ServiceNow, Workday, and others showing up in the agent gallery and procurement flow [13].
 
 That sequence is the real milestone. Protocol launch. Stability upgrade. v1 release. Platform embedding. Partner channel. If you are deciding whether A2A is "real," that timeline is the answer.
 
@@ -359,8 +361,6 @@ Expected output:
 ```json
 {"ok":true}
 ```
-
-There is a fourth pattern that matters if you are building on Google's stack directly. Google's ADK documentation now includes an A2A extension path where a remote A2A agent can be consumed with `use_legacy=False`, which activates the newer executor path and advertises the extension through headers and Agent Card metadata. That is less important as vendor branding than as a sign that Google is hardening the bridge between ADK-based agents and the open A2A contract [11][12].
 
 ## KnowledgeCheck
 
