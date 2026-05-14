@@ -36,10 +36,12 @@ import {
   isHermesUnknownSessionError,
   parseHermesQuietStdout,
   parseHermesSessionExport,
+  selectHermesSessionLogDiagnostic,
 } from "./parse.js";
 import { prepareHermesRuntimeConfig } from "./runtime-config.js";
 
 const SESSION_EXPORT_TIMEOUT_SEC = 15;
+const HERMES_ERROR_LOG_TAIL_BYTES = 64 * 1024;
 
 function firstNonEmptyLine(text: string): string {
   return (
@@ -119,6 +121,40 @@ async function fetchHermesSessionExport(input: {
       `[paperclip] Hermes sessions export for "${input.sessionId}" threw: ${reason}\n`,
     );
     return null;
+  }
+}
+
+async function readHermesErrorsLogDiagnostic(input: {
+  env: Record<string, string>;
+  sessionId: string | null;
+  onLog: AdapterExecutionContext["onLog"];
+}): Promise<string> {
+  if (!input.sessionId) return "";
+
+  const hermesHome = asString(input.env.HERMES_HOME, "").trim();
+  if (!hermesHome) return "";
+
+  const logPath = path.join(hermesHome, "logs", "errors.log");
+  let handle: fs.FileHandle | null = null;
+  try {
+    handle = await fs.open(logPath, "r");
+    const stat = await handle.stat();
+    const length = Math.min(stat.size, HERMES_ERROR_LOG_TAIL_BYTES);
+    const buffer = Buffer.alloc(length);
+    await handle.read(buffer, 0, length, Math.max(0, stat.size - length));
+    return selectHermesSessionLogDiagnostic(buffer.toString("utf8"), input.sessionId);
+  } catch (err) {
+    const code = typeof err === "object" && err !== null && "code" in err ? String(err.code) : "";
+    if (code !== "ENOENT") {
+      const reason = err instanceof Error ? err.message : String(err);
+      await input.onLog(
+        "stderr",
+        `[paperclip] Hermes errors.log diagnostic lookup failed: ${reason}\n`,
+      );
+    }
+    return "";
+  } finally {
+    await handle?.close();
   }
 }
 
@@ -499,8 +535,16 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
       const stderrLine = firstMeaningfulStderrLine(attempt.proc.stderr);
       const rawExitCode = attempt.proc.exitCode;
+      const hermesLogDiagnostic =
+        (rawExitCode ?? 0) === 0
+          ? ""
+          : await readHermesErrorsLogDiagnostic({
+              env: runtimeEnv,
+              sessionId: attempt.parsed.sessionId,
+              onLog,
+            });
       const fallbackErrorMessage =
-        stderrLine || `Hermes exited with code ${rawExitCode ?? -1}`;
+        stderrLine || hermesLogDiagnostic || `Hermes exited with code ${rawExitCode ?? -1}`;
       const modelId = model || exportedModel || null;
 
       return {
@@ -524,6 +568,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
         resultJson: {
           stdout: attempt.proc.stdout,
           stderr: attempt.proc.stderr,
+          ...(hermesLogDiagnostic ? { hermesLogDiagnostic } : {}),
         },
         summary: attempt.parsed.summary,
         clearSession: Boolean(clearSessionOnMissingSession && !attempt.parsed.sessionId),

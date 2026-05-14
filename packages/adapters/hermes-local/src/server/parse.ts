@@ -110,3 +110,31 @@ export function isHermesUnknownSessionError(stdout: string, stderr: string): boo
     haystack,
   );
 }
+
+export function sanitizeHermesLogDiagnostic(line: string): string {
+  return line
+    .replace(/(authorization:\s*bearer\s+)[^\s'"}]+/gi, "$1[REDACTED]")
+    .replace(/((?:api[_-]?key|token|secret|password)\s*[=:]\s*)[^\s,'"}]+/gi, "$1[REDACTED]")
+    .replace(/\b(sk-[A-Za-z0-9_-]{8,})\b/g, "[REDACTED]")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 500);
+}
+
+export function selectHermesSessionLogDiagnostic(
+  logText: string,
+  sessionId: string | null | undefined,
+): string {
+  const needle = sessionId?.trim();
+  if (!needle) return "";
+
+  const lines = logText.split(/\r?\n/);
+  for (let idx = lines.length - 1; idx >= 0; idx--) {
+    const line = lines[idx] ?? "";
+    if (!line.includes(needle)) continue;
+    const sanitized = sanitizeHermesLogDiagnostic(line);
+    if (sanitized) return sanitized;
+  }
+
+  return "";
+}
