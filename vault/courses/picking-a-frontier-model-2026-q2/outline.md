@@ -145,10 +145,10 @@ The existing "model comparison" resources fall into two categories: marketing pa
 ---
 
 ## Internal wikilinks (seed)
-- [[courses/picking-a-frontier-model-2026-q2/01-dimensions-that-matter]]
-- [[courses/picking-a-frontier-model-2026-q2/02-tool-use-determinism-benchmark]]
-- [[courses/picking-a-frontier-model-2026-q2/03-long-context-behavior]]
-- [[courses/picking-a-frontier-model-2026-q2/04-cost-per-task]]
-- [[blogs/opus-4-7-long-running-coding-benchmark]]
-- [[blogs/gpt-5-5-in-codex]]
-- [[courses/claude-tool-use-from-zero]]
+- [[course/picking-a-frontier-model-2026-q2/01-dimensions-that-matter]]
+- [[course/picking-a-frontier-model-2026-q2/02-tool-use-determinism-benchmark]]
+- [[course/picking-a-frontier-model-2026-q2/03-long-context-behavior]]
+- [[course/picking-a-frontier-model-2026-q2/04-cost-per-task]]
+- [[blog/2026-04-30-opus-4-7-long-running-coding-benchmark]]
+- [[blog/2026-04-30-gpt-5-5-in-codex]]
+- [[course/claude-tool-use-from-zero]]

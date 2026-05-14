@@ -229,7 +229,7 @@ The [agents-starter](https://github.com/cloudflare/agents-starter) (retrieved 20
   explanation="Without hibernation, a Durable Object incurs duration charges even when idle between WebSocket messages. Enabling WebSocketHibernation drops idle cost to near zero by suspending the isolate between messages."
 />
 
-If you're building production AI agents and haven't looked at Cloudflare's stack since 2024, Agents Week is the inflection point worth reviewing. For a deeper look at how [[glossary/durable-objects|Durable Objects]] compose with multi-agent orchestration patterns, the Koenig AI Academy covers that in the [[courses/multi-agent-orchestration-a2a|Multi-Agent Orchestration]] course.
+If you're building production AI agents and haven't looked at Cloudflare's stack since 2024, Agents Week is the inflection point worth reviewing. For a deeper look at how [[glossary/durable-objects|Durable Objects]] compose with multi-agent orchestration patterns, the Koenig AI Academy covers that in the [[course/multi-agent-orchestration-a2a|Multi-Agent Orchestration]] course.
 
 [^1]: Cost estimate derived from: [Durable Objects pricing](https://developers.cloudflare.com/durable-objects/platform/pricing/) (retrieved 2026-05-12), [Workers AI pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/) (retrieved 2026-05-12), and [Vectorize limits](https://developers.cloudflare.com/vectorize/platform/limits/) (retrieved 2026-05-12). Assumes hibernation enabled, Llama 3.1-8B, 10 msgs/user/day.
 [^2]: [agents-starter GitHub repository](https://github.com/cloudflare/agents-starter), retrieved 2026-05-12.
