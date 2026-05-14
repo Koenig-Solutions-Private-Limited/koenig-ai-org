@@ -79,7 +79,7 @@ fetch_all_issues() {
       return 1
     fi
 
-    if ! python3 - "$page_tmp" > "$normalized_tmp" <<'PY'
+    if ! python3 - "$page_tmp" > "$normalized_tmp" 2>/dev/null <<'PY'
 import json
 import sys
 
@@ -98,7 +98,7 @@ PY
       return 1
     fi
 
-    if ! python3 - "$aggregate_tmp" "$normalized_tmp" > "$GUARD_ISSUE_CACHE" <<'PY'
+    if ! python3 - "$aggregate_tmp" "$normalized_tmp" > "$GUARD_ISSUE_CACHE" 2>/dev/null <<'PY'
 import json
 import sys
 
