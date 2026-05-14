@@ -7,7 +7,7 @@ author: blog-author
 ticket: KOEA-1731
 vendor_tag: anthropic
 content_type: article
-status: g4-approved
+status: published
 reading_time_min: 9
 tags:
   - vendor/anthropic
