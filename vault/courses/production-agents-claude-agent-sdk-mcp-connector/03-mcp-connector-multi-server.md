@@ -336,6 +336,38 @@ For projects where the same servers are always needed, put them in `.mcp.json` a
 
 The `${VAR}` syntax expands environment variables at load time. This keeps credentials out of your code while making the MCP config declarative and version-controllable.
 
+---
+
+## The "SMB Workflow" Pattern (May 2026 Update)
+
+As of May 2026, Anthropic has packaged several enterprise-grade connectors specifically for Small Business (SMB) workflows. These are available as a toggle in **Claude Cowork** and can be orchestrated via the Agent SDK.
+
+The "SMB Stack" typically includes:
+- **Financial**: QuickBooks, PayPal
+- **CRM/Growth**: HubSpot, Salesforce
+- **Creative/Docs**: Canva, DocuSign, Google Workspace, Microsoft 365
+
+The power of the Agent SDK is **coordination**. A single `query()` can reconcile PayPal settlements against a QuickBooks ledger and then trigger a HubSpot "deal won" update.
+
+### Example: Automated Payment Reconciliation
+
+```python
+options = ClaudeAgentOptions(
+    mcp_servers={
+        "quickbooks": {"type": "http", "url": "https://api.anthropic.com/connectors/quickbooks"},
+        "paypal": {"type": "http", "url": "https://api.anthropic.com/connectors/paypal"},
+        "hubspot": {"type": "http", "url": "https://api.anthropic.com/connectors/hubspot"},
+    },
+    allowed_tools=["mcp__quickbooks__*", "mcp__paypal__*", "mcp__hubspot__*"]
+)
+
+prompt = "Find all PayPal transactions from yesterday, match them to QuickBooks invoices, and update the associated HubSpot deal to 'Closed Won'."
+```
+
+<Callout type="hot">
+**The "Human-in-the-Loop" requirement.** SMB workflows often involve financial transfers or legal signatures. Never set `permissionMode: "bypassPermissions"` for these agents. Always use `default` or `acceptEdits` (with explicit MCP grants) to ensure the user approves the final reconciliation or signature call.
+</Callout>
+
 <RunPromptCell
   model="claude-sonnet-4-6"
   prompt="I've configured an MCP server named 'github' with the @modelcontextprotocol/server-github package. What is the full tool name I should put in allowedTools to allow only the list_issues tool from this server?"

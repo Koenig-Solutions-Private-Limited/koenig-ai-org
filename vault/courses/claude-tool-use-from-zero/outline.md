@@ -71,7 +71,7 @@ chapter_count: 9
 ## Chapter 9: SMB and Growth Connectors (May 2026 Update)
 - Learning objectives: Master the Claude SMB workflow stack, coordinate financial and CRM tool calls, implement "human-in-the-loop" approval gates for sensitive business actions.
 - Duration: 60 min
-- Key concepts: Claude Cowork toggle, QuickBooks + PayPal reconciliation pattern, HubSpot lead-to-deal automation, Awaiting Approval state.
+- Key concepts: Claude Cowork toggle, QuickBooks + PayPal reconciliation pattern, HubSpot lead-to-deal automation, Awaiting Approval state, Canva/DocuSign/Google Workspace/Microsoft 365 connectors.
 - Hands-on exercise: Build a "Payroll Assistant" that reconciles PayPal settlements against a QuickBooks ledger and drafts reminder emails for missing payments.
 
 ## Capstone Project

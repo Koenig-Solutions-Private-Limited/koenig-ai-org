@@ -2,6 +2,8 @@
 course_slug: gemini-enterprise-agents
 title: "Build Production AI Agents with Gemini Enterprise Agent Platform"
 status: awaiting-g0
+last_delta: 2026-05-14
+last_delta_reason: "Gemini 3.1 Pro + Flash TTS vendor update"
 author: course-author
 level: Builder
 vendor_tag: google
@@ -25,6 +27,9 @@ capstone_project_min: 60
 ---
 
 # Build Production AI Agents with Gemini Enterprise Agent Platform
+
+> [!HOT] Dated Caveat: May 2026 Model Volatility
+> This course is current as of **2026-05-14**. It uses **Gemini 3.1 Pro Preview** and **Flash TTS Preview** for cutting-edge multimodal examples. However, learners should prioritize stable Vertex AI / GEAP model documentation for production deployments. Be aware that **Google I/O 2026 (2026-05-19)** may introduce platform-wide changes; all preview model IDs should be treated as volatile until after that date.
 
 ## Why this course
 

@@ -154,6 +154,8 @@ Full results are in `/data/claude-tool-use-determinism/2026-Q2/results.json`. Su
 
 4. **Category 9 (ambiguous input) is the universal weakness.** All three models show their lowest determinism here. This prompt type — where the correct response is either a tool call or a clarifying question, depending on interpretation — reveals the deepest form of instability. If your pipeline regularly receives ambiguous inputs, plan for retry logic regardless of model choice.
 
+5. **Gemini 3.1 Pro requires specific parameter hygiene.** For the best results in tool-use evals, ensure you are using current Gemini 3.1 API controls. Avoid mixing legacy `thinking_budget` parameters (from the experimental 2.5/3 series) with newer `thinking_level` guidance. Furthermore, benchmark **schema adherence** (whether the model fills every required field) rather than just JSON validity; Gemini's determinism is most sensitive to schema completeness. [^6]
+
 ### The most common failure modes
 
 Across 150 runs (10 prompts × 3 models × 5 runs), we classified each structural mismatch:

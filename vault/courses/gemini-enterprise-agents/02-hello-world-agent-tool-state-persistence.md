@@ -146,12 +146,17 @@ Three things to notice:
 Create `budget_tracker/agent.py`:
 
 ```python
+import os
 from google.adk import Agent
 from budget_tracker.tools import log_expense, get_expense_summary
 
+# Use a stable model ID or environment variable in production.
+# Preview model IDs like 'gemini-3.1-pro-preview' are volatile.
+MODEL_ID = os.getenv("AGENT_MODEL_ID", "gemini-flash-latest")
+
 budget_agent = Agent(
     name="budget_tracker",
-    model="gemini-flash-latest",
+    model=MODEL_ID,
     description="A personal budget tracker that logs and summarises expenses.",
     instruction="""You are a friendly budget tracker. 
 

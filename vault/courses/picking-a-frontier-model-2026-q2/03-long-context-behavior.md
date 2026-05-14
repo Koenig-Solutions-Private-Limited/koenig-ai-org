@@ -182,9 +182,9 @@ The practical takeaway: **if your workload is primarily synthesis, use RAG.** If
 
 ## Hands-on exercise
 
-**Run a needle-in-haystack test at three depth levels on a document from your own use case.**
+**Run a needle-in-haystack test and source-packet synthesis at three depth levels.**
 
-1. Choose a document or document set from your production context. Prepare versions at three sizes: ~50K tokens, ~200K tokens, and as large as your target depth (up to 500K if relevant to your use case).
+1. Choose a document or document set from your production context. Prepare versions at three sizes: ~50K tokens, ~200K tokens, and as large as your target depth (up to 1M tokens if testing Gemini 3.1 Pro Preview's full window).
 
 2. Insert 3 unique "needles" into each version:
    - Needle A: near the start (5–10% depth)
@@ -195,12 +195,13 @@ The practical takeaway: **if your workload is primarily synthesis, use RAG.** If
 
 4. Record a 3×3 accuracy grid (3 depths × 3 positions). Note which positions and depths produce failures.
 
-5. Run at least one multi-hop synthesis task: a question that requires combining facts from Needles A and C. Record whether the model correctly synthesizes both.
+5. **Run a source-packet synthesis task**: a question that requires combining facts from Needles A and C to produce a summary or plan. If testing Gemini 3.1 Pro Preview, note its documented 1M-token context and 64K output token ceiling — ensure your synthesis prompt doesn't hit the output limit. Record whether the model correctly synthesizes both facts while maintaining reasoning quality.
 
 **Verification**: You have completed this exercise when:
 - A 3×3 retrieval accuracy grid is filled for ≥1 model
 - The retrieval effective limit (depth where accuracy first drops below 90%) is estimated
-- The multi-hop synthesis task result is recorded (pass or fail)
+- The source-packet synthesis result is recorded, noting any reasoning degradation at 1M-token depth
+- You have explicitly checked Gemini's 64K output ceiling if using it for large-scale summarization
 
 **Estimated time**: 25 minutes
 

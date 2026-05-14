@@ -179,6 +179,19 @@ For internal tools that nobody touches over the weekend, `min_replicas: 0` is co
 
 ---
 
+## Deploying Preview Endpoints: The Lifecycle Checklist
+
+As of May 2026, many of the most capable models (e.g., **Gemini 3.1 Pro Preview**) are shipped as preview endpoints. While tempting for their reasoning quality, they introduce lifecycle risk. Use this checklist before deploying any `preview` or `experimental` model ID to production:
+
+1. **Launch Stage Verification**: Is this `PREVIEW`, `BETA`, or `GA`? GEAP features may only be partially supported on preview endpoints.
+2. **Deprecation Window**: Check the [Gemini API changelog](https://ai.google.dev/gemini-api/docs/changelog) for the sunset date of the specific model ID. Preview IDs often expire in 90 days.
+3. **Quota Differential**: Preview endpoints often have significantly lower RPM/TPM quotas than GA models. Ensure your capacity plan accounts for this ceiling.
+4. **Automated Fallback**: Implement a "stable fallback" in your ADK configuration. If the preview call fails with a 429 or 503, the orchestrator should automatically retry against a GA model (e.g., Gemini 1.5 Pro).
+5. **Per-Model Logging**: Use GEAP labels to log latency and cost specifically for the preview model. Do not aggregate it with stable model metrics.
+6. **Changelog Review**: Review the Google Cloud AI release notes weekly. Preview models can receive "silent" updates that change output structure or reasoning quality.
+
+---
+
 ## Cost attribution: who is paying for what
 
 Finance teams ask one question that matters more than all the dashboards: "Which team is responsible for which fraction of the agent bill?" GEAP makes this answerable, but only if you wire labels at deploy time.

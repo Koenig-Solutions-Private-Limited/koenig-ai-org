@@ -48,6 +48,10 @@ When Google announced GEAP, industry coverage focused on the new features: sub-a
 
 That is a major commitment. It means if you are using Vertex AI Pipelines, Vertex AI Evaluation, or any other standalone Vertex service, your upgrade path is now through GEAP. Google is betting that agent-orchestration is the right abstraction for the next era of enterprise AI — not individual model calls, not standalone pipelines.
 
+<Callout type="info">
+**Model Surfaces vs. Agent Platform**: Google's frontier models (like Gemini 3.1 Pro) appear in multiple "surfaces" simultaneously. You might see a model upgrade in **AI Studio** or the **Gemini API** weeks before it reaches **Vertex AI / Gemini Enterprise**. Other surfaces like **NotebookLM**, **Antigravity** (Google's experimental dev-tool), and **Jules** (Google's enterprise coding assistant) may expose different parameter sets or prompt ceilings. For this course, we focus on the **Gemini Enterprise Agent Platform (GEAP)** surface, which is the stable target for production-grade, CISO-defensible agents.
+</Callout>
+
 Whether that bet pays off for you depends on your use case. This chapter explains the architecture so you can make that judgment with clear eyes.
 
 ---

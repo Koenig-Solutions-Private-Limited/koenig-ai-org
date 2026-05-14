@@ -98,6 +98,14 @@ cost_per_task = (
 
 The last factor — `(1 / determinism_rate)^pipeline_steps` — is the retry multiplier. It is the single biggest source of divergence between pricing page cost and actual bill, as benchmarked across tool-use tasks [^5].
 
+<Callout type="warn">
+**Preview Lifecycle: The hidden reliability tax.** When using preview models such as **Gemini 3.1 Pro Preview**, the "cost" is not just in tokens. Preview endpoints often have lower quotas, more frequent 429/503 errors, and shorter deprecation cycles. To keep production costs defensible:
+1. **Configurable Model IDs**: Never hard-code a preview ID; use an environment variable or config service.
+2. **Deprecation Checks**: Review the vendor changelog weekly for sunset dates.
+3. **Fallback Routing**: Implement logic to automatically fall back to a stable model (e.g., Gemini 1.5 Pro) if the preview endpoint fails.
+4. **Separate Monitoring**: Track error rates and latency specifically for preview calls to distinguish model flakiness from infrastructure issues.
+</Callout>
+
 ---
 
 ## The retry multiplier in practice

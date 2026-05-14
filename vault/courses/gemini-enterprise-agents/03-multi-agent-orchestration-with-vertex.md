@@ -81,6 +81,12 @@ The orchestrator is an Agent with a strong instruction and a special `transfer_t
 
 **Tradeoff**: Non-deterministic costs (you do not know how many sub-agent calls occur), harder to test exhaustively, and more susceptible to jailbreak if the orchestrator instruction is weak.
 
+<Callout type="hot">
+**Model Routing: Pro vs. Flash.** In a multi-agent system, using the most expensive model for every agent is a common anti-pattern. GEAP allows per-agent model selection:
+1. **Supervisor/Planner**: Always use **Gemini 3.1 Pro**. The orchestration reasoning required to decompose tasks and synthesize results is significantly higher than task execution. Pro's ARC-AGI-2 reasoning leap reduces "looping" and hallucinated handoffs.
+2. **Worker/Specialist**: Use **Gemini 3.1 Flash or Flash-Lite** for high-volume, well-defined tasks (e.g., data extraction, sentiment analysis, simple lookup). If your evaluation pipeline shows Flash-Lite can handle the task, you drop your per-agent cost by 13×.
+</Callout>
+
 For this chapter we build a generative orchestration pipeline, because it showcases more GEAP-specific features. The Chapter 3 hands-on exercise includes a note on when to prefer the deterministic version.
 
 ---

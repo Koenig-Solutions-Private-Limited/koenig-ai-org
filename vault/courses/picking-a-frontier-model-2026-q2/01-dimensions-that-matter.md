@@ -168,6 +168,16 @@ Most production AI workloads fall into one of three archetypes. Use these as a s
 | **Document Q&A** (long-context, synthesis) | Context fidelity at depth | Cost-per-task | Lost-needle rate > 10% at target depth |
 | **High-volume classification** (batch, latency-tolerant) | Cost-per-task | Structured-output reliability | Cost-per-task > 2× competitor |
 
+### Choosing your Gemini family member
+
+As of May 2026, the Gemini 3.1 family has specialized into three distinct surfaces. Choosing the right one is your first move in model selection.
+
+| Model | Primary use case | Why it wins |
+|---|---|---|
+| **Gemini 3.1 Pro Preview** | Complex reasoning & long-context synthesis | High reasoning depth and 1M+ token window for synthesis tasks. |
+| **Gemini 3.1 Flash / Flash-Lite** | High-volume classification & latency-sensitive tool-use | 13× cheaper than Pro with significantly lower TTFT (Time to First Token). |
+| **Gemini 3.1 Flash TTS** | Scripted audio generation & narration | Optimized for exact text-to-audio recitation; not for general reasoning. |
+
 If your use case maps cleanly to one of these archetypes, you already know your top dimensions. If it doesn't — if you're building something latency-critical *and* tool-heavy *and* long-context — you have a hard evaluation problem and should expect to make tradeoffs rather than finding a model that wins on all axes.
 
 ---
