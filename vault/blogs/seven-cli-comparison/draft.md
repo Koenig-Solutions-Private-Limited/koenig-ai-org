@@ -7,7 +7,7 @@ author: blog-author
 ticket: KOEA-2240
 vendor_tag: community
 content_type: article
-status: awaiting-g0
+status: g0-blocked
 reading_time_min: 14
 tags: [ai-coding-tools, cli-agents, claude-code, codex, opencode]
 primary_query: "best AI coding CLI 2026"
