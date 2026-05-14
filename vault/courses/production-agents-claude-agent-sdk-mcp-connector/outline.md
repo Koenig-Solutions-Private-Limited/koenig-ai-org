@@ -1,7 +1,7 @@
 ---
 course_slug: production-agents-claude-agent-sdk-mcp-connector
 title: "Production Agents with Claude Agent SDK + MCP Connector"
-status: outline-draft-for-review
+status: awaiting-g0
 author: course-author
 agent_drafted_by: course-author
 date: 2026-04-30
@@ -79,9 +79,10 @@ There's also a contrarian thread running through each chapter: the defaults aren
   - Configure stdio, HTTP, and SSE MCP servers in a single `query()` call
   - Scope MCP tool access with `allowedTools` wildcards and per-tool grants
   - Detect and handle server connection failures via the `system` init message
+  - Apply the "SMB Workflow" pattern: coordinating QuickBooks, PayPal, and HubSpot tools
   - Explain why `permissionMode: "acceptEdits"` is NOT sufficient for MCP tool approval
-- **Key concepts**: `mcp__<server>__<tool>` naming, `mcpServers`, transport types, `.mcp.json`, tool search, OAuth2 via headers, 60s connection timeout
-- **Hands-on exercise**: Wire a GitHub MCP server (stdio) + a Postgres MCP server (stdio) + a cloud docs server (HTTP) into one agent that pulls an issue, queries a related DB table, and writes a summary
+- **Key concepts**: `mcp__<server>__<tool>` naming, `mcpServers`, transport types, `.mcp.json`, tool search, OAuth2 via headers, 60s connection timeout, Claude SMB connectors
+- **Hands-on exercise**: Wire a QuickBooks MCP server (stdio) + a PayPal MCP server (HTTP) + a HubSpot server (HTTP) into one agent that reconciles payments and updates lead status in a single workflow.
 
 ---
 

@@ -1,11 +1,11 @@
 ---
 course_slug: picking-a-frontier-model-2026-q2
 title: "Picking a Frontier Model: Opus 4.7 vs GPT-5.5 vs Gemini 3.1 Pro — A Builder's Benchmark Guide"
-status: outline-draft-for-review
+status: awaiting-g0
 author: course-author
 level: Builder
 vendor_tag: community
-ticket: KOE-25
+ticket: KOEA-2415
 target_audience: "Software engineers and AI builders evaluating Anthropic, OpenAI, or Google for a production AI system. They have shipped at least one AI-powered feature and have used an LLM API in production. They are NOT AI researchers — they need to ship something reliable and affordable, not win a leaderboard."
 prerequisites:
   - "Hands-on experience calling at least one frontier LLM API (OpenAI, Anthropic, or Gemini)"
@@ -16,13 +16,15 @@ learning_outcomes:
   - "Run a structured determinism benchmark (10×3×5 design) against any three frontier models"
   - "Measure long-context degradation on your own documents at 50K, 200K, and 500K+ tokens"
   - "Calculate cost-per-task (not cost-per-token) for real production workloads"
+  - "Evaluate governance and specialized access programs (Trusted Access for Cyber) for secure production deployments"
   - "Produce a defensible, documented model-selection memo for your use case"
-total_duration_min: 200
-chapter_count: 4
+total_duration_min: 250
+chapter_count: 5
 capstone_project_min: 60
 related_blogs:
   - opus-4-7-long-running-coding-benchmark
   - gpt-5-5-in-codex
+  - sub-hour-zero-days-aisi-mythos-autonomous-cyber-developers
 sources:
   - https://www.anthropic.com/news
   - https://help.openai.com/en/articles/9624314-model-release-notes
@@ -53,9 +55,9 @@ The standard comparison post asks: *which model is the smartest?* We ask: *which
 - **Duration**: 40 min
 - **Prerequisites**: course intro only
 - **Learning objectives**:
-  1. Identify the 5 evaluation dimensions that consistently separate frontier models on real production workloads (latency p95, tool-use determinism, context fidelity at depth, structured-output reliability, cost-per-task)
+  1. Identify the 7 evaluation dimensions that consistently separate frontier models on real production workloads (latency p95, tool-use determinism, context fidelity at depth, structured-output reliability, cost-per-task, multimodal fidelity (TTS/Vision), and governance/specialized access)
   2. Name 3 commonly cited benchmarks that correlate poorly with production outcomes and explain why
-  3. Build a custom scorecard template scoped to a specific use case (coding agent, document Q&A, customer support)
+  3. Build a custom scorecard template scoped to a specific use case (coding agent, document Q&A, customer support, voice agent)
   4. Distinguish "frontier model" from "best model for your use case"
 - **Key concepts**: evaluation dimensions vs. benchmark proxies, production gap, use-case-first selection, capability overhang
 - **Contrarian angle**: MMLU and coding benchmarks measure the same narrow slice of reasoning. The dimensions that actually fail in production — output stability, tool schema adherence, mid-context retrieval — are barely represented in public evals.
@@ -116,6 +118,22 @@ The standard comparison post asks: *which model is the smartest?* We ask: *which
 
 ---
 
+### Chapter 5: Governance and Security Access — GPT-5.5-Cyber & Codex on Bedrock
+
+- **Duration**: 50 min
+- **Prerequisites**: Chapter 1
+- **Learning objectives**:
+  1. Define the "Trusted Access for Cyber" program and its role in accelerating defensive AI workflows while mitigating risk
+  2. Explain the governance benefits of deploying OpenAI models and Codex via Amazon Bedrock (IAM, PrivateLink, VPC controls)
+  3. Compare specialized access tiers (e.g., Anthropic's Project Glasswing vs. OpenAI's Trusted Access) for security and research teams
+  4. Evaluate the "Codex governance case": choosing between local Codex Desktop, OpenAI Enterprise, and centralized Bedrock endpoints based on audit requirements
+- **Key concepts**: Trusted Access for Cyber, Model Safeguards vs. Permissive Access, Enterprise Governance on Bedrock, Data Residency, Agentic Compliance, Codex Desktop v0.125.0 Governance
+- **Contrarian angle**: Specialized model access is the new "priority support." For high-stakes security work, the delta between a standard model's refusals and a Trusted Access model's permissiveness is a bigger productivity lever than any reasoning benchmark. Furthermore, Bedrock's value proposition isn't the model—it's the IAM policy you wrap around it.
+- **Hands-on exercise**: Draft a mock application for OpenAI's Trusted Access for Cyber program. Specify three defensive use cases (e.g., reverse engineering, patch review, malware study) and define the necessary Paperclip-style governance controls (approvals, logging) for your team's deployment.
+- **v3-citation-authority requirements**: Wikipedia-style lead, key-facts list, ≥6 citations (OpenAI, AWS, AISI benchmarks), ≥3 internal wikilinks, References footer
+
+---
+
 ## Capstone project
 
 **Write a model-selection memo for your production use case.**
@@ -149,6 +167,7 @@ The existing "model comparison" resources fall into two categories: marketing pa
 - [[courses/picking-a-frontier-model-2026-q2/02-tool-use-determinism-benchmark]]
 - [[courses/picking-a-frontier-model-2026-q2/03-long-context-behavior]]
 - [[courses/picking-a-frontier-model-2026-q2/04-cost-per-task]]
+- [[courses/picking-a-frontier-model-2026-q2/05-governance-and-security-access]]
 - [[blogs/opus-4-7-long-running-coding-benchmark]]
 - [[blogs/gpt-5-5-in-codex]]
 - [[courses/claude-tool-use-from-zero]]

@@ -1,7 +1,7 @@
 ---
 course_slug: claude-tool-use-from-zero
 title: "Claude Tool Use from Zero: From Basics to Production Connectors"
-status: g0-passed
+status: awaiting-g0
 author: course-author
 level: Builder
 target_audience: "Developers who want to master Claude's tool use capabilities, from simple function calling to building robust specialized MCP servers."
@@ -14,8 +14,8 @@ learning_outcomes:
   - "Design secure, observable tool connectors for real-world domains"
   - "Debug complex tool interaction and authorization issues"
   - "Implement structured logging and audit trails for tool operations"
-total_duration_min: 480
-chapter_count: 8
+total_duration_min: 540
+chapter_count: 9
 ---
 
 # Course outline: Claude Tool Use from Zero
@@ -68,8 +68,14 @@ chapter_count: 8
 - Key concepts: Confidentiality, audit trails, data residency, PII redaction.
 - Hands-on exercise: Extend your MCP server with a document redaction tool.
 
+## Chapter 9: SMB and Growth Connectors (May 2026 Update)
+- Learning objectives: Master the Claude SMB workflow stack, coordinate financial and CRM tool calls, implement "human-in-the-loop" approval gates for sensitive business actions.
+- Duration: 60 min
+- Key concepts: Claude Cowork toggle, QuickBooks + PayPal reconciliation pattern, HubSpot lead-to-deal automation, Awaiting Approval state.
+- Hands-on exercise: Build a "Payroll Assistant" that reconciles PayPal settlements against a QuickBooks ledger and drafts reminder emails for missing payments.
+
 ## Capstone Project
-- Build a production-ready MCP "Agentic Connector" that bridges a secure corporate system (e.g., medical or legal) to Claude. It must include:
+- Build a production-ready MCP "Agentic Connector" that bridges a secure corporate system (e.g., medical, legal, or SMB finance) to Claude. It must include:
   - Custom tool definitions for data retrieval and modification.
   - Full observability (structured logs of all calls).
   - Implemented authorization per-tool call.

@@ -1,7 +1,7 @@
 ---
 course_slug: gemini-enterprise-agents
 title: "Build Production AI Agents with Gemini Enterprise Agent Platform"
-status: outline-revised-for-g0
+status: awaiting-g0
 author: course-author
 level: Builder
 vendor_tag: google
@@ -13,13 +13,14 @@ prerequisites:
   - "Basic understanding of IAM, VPC networking, and GCP project structure"
   - "Comfort reading architecture diagrams and API reference docs"
 learning_outcomes:
-  - "Design and deploy a single Gemini-powered agent on Agent Runtime with tools, sessions, and Memory Bank"
+  - "Design and deploy multimodal agents using Gemini 3.1 Pro and Flash TTS with expressive audio control"
   - "Architect multi-agent orchestration patterns (supervisor/worker, sequential pipeline, A2A) using Agent Registry"
   - "Configure Agent Gateway, Agent Identity, and Model Armor for a CISO-defensible deployment"
   - "Implement production observability (traces, logs, metrics, topology) and automated evaluation pipelines"
-  - "Operate a production agent system with SLA targets, cost controls, and incident response runbooks"
-total_duration_min: 300
-chapter_count: 7
+  - "Operate a production agent system with SLA targets, cost controls (Flash-Lite), and incident response runbooks"
+  - "Deploy agents in hardened Agent Sandboxes for secure 'computer use' and code execution"
+total_duration_min: 345
+chapter_count: 8
 capstone_project_min: 60
 ---
 
@@ -27,21 +28,11 @@ capstone_project_min: 60
 
 ## Why this course
 
-Google's Gemini Enterprise Agent Platform (GEAP), GA since 23 April 2026, is the first cloud-native agent runtime with DevSecOps baked in. Every Vertex AI service now lives under one unified surface — model serving, fine-tuning, pipelines, evaluation, and the new agent primitives (Runtime, Memory Bank, Agent Gateway, Agent Identity).
+Google's Gemini Enterprise Agent Platform (GEAP), GA since 23 April 2026, is the first cloud-native agent runtime with DevSecOps baked in. With the release of **Gemini 3.1 Pro** and **Flash TTS**, the platform has moved beyond text-based reasoning to native multimodal agency. Gemini 3.1 Pro's 77.1% score on ARC-AGI-2 marks a shift from "managing tasks" to "delegating outcomes."
 
 Most agent tutorials end at "hello world with a tool." This course starts where they stop. It is for the engineer who must defend a production agent deployment to a CISO — not just ship a demo. Every chapter produces something you can show your security team, your SRE on-call, or your finance department.
 
-By the end of Chapter 7 you will have a fully deployed multi-agent system behind Agent Gateway, with IAM policies, Model Armor, structured observability, and an evaluation pipeline — and the runbook to operate it.
-
-**Merged 2026-05-01 with the former hands-on-tour course.** Per Vardaan's instruction, the two Gemini Enterprise courses (`gemini-enterprise-agent-platform-hands-on-tour` + this one) have been consolidated under this canonical slug. The 4 written chapter drafts from the hands-on-tour course are now in this directory as Ch1-Ch4 stubs and need to be **rewritten by course-author** to fit the production focus described in this outline (current chapter content is intro-level; this outline targets production/CISO-defensible). Ch5-Ch7 are net-new and need to be written from scratch. The hands-on-tour outline shell is archived at `vault/_dedupe-archive/2026-05-01/courses/gemini-enterprise-agent-platform-hands-on-tour/`.
-
-**Action items for course-author (post-merge):**
-- Rewrite Ch1 (currently "What GEAP is and isn't" — intro) to fit "The production agent landscape — why GEAP exists"
-- Rewrite Ch2 (currently "Hello-world: tool, state, persistence") to fit "Single-agent setup — build, tool, persist"
-- INSERT Ch3 (RAG and grounding) — net-new, no existing draft
-- Rewrite Ch3 (currently "Multi-agent w/ Vertex") and renumber to Ch4 to fit "Multi-agent orchestration"
-- Move Ch4 (currently "Comparing to Claude Agent SDK and Cloudflare Agents") to an Appendix or fold into Ch1 as a "what GEAP is not" section
-- Write Ch5 (Enterprise security), Ch6 (Observability), Ch7 (Scale + cost)
+By the end of Chapter 8 you will have a fully deployed multi-agent system behind Agent Gateway, featuring expressive voice interaction, hardened code execution, and the governance to operate it at scale.
 
 ## Course outline
 
@@ -49,25 +40,25 @@ By the end of Chapter 7 you will have a fully deployed multi-agent system behind
 - **Duration**: 35 min
 - **Prerequisites**: None (course intro)
 - **Learning objectives**:
-  - Explain why stitching LangChain demos into microservices fails at enterprise scale (state sprawl, no identity, no audit trail)
-  - Map GEAP's four pillars (Build / Scale / Govern / Optimize) to enterprise requirements: who in your org needs what
-  - Identify the three things GEAP explicitly does NOT guarantee (multi-cloud portability, open-source model access, free-tier SLAs) and the architectural workarounds for each
-  - Read a GEAP architecture diagram and annotate which pillar owns each component
-- **Key concepts**: Agent Runtime, Memory Bank, Agent Gateway, Agent Identity, Agent Registry, Model Armor, ADK vs Agent Studio, the Vertex AI consolidation, enterprise SLA tiers
-- **Hands-on**: Draw the GEAP component map for an enterprise HR-onboarding agent. Annotate which pillar owns each component, which IAM roles are needed, and where data flows cross VPC boundaries.
+  - Explain the 2026 transition from Vertex AI to GEAP: why standalone AI services are legacy
+  - Map Gemini 3.1 Pro's reasoning leap (ARC-AGI-2) to the necessity of enterprise guardrails
+  - Map GEAP's four pillars (Build / Scale / Govern / Optimize) to enterprise requirements
+  - Identify the trade-offs of the "Google-native" stack vs. multi-cloud agent SDKs
+- **Key concepts**: Agent Runtime, Memory Bank, Agent Gateway, Agent Identity, Agent Registry, Model Armor, Gemini 3.1 Pro reasoning leap, Vertex AI consolidation
+- **Hands-on**: Draw the GEAP component map for an enterprise HR-onboarding agent. Annotate which pillar owns each component and where Gemini 3.1 Pro sits.
 
 ---
 
 ### Chapter 2: Single-agent setup — build, tool, and persist
 - **Duration**: 50 min
-- **Prerequisites**: Chapter 1, GCP project with billing, `gcloud` CLI installed
+- **Prerequisites**: Chapter 1, GCP project with billing, `gcloud` CLI
 - **Learning objectives**:
-  - Install `google-cloud-aiplatform[agent_engines,adk]` and initialize the Agent Platform SDK for Python in under 15 minutes
-  - Define Python functions as tools with proper type hints and docstrings that ADK auto-introspects — no decorator required
-  - Distinguish in-session state (Sessions managed via `AdkApp`) from long-term memory (`Memory Bank`) and explain when to use each
-  - Deploy the agent to Agent Runtime via `client.agent_engines.create()` and invoke it via the managed `reasoningEngine` endpoint
-- **Key concepts**: `Agent` class, `agent_engines.AdkApp`, `async_stream_query` (in-memory sessions for local testing), Sessions vs Memory Bank, Agent Runtime deployment (`reasoningEngine`), cold-start behavior, tool type hints and docstrings as ADK tool annotations
-- **Hands-on**: Build a "Policy Q&A" agent — a tool that queries a mock policy document store, a Session that tracks the conversation, and a Memory Bank profile that accumulates the user's department and access level across sessions. Deploy to Agent Runtime and verify via `curl`.
+  - Install `google-cloud-aiplatform[agent_engines,adk]` and initialize the SDK
+  - Define Python functions as tools with proper type hints for ADK auto-introspection
+  - Distinguish in-session state (Sessions) from long-term memory (Memory Bank)
+  - Deploy to Agent Runtime and compare **Gemini 3.1 Pro** vs. **Flash-Lite** for cost/latency tradeoffs
+- **Key concepts**: `AdkApp`, Sessions vs Memory Bank, Agent Runtime, Gemini 3.1 Pro vs. Flash-Lite pricing, cold-start behavior
+- **Hands-on**: Build a "Policy Q&A" agent — a tool for mock policy retrieval, a Session for state, and a Memory Bank profile for user context. Verify via `curl`.
 
 ---
 
@@ -75,12 +66,12 @@ By the end of Chapter 7 you will have a fully deployed multi-agent system behind
 - **Duration**: 45 min
 - **Prerequisites**: Chapter 2
 - **Learning objectives**:
-  - Configure RAG Engine with your own corpus (PDF, HTML, Cloud Storage) and explain the ingestion pipeline
-  - Distinguish the grounding options available on Agent Platform (Google Search, Google Maps, Agent Platform Search, RAG, Elasticsearch, your search API, Parallel, Web Grounding for Enterprise) and select the right one for three enterprise scenarios
-  - Set up Agent Platform Vector Search 2.0 as the backing vector store for RAG
-  - Measure retrieval quality and diagnose hallucination with grounding metadata and citation scores
-- **Key concepts**: RAG Engine, corpus ingestion, chunking and parsing strategies (Document AI, LLM parser), Vector Search 2.0 collections, grounding options (Google Search, Google Maps, Agent Platform Search, RAG, Elasticsearch, your search API, Parallel), hybrid retrieval, reranking
-- **Hands-on**: Ingest a set of 10 internal policy documents into a RAG corpus. Connect the Policy Q&A agent from Chapter 2 to the corpus. Run five test queries and compare responses with and without grounding. Identify at least one hallucination that grounding eliminates.
+  - Configure RAG Engine with a 1M+ token corpus using Gemini 3.1 Pro's long-context capabilities
+  - Distinguish grounding options: Google Search, Maps, RAG, and Web Grounding for Enterprise
+  - Set up Vector Search 2.0 as the backing store
+  - Measure retrieval quality vs. synthesis accuracy at various context depths (200K, 500K, 1M)
+- **Key concepts**: RAG Engine, chunking strategies, Vector Search 2.0, 1M token context behavior, synthesis effective limits
+- **Hands-on**: Ingest 20 internal policy documents. Compare 3.1 Pro reasoning quality with and without grounding at 500K token depth.
 
 ---
 
@@ -88,12 +79,12 @@ By the end of Chapter 7 you will have a fully deployed multi-agent system behind
 - **Duration**: 55 min
 - **Prerequisites**: Chapter 3
 - **Learning objectives**:
-  - Implement three orchestration patterns: supervisor/worker, sequential pipeline, and Agent2Agent (A2A) inter-platform delegation
-  - Register agents in Agent Registry and discover them by name and capability annotations
-  - Wire agent handoffs with `transfer_to_agent` and debug failed handoffs using Agent Observability traces
-  - Design a multi-agent system that avoids common anti-patterns: circular delegation, unconstrained fan-out, and shared mutable state
-- **Key concepts**: sub-agent networks, graph-based orchestration, `AgentRegistry`, `transfer_to_agent`, Agent2Agent protocol, sequential vs parallel routing, agent anomaly detection, orchestration anti-patterns
-- **Hands-on**: Build a three-agent invoice processing pipeline — an Orchestrator (supervisor), an Extractor sub-agent (mocks PDF parsing), and a Validator sub-agent (checks totals against rules). Register all three in Agent Registry. Process three test invoices end-to-end and view the trace in Agent Observability.
+  - Implement orchestration patterns: supervisor/worker, sequential pipeline, and Agent2Agent (A2A)
+  - Register agents in Agent Registry and discover them by capability annotations
+  - Wire agent handoffs with `transfer_to_agent` and debug via Agent Observability traces
+  - Use Gemini 3.1 Pro's high-determinism reasoning to reduce orchestration "looping"
+- **Key concepts**: sub-agent networks, `AgentRegistry`, `transfer_to_agent`, A2A protocol, orchestration anti-patterns, determinism budgets
+- **Hands-on**: Build a three-agent invoice processing pipeline. Register all three in Agent Registry and process test invoices through the ensemble.
 
 ---
 
@@ -101,12 +92,12 @@ By the end of Chapter 7 you will have a fully deployed multi-agent system behind
 - **Duration**: 50 min
 - **Prerequisites**: Chapter 4
 - **Learning objectives**:
-  - Configure Agent Identity (SPIFFE-formatted ID) per agent and assign IAM roles directly to the agent — no shared service accounts
-  - Set up Agent Gateway as the single traffic enforcement point: intercept tool calls, enforce access control policies, and apply Model Armor inspection
-  - Implement user-delegated OAuth 2.0 via Agent Identity Auth Manager so agents invoke tools on behalf of specific users with a clear audit trail
-  - Write a security review checklist that a CISO can approve for a GEAP deployment
-- **Key concepts**: Agent Identity (SPIFFE), Agent Gateway, Model Armor, Agent Identity Auth Manager, 2-legged and 3-legged OAuth, VPC-Service Controls, Customer-Managed Encryption Keys (CMEK), Application Design Center, audit logging, semantic governance policies
-- **Hands-on**: Secure the invoice pipeline from Chapter 4 — assign Agent Identities to each sub-agent, configure Agent Gateway to enforce that the Extractor can only read from the designated Cloud Storage bucket, enable Model Armor on tool-call responses, and verify the IAM audit log captures agent actions.
+  - Configure Agent Identity (SPIFFE) per agent—no shared service accounts
+  - Set up Agent Gateway for traffic enforcement, tool-call interception, and Model Armor inspection
+  - Implement user-delegated OAuth 2.0 via Agent Identity Auth Manager
+  - Use **SynthID watermarking** for audit-logging and verifying model-generated audio/video
+- **Key concepts**: Agent Identity, Agent Gateway, Model Armor, Agent Identity Auth Manager, SynthID, VPC-SC, CMEK
+- **Hands-on**: Secure the invoice pipeline—assign Identities, configure Gateway to block unauthorized tool calls, and enable Model Armor for tool responses.
 
 ---
 
@@ -114,81 +105,71 @@ By the end of Chapter 7 you will have a fully deployed multi-agent system behind
 - **Duration**: 50 min
 - **Prerequisites**: Chapter 5
 - **Learning objectives**:
-  - Configure Cloud Observability (Trace, Logging, Monitoring, Topology) for deployed agents using OpenTelemetry
-  - Read an agent trace to diagnose a failed tool call, identify the latency bottleneck, and calculate token cost per interaction
-  - Set up an automated evaluation pipeline using Agent Evaluation: Agent Simulation for pre-deploy testing, Online Monitors (multi-turn autoraters) for continuous live evaluation, and Agent Optimizer for automated failure clustering and instruction refinement
-  - Configure quality alerts and Example Store for continuous improvement
-- **Key concepts**: Cloud Trace, Cloud Logging, Cloud Monitoring, Topology view, OpenTelemetry, Agent Evaluation, Agent Simulation (synthetic user interactions), Online Monitors (multi-turn autoraters), offline evaluation, quality alerts, Example Store, Agent Optimizer (failure clustering + instruction refinement), failure cluster analysis
-- **Hands-on**: Enable observability on the invoice pipeline. Inject a deliberate failure (misconfigured tool). Read the trace to identify the failure point. Run an offline evaluation with a 20-query test set. Configure a quality alert for latency > 5s. Verify the alert fires in the monitoring dashboard.
+  - Configure Cloud Observability using OpenTelemetry for agent-specific traces
+  - Read traces to identify bottlenecks and calculate token cost per interaction
+  - Set up automated evaluation with Agent Simulation and Online Monitors (autoraters)
+  - Use Agent Optimizer to cluster failures and suggest prompt refinements based on 3.1 Pro behavior
+- **Key concepts**: Cloud Trace, Cloud Logging, OpenTelemetry, Agent Simulation, Online Monitors, Agent Optimizer
+- **Hands-on**: Inject a failure into the pipeline. Use the trace to find it. Run an offline evaluation on 30 queries and configure a quality alert.
 
 ---
 
-### Chapter 7: Operating at scale — SLAs, cost, and incident response
-- **Duration**: 45 min
+### Chapter 7: Multimodal Agents — Voice, Video, and Computer Use
+- **Duration**: 40 min
 - **Prerequisites**: Chapter 6
 - **Learning objectives**:
-  - Define SLA targets (latency, availability, cost-per-transaction) for a production agent deployment and map them to GEAP's pricing model and quota system
-  - Implement cost controls: model selection (Flash vs Pro), token budgeting, and caching strategies
-  - Write an incident response runbook specific to agent failures: tool-timeout, model-overspend, Memory Bank corruption, Agent Gateway outage
-  - Plan a rollback strategy for agent code changes using Agent Registry versioning and gradual traffic shifting
-- **Key concepts**: SLA definition, GEAP pricing tiers, token budgeting, model selection strategy (Gemini Flash vs Pro), caching, Agent Registry versioning, traffic shifting, incident response runbooks, Memory Bank backup and recovery, Agent Gateway redundancy, Private Service Connect
-- **Hands-on**: Write a production runbook for the invoice pipeline. Include: SLA targets with rationale, cost projection for 10K invoices/month, escalation matrix for three failure scenarios, and a rollback procedure for agent code updates. Test the rollback by deploying a deliberate regression and reverting via Agent Registry.
+  - Implement **Gemini 3.1 Flash TTS** with expressive audio tags (`[whisper]`, `[excited]`)
+  - Build agents that reason over images and real-time video streams
+  - Configure **Agent Sandbox** for secure code execution and "computer use" browser tasks
+  - Apply SynthID watermarking to all agent-generated multimodal outputs
+- **Key concepts**: Flash TTS, expressive audio tags, multimodal reasoning, Agent Sandbox, Computer Use, SynthID
+- **Hands-on**: Build a "Voice Concierge" that uses Flash TTS to welcome users with different vocal styles and identifies a product shown to a webcam.
+
+---
+
+### Chapter 8: Operating at scale — SLAs, cost, and incident response
+- **Duration**: 20 min
+- **Prerequisites**: Chapter 7
+- **Learning objectives**:
+  - Define SLA targets and map them to GEAP's pricing model (Pro vs. Flash-Lite)
+  - Implement cost controls: Provisioned Throughput vs. On-demand, and context caching
+  - Write an incident response runbook for tool-timeouts and Memory Bank corruption
+  - Plan rollbacks using Agent Registry versioning and traffic shifting
+- **Key concepts**: SLA definition, Provisioned Throughput, context caching, Agent Registry versioning, traffic shifting, incident response runbooks
+- **Hands-on**: Write a production runbook for the multimodal invoice pipeline. Test a rollback procedure via Agent Registry.
 
 ---
 
 ## Capstone project
 
-**Deploy a production-grade multi-agent system for enterprise document processing.**
+**Deploy a production-grade multimodal multi-agent system for enterprise processing.**
 
 Deliverable:
-- An ADK codebase with: a Supervisor agent, a Document Ingestion sub-agent (uses RAG Engine), a Compliance Checker sub-agent (uses grounding + rules), and a Notification sub-agent (sends alerts)
-- All agents registered in Agent Registry with Agent Identities
-- Agent Gateway configured with IAM policies and Model Armor
-- RAG Engine corpus with at least 20 real documents ingested
-- Cloud Observability enabled with traces, logs, and at least one quality alert
-- An offline evaluation with a 30-query test set showing >80% accuracy
-- A production runbook covering SLA targets, cost projections, incident response, and rollback procedures
-- A CISO security review checklist completed for the deployment
-
-Verification criteria:
-- `client.agent_engines.create()` succeeds and all four agents are reachable via Agent Runtime
-- Agent Gateway blocks an unauthorized tool call (demonstrated in trace)
-- Model Armor flags a sensitive-data leak in a tool response (demonstrated in audit log)
-- Memory Bank retains user context across three separate sessions
-- Offline evaluation achieves >80% accuracy on the test set
-- Quality alert fires when latency exceeds the defined threshold
-- Runbook is reviewable by a security team with no GEAP-specific knowledge
+- ADK codebase with Supervisor, RAG (1M context), Voice (Flash TTS), and Compliance agents
+- All agents registered in Agent Registry with Agent Identities and secured by Agent Gateway
+- Multimodal capability: processes images/video and responds with expressive voice
+- Cloud Observability enabled with quality alerts and an evaluation report (>80% accuracy)
+- Production runbook with SLA, cost projection (Pro/Flash-Lite mix), and CISO checklist
 
 Time: 60 min
 
 ---
 
-## How this course relates to our existing GEAP course
-
-Our *Gemini Enterprise Agent Platform: A Hands-On Tour* (4 chapters) is an introductory course for developers evaluating GEAP against alternatives. It covers hello-world agents, basic tool use, multi-agent patterns, and a comparison with Claude Agent SDK and Cloudflare Agents.
-
-**This course is not a duplicate.** It assumes the learner has decided to build on GEAP and needs to ship something production-grade. Chapters 3–7 (RAG, security, observability, evaluation, operations) have no overlap with the Tour course. Learners who completed the Tour will find Chapter 2 a useful refresher and can skip to Chapter 3.
-
----
-
 ## Why this beats alternatives
 
-Most GEAP content stops at "deploy your first agent." No existing tutorial covers Agent Gateway configuration, Model Armor inspection, or Agent Identity IAM. No course teaches you how to write a CISO review checklist for an agent deployment. This course does — because the real bottleneck for enterprise agent adoption isn't the code, it's the security review.
+Most GEAP content stops at "deploy your first agent." This is the first course to integrate **Gemini 3.1 Pro**'s reasoning, **Flash TTS**'s expressive voice, and **Agent Gateway**'s enterprise security. We don't just teach you to code; we teach you to defend your deployment to a CISO.
 
 ---
 
 ## Sources
 
 1. [Google Cloud Blog: Introducing Gemini Enterprise Agent Platform](https://cloud.google.com/blog/products/ai-machine-learning/introducing-gemini-enterprise-agent-platform)
-2. [GEAP Agents Overview — Official Docs](https://docs.cloud.google.com/gemini-enterprise-agent-platform/agents/overview)
-3. [Agent Studio Overview — Official Docs](https://docs.cloud.google.com/gemini-enterprise-agent-platform/agent-studio/overview)
-4. [Agent Development Kit (ADK) Quickstart](https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/quickstart-adk)
-5. [RAG Engine Overview — Official Docs](https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/rag-engine/rag-overview)
-6. [Grounding Overview — Official Docs](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/grounding/overview)
-7. [Agent Gateway Overview — Official Docs](https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview)
-8. [Agent Identity Overview — Official Docs](https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/agent-identity-overview)
-9. [Cloud Observability for Agents — Official Docs](https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/observability/overview)
-10. [Agent Evaluation — Official Docs](https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/agent-evaluation)
-11. [Agent Optimizer — Official Docs](https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/optimize-agent)
-12. [Google DeepMind: Measuring AGI Progress](https://blog.google/innovation-and-ai/models-and-research/google-deepmind/measuring-agi-cognitive-framework/)
-13. [OpenAI on AWS — Competitive Context](https://openai.com/index/openai-on-aws/)
+2. [Gemini 3.1 Flash TTS: Expressive AI Speech](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-flash-tts/)
+3. [Gemini 3.1 Pro: A Smarter Model](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/)
+4. [Gemini 3.1 Flash-Lite GA](https://cloud.google.com/blog/products/ai-machine-learning/gemini-3-1-flash-lite-is-now-generally-available)
+5. [GEAP Official Documentation](https://docs.cloud.google.com/gemini-enterprise-agent-platform/agents/overview)
+6. [Agent Development Kit (ADK) Quickstart](https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/quickstart-adk)
+7. [RAG Engine Overview](https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/rag-engine/rag-overview)
+8. [Agent Gateway & Identity](https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview)
+9. [Agent Observability & Evaluation](https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/observability/overview)
+10. [ARC-AGI-2 Reasoning Benchmark](https://arcprize.org/blog/gemini-3-1-pro-results)

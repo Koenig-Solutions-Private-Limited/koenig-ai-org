@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Copilot, Cursor, and Claude Code agent loop comparison</title>
+  <desc id="desc">Three columns compare where the agent execution loop lives: GitHub, a managed background runtime, or the terminal.</desc>
+  <rect width="1600" height="900" fill="#f7f8fb"/>
+  <rect x="90" y="90" width="1420" height="720" rx="28" fill="#ffffff" stroke="#d9dee8" stroke-width="3"/>
+  <text x="150" y="180" font-family="Inter, Arial, sans-serif" font-size="52" font-weight="700" fill="#111827">Choose by where the agent loop lives</text>
+  <text x="150" y="235" font-family="Inter, Arial, sans-serif" font-size="28" fill="#4b5563">Copilot keeps it in GitHub. Cursor runs it in the background. Claude Code makes it programmable.</text>
+
+  <g transform="translate(150 310)">
+    <rect width="380" height="360" rx="18" fill="#eef7ff" stroke="#93c5fd" stroke-width="3"/>
+    <circle cx="70" cy="72" r="36" fill="#2563eb"/>
+    <path d="M55 73h30M70 58v30" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+    <text x="120" y="80" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700" fill="#111827">Copilot</text>
+    <text x="42" y="150" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="700" fill="#1f2937">Loop lives in GitHub</text>
+    <text x="42" y="205" font-family="Inter, Arial, sans-serif" font-size="22" fill="#374151">Issues, branches, reviews,</text>
+    <text x="42" y="238" font-family="Inter, Arial, sans-serif" font-size="22" fill="#374151">usage metrics, budgets,</text>
+    <text x="42" y="271" font-family="Inter, Arial, sans-serif" font-size="22" fill="#374151">and organization policy.</text>
+  </g>
+
+  <g transform="translate(610 310)">
+    <rect width="380" height="360" rx="18" fill="#fff7ed" stroke="#fdba74" stroke-width="3"/>
+    <circle cx="70" cy="72" r="36" fill="#f97316"/>
+    <path d="M50 82c42 0 42-28 82-28" stroke="#ffffff" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <text x="120" y="80" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700" fill="#111827">Cursor</text>
+    <text x="42" y="150" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="700" fill="#1f2937">Loop runs in background</text>
+    <text x="42" y="205" font-family="Inter, Arial, sans-serif" font-size="22" fill="#374151">Cloud agents, Bugbot,</text>
+    <text x="42" y="238" font-family="Inter, Arial, sans-serif" font-size="22" fill="#374151">web and mobile follow-up,</text>
+    <text x="42" y="271" font-family="Inter, Arial, sans-serif" font-size="22" fill="#374151">and managed throughput.</text>
+  </g>
+
+  <g transform="translate(1070 310)">
+    <rect width="380" height="360" rx="18" fill="#f0fdf4" stroke="#86efac" stroke-width="3"/>
+    <circle cx="70" cy="72" r="36" fill="#16a34a"/>
+    <path d="M50 62h40l-18 18 18 18H50" stroke="#ffffff" stroke-width="8" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+    <text x="120" y="80" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700" fill="#111827">Claude Code</text>
+    <text x="42" y="150" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="700" fill="#1f2937">Loop is programmable</text>
+    <text x="42" y="205" font-family="Inter, Arial, sans-serif" font-size="22" fill="#374151">Terminal workflows, hooks,</text>
+    <text x="42" y="238" font-family="Inter, Arial, sans-serif" font-size="22" fill="#374151">MCP tools, worktrees,</text>
+    <text x="42" y="271" font-family="Inter, Arial, sans-serif" font-size="22" fill="#374151">and custom automation.</text>
+  </g>
+</svg>

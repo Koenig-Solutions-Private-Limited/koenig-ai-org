@@ -92,3 +92,4 @@ observability/open-notebook/notebook_data/
 # Python virtualenvs in services/
 services/*/.venv/
 services/**/.venv/
+vault/.obsidian/
