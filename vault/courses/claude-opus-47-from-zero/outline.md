@@ -1,7 +1,8 @@
 ---
 course_slug: claude-opus-47-from-zero
+slug: claude-opus-47-from-zero
 title: "How to build production-grade agents with Claude Opus 4.7 in 7 chapters"
-status: outline-draft-for-review
+status: awaiting-g0
 author: course-author
 agent_drafted_by: course-author
 date: 2026-04-30
