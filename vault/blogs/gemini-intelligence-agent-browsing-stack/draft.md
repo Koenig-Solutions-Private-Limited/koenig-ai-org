@@ -15,7 +15,7 @@ tags:
   - google-io-2026
   - project-mariner
   - computer-use
-status: g0-blocked
+status: g0-pending
 reading_time_min: 6
 primary_query: "gemini intelligence browser agent vs openai operator browser-use 2026"
 contrarian_angle: "Project Mariner didn't fail — it was absorbed on purpose; Google's actual developer bet is Gemini 2.5 Computer Use API at $1.25/M input, the most underpriced flagship agent model in the stack"
@@ -23,7 +23,7 @@ faq:
   - q: "What replaced Project Mariner?"
     a: "Project Mariner was shut down May 4, 2026. Its technology moved into three products: Gemini Agent (AI Pro/Ultra), AI Mode (enhanced search), and Chrome Auto Browse (desktop now, mobile late June 2026)."
   - q: "How does Gemini Intelligence compare to OpenAI Operator?"
-    a: "OpenAI Operator (GPT-5.5 backbone) scores 90.1 on BenchLM agentic benchmarks versus no published score for Gemini Intelligence's consumer layer. Gemini leads on ecosystem integration (Android/Chrome/Workspace); Operator leads on standalone task reliability."
+    a: "OpenAI Operator (GPT-5.5 Pro backbone) scores 90.1 on BenchLM agentic benchmarks versus no published score for Gemini Intelligence's consumer layer. Gemini leads on ecosystem integration (Android/Chrome/Workspace); Operator leads on standalone task reliability."
   - q: "Is Gemini 2.5 Computer Use free?"
     a: "No. The Gemini 2.5 Computer Use Preview model is paid-only — $1.25/M input tokens for prompts under 200k tokens. There is no free tier."
 sources:
@@ -37,6 +37,7 @@ sources:
   - https://builtin.com/articles/google-gemini
   - https://devtk.ai/en/blog/ai-api-pricing-comparison-2026/
   - https://www.tomsguide.com/ai/google-just-unlocked-agent-mode-for-gemini-3-1-here-are-7-things-it-can-now-do-for-you
+  - https://benchlm.ai/llm-agent-benchmarks
 whats_new:
   - "Project Mariner shut down May 4; Gemini Intelligence launched May 12 — Google's agent browsing is now an OS feature, not a lab experiment, and the $1.25/M Gemini 2.5 Computer Use API quietly undercuts every competitor"
 learning_objectives:
@@ -75,7 +76,7 @@ The consumer positioning is deliberate: Android VP Sameer Samat told CNBC that [
 | | Google Gemini | OpenAI Operator | browser-use | Anthropic Computer Use |
 |---|---|---|---|---|
 | **Architecture** | DOM + OS-level Chrome/Android integration | GPT-5.5 browser agent | Playwright + LLM (hybrid DOM/vision) | Screenshot + keyboard/mouse (API primitive) |
-| **Benchmark** | Not published (consumer UI) | 90.1 BenchLM agentic score | 89.1% WebVoyager | 72.5% OSWorld-Verified |
+| **Benchmark** | Not published (consumer UI) | [90.1 BenchLM](https://benchlm.ai/llm-agent-benchmarks) (GPT-5.5 Pro) | 89.1% WebVoyager | Not publicly benchmarked |
 | **API access** | Gemini 2.5 Computer Use Preview ($1.25/M) | GPT-5.5 ($5.00/M) | Open source (self-host free) | Claude API ($5.00/M Opus 4.6) |
 | **Best for** | Consumer Android/Chrome tasks | Production-ready discrete web tasks | Developer infrastructure, any LLM | Desktop-level OS automation in sandboxes |
 | **Ecosystem** | Gmail, Calendar, Drive, Android, Chrome | ChatGPT, Plugin ecosystem | Any LLM via LangChain | Claude agents, Docker sandboxes |
@@ -87,7 +88,7 @@ The consumer positioning is deliberate: Android VP Sameer Samat told CNBC that [
 
 For a direct model benchmark breakdown across GPT-5.5 and Claude Opus 4.7, see [[gpt-5-5-vs-claude-opus-4-7-agentic-coding/draft]].
 
-**Anthropic Computer Use** operates at the OS level (full desktop via Docker sandboxes), which makes it more capable than browser-only agents for complex desktop automation — but it is a developer building block, not a finished product, and its 72.5% OSWorld-Verified score trails Operator's BenchLM.
+**Anthropic Computer Use** operates at the OS level (full desktop via Docker sandboxes), which makes it more capable than browser-only agents for complex desktop automation — but it is a developer building block, not a finished product, and Anthropic has not published a comparable agentic web-task benchmark score.
 
 ## The Pricing Math That Changes the Developer Equation
 
@@ -101,26 +102,7 @@ Competitive context from [DevTK's May 2026 pricing comparison](https://devtk.ai/
 
 **The developer use case:** If you are building a browser control agent and want a hosted inference backend rather than self-hosting browser-use, Gemini 2.5 Computer Use Preview is the cheapest path to a production-grade model. The catch: it is paid-only (no free tier) and the model is still in preview.
 
-```bash
-# Minimal Gemini 2.5 Computer Use Preview — list visible interactive elements on a page screenshot
-curl -s https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-computer-use-preview-10-2025:generateContent \
-  -H "Content-Type: application/json" \
-  -H "x-goog-api-key: $GEMINI_API_KEY" \
-  -d '{
-    "contents": [{
-      "parts": [
-        {"text": "List all clickable interactive elements visible in this screenshot and their approximate screen coordinates."},
-        {"inline_data": {"mime_type": "image/png", "data": "'$(base64 -w0 screenshot.png)'"}}
-      ]
-    }],
-    "generationConfig": {"temperature": 0}
-  }' | jq '.candidates[0].content.parts[0].text'
-
-# Expected output (example):
-# "1. Search bar — top-center (~960, 80)\n2. 'Sign In' button — top-right (~1820, 45)\n3. Navigation menu items: Home, Products, Pricing (~200-600, 130)"
-```
-
-Note: `screenshot.png` must be a Base64-encoded PNG of the browser viewport. For production use, pair with Playwright to capture and feed screenshots in a loop.
+The model accepts screenshot images and returns structured action instructions (click coordinates, text input targets, scroll commands). A real Computer Use agent loops: take screenshot → call the model → execute the returned action → repeat. Google's official quickstart for `gemini-2.5-computer-use-preview-10-2025` is at [ai.google.dev/gemini-api/docs/computer-use](https://ai.google.dev/gemini-api/docs/computer-use) and requires the `computer_use` tool declaration in the request payload, which differs from the standard `generateContent` path.
 
 ---
 

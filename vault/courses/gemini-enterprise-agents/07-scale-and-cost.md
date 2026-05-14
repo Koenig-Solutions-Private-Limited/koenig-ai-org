@@ -23,10 +23,10 @@ learning_objectives:
 sources:
   - https://cloud.google.com/vertex-ai/generative-ai/pricing
   - https://cloud.google.com/vertex-ai/generative-ai/docs/provisioned-throughput
-  - https://cloud.google.com/vertex-ai/generative-ai/docs/batch-prediction-api
+  - https://docs.cloud.google.com/vertex-ai/generative-ai/docs/model-reference/batch-prediction-api
   - https://cloud.google.com/vertex-ai/generative-ai/docs/quotas
-  - https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/scaling
-  - https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/autoscaling
+  - https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale
+  - https://docs.cloud.google.com/gemini-enterprise-agent-platform/machine-learning/predictions/autoscaling
   - https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
 ---
 
@@ -42,7 +42,7 @@ A multi-agent system on Gemini Enterprise Agent Platform (GEAP) that costs $200/
 4. Batch prediction discounts the per-token rate by 50% with a 24-hour SLA on completion [3]
 5. Global endpoints (`global-aiplatform.googleapis.com`) auto-route to the nearest available region; regional endpoints (`europe-west4-aiplatform.googleapis.com`) pin traffic for residency [4]
 6. Default per-project quota for Gemini 3.1 Pro is 60 requests-per-minute; raise via support ticket with a documented capacity plan [5]
-7. Agent Runtime autoscales between 0 and `max_replicas`; cold-start latency on scale-from-zero is sub-second for pre-warmed instances and 5-9s for fully cold [6]
+7. Agent Runtime autoscales between 0 and `max_replicas`; cold-start latency on scale-from-zero is sub-second for pre-warmed instances and approximately 4-5 seconds for fully cold (average ~4.7s measured at `min_instances=1`) [6]
 8. Anthropic Claude Sonnet 4.6 (priced separately even when invoked from GEAP) is $3.00/$15.00 per 1M tokens — reading prompt-caching docs before sub-agent design saves 40-90% on multi-turn workloads [7]
 
 ---
@@ -95,7 +95,7 @@ A subtle trap: if your agent is deployed regionally for residency but you forget
 
 ## Lever 3: Batch prediction for offline workloads
 
-Many agent workloads are nominally synchronous but contain offline-able sub-tasks. Document classification on a daily ingest. Bulk evaluation runs against a 50,000-prompt test set. Periodic enrichment of customer records. For these, [Vertex AI batch prediction](https://cloud.google.com/vertex-ai/generative-ai/docs/batch-prediction-api) cuts the per-token rate by 50% with a 24-hour completion SLA. [3]
+Many agent workloads are nominally synchronous but contain offline-able sub-tasks. Document classification on a daily ingest. Bulk evaluation runs against a 50,000-prompt test set. Periodic enrichment of customer records. For these, [Vertex AI batch prediction](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/model-reference/batch-prediction-api) cuts the per-token rate by 50% with a 24-hour completion SLA. [3]
 
 ```python
 from google.cloud import aiplatform
@@ -150,7 +150,7 @@ The most expensive incident we have seen at Koenig was a sub-agent recursion loo
 
 Agent Runtime autoscales between zero and a configured maximum. The behavior:
 
-- **Cold start (scale from zero):** 5-9 seconds for first request after idle period. [6]
+- **Cold start (scale from zero):** approximately 4-5 seconds for first request after idle period (Google-measured average: ~4.7s at default `min_instances=1`). [6]
 - **Pre-warmed instances:** sub-second cold-start by keeping `min_replicas >= 1`.
 - **Scale-up:** new replicas spin up when concurrent invocations exceed `target_concurrency_per_replica`.
 - **Scale-down:** replicas terminate after `idle_timeout_seconds` of no traffic.
@@ -259,13 +259,13 @@ For deeper reading on adjacent topics, see [[course/claude-tool-use-from-zero]] 
 
 [2] Google Cloud. "Provisioned Throughput for Generative AI on Vertex AI." — https://cloud.google.com/vertex-ai/generative-ai/docs/provisioned-throughput · retrieved 2026-05-03
 
-[3] Google Cloud. "Batch prediction API for Gemini." — https://cloud.google.com/vertex-ai/generative-ai/docs/batch-prediction-api · retrieved 2026-05-03
+[3] Google Cloud. "Get batch predictions for Gemini." — https://docs.cloud.google.com/vertex-ai/generative-ai/docs/model-reference/batch-prediction-api · retrieved 2026-05-14
 
 [4] Google Cloud. "Vertex AI endpoints overview." — https://cloud.google.com/vertex-ai/docs/general/endpoints · retrieved 2026-05-03
 
 [5] Google Cloud. "Quotas and limits for generative AI on Vertex AI." — https://cloud.google.com/vertex-ai/generative-ai/docs/quotas · retrieved 2026-05-03
 
-[6] Google Cloud. "Agent Runtime autoscaling." Gemini Enterprise Agent Platform docs. — https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime/autoscaling · retrieved 2026-05-03
+[6] Google Cloud. "Optimize and scale Agent Runtime performance." Gemini Enterprise Agent Platform docs. — https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale · retrieved 2026-05-14
 
 [7] Anthropic. "Prompt caching." — https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching · retrieved 2026-05-03
 
