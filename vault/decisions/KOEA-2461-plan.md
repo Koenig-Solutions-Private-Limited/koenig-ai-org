@@ -9,6 +9,8 @@ repo: learnovaBeast/learnova-academy
 base_branch: academy/redesign-v1
 basebranch_verified: true
 chain_alert_unblocked_by: f06a3e59-425d-4302-9b81-c1b6f0a46759
+revised_for_issue: KOEA-2518
+revision_note: "Use isolated node-owned implementation checkout after host-root path drift was identified."
 ---
 
 # Plan: Fix Claude tool-use course chapter metadata rendering
@@ -22,7 +24,7 @@ Fix `/learn/claude-tool-use-from-zero` so it no longer renders metadata sidecar 
 - Root cause found: `readCourseOutline()` currently accepts every filename matching `/^\d+-[a-z0-9-]+\.md$/`, so sidecars such as `06-security-and-authentication-meta.md`, `07-creative-connectors-meta.md`, and `08-legal-connectors-meta.md` become chapters. `readChapter()` then falls back to `title: data.title ?? file` and `duration_min: data.duration_min ?? 0`, producing raw filenames and `0m` rows. The Claude vault folder also has no real chapter markdown for chapters 1-6 or 9 in current git history; the outline advertises `chapter_count: 9`, so the page presents an incomplete course as if it were complete.
 - Anchor root cause: `chapterAnchor()` emits `ch-<padded chapter number>-<slugified title>`, while wikilinks and schema URLs can point at `#ch-<chapter-slug>` or `#ch-<N>`, so generated links can miss the rendered section ids.
 - Relevant prior work: current vault history only shows actual Claude chapter sources for 7 and 8, plus metadata/asset files for 6, 7, 8, and 9; no historical full chapter files for 1-6 or 9 were found by `git log -- vault/courses/claude-tool-use-from-zero`.
-- Constraints: use or create the locked worktree `~/Documents/Paperclip/learnovaBeast-fe-agent/` and base it on `academy/redesign-v1`; do not mutate the dirty `/Users/vardaankoenig/Documents/Paperclip/learnovaBeast` checkout. Do not run a Convex deploy. Any production deploy, if later approved, must originate from `learnova-tc`.
+- Constraints: use the isolated node-owned implementation checkout `/paperclip/instances/default/workspaces/learnovaBeast-KOEA-2518` and base it on `academy/redesign-v1`; do not use the host-root `/Users/vardaankoenig/Documents/Paperclip/learnovaBeast-fe-agent` path, and do not use the shared `/paperclip/instances/default/workspaces/learnovaBeast-fe-agent` checkout because it is locked for KOEA-2423. Do not mutate the dirty `/Users/vardaankoenig/Documents/Paperclip/learnovaBeast` checkout. Do not run a Convex deploy. Any production deploy, if later approved, must originate from `learnova-tc`.
 
 ## Approach (1 chosen, alternatives rejected)
 **Chosen**: Harden course ingestion and render only valid chapter data. Update the academy reader so metadata sidecars are never chapter candidates, chapter titles fall back to the first H1 before the filename, durations can fall back to `reading_time_min` when `duration_min` is absent, and outline `chapter_count` does not override the number of renderable chapters when the source folder is incomplete. Update chapter anchors so the canonical id is based on the chapter slug and add/maintain aliases for numeric `#ch-N` links. This fixes the broken page without inventing missing long-form chapter content.
@@ -30,7 +32,7 @@ Fix `/learn/claude-tool-use-from-zero` so it no longer renders metadata sidecar 
 **Rejected**: Content-only cleanup of the Claude vault folder; it would still leave the reader vulnerable to future `*-meta.md` sidecars and cannot restore chapters 1-6/9 because they are not present in current git history. **Rejected**: Re-author missing chapters 1-6 and 9 as part of this ticket; that is content production, far larger than a metadata/rendering repair, and should be a separate Content Author task if Chief Engineering wants the full course completed.
 
 ## Steps (Executor follows in order)
-1. Prepare `~/Documents/Paperclip/learnovaBeast-fe-agent/` as the execution worktree on `academy/redesign-v1`, confirm `git status --short` is clean before edits, and keep all code changes inside `learnova-academy/`.
+1. Prepare `/paperclip/instances/default/workspaces/learnovaBeast-KOEA-2518` as an isolated execution worktree on `academy/redesign-v1`, confirm `git status --short` is clean before edits, respect the repo `.claude/agent-lock` requirement before touching files, and keep all code changes inside `learnova-academy/`.
 2. In `learnova-academy/src/lib/courses.ts`, replace the loose chapter filename filter with a helper that excludes sidecars (`*-meta.md`, `*-meta-meta.md`, metadata-only files, and chapter asset directories) and keeps only content-bearing `NN-*.md` chapter sources.
 3. In `learnova-academy/src/lib/courses.ts`, update `readChapter()` to derive `slug` from the content filename, use `data.title` then first Markdown H1 before falling back to the filename, and use `data.duration_min` then `data.reading_time_min` before falling back to `0`; do not silently accept metadata-only files as publishable chapters.
 4. In `learnova-academy/src/lib/courses.ts` and `learnova-academy/src/app/learn/[slug]/page.tsx`, make displayed chapter count and FAQ/schema count reflect `course.chapters.length` when the outline count disagrees with valid parsed chapters; this prevents `chapter_count: 9` from claiming a complete course when only valid chapter markdown is present.

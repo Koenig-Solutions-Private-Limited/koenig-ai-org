@@ -27,7 +27,7 @@ key_concepts:
   [mcp-tool-naming, mcpServers, transport-types, mcp-json, tool-search, oauth2-headers, connection-timeout]
 hands_on_exercise: "Wire a GitHub MCP server (stdio) and a Postgres MCP server (stdio) and a cloud docs server (HTTP) into one agent that pulls an issue, queries a related DB table, and writes a summary"
 sources:
-  - https://code.claude.com/docs/en/agent-sdk/mcp
+  - https://docs.anthropic.com/en/docs/claude-code/sdk/sdk-mcp
   - https://modelcontextprotocol.io/docs/getting-started/intro
   - https://platform.claude.com/docs/en/agent-sdk/overview
   - https://github.com/modelcontextprotocol/servers
@@ -132,7 +132,7 @@ options = ClaudeAgentOptions(
     mcp_servers={
         "claude-code-docs": {
             "type": "http",
-            "url": "https://code.claude.com/docs/mcp",
+            "url": "https://docs.anthropic.com/en/docs/claude-code/sdk/sdk-mcp",
         }
     },
     allowed_tools=["mcp__claude-code-docs__*"],
@@ -203,7 +203,7 @@ async def investigate_issue(issue_ref: str, db_connection: str):
             # HTTP: Cloud docs server
             "docs": {
                 "type": "http",
-                "url": "https://code.claude.com/docs/mcp",
+                "url": "https://docs.anthropic.com/en/docs/claude-code/sdk/sdk-mcp",
             },
         },
         allowed_tools=[
@@ -456,7 +456,7 @@ In [[course/production-agents-claude-agent-sdk-mcp-connector/04-files-api-code-e
 
 ## References
 
-[1] Agent SDK MCP Connector — https://code.claude.com/docs/en/agent-sdk/mcp · retrieved 2026-04-30
+[1] Agent SDK MCP Connector — https://docs.anthropic.com/en/docs/claude-code/sdk/sdk-mcp · retrieved 2026-05-14
 [2] Model Context Protocol specification — https://modelcontextprotocol.io/docs/getting-started/intro · retrieved 2026-04-30
 [3] MCP server registry — https://github.com/modelcontextprotocol/servers · retrieved 2026-04-30
 [4] Claude Agent SDK Overview — https://code.claude.com/docs/en/agent-sdk/overview · retrieved 2026-04-30

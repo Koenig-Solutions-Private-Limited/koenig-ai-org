@@ -105,11 +105,11 @@ There's also a contrarian thread running through each chapter: the defaults aren
 - **Duration**: 45 min
 - **Prerequisites**: Chapters 1–4
 - **Learning objectives**:
-  - Implement four production hooks: audit logging (PostToolUse), cost circuit breaker (Stop), session initialization (SessionStart), and prompt sanitization (UserPromptSubmit)
+  - Implement a production hook stack: audit logging (PostToolUse), cost circuit breaker (PreToolUse), prompt sanitization (UserPromptSubmit), and session lifecycle telemetry where the SDK supports it
   - Configure structured JSON logging for every tool call
   - Apply the five-step deployment checklist before taking an agent to production
   - Explain why `bypassPermissions` is dangerous and what to use instead
-- **Key concepts**: `PreToolUse`/`PostToolUse` hooks, `HookMatcher`, JSONL session state, `settingSources`, Langfuse integration, budget enforcement, permission modes
+- **Key concepts**: `PreToolUse`/`PostToolUse` hooks, Python-vs-TypeScript hook compatibility, `HookMatcher`, JSONL session state, `settingSources`, Langfuse integration, budget enforcement, permission modes
 - **Hands-on exercise**: Harden the agents from Chapters 2 and 3 with the production hook stack, add a cost cap, and verify that a simulated runaway session is terminated before it hits budget
 
 ---
