@@ -182,8 +182,8 @@ For a builder using Koenig Academy material, this maps directly to three learnin
 
 <KnowledgeCheck
   question="Why is Anthropic's legal MCP release better understood as a platform playbook than as a legal-software replacement story?"
-  options={["Because Claude moves all legal data into Anthropic-owned storage", "Because MCP lets Claude operate above incumbent legal systems while those systems keep their data, permissions, and workflows", "Because the release only targets law students and legal clinics", "Because Thomson Reuters, Harvey, and Everlaw stopped building their own products"]}
-  correctIdx={1}
+  answers={["Because Claude moves all legal data into Anthropic-owned storage", "Because MCP lets Claude operate above incumbent legal systems while those systems keep their data, permissions, and workflows", "Because the release only targets law students and legal clinics", "Because Thomson Reuters, Harvey, and Everlaw stopped building their own products"]}
+  correct={1}
 />
 
 The concrete takeaway: do not start a vertical AI product by replacing the systems of record. Start by making the systems of record usable from an AI work surface, inherit their permissions, package the workflows, and give teams a way to encode their own playbooks. That is the architecture behind Anthropic's legal MCP release, and it is the reason the same pattern belongs in [[course/claude-tool-use-from-zero]] before it becomes a course chapter on any single vertical.
