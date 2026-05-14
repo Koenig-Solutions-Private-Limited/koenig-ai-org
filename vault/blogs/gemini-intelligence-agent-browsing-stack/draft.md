@@ -28,13 +28,11 @@ faq:
     a: "No. The Gemini 2.5 Computer Use Preview model is paid-only — $1.25/M input tokens for prompts under 200k tokens. There is no free tier."
 sources:
   - https://blog.google/products-and-platforms/platforms/android/gemini-intelligence/
-  - https://www.cnbc.com/2026/05/12/google-races-put-gemini-at-center-of-android-before-apples-ai-reboot.html
   - https://9to5google.com/2026/05/06/gemini-agent-planner-upgrade/
   - https://www.theverge.com/tech/925559/google-project-mariner-shut-down
   - https://aimultiple.com/open-source-web-agents
   - https://ai.google.dev/gemini-api/docs/pricing
   - https://9to5google.com/2026/05/12/the-android-show-2026/
-  - https://builtin.com/articles/google-gemini
   - https://devtk.ai/en/blog/ai-api-pricing-comparison-2026/
   - https://www.tomsguide.com/ai/google-just-unlocked-agent-mode-for-gemini-3-1-here-are-7-things-it-can-now-do-for-you
   - https://benchlm.ai/llm-agent-benchmarks
@@ -67,7 +65,7 @@ What absorbed Mariner's tech:
 
 Gemini Intelligence, [announced May 12 at The Android Show](https://blog.google/products-and-platforms/platforms/android/gemini-intelligence/), is Google's umbrella brand for its best AI features on premium Android hardware — not a new model, and not a standalone product. It is an OS-level capability suite: Chrome Auto Browse for web tasks, cross-app orchestration ("build a barbecue menu, add ingredients to Instacart, return for checkout approval"), and Personal Intelligence pulling from Gmail and Calendar to autofill forms and answer context-aware questions.
 
-The consumer positioning is deliberate: Android VP Sameer Samat told CNBC that ["the human is always in the loop"](https://www.cnbc.com/2026/05/12/google-races-put-gemini-at-center-of-android-before-apples-ai-reboot.html) before transactions complete (retrieved 2026-05-14). It rolls out to Samsung Galaxy and Google Pixel devices starting summer 2026, with watches, cars, glasses, and laptops to follow. Chrome Auto Browse — powered by Gemini 3 — can [schedule appointments, fill online forms, manage subscriptions, and add shopping items to a cart](https://builtin.com/articles/google-gemini) (retrieved 2026-05-14).
+The consumer positioning is deliberate: Google's [official Gemini Intelligence announcement](https://blog.google/products-and-platforms/platforms/android/gemini-intelligence/) explicitly frames the system around keeping the user "in control" before transactions complete (retrieved 2026-05-14). It rolls out to Samsung Galaxy and Google Pixel devices starting summer 2026, with watches, cars, glasses, and laptops to follow. Per that same announcement, Chrome Auto Browse can [complete tasks including scheduling appointments, filling out forms, managing subscriptions, and purchasing — returning for your approval before any transaction finalises](https://blog.google/products-and-platforms/platforms/android/gemini-intelligence/) (retrieved 2026-05-14).
 
 **The access gate:** Chrome Auto Browse requires Google AI Pro ($19.99/month) at minimum. The full Gemini Agent Mode — with Workspace integration and multi-step purchasing flows — requires Ultra ($249.99/month), the same tier that previously funded Project Mariner.
 
@@ -96,7 +94,7 @@ The [Gemini API pricing page](https://ai.google.dev/gemini-api/docs/pricing) (re
 
 - Input: **$1.25/M tokens** (≤200k context)
 - Output: **$10.00/M tokens**
-- Context: unlisted (based on 2.5 Pro architecture)
+- Context window and other limits: see the [Computer Use docs](https://ai.google.dev/gemini-api/docs/computer-use) (paid tier only)
 
 Competitive context from [DevTK's May 2026 pricing comparison](https://devtk.ai/en/blog/ai-api-pricing-comparison-2026/) (retrieved 2026-05-14): GPT-5.5 at $5.00/$30 per 1M, Claude Opus 4.6 at $5.00/$25 per 1M. Gemini 3.1 Pro at $2.00/$12.00 is already the most price-competitive flagship; the Computer Use Preview at $1.25 input is a further 37.5% discount over Gemini 3.1 Pro for browser-agent use cases.
 
