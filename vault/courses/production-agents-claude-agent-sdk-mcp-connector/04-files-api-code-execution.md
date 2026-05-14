@@ -31,7 +31,7 @@ sources:
   - https://claude.com/blog/agent-capabilities-api
   - https://platform.claude.com/docs/en/managed-agents/overview
   - https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool
-  - https://platform.claude.com/docs/en/api-reference/files
+  - https://platform.claude.com/docs/en/api/files-list
   - https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention
 ---
 
@@ -445,6 +445,6 @@ In [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deplo
 [2] Agent Capabilities API announcement — https://claude.com/blog/agent-capabilities-api · retrieved 2026-04-30
 [3] Claude Managed Agents Tools — https://platform.claude.com/docs/en/managed-agents/tools · retrieved 2026-04-30
 [4] Code Execution Tool — https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool · retrieved 2026-04-30
-[5] Files API Reference — https://platform.claude.com/docs/en/api-reference/files · retrieved 2026-05-14
+[5] Files API Reference — https://platform.claude.com/docs/en/api/files-list · retrieved 2026-05-14
 [6] Anthropic API and data retention — https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention · retrieved 2026-05-14
 [5] Anthropic Data Retention — https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention · retrieved 2026-04-30

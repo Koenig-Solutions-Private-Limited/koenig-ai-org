@@ -7,7 +7,7 @@ author: blog-author
 ticket: KOEA-1731
 vendor_tag: anthropic
 content_type: article
-status: draft-for-review
+status: g0-passed
 reading_time_min: 9
 tags:
   - vendor/anthropic
@@ -66,7 +66,7 @@ The connector list matters because it maps onto systems lawyers already use:
 
 TechCrunch described the same move as Anthropic entering a legal AI market already sensitive to "AI slop," especially after lawyers have been sanctioned for citing fabricated cases ([TechCrunch, retrieved 2026-05-13](https://techcrunch.com/2026/05/12/the-ai-legal-services-industry-is-heating-up-anthropic-is-getting-in-on-the-action/)). That risk explains why legal is a good stress test for connectors. Legal buyers do not only need answers; they need to know what system was searched, under whose permissions, and what artifacts came back before a human signs off.
 
-That is where MCP changes the product shape. Anthropic's MCP connector help docs say connectors let Claude connect to organizational tools, data sources, and services without leaving chat, and that Claude inherits the user's permissions when a connector uses delegated OAuth ([Claude Help Center, retrieved 2026-05-14](https://support.claude.com/en/articles/14503689-mcp-connectors)). For Claude for Government specifically, Anthropic says the MCP service, token storage, and connector-execution audit logging stay inside the FedRAMP High authorized environment. That is narrower than "MCP satisfies legal compliance," but it supports the central point: connector execution can be governed as infrastructure, not treated as an invisible prompt trick.
+That is where MCP changes the product shape. Anthropic's MCP connector help docs say connectors let Claude connect to organizational tools, data sources, and services without leaving chat, and that Claude inherits the user's permissions when a connector uses delegated OAuth ([Claude Help Center, retrieved 2026-05-14](https://support.claude.com/en/articles/14503689-mcp-connectors)). For Claude for Government specifically, Anthropic says the MCP service, token storage, and connector-execution audit logging stay inside the FedRAMP High authorized environment. That is narrower than a blanket compliance promise, but it supports the central point: connector execution can be governed as infrastructure, not treated as an invisible prompt trick.
 
 ## OpenAI is betting that engineers solve the last mile
 
@@ -84,7 +84,7 @@ Legal is a natural wedge for MCP because it combines high-value work, fragmented
 
 The key is not that MCP magically makes legal AI safe. It does not. The stronger claim is that MCP gives developers and admins a standard place to define tool names, schemas, permissions, and invocation boundaries. Anthropic's tool-use documentation shows Claude returning `tool_use` content blocks when it decides to call a tool, which gives API builders a concrete event to inspect and log in their own application layer ([Anthropic tool-use docs, retrieved 2026-05-14](https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/implement-tool-use)).
 
-That distinction matters for reviewers. The earlier draft overstated the case by implying MCP logs the model's reasoning chain and satisfies legal or financial compliance by itself. A more defensible formulation is: MCP and Claude tool use expose structured tool invocations, and some Anthropic connector environments document connector-execution audit logging. Compliance still depends on the buyer's retention policies, connector permissions, matter scoping, human review, and the downstream system's own audit trail.
+That distinction matters for reviewers. The earlier draft overstated the case by implying MCP exposes private model reasoning and resolves legal or financial compliance by itself. A more defensible formulation is: MCP and Claude tool use expose structured tool invocations, and some Anthropic connector environments document connector-execution audit logging. Compliance still depends on the buyer's retention policies, connector permissions, matter scoping, human review, and the downstream system's own audit trail.
 
 ## Finance and healthcare show the same enterprise pattern
 

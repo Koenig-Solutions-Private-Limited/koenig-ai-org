@@ -1,7 +1,7 @@
 ---
 course_slug: migrating-custom-gpts-to-chatgpt-workspace-agents
 title: "Migrating Custom GPTs to ChatGPT Workspace Agents: A Builder's Guide"
-status: awaiting-g0
+status: g0-blocked
 author: course-author
 level: Builder
 target_audience: "Developers familiar with Custom GPTs and OpenAI platform APIs"

@@ -6,7 +6,7 @@ author: koenig-ai-academy
 ticket: KOEA-2088
 vendor_tag: anthropic
 content_type: article
-status: draft-for-review
+status: g0-blocked
 reading_time_min: 8-10
 primary_query: "Claude for Small Business Anthropic SMB strategy"
 contrarian_angle: "The PayPal co-course isn't education — it's Anthropic co-opting 57 million business accounts as a distribution channel before enterprise IT locks up SMB AI spend"

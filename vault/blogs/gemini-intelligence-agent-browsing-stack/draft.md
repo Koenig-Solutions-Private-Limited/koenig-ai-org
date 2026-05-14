@@ -33,6 +33,7 @@ sources:
   - https://www.theverge.com/tech/925559/google-project-mariner-shut-down
   - https://aimultiple.com/open-source-web-agents
   - https://ai.google.dev/gemini-api/docs/pricing
+  - https://ai.google.dev/gemini-api/docs/computer-use
   - https://9to5google.com/2026/05/12/the-android-show-2026/
   - https://devtk.ai/en/blog/ai-api-pricing-comparison-2026/
   - https://www.tomsguide.com/ai/google-just-unlocked-agent-mode-for-gemini-3-1-here-are-7-things-it-can-now-do-for-you
@@ -77,7 +78,7 @@ The consumer positioning is deliberate: Google's [official Gemini Intelligence a
 
 | | Google Gemini | OpenAI Operator | browser-use | Anthropic Computer Use |
 |---|---|---|---|---|
-| **Architecture** | DOM + OS-level Chrome/Android integration | GPT-5.5 browser agent | Playwright + LLM (hybrid DOM/vision) | Screenshot + keyboard/mouse (API primitive) |
+| **Architecture** | DOM + OS-level Chrome/Android integration | Managed browser-agent product; model score published separately | Playwright + LLM (hybrid DOM/vision) | Screenshot + keyboard/mouse (API primitive) |
 | **Benchmark** | Not published (consumer UI) | GPT-5.5 Pro model: [90.1 on BenchLM](https://benchlm.ai/llm-agent-benchmarks) (no published Operator product score) | 89.1% WebVoyager | Not publicly benchmarked |
 | **API access** | Gemini 2.5 Computer Use Preview ($1.25/M) | GPT-5.5 ($5.00/M) | Open source (self-host free) | Claude API ($5.00/M Opus 4.6) |
 | **Best for** | Consumer Android/Chrome tasks | Production-ready discrete web tasks | Developer infrastructure, any LLM | Desktop-level OS automation in sandboxes |
@@ -90,7 +91,7 @@ The consumer positioning is deliberate: Google's [official Gemini Intelligence a
 
 2. **Screenshot + vision** (Anthropic Computer Use, legacy Mariner): sees the browser as a pixel grid, identical to a human's view — platform-agnostic and works on any surface regardless of DOM structure, but slower per step (larger image payloads per token), more fragile on scroll-heavy or dynamically rendered pages, and more expensive at scale. The Gemini 2.5 Computer Use Preview model also operates in this mode: it receives screenshot images and returns structured action coordinates (click targets, text inputs, scroll offsets).
 
-3. **Hybrid DOM + vision** (browser-use, OpenAI Operator): reads the DOM for structural context and uses a vision model to verify state and handle dynamic rendering — currently the highest-reliability architecture across diverse page types. browser-use's [89.1% WebVoyager accuracy](https://aimultiple.com/open-source-web-agents) and GPT-5.5 Pro's 90.1 BenchLM score both emerge from this hybrid approach.
+3. **Hybrid DOM + vision** (browser-use, managed browser agents): reads the DOM for structural context and uses a vision model to verify state and handle dynamic rendering — currently the most practical architecture across diverse page types. browser-use's [89.1% WebVoyager accuracy](https://aimultiple.com/open-source-web-agents) is the cleanest public benchmark signal for this framework pattern.
 
 Gemini Intelligence's Chrome surface (DOM-integrated) and Gemini 2.5 Computer Use Preview (screenshot-based) are **not interchangeable layers of the same stack** — they are different products targeting different use cases.
 
@@ -98,7 +99,7 @@ Gemini Intelligence's Chrome surface (DOM-integrated) and Gemini 2.5 Computer Us
 
 **OpenAI Operator** leads on production maturity for discrete web tasks. [GPT-5.5 Pro scores 90.1 on BenchLM's agentic benchmark](https://benchlm.ai/llm-agent-benchmarks) — the highest published score in this comparison set (retrieved 2026-05-14). Operator's $5.00/M API pricing is 4× the Gemini 2.5 Computer Use Preview rate for comparable agent workloads. Gemini Intelligence occupies Chrome/Android while active — it is not a background process.
 
-For a direct model benchmark breakdown across GPT-5.5 and Claude Opus 4.7, see [[gpt-5-5-vs-claude-opus-4-7-agentic-coding/draft]].
+For a direct model benchmark breakdown across frontier agent workloads, see [[course/picking-a-frontier-model-2026-q2]].
 
 **Anthropic Computer Use** operates at the OS level (full desktop via Docker sandboxes), which makes it more capable than browser-only agents for complex desktop automation — but it is a developer building block, not a finished product, and Anthropic has not published a comparable agentic web-task benchmark score.
 
@@ -116,6 +117,17 @@ Competitive context from [DevTK's May 2026 pricing comparison](https://devtk.ai/
 
 The model accepts screenshot images and returns structured action instructions (click coordinates, text input targets, scroll commands). A real Computer Use agent loops: take screenshot → call the model → execute the returned action → repeat. Google's official quickstart for `gemini-2.5-computer-use-preview-10-2025` is at [ai.google.dev/gemini-api/docs/computer-use](https://ai.google.dev/gemini-api/docs/computer-use) and requires the `computer_use` tool declaration in the request payload, which differs from the standard `generateContent` path.
 
+```bash
+curl -s "$GEMINI_ENDPOINT" \
+  -H "Content-Type: application/json" \
+  -H "x-goog-api-key: $GEMINI_API_KEY" \
+  -d '{"contents":[{"parts":[{"text":"Given a browser screenshot, identify the next safe click target for cancelling a subscription. Return only the target label and coordinates."}]}]}' |
+  jq '.candidates[0].content.parts[0].text'
+
+# Expected shape:
+# "Cancel subscription button, approximate coordinates: x=742, y=514. Ask for confirmation before clicking."
+```
+
 ## How to Pick Your Agent Browsing Stack
 
 The four players serve meaningfully different use cases. Here is how to route a decision:
@@ -124,7 +136,7 @@ The four players serve meaningfully different use cases. Here is how to route a 
 
 **If you need production-grade, standalone web task completion today:** OpenAI Operator is the most mature product in this list. GPT-5.5 Pro's 90.1 BenchLM score is the highest published agentic benchmark in the stack, and ChatGPT's plugin ecosystem is wider than any Google surface. The cost is higher ($5.00/M input vs $1.25/M for Gemini Computer Use), and the product requires a ChatGPT Pro or Enterprise subscription rather than a raw API key for direct integration. One important nuance: the 90.1 BenchLM score is published for the GPT-5.5 Pro model itself, not for Operator as an end-to-end product. Real-world Operator performance also reflects the product's tool-calling layer, retry logic, and session management on top of the model — which is why published model benchmarks and deployed-product reliability are not the same number.
 
-**If you are a developer who wants LLM flexibility and low vendor lock-in:** browser-use is the correct starting point. MIT license, Python, Playwright-backed, and compatible with any model — Gemini, Claude, GPT-5.5, or local models. Its 89.1% WebVoyager score comes with no ongoing per-token cost beyond your LLM provider. The downside is operational overhead: you run the infrastructure, manage anti-bot profiles, handle CAPTCHA, and build your own memory layer. The practical entry point is three commands: `pip install browser-use playwright && playwright install chromium`. You then configure a `BrowserAgent`, attach your preferred LLM client (Gemini 2.5, GPT-5.5 Pro, or Claude are first-class community targets), and call `agent.run("your task description")`. Anti-bot handling and CAPTCHA require additional configuration via Playwright's stealth mode or a third-party CAPTCHA service — both are documented in the browser-use repository. See [[migrating-custom-gpts-to-chatgpt-workspace-agents/outline]] if you are assessing how to move existing automation from a provider's managed service to a more portable stack.
+**If you are a developer who wants LLM flexibility and low vendor lock-in:** browser-use is the correct starting point. MIT license, Python, Playwright-backed, and compatible with any model — Gemini, Claude, GPT-5.5, or local models. Its 89.1% WebVoyager score comes with no ongoing per-token cost beyond your LLM provider. The downside is operational overhead: you run the infrastructure, manage anti-bot profiles, handle CAPTCHA, and build your own memory layer. The practical entry point is three commands: `pip install browser-use playwright && playwright install chromium`. You then configure a `BrowserAgent`, attach your preferred LLM client, and call `agent.run("your task description")`. See [[course/multi-agent-orchestration-a2a]] if you are assessing how to coordinate browser tasks across multiple agents.
 
 **If you need to automate desktop applications, not just browser tasks:** Anthropic Computer Use is currently the only production API in this group that controls the full OS environment — keyboard, mouse, file system — not just a browser window. This matters when the target is a native app, a legacy enterprise tool, or any workflow that moves between browser and desktop. The trade-off is isolation: running Computer Use safely requires a Docker sandbox or equivalent, which adds operational complexity.
 
@@ -151,4 +163,4 @@ The current read: Google holds the largest consumer distribution advantage — A
 
 ---
 
-Ready to evaluate which model tier fits your agent stack before committing to an API? The [[picking-a-frontier-model-2026-q2/outline]] course covers the benchmark dimensions that matter for agentic workloads — including Computer Use tiers — with hands-on exercises. For building multi-agent systems that coordinate browser tasks in parallel, see [[multi-agent-orchestration-a2a/outline]]. If Gemini's enterprise integration is your primary interest — Workspace agents, cross-app orchestration, Android deployment — [[gemini-enterprise-agents/outline]] covers the full production stack.
+Ready to evaluate which model tier fits your agent stack before committing to an API? The [[course/picking-a-frontier-model-2026-q2]] course covers the benchmark dimensions that matter for agentic workloads, including Computer Use tiers, with hands-on exercises. For building multi-agent systems that coordinate browser tasks in parallel, see [[course/multi-agent-orchestration-a2a]]. If Gemini's enterprise integration is your primary interest — Workspace agents, cross-app orchestration, Android deployment — [[course/gemini-enterprise-agents]] covers the full production stack.

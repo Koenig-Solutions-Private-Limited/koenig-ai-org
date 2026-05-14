@@ -30,6 +30,9 @@ sources:
   - https://code.claude.com/docs/en/agent-sdk/mcp
   - https://modelcontextprotocol.io/docs/getting-started/intro
   - https://platform.claude.com/docs/en/agent-sdk/overview
+  - https://github.com/modelcontextprotocol/servers
+  - https://claude.com/blog/agent-capabilities-api
+  - https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization
 ---
 
 # MCP connector: orchestrating multi-server agents

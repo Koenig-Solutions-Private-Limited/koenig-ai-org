@@ -30,7 +30,7 @@ sources:
   - https://platform.claude.com/docs/en/managed-agents/overview
   - https://platform.claude.com/docs/en/managed-agents/quickstart
   - https://claude.com/blog/agent-capabilities-api
-  - https://platform.claude.com/docs/en/api-reference/beta
+  - https://platform.claude.com/docs/en/api/beta-headers
   - https://code.claude.com/docs/en/agent-sdk/overview
   - https://modelcontextprotocol.io/docs/getting-started/intro
 ---
@@ -50,7 +50,7 @@ On the same day the Claude Code SDK was renamed, Anthropic shipped this hosted c
 ## Key facts
 
 1. Claude Managed Agents launched in public beta on April 8, 2026; all API requests require the `managed-agents-2026-04-01` beta header [1].
-2. Pricing: $0.08 per runtime hour + standard Claude model token costs; the runtime clock runs from session creation to session termination [2].
+2. Pricing has two parts: Managed Agents runtime plus standard Claude model token costs; verify current rates in the official quickstart before launch [2].
 3. Rate limits: 300 requests per minute for create endpoints (agents, sessions, environments); 600 requests per minute for read endpoints (retrieve, list, stream) [1].
 4. The `agent_toolset_20260401` tool type enables the full built-in toolset: Bash, file operations, web search and fetch, and MCP servers [1].
 5. Two features — outcomes and multiagent — are in research preview and require separate access approval [1].
@@ -211,14 +211,14 @@ for await (const event of stream) {
   expectedOutput="Claude emits an agent.message with a plan, then an agent.tool_use event for Bash, then another agent.message with results like: mean=308.0, median=340.0, std_dev=109.3. The session then emits session.status_idle."
 />
 
-## The pricing trap most tutorials skip
+## The lifecycle cost trap most tutorials skip
 
-Here's the fact the quickstart buries: the $0.08 per runtime hour accrues from session creation to session termination — not from when the agent is actively processing. A session waiting for a user message, sleeping between tool calls, or paused after going idle but not explicitly closed still accrues runtime cost.
+Here's the operational fact most tutorials bury: Managed Agents cost depends on session lifetime, not just the seconds when the model is actively generating. A session waiting for a user message, sleeping between tool calls, or paused after going idle but not explicitly closed can still create runtime exposure, so your app should treat `session.status_idle` as a cleanup signal and verify current billing rules in Anthropic's official quickstart [2].
 
 The operational implication:
 
-- **Short, stateless tasks** (under 5 minutes): Managed Agents is fine. The $0.08/hr works out to ~$0.007 per run.
-- **Long interactive sessions** (hours with gaps): runtime cost compounds fast. An agent session left open for 8 hours waiting for user input = $0.64 in runtime before tokens.
+- **Short, stateless tasks** (under 5 minutes): the Agent SDK is usually simpler because the hosting process can exit immediately after the response.
+- **Long interactive sessions** (hours with gaps): runtime exposure compounds unless your app closes or idles sessions deliberately.
 - **Polling loops** ("check every 30 minutes"): never use Managed Agents for this. Use the Agent SDK with a cron job.
 
 Always close idle sessions explicitly:
@@ -292,7 +292,7 @@ Steps:
     "Agent SDK — the Managed Agents beta header makes it unsuitable for production webhooks"
   ]}
   correctIdx={0}
-  explanation="For 15–30 second tasks triggered by webhooks, the Agent SDK on a serverless function (Lambda, Cloud Run) is the right call. Managed Agents charges $0.08/hr from session creation, meaning each short task costs the same as a task left running for an hour. The beta header caveat is real but not the primary reason — the cost and architecture fit is."
+  explanation="For 15–30 second tasks triggered by webhooks, the Agent SDK on a serverless function (Lambda, Cloud Run) is the right call. Managed Agents is designed for hosted agent sessions, so the architecture fit is weaker when every task is short, stateless, and easy to run in your own invocation. The beta header caveat is real but not the primary reason — lifecycle and operational ownership are."
 />
 
 <KnowledgeCheck
@@ -364,6 +364,6 @@ In [[course/production-agents-claude-agent-sdk-mcp-connector/03-mcp-connector-mu
 [1] Claude Managed Agents Overview — https://platform.claude.com/docs/en/managed-agents/overview · retrieved 2026-04-30
 [2] Claude Managed Agents Quickstart — https://platform.claude.com/docs/en/managed-agents/quickstart · retrieved 2026-04-30
 [3] Agent Capabilities API announcement — https://claude.com/blog/agent-capabilities-api · retrieved 2026-04-30
-[4] Managed Agents Beta Header Documentation — https://platform.claude.com/docs/en/api-reference/beta · retrieved 2026-05-14
+[4] Managed Agents Beta Header Documentation — https://platform.claude.com/docs/en/api/beta-headers · retrieved 2026-05-14
 [5] Claude Agent SDK Overview — https://code.claude.com/docs/en/agent-sdk/overview · retrieved 2026-04-30
 [6] Model Context Protocol introduction — https://modelcontextprotocol.io/docs/getting-started/intro · retrieved 2026-05-14

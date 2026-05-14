@@ -32,7 +32,7 @@ sources:
   - https://platform.claude.com/docs/en/build-with-claude/files
   - https://code.claude.com/docs/en/agent-sdk/hooks
   - https://code.claude.com/docs/en/agent-sdk/permissions
-  - https://code.claude.com/docs/en/agent-sdk/costs
+  - https://code.claude.com/docs/en/agent-sdk/cost-tracking
 ---
 
 # Production: deploy + observability + cost controls
