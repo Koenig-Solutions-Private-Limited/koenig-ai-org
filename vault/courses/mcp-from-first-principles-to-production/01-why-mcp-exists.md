@@ -126,7 +126,7 @@ MCP defines a precise three-way topology that almost every tutorial glosses over
 The key constraint: the server does not independently trigger host actions. Information flows in one direction: the client calls the server, the server returns results, the client passes them to the host, the host injects them into the model context. While MCP's sampling capability (`sampling/createMessage`) allows servers to request that the host perform model inference on their behalf, the server has no channel to independently trigger arbitrary host actions. This unidirectional constraint is what makes MCP servers safe to run as untrusted third-party processes: a server cannot independently initiate actions against the host or against other connected services.
 
 <Callout type="warning">
-**The unidirectional constraint has teeth.** If you design an MCP server that tries to call back into the host (e.g., to trigger another tool call), you have broken the security model. The server has no channel for this — and any workaround (e.g., embedding a callback URL in a tool result) should be treated as a red flag in code review. See [[courses/mcp-from-first-principles-to-production/02-json-rpc-wire-protocol]] for how the JSON-RPC framing enforces this at the wire level.
+**The unidirectional constraint has teeth.** If you design an MCP server that tries to call back into the host (e.g., to trigger another tool call), you have broken the security model. The server has no channel for this — and any workaround (e.g., embedding a callback URL in a tool result) should be treated as a red flag in code review. See [[course/mcp-from-first-principles-to-production/02-json-rpc-over-stdio]] for how the JSON-RPC framing enforces this at the wire level.
 </Callout>
 
 <KnowledgeCheck
@@ -338,9 +338,9 @@ Structure your answer: "This is an MCP [Tool/Resource/Prompt] exposed by a serve
 ---
 
 ## What's next
-Chapter 2 covers the *how*. In [[courses/mcp-from-first-principles-to-production/02-json-rpc-wire-protocol]], you will dissect the JSON-RPC 2.0 envelope, implement the `initialize` lifecycle by hand, and build a 60-line Python server. You'll also learn the trade-offs between stdio and Streamable HTTP (HTTP+SSE).
+Chapter 2 covers the *how*. In [[course/mcp-from-first-principles-to-production/02-json-rpc-over-stdio]], you will dissect the JSON-RPC 2.0 envelope, implement the `initialize` lifecycle by hand, and build a 60-line Python server. You'll also learn the trade-offs between stdio and Streamable HTTP (HTTP+SSE).
 
-For roadmap context, [[blogs/mcp-2026-roadmap-explained]] details the OAuth 2.1 + DPoP trajectory and gateway discovery.
+For roadmap context, [[blog/mcp-2026-roadmap-explained]] details the OAuth 2.1 + DPoP trajectory and gateway discovery.
 
 ---
 

@@ -33,7 +33,7 @@ Three production agent platforms — Google's Gemini Enterprise Agent Platform (
 
 1. All three platforms support tool calling, multi-agent patterns, and long-running agents
 2. State management is the sharpest architectural divergence: managed SQL (GEAP), you-manage-it (Claude SDK), and [[glossary/durable-objects|Durable Objects]] with built-in SQLite (Cloudflare)
-3. Deployment topology: GCP-regional (GEAP), any infra (Claude SDK), Cloudflare global edge ([[course/cloudflare-agents-edge-patterns|Cloudflare Agents]])
+3. Deployment topology: GCP-regional (GEAP), any infra (Claude SDK), Cloudflare global edge ([[blog/cloudflare-agents-week-2026-explained|Cloudflare Agents]])
 4. Vendor lock-in surface: GEAP is highest ([[glossary/memory-bank|Memory Bank]], Registry, Gateway), Claude SDK is lowest (just the Anthropic API), Cloudflare Agents is medium (Durable Objects are Cloudflare-proprietary)
 5. Model flexibility: GEAP (200+ models), Claude SDK (Claude models only without manual wiring), Cloudflare Agents (model-agnostic — bring your own provider)
 6. Cold-start: Cloudflare (sub-millisecond via edge), GEAP (sub-second with pre-warmed instances), Claude SDK (depends on your infra) [1]
@@ -359,7 +359,7 @@ You have completed the Gemini Enterprise Agent Platform hands-on tour. The logic
 
 If you are evaluating other agent platforms, see also:
 - [[course/claude-tool-use-from-zero]] for a deep dive on Claude's tool-use patterns
-- [[course/cloudflare-agents-edge-patterns]] for Durable Objects and edge agent architecture
+- [[blog/cloudflare-agents-week-2026-explained|Cloudflare Agents]] for Durable Objects and edge agent architecture
 
 ---
 

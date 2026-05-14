@@ -379,7 +379,7 @@ This means:
 
 ## What's next
 
-You have now built a two-agent system on GEAP. Before going deeper into the platform, it is worth asking: is GEAP the right platform for your use case? Chapter 4 puts GEAP in an honest comparison with Claude Agent SDK and Cloudflare Agents — covering state management, deployment topology, lock-in, and the workloads each platform wins. For reference on the [[glossary/memory-bank|Memory Bank]] and session state primitives powering these agents, or for [[course/vertex-ai-fundamentals|Vertex AI fundamentals]], see the linked resources.
+You have now built a two-agent system on GEAP. Before going deeper into the platform, it is worth asking: is GEAP the right platform for your use case? Chapter 4 puts GEAP in an honest comparison with Claude Agent SDK and Cloudflare Agents — covering state management, deployment topology, lock-in, and the workloads each platform wins. For reference on the [[glossary/memory-bank|Memory Bank]] and session state primitives powering these agents, or for Vertex AI fundamentals, see the linked resources.
 
 See [[gemini-enterprise-agent-platform-hands-on-tour/04-comparing-to-claude-agent-sdk-and-cloudflare-agents]] to continue.
 

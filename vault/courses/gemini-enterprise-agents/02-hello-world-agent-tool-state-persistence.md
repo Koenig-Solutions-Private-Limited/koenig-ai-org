@@ -367,7 +367,7 @@ session_service = VertexAiSessionService(
 )
 ```
 
-Everything else stays the same. Your tool code, your agent instruction, your tool definitions — unchanged. The `Session` object your tools receive has the same API. This is the portability promise of ADK: develop locally with in-memory services, deploy to Vertex with a one-line swap. For a broader introduction to the Vertex AI infrastructure GEAP builds on, see [[course/vertex-ai-fundamentals]].
+Everything else stays the same. Your tool code, your agent instruction, your tool definitions — unchanged. The `Session` object your tools receive has the same API. This is the portability promise of ADK: develop locally with in-memory services, deploy to Vertex with a one-line swap. For a broader introduction to the Vertex AI infrastructure GEAP builds on, see Vertex AI fundamentals.
 
 <RunPromptCell
   model="gemini-flash-latest"

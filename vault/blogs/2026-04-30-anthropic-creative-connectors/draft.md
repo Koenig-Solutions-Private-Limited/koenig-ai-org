@@ -14,11 +14,11 @@ whats_new:
   - Updated Resolume and Blender descriptions for accuracy
   - Standardized "Adobe for creativity" branding
   - Fixed broken Academy course links
-  - Rev 6: Resolume Arena and Wire descriptions now match Anthropic's live-performance wording
-status: g0-blocked
+  - "Rev 5: Resolume Wire connector #9 corrected — now describes Wire's node-based visual programming domain instead of incorrectly claiming Arena/Avenue control"
+status: published
 title: "How to use Anthropic's 9 new creative connectors in your workflow"
 slug: "2026-04-30-anthropic-creative-connectors"
-description: "Anthropic launched 9 MCP-based connectors for Blender, Adobe for creativity, Ableton Live, and Resolume in April 2026, letting Claude orchestrate 3D, audio, and design workflows via natural language."
+description: "Anthropic launched 9 MCP-based connectors for Blender, Adobe Creative Cloud, Ableton Live, and Resolume in April 2026, letting Claude orchestrate 3D, audio, and design workflows via natural language."
 reading_time_min: 4
 sources:
   - https://www.anthropic.com/news/claude-for-creative-work
@@ -40,11 +40,11 @@ references:
     retrieved: 2026-05-01
 faq:
   - question: "Which creative software tools now connect to Claude via MCP?"
-    answer: "Anthropic launched 9 new MCP connectors for creative apps including Blender, Adobe for creativity, Ableton Live, and Resolume — letting Claude orchestrate 3D, audio, and design workflows via natural language."
+    answer: "Anthropic launched 9 new MCP connectors for creative apps including Blender, Adobe Creative Cloud tools, Ableton Live, and Resolume — letting Claude orchestrate 3D, audio, and design workflows via natural language."
   - question: "How does the Blender MCP connector let Claude interact with 3D scenes?"
-    answer: "The Blender MCP connector gives Claude a natural-language interface to Blender's Python API, helping artists analyze scenes, debug scripts, and draft reusable Blender code."
+    answer: "The Blender MCP connector exposes Blender's Python API to Claude, letting you inspect scene hierarchies, modify materials, and script animations using plain English instead of writing Python directly."
   - question: "How do I map creative workflows across audio, 3D, and design tools with Claude?"
-    answer: "Claude acts as the orchestration layer: you describe the end goal in natural language, and it helps route tasks across connected tools — for example, exporting a Blender render, applying an effect with Adobe for creativity, then syncing timing in Ableton."
+    answer: "Claude acts as the orchestration layer: you describe the end goal in natural language, and it routes tasks across connected tools — for example, exporting a Blender render, applying an effect in Adobe CC, then syncing timing in Ableton."
 ---
 
 # How to use Anthropic’s 9 new creative connectors in your workflow
@@ -74,8 +74,8 @@ The launch covers the full spectrum of creative production, from 3D modeling to 
 5.  **SketchUp**: Describe a room or furniture piece to Claude and have it generate a starting point you can open and refine in 3D.
 6.  **Splice**: Search the massive Splice catalog of royalty-free samples directly from the Claude interface.
 7.  **Affinity by Canva**: Automate repetitive tasks like batch layer renaming, adjustments, and file exports.
-8.  **Resolume Arena**: VJs and live visual artists can control Arena in real time through natural language for live performance and AV production.
-9.  **Resolume Wire**: Claude extends the same natural-language control pattern to Wire, helping live visual artists work across Resolume's real-time AV production environment.
+8.  **Resolume Arena**: Control live visuals in real-time using natural language—letting VJs trigger clips and layers without touching the keyboard.
+9.  **Resolume Wire**: Claude assists in building and debugging node-based visual patches inside Resolume Wire, helping artists create custom effects and generative visuals within Wire's visual programming environment.
 
 ## How Blender's Python API becomes conversational through MCP
 

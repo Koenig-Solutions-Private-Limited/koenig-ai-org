@@ -377,7 +377,7 @@ You have now completed all four analytical chapters. You have:
 
 The capstone project synthesizes all four into a **model selection memo** — a 500–800 word document your engineering manager could read and act on. The memo format is in `vault/courses/picking-a-frontier-model-2026-q2/outline.md`.
 
-For further reading on how these models perform on specific workloads, see [Opus 4.7 long-running coding benchmark](/blog/opus-4-7-long-running-coding-benchmark) and [GPT-5.5 in Codex](/blog/gpt-5-5-in-codex) in the Academy vault.
+For further reading on how these models perform on specific workloads, see [Opus 4.7 long-running coding benchmark](/blog/2026-04-30-opus-4-7-long-running-coding-benchmark) and [GPT-5.5 in Codex](/blog/2026-04-30-gpt-5-5-in-codex) in the Academy vault.
 
 ---
 

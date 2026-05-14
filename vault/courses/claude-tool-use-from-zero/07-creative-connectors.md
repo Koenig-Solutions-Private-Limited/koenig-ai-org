@@ -47,7 +47,7 @@ Most AI providers chase enterprise CRM and ERP integrations. Anthropic’s pivot
 2.  **Low Risk, High Visibility**: A bug in a generative 3D script is a creative glitch; a bug in a Salesforce integration is a business catastrophe. Creative tools provide a safe sandbox to stress-test MCP in production.
 3.  **Synthesizing the Pipeline**: Creative work is rarely done in one app. By winning the "bridge" between Blender and Photoshop, Anthropic positions Claude as the OS for the creative studio, not just another chat box.
 
-This signals that Anthropic view MCP as a **distribution play**. By becoming the default way humans interact with complex, fragmented software suites, they bypass the need for every software vendor to build their own AI UI. For a primer on the protocol itself, see [[courses/mcp-from-first-principles-to-production/01-why-mcp-exists]].
+This signals that Anthropic view MCP as a **distribution play**. By becoming the default way humans interact with complex, fragmented software suites, they bypass the need for every software vendor to build their own AI UI. For a primer on the protocol itself, see [[course/mcp-from-first-principles-to-production/01-why-mcp-exists]].
 
 ---
 
@@ -313,7 +313,7 @@ For industrial designers and architects, the Fusion and SketchUp connectors prov
 
 ## Sidebar: Design for resilience from day one
 
-Building for resilience requires understanding the [[courses/picking-a-frontier-model-2026-q2/01-dimensions-that-matter]] that ensure your pipeline stays live during provider volatility.
+Building for resilience requires understanding the [[course/picking-a-frontier-model-2026-q2/01-dimensions-that-matter]] that ensure your pipeline stays live during provider volatility.
 
 <Callout type="warning">
 **Two incidents in the same week.** On April 30 (UTC), 2026, Claude.ai experienced a full availability outage [[source](https://status.claude.com/incidents/2gf1jpyty350)]. The same week, a billing routing bug in Claude Code (the "HERMES.md incident") highlighted the risks of single-provider dependency [[source](https://news.ycombinator.com/item?id=47952722)].
@@ -351,7 +351,7 @@ async function resilientToolCall(
 }
 ```
 
-When Claude is unavailable, the loop retries on the next provider. Your tool definitions work unchanged across providers because they are MCP-standard. For server hardening tips, see [[courses/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability]].
+When Claude is unavailable, the loop retries on the next provider. Your tool definitions work unchanged across providers because they are MCP-standard. For server hardening tips, see [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability]].
 
 <KnowledgeCheck
   questions={[

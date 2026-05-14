@@ -249,7 +249,7 @@ A concrete example. For an invoice-extraction prompt we benchmarked in April 202
 
 You have completed the seven-chapter course. Combine what you have built across all chapters into the capstone described in the [[gemini-enterprise-agents/outline]] — a four-agent enterprise document processing system with security, observability, and runbooks ready for a CISO sign-off and a finance review.
 
-For deeper reading on adjacent topics, see [[course/claude-tool-use-from-zero]] for prompt-caching patterns that translate directly to GEAP cost optimization, [[course/cloudflare-agents-edge-patterns]] for an alternative scaling model, and [[glossary/context-window]] for the underlying cost driver behind most token-bill surprises.
+For deeper reading on adjacent topics, see [[course/claude-tool-use-from-zero]] for prompt-caching patterns that translate directly to GEAP cost optimization, [[blog/cloudflare-agents-week-2026-explained|Cloudflare Agents]] for an alternative scaling model, and [[glossary/context-window]] for the underlying cost driver behind most token-bill surprises.
 
 ---
 

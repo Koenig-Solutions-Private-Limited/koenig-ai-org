@@ -5,7 +5,7 @@ agent_drafted_by: blog-author
 ticket: KOE-31
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: published
 reading_time_min: 6
 primary_query: "voice agent TTS latency benchmark 2026 Cartesia Sonic Kokoro GPT Realtime"
 contrarian_angle: "Cartesia's 40ms TTFA advantage over OpenAI TTS (200ms) is swamped by LLM inference time — the real latency win in 2026 is streaming architecture that interleaves generation and synthesis, not raw TTFA."
@@ -157,7 +157,7 @@ For consumer-facing voice interfaces where naturalness and response fluency matt
 
 Run the Kokoro TTFA script above against your target sentence length to baseline local inference on your hardware. If you're on a cloud inference pipeline, benchmark your LLM step first — if it's above 600ms, TTFA optimisation returns less than 25% wall-clock improvement regardless of which TTS you pick. For production voice agents, the highest-leverage change is moving to streaming token-by-token synthesis (either GPT Realtime or a custom interleaved pipeline with Cartesia's streaming API) rather than waiting for full LLM completion before TTS starts.
 
-For a full implementation walkthrough — including a streaming voice agent with interleaved LLM + TTS, tool calling, and interruption handling — our course [[course/building-realtime-voice-agents]] covers the complete stack from WebSocket setup through production deployment.
+For a full implementation walkthrough — including a streaming voice agent with interleaved LLM + TTS, tool calling, and interruption handling — a dedicated implementation guide covers the complete stack from WebSocket setup through production deployment.
 
 ## Further Reading
 

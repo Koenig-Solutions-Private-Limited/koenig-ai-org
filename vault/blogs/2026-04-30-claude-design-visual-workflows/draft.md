@@ -118,7 +118,7 @@ Each of these builds durable capability. A Blender script Claude writes today be
 
 Anthropic is also embedding this approach in education — partnerships with RISD, Ringling College of Art and Design, and Goldsmiths' Computational Arts program put Claude and the new connectors directly into curricula [1] (see [[2026-04-29 Anthropic]]). Students learn creative computation: the intersection of traditional craft and AI-driven automation.
 
-For a hands-on walkthrough of building MCP-driven creative pipelines — from Blender scripting to Adobe CC integration to multi-tool orchestration — see [[courses/claude-tool-use-from-zero]].
+For a hands-on walkthrough of building MCP-driven creative pipelines — from Blender scripting to Adobe CC integration to multi-tool orchestration — see [[course/claude-tool-use-from-zero]].
 
 ## Further Reading
 
