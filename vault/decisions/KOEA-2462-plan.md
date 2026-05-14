@@ -7,6 +7,8 @@ estimated_token_cost: $0.32
 base_branch: academy/redesign-v1
 basebranch_verified: true
 triggered_by_approval: 365ea2fc-2d45-4c03-a1e1-65328aa175b2
+revision: 2
+revised_at: 2026-05-14T14:54:00Z
 ---
 
 # Plan: Make course slide/audio URLs match published files
@@ -16,21 +18,21 @@ Course chapter audio and slide URLs should never point at same-origin `/courses/
 
 ## Context
 - Files to read first: `learnova-academy/src/lib/courses.ts:91-149`, `learnova-academy/scripts/sync-vault.mjs:68-113`, `learnova-academy/src/app/learn/[slug]/page.tsx:450-460`, `learnova-academy/src/app/learn/[slug]/page.tsx:811-819`, `learnova-academy/package.json:4-12`
-- Relevant prior work: ticket comment says `chapterAssetUrls` should mirror `sync-vault.mjs`, but current code only falls back to flat vault media after `chapter-meta.json`; `sync-vault.mjs` only copies flat course-root media.
+- Relevant prior work: the prior claimed `Fix in PR ''` maps to LearnovaBeast PR #46, `https://github.com/Koenig-Solutions-Private-Limited/learnovaBeast/pull/46`, merged to `academy/redesign-v1` at merge commit `94b4957e` with KOEA-2462 commit `281524ef`. That PR updates `chapterAssetUrls` to handle flat and nested vault layouts. Current `origin/academy/redesign-v1` also has `sync-vault.mjs` flattening nested media into `public/courses/<slug>/chNN-*`.
 - Constraints: no explicit acceptance criteria were captured; Chief approval `365ea2fc-2d45-4c03-a1e1-65328aa175b2` authorized proceeding from the current description. Keep this scoped to `learnovaBeast/learnova-academy` asset resolution and validation. Base branch verified with `git ls-remote --heads origin academy/redesign-v1`.
 
 ## Approach (1 chosen, alternatives rejected)
-**Chosen**: Add a shared layout contract between resolver, vault sync, and validation. Keep R2 `chapter-meta.json` URLs as the preferred source, then support local flat and nested chapter media by emitting only URLs that the sync script will copy into `public/courses/<course>/<relative-file>`. Add a small validation script and package script so the same-origin URL/file invariant is checked before publish, with optional remote HEAD checks for absolute R2 URLs when explicitly enabled.
+**Chosen**: Treat PR #46 as the baseline implementation and avoid duplicating it. Executor should first fetch `origin/academy/redesign-v1` and confirm PR #46's `chapterAssetUrls` change plus the current `sync-vault.mjs` nested-media flattening are present. If they are present, implement only the missing validation/smoke-check path and attach PR #46 as the concrete prior fix; if the executor workspace is stale, update it from `origin/academy/redesign-v1` before adding validation.
 
 **Rejected**: R2-only migration for every course asset - it requires moving existing vault binaries and upload credentials outside this ticket. Resolver-only change - it could emit nested `/courses/*` URLs that `sync-vault.mjs` still does not publish. Sync-only change - it would not fix missing asset discovery for nested local media when no `chapter-meta.json` exists.
 
 ## Steps (Executor follows in order)
-1. Update `learnova-academy/src/lib/courses.ts` to resolve chapter assets in this order: valid `chapter-meta.json` asset URLs, flat course-root candidates, then nested `<chapterPrefix>/<candidate>` candidates.
-2. Keep returned local URLs path-stable as `/courses/${courseSlug}/${relativePath}` where `relativePath` is either `ch01-slides.pptx` or `01-why-mcp-exists/ch01-slides-v2.pptx`; URI-encode path segments if needed, but do not encode `/`.
-3. Update `learnova-academy/scripts/sync-vault.mjs` so `mirrorCourseMedia()` copies media from both the course root and one-level chapter subdirectories into `public/courses/<courseSlug>/...`, preserving nested relative paths.
-4. Add `learnova-academy/scripts/verify-course-assets.mjs` that loads publishable courses, inspects `audio_url` and `slides_url`, verifies every relative `/courses/*` URL has a corresponding file in `public/`, and optionally HEAD-checks absolute `http(s)` URLs when `VERIFY_REMOTE_COURSE_ASSETS=1`.
-5. Update `learnova-academy/package.json` so the build path runs `sync-vault.mjs` and the local-file validation before `next build`; expose a named script such as `course-assets:check` for QA/publish verification.
-6. Add focused fixture coverage inside the verifier script or a minimal colocated test harness for flat and nested layouts, using temporary directories so it does not depend on the developer vault contents.
+1. Fetch `learnovaBeast` refs and confirm PR #46 is on `origin/academy/redesign-v1`: `git fetch origin academy/redesign-v1` then `git merge-base --is-ancestor 281524ef origin/academy/redesign-v1`.
+2. Inspect `origin/academy/redesign-v1:learnova-academy/src/lib/courses.ts` and `origin/academy/redesign-v1:learnova-academy/scripts/sync-vault.mjs`; if the flat+nested resolver or nested-media flattening is missing in the working branch, update the branch from `origin/academy/redesign-v1` before proceeding.
+3. Add `learnova-academy/scripts/verify-course-assets.mjs` that loads publishable courses, inspects rendered `audio_url` and `slides_url`, verifies every relative `/courses/*` URL has a corresponding file in `public/`, and optionally HEAD-checks absolute `http(s)` URLs when `VERIFY_REMOTE_COURSE_ASSETS=1`.
+4. Update `learnova-academy/package.json` so the build path runs `sync-vault.mjs` and the local-file validation before `next build`; expose a named script such as `course-assets:check` for QA/publish verification.
+5. Add focused fixture coverage inside the verifier script or a minimal colocated test harness for flat and nested layouts, using temporary directories so it does not depend on the developer vault contents.
+6. In the final handoff, cite PR #46 and state whether the executor implemented only validation or also had to refresh/cherry-pick the already-merged asset resolver changes.
 
 ## Verification (QA Verifier checks these)
 - [ ] `cd /Users/vardaankoenig/Documents/Paperclip/learnovaBeast/learnova-academy && node ./scripts/sync-vault.mjs && node ./scripts/verify-course-assets.mjs` exits 0 and reports no missing relative course assets.
