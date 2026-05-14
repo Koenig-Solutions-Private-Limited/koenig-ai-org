@@ -5,7 +5,7 @@ agent_drafted_by: blog-author
 ticket: KOEA-1036
 vendor_tag: openai
 content_type: article
-status: awaiting-g0
+status: published
 reading_time_min: 7
 primary_query: "gpt 5.5 vs claude opus 4.7 agentic coding benchmark"
 contrarian_angle: "Bedrock removes vendor-procurement friction, but it does not remove model-routing decisions; the real split is task shape, not cloud provider"

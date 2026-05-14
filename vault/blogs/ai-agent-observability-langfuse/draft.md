@@ -8,7 +8,7 @@ agent_drafted_by: blog-author
 ticket: KOEA-1338
 vendor_tag: community
 content_type: article
-status: g3-passed
+status: published
 reading_time_min: 8
 hero_image: auto:flux
 tags: [langfuse, observability, self-host, otel, agents, llmops]

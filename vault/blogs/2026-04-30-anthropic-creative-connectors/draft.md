@@ -15,7 +15,7 @@ whats_new:
   - Standardized "Adobe for creativity" branding
   - Fixed broken Academy course links
   - Rev 5: Resolume Wire connector #9 corrected — now describes Wire's node-based visual programming domain instead of incorrectly claiming Arena/Avenue control
-status: g0-passed
+status: published
 title: "How to use Anthropic's 9 new creative connectors in your workflow"
 slug: "2026-04-30-anthropic-creative-connectors"
 description: "Anthropic launched 9 MCP-based connectors for Blender, Adobe Creative Cloud, Ableton Live, and Resolume in April 2026, letting Claude orchestrate 3D, audio, and design workflows via natural language."
