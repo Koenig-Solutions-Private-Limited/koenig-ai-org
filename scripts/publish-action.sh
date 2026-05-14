@@ -135,10 +135,10 @@ import json, sys
 items = json.load(sys.stdin)
 if isinstance(items, dict): items = items.get('items', [])
 result = [
-    {'id': i['id'], 'slug': i.get('metadata', {}).get('slug', i['id'])}
+    {'id': i['id'], 'slug': (i.get('metadata') or {}).get('slug', i['id'])}
     for i in items
     if i.get('status') == 'done'
-    and i.get('metadata', {}).get('publish_state') == 'g4-approved'
+    and (i.get('metadata') or {}).get('publish_state') == 'g4-approved'
 ]
 print(json.dumps(result))
 ")"
@@ -187,9 +187,9 @@ import json, sys
 items = json.load(sys.stdin)
 if isinstance(items, dict): items = items.get('items', [])
 result = [
-    {'id': i['id'], 'dispatched_at': i.get('metadata', {}).get('dispatched_at', '')}
+    {'id': i['id'], 'dispatched_at': (i.get('metadata') or {}).get('dispatched_at', '')}
     for i in items
-    if i.get('metadata', {}).get('publish_state') == 'dispatching'
+    if (i.get('metadata') or {}).get('publish_state') == 'dispatching'
 ]
 print(json.dumps(result))
 ")"
