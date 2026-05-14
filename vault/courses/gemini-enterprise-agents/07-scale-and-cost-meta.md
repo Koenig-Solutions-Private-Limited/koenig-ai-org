@@ -5,5 +5,5 @@ tool: python-pptx
 duration_audio_sec: null
 slide_count: 8
 produced_at: 2026-05-14T05:31:07Z
-status: g0-blocked
+status: awaiting-g0
 ---

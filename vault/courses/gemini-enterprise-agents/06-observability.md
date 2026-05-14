@@ -1,244 +1,370 @@
 ---
 chapter_num: 6
-title: "Production Observability: Traces, Logs, Metrics, and Drift Detection"
+title: "Production Observability and Evaluation for Gemini Enterprise Agents"
 course_slug: gemini-enterprise-agents
 prerequisites_chapters: [1, 2, 3, 4, 5]
 duration_min: 50
-reading_time_min: 22
-date: 2026-05-03
+reading_time_min: 27
+date: 2026-05-14
 author: course-author
 agent_drafted_by: course-author
 content_type: chapter
 chapter: 6
 parent_course: gemini-enterprise-agents
-ticket: KOEA-25
-status: g0-blocked
+ticket: KOEA-2633
+status: awaiting-g0
 vendor_tag: google
 learning_objectives:
-  - "Wire Cloud Trace and Cloud Logging into a deployed GEAP agent using OpenTelemetry"
-  - "Read an agent trace to diagnose a failed tool call and calculate token cost per interaction"
-  - "Compare Google-native observability (Cloud Trace, Vertex AI Model Monitoring) to OSS alternatives (Langfuse, Helicone)"
-  - "Build latency and token-usage dashboards in Cloud Monitoring"
-  - "Configure drift alerts using Vertex AI Model Monitoring on agent inputs and outputs"
+  - "Configure OpenTelemetry-backed tracing and logging for an ADK agent on Agent Runtime"
+  - "Read a trace DAG to isolate a slow or failed tool call in the invoice pipeline"
+  - "Build Cloud Monitoring views for request count, latency, error rate, and tool-call volume"
+  - "Set up offline evaluations and Online Monitors to catch quality regressions"
+  - "Use failure clusters and prompt optimization output to choose the next fix"
 sources:
-  - https://opentelemetry.io/docs/specs/otel/
-  - https://cloud.google.com/trace/docs
-  - https://cloud.google.com/logging/docs
-  - https://cloud.google.com/vertex-ai/docs/model-monitoring/overview
+  - https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/tracing
+  - https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/logging
+  - https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/monitoring
   - https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/observability/overview
-  - https://langfuse.com/docs
-  - https://docs.helicone.ai/
+  - https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/evaluate-agents
+  - https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/evaluate-offline
+  - https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/evaluate-online
+  - https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/view-results
+  - https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/optimize-agent
 ---
 
-# Production Observability: Traces, Logs, Metrics, and Drift Detection
+# Production Observability and Evaluation for Gemini Enterprise Agents
 
-Observability for a Gemini Enterprise Agent Platform (GEAP) deployment is the difference between "the agent feels slow today" and "tool call #4 in the orchestrator added 4.2s p99 latency starting at 14:32 UTC after we shipped instruction v3.2." Since the GEAP general-availability release on 23 April 2026, every agent invocation is automatically instrumented with [OpenTelemetry](https://opentelemetry.io/) spans that flow into Cloud Trace, Cloud Logging, and Cloud Monitoring — a stack that gives you 90% of what Langfuse or Helicone provide, minus the vendor switching cost. [1] This chapter wires that stack end-to-end on the invoice pipeline you secured in Chapter 5.
+Chapter 5 made the invoice pipeline defensible: every agent had an identity, traffic flowed through governance controls, and risky tool calls could be inspected. That is necessary, but it does not tell you whether the system is healthy after launch.
 
-## Key facts
+This chapter turns the secured pipeline into an observable system. By the end, you will know how to answer four production questions without guessing:
 
-1. GEAP agents auto-export OpenTelemetry traces to Cloud Trace with one config flag — no manual span instrumentation required for tool calls or model invocations [1]
-2. Every agent invocation produces three correlated artifacts: a trace ID, a structured log entry in `agent-runtime.googleapis.com/invocations`, and a row in the Vertex AI usage metering table
-3. Token usage is exposed as a Cloud Monitoring metric (`agentengine.googleapis.com/agent/tokens_consumed`) with labels for model, agent ID, and tool name [2]
-4. Vertex AI Model Monitoring detects drift on agent inputs (prompt distribution shift) and outputs (response quality regression) using the same skew/drift jobs that exist for traditional ML models [3]
-5. OpenTelemetry traces export simultaneously to Cloud Trace and any OTLP-compatible backend — Langfuse, Helicone, Honeycomb, Tempo — without code changes
-6. The default Cloud Trace retention is 30 days; agent invocations often need longer for compliance, so route to BigQuery via the Trace export sink for indefinite retention
-7. Agent Observability's "trace topology" view renders multi-agent handoffs as a directed graph — invaluable for debugging supervisor/sub-agent loops
+1. Which agent, model call, or tool made this request slow?
+2. Did this failure come from infrastructure, a tool, policy enforcement, or agent reasoning?
+3. Are latency and error rates trending in the wrong direction?
+4. Is answer quality drifting even when the runtime looks healthy?
 
----
+The correction from the earlier draft is important: do not treat classic Vertex AI Model Monitoring as the agent-quality answer. For Gemini Enterprise Agent Platform, the documented path is trace-backed observability plus the Agent Platform evaluation workflow: offline evaluations for test sets, Online Monitors for production traffic, and failure-cluster analysis for root-cause work. Google documents Agent Runtime tracing through OpenTelemetry environment variables, built-in Cloud Monitoring metrics for the `aiplatform.googleapis.com/ReasoningEngine` resource, Cloud Logging routes for deployed agents, and Agent Platform Online Monitors that sample Cloud Trace and Cloud Logging on a schedule.[^trace][^monitoring][^logging][^online]
 
-## What "observable" means for an agent
-
-Three kinds of failure dominate agent operations, and each demands a different telemetry signal.
-
-**Latency failures** are the loudest and easiest to diagnose. A user clicks, waits 18 seconds, gives up. The fix is a trace that breaks the 18 seconds into its constituent spans: 1.2s waiting for orchestrator decision, 6.4s for sub-agent A, 9.7s for sub-agent B's slow tool call, 0.7s synthesizing the response. Cloud Trace handles this without modification.
-
-**Quality failures** are the silent killer. The agent returns a fluent, confident response — that is wrong. No 500 error, no SLO violation, no PagerDuty page. You discover it from a customer support ticket three weeks later. Detecting these requires either continuous evaluation (Online Monitors, covered in the outline) or output-distribution drift detection (Vertex AI Model Monitoring).
-
-**Cost failures** are the slow leak. An agent that should cost $0.003 per invocation creeps to $0.04 after a context-window expansion or a recursive sub-agent call pattern. By the time finance notices, you have spent $40,000 on invocations that should have cost $3,000. Token-usage metrics with per-tool labels make this visible in real time.
-
-A complete observability stack covers all three. Most teams cover the first, neglect the third, and discover the second from churn.
+<Callout type="warn">
+**Do not make prompt and response capture your default production setting.** Agent traces can include inputs and outputs when you enable content capture. That is useful during debugging and evaluation, but it can also store customer data in observability systems. Start with metadata-only traces, enable content capture only for controlled environments or sampled monitors, and record large multimodal artifacts to Cloud Storage when the docs recommend it.
+</Callout>
 
 ---
 
-## Wiring OpenTelemetry into GEAP
+## Prerequisites check
 
-GEAP's runtime emits OpenTelemetry spans automatically. To turn this on for a deployed agent, set two fields on the deployment config:
+You should have:
+
+- The three-agent invoice pipeline from Chapter 4: Orchestrator, Extractor, and Validator.
+- The security controls from Chapter 5: agent identities, gateway routing, and Model Armor inspection where your deployment uses it.
+- A deployed Agent Runtime instance or a staging deployment you can redeploy.
+- Google Cloud permissions to view Cloud Trace, Cloud Logging, and Cloud Monitoring. At minimum, reviewers need Monitoring Viewer and Logs Viewer-style access for this chapter's checks.
+
+If you do not have a deployed agent yet, you can still complete the reasoning exercises and RunPromptCells, but the hands-on exercise requires a staging deployment.
+
+---
+
+## The agent observability stack
+
+A production agent needs more than "the endpoint returned 200." Agent behavior is a chain: user request, orchestrator decision, tool call, sub-agent handoff, model call, policy check, final response. A normal HTTP metric tells you whether the outer request succeeded. It does not tell you whether the agent silently skipped a required tool, called the wrong extractor, or spent 24 seconds waiting on Document AI before returning a fallback answer.
+
+Gemini Enterprise Agent Platform splits the problem across four layers.
+
+**Traces** show the execution path. Google describes a trace as a timeline for a query, composed of spans that represent units of work such as function calls, LLM interactions, or tool executions.[^trace] For your invoice pipeline, the trace is where you see that the Orchestrator called the Extractor, the Extractor called Document AI, and the Validator rejected a schema field.
+
+**Logs** capture event detail. Agent Runtime can route stdout and stderr to Cloud Logging by default, and Python logging or the Cloud Logging client can write structured log entries against the Reasoning Engine resource.[^logging] Logs are best for durable business facts: invoice ID, supplier class, gateway policy decision, retry count, or the evaluation case ID that produced a failure.
+
+**Metrics** capture trends. Agent Runtime automatically collects operational metrics for deployed agents, including request count, request latencies, container CPU allocation time, and container memory allocation time for the Reasoning Engine monitored resource.[^monitoring] If you need tool-call counts or custom business counters, Google recommends log-based metrics or user-defined metrics.[^monitoring]
+
+**Evaluation signals** capture quality. Agent Platform evaluation supports rapid evaluation, test-case evaluation, and Online Monitoring. Google frames these as development, CI/CD, and production evaluation modes respectively.[^eval] Online Monitors continuously score sampled live traces using predefined or custom metrics and export results to Cloud Logging and Cloud Monitoring.[^online]
+
+The practical rule is simple: use traces to debug one request, logs to preserve event facts, metrics to detect trend changes, and evaluations to detect answer-quality regressions.
+
+---
+
+## Configure tracing without inventing an API
+
+The previous version of this chapter used a fictional `OtelConfig` object. The current documented setup for ADK agents on Agent Runtime is environment-variable based. To enable tracing for an ADK agent, set OpenTelemetry-related environment variables when deploying to Agent Runtime:
 
 ```python
-from google.adk import agent_engines
-from google.adk.observability import OtelConfig
-
-agent_engines.create(
-    agent=invoice_orchestrator,
-    region="us-central1",
-    observability=OtelConfig(
-        enabled=True,
-        export_to_cloud_trace=True,
-        export_to_cloud_logging=True,
-        additional_otlp_endpoints=[
-            # Send to a self-hosted Langfuse for cross-cloud aggregation
-            "https://langfuse.acme-internal.com:4318/v1/traces",
-        ],
-        log_level="INFO",
-        sample_rate=1.0,    # 100% sampling in dev; drop to 0.1 in prod for cost
-    ),
-)
+env_vars = {
+    "GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY": "true",
+    "OTEL_SEMCONV_STABILITY_OPT_IN": "gen_ai_latest_experimental",
+    "OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT": "EVENT_ONLY",
+}
 ```
 
-The span schema follows the [OpenTelemetry GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/), which were promoted to stable in late 2025. [4] Each span carries:
+Google's tracing documentation says `GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY` enables agent traces and logs but does not include prompt and response data by itself. The semantic-convention opt-in enables the latest generative AI conventions. The content-capture setting enables logging of input prompts and output responses.[^trace]
 
-- `gen_ai.system` — `gemini` (or whatever model you route to)
-- `gen_ai.request.model` — `gemini-pro-latest`, `gemini-flash-latest`
-- `gen_ai.usage.input_tokens` and `gen_ai.usage.output_tokens`
-- `gen_ai.operation.name` — `chat`, `tool_call`, `agent_handoff`
-- `agent.id` — the SPIFFE ID from Chapter 5
-- `agent.tool_name` — for tool-call spans
+That last setting deserves a design decision, not a copy-paste. For the invoice pipeline, prompt and response capture might include supplier names, addresses, bank details, purchase-order numbers, and invoice attachments. In development, capture is useful because it lets you inspect the exact evidence behind a bad extraction. In production, capture should be sampled, access-controlled, and retention-limited. If the agent processes large documents or multimodal payloads, Google recommends recording media in Cloud Storage instead of embedding it directly in trace spans for Online Monitors.[^online]
 
-Because these are standard semantic conventions, the same trace renders correctly in Langfuse, Honeycomb, Grafana Tempo, or any other OTLP backend — the schema is the contract.
+For non-ADK frameworks, the setup differs. LangChain and LangGraph agent wrappers can enable tracing with an `enable_tracing=True` parameter in Google's examples, while custom agents should use OpenTelemetry instrumentation directly.[^trace] The goal is the same: emit spans that Cloud Trace and Agent Platform observability can assemble into a useful request timeline.
 
----
-
-## Reading a trace to diagnose a failure
-
-Cloud Trace renders agent invocations as a tree of spans, each with start time, duration, status, and arbitrary attributes. The trace is the single most useful debugging artifact for any agent failure that is not a flat 500 error — and most production failures are not flat 500 errors. They are slow, partial, or subtly wrong, and the trace makes the structure of the failure visible in a way that no log line can.
-
-Here is a real trace from a deliberately-broken invoice pipeline. The orchestrator calls the Extractor, which calls Document AI, which times out:
-
-```
-[trace] invoice-run-7f3a9c (total: 31.4s, status: ERROR)
-├─ orchestrator.invoke (31.2s)
-│  ├─ orchestrator.model.chat (1.8s, 1240 in / 312 out tokens)
-│  ├─ tool.transfer_to_agent (extractor) (29.1s)
-│  │  └─ extractor.invoke (28.9s)
-│  │     ├─ extractor.model.chat (0.9s, 890 in / 145 out tokens)
-│  │     ├─ tool.parse_pdf_with_doc_ai (28.0s, status: TIMEOUT) ← culprit
-│  │     └─ extractor.error_handler.invoke (0.0s)
-│  └─ orchestrator.error_handler.invoke (0.1s)
-└─ audit_log.write (0.2s)
-```
-
-Three observations the trace makes obvious that a log file would not:
-
-The bottleneck is one specific tool call (`parse_pdf_with_doc_ai`), not the orchestrator's reasoning or the sub-agent's reasoning. Token cost is unevenly distributed: the orchestrator consumed 1240 input tokens to make a 312-token routing decision — almost certainly a sign of an over-large system prompt. And the extractor's `error_handler` took 0.0s, meaning it returned a default response without making a follow-up model call — which sounds good but is actually a hidden failure mode (the response was wrong, but no further latency was added to mask it).
-
-To find this, you click into the slow span in Cloud Trace, filter to `attributes.tool_name = "parse_pdf_with_doc_ai"`, and chart its p99 latency over the last 24 hours. If it correlates with a deploy, you know what to roll back.
-
-The trace also exposes a category of issue that pre-agent observability stacks could not reach: **causal-chain failures**. Tool A returned a malformed JSON; the agent's reasoning silently degraded for the next three turns; the eventual response was wrong but no individual span errored. Filter your trace search to `agent.handoff_count > 5` for any single user request — the long tail of these queries is where causal-chain failures hide. We have rescued several customer deployments by turning that filter into a saved query and reviewing it weekly.
-
-A workflow detail worth adopting: tag every deploy with a release ID and propagate it as a span attribute. When a regression appears, you can compare trace distributions across release IDs in seconds rather than reasoning about timestamps. Cloud Trace supports trace-attribute aggregation natively; this is a five-minute setup that pays back the first time you ship a bad change.
+<RunPromptCell
+  model="gemini-3.1-pro-preview"
+  prompt="You are reviewing this Agent Runtime telemetry config for a regulated invoice-processing agent:\n\nGOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY=true\nOTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental\nOTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT=EVENT_ONLY\n\nProduce a deployment review with three sections: (1) what each variable does, (2) what privacy or retention risk it introduces, and (3) the production policy you would recommend for a staging environment versus a production environment. Keep the answer specific to invoices and supplier data."
+  expectedOutput="A strong answer explains that telemetry enables traces/logs, semantic-convention opt-in standardizes gen-ai attributes, and content capture can log prompts/responses. It should recommend full or high capture in staging, sampled or disabled content capture in production unless needed for controlled Online Monitors, and explicit retention/access controls for invoice and supplier data."
+/>
 
 ---
 
-## Build the four dashboards every production deployment needs
+## Read the trace DAG, not just the top-line latency
 
-Cloud Monitoring lets you build dashboards from agent metrics with zero custom code. The four dashboards we recommend for every GEAP production deployment:
+Cloud Trace and the Agent Platform Traces tab let you inspect a session or span and view a directed acyclic graph of spans, inputs/outputs, and metadata attributes.[^trace] That DAG is the fastest way to debug a multi-agent request because it preserves the causal path.
 
-**Dashboard 1 — Latency.** Plot p50, p95, p99 of `agentengine.googleapis.com/agent/invocation_latency` grouped by `agent.id`. Alert at p99 > 5s for orchestrator agents; sub-agents can run hotter. Add a side panel breaking down latency into `model_latency`, `tool_latency`, and `handoff_latency` so you know which subsystem is slow.
+Suppose a customer uploads an invoice and the system takes 31 seconds before returning "unable to validate." A flat log search gives you several events. The trace shows the shape:
 
-**Dashboard 2 — Token usage and cost.** Plot `agent/tokens_consumed` summed by `model` and multiplied by current per-token pricing. Add a 30-day budget line; alert when projected monthly spend exceeds 80% of budget. This is the dashboard finance will ask to see during procurement renewal.
-
-**Dashboard 3 — Tool error rate.** Plot the count of spans where `status = ERROR` grouped by `tool_name`. A tool with a 2% error rate is normal; a tool with a 30% error rate is a regression you need to find before customers do.
-
-**Dashboard 4 — Drift indicators.** Plot two Vertex AI Model Monitoring metrics: `feature_skew` (input prompt distribution vs training distribution) and `prediction_drift` (output distribution vs baseline). Alert at skew > 0.3 (Jensen-Shannon divergence). [3]
-
-Wire the alerts to PagerDuty. Latency alerts are P2 (page during business hours), cost alerts are P3 (Slack only), error-rate spikes are P1 (page immediately, day or night).
-
-A common pattern we see new teams skip: a fifth dashboard for **handoff topology**. Cloud Trace's topology view renders the directed graph of agent-to-agent transfers across the last hour, sized by invocation count and colored by latency. For multi-agent systems with three or more agents, this single view answers "which sub-agent is the bottleneck?" faster than any tabular dashboard. Pin it next to the latency dashboard.
-
----
-
-## Vertex AI Model Monitoring for agents
-
-Vertex AI Model Monitoring was originally designed for tabular ML models, but the April 2026 release extended it to agent workloads. [3] The mental model is the same: define a baseline, sample live traffic, compute distance metrics, alert on drift.
-
-For an agent, two distributions matter. The **input distribution** is the embedding of incoming user prompts. If your invoice agent was deployed in March on procurement invoices and someone starts using it for medical billing, the input distribution shifts — and your tool-routing accuracy will collapse without anyone deploying a code change. The **output distribution** is the embedding of agent responses. Output drift detects regressions that the input would not — a model upgrade, a prompt tweak, a tool that started returning slightly different formatting.
-
-Configure both in one spec:
-
-```python
-from google.cloud import aiplatform
-
-aiplatform.ModelMonitoringJob.create(
-    display_name="invoice-orchestrator-drift",
-    target_resource=f"projects/acme-prod-7841/locations/us-central1/agents/invoice-orchestrator-v3",
-    schedule="0 */6 * * *",                  # every 6 hours
-    objective_config={
-        "training_dataset": "bq://acme-prod-7841.agents.invoice_baseline_2026_03",
-        "skew_thresholds": {"prompt_embedding": 0.3},
-        "drift_thresholds": {"response_embedding": 0.25},
-    },
-    notification_emails=["agents-oncall@acme.com"],
-    log_ttl_days=90,
-)
+```text
+invoice-run-7f3a9c total=31.4s status=ERROR
+  orchestrator.invoke 31.2s
+    orchestrator.model 1.8s
+    transfer_to_agent extractor 29.1s
+      extractor.invoke 28.9s
+        extractor.model 0.9s
+        tool.parse_pdf_with_document_ai 28.0s status=TIMEOUT
+        extractor.fallback 0.0s
+    validator.invoke skipped
+  audit_log.write 0.2s
 ```
 
-Drift detection on agents is genuinely new ground — the field has converged on input/output embedding comparison as the practical baseline, but there is no settled best practice for detecting *quality* drift independent of distribution drift. An agent can produce responses with the same embedding distribution as the baseline while being subtly worse on accuracy. For that, you need Online Monitors with multi-turn autoraters — covered in the GEAP outline — and an Example Store that catches regressions on a known-good test set every time you deploy.
+This trace tells you three things immediately.
+
+First, the bottleneck is a tool call, not model reasoning. The orchestrator and extractor model spans are small compared with the Document AI span.
+
+Second, the Validator did not run. That matters because a user-facing "unable to validate" message might imply validation failed, when the trace shows extraction never produced input for validation.
+
+Third, the fallback path is suspicious. A zero-duration fallback might be a deterministic error template, which is fine, or it might be a hidden path that returns a generic answer without logging the root cause. Either way, it deserves inspection.
+
+The anti-pattern is staring at the top-level p99 chart and guessing. The chart tells you there is pain. The trace tells you where the pain entered the system.
+
+When reviewing a trace, use this order:
+
+1. Confirm the top-level status and total duration.
+2. Identify the longest child span and its status.
+3. Check whether expected downstream spans are missing.
+4. Compare model spans, tool spans, gateway or policy spans, and handoff spans separately.
+5. Copy the trace ID into your incident notes and any evaluation case you create from the failure.
+
+This last step connects operations to improvement. A trace that caused a customer incident should become either an offline evaluation case or an Online Monitor filter.
 
 ---
 
-## When to add Langfuse, Helicone, or another OSS layer
+## Build the minimum production dashboard
 
-Cloud Trace and Cloud Logging are sufficient for most enterprise deployments. The case for adding Langfuse or Helicone on top is narrow but real:
+Agent Runtime's built-in metrics are intentionally operational. They do not replace evaluations. They answer health questions: is the service receiving traffic, how slow are requests, are errors increasing, and is the container resource profile changing?
 
-**Cross-cloud aggregation.** If you run agents on GEAP, Cloudflare Agents, and Claude SDK on AWS Lambda, you want one pane of glass. [Langfuse](https://langfuse.com/) is open-source (MIT-licensed), self-hostable, and accepts OTLP traces from any source. Run it once; point all three platforms at it.
+Start with four dashboard panels:
 
-**Prompt-level analytics.** Langfuse and [Helicone](https://docs.helicone.ai/) both surface prompt-template analytics that Cloud Trace does not — which prompt template version produced which user satisfaction score, A/B testing of system prompts, hit-rate on cached prompts. If your agent program runs continuous prompt experiments, the OSS tools have richer primitives.
+**Request volume.** Use `aiplatform.googleapis.com/reasoning_engine/request_count`, grouped by `reasoning_engine_id` and `response_code_class`. This catches traffic drops, deploy routing mistakes, and sudden error spikes. Google shows this metric under the Reasoning Engine monitored resource and documents PromQL examples for request count and error-rate ratios.[^monitoring]
 
-**Cost-attribution by team.** Helicone's user-level cost attribution is more granular than Cloud Monitoring's metric labels. If finance asks "which product team is responsible for $42K of last month's Vertex spend?" Helicone answers in five clicks; building the equivalent in Cloud Monitoring requires custom metric labels at every invocation.
+**Latency percentiles.** Use the built-in request latency metric. Track p50, p95, and p99 by agent deployment. The SRE mistake is alerting only on average latency. Agent workloads often have a long tail: one slow document parser or retrieval call can make 5% of requests unusable while the average remains acceptable.
 
-**The contrarian angle:** Most teams adopting Langfuse or Helicone do not actually need them. They add a second observability stack because it feels rigorous, then operate two systems forever — paying the cognitive overhead of "where did that trace go?" twice. Unless you have a concrete cross-cloud requirement or a prompt-experimentation pipeline that needs Langfuse's analytics primitives, stay with Cloud Trace. The right number of observability backends is one. Adopt a second only when the gap is concrete, not aspirational.
+**Error rate.** Calculate failed requests over total requests, filtering by `response_code` or response-code class. For the invoice pipeline, treat sustained 5xx errors as infrastructure incidents and sustained 4xx or policy-denial spikes as product or integration incidents. They need different owners.
 
-In line with our cost discipline, if you do add an OSS layer, host it yourself on a `e2-small` GCE instance — Langfuse's footprint is modest, and the SaaS pricing on either tool inflates fast at production volume. The Koenig AI Academy stack at academy.kspl.tech runs Langfuse self-hosted; we have written up the Docker setup at [[engineering/observability-langfuse-self-hosted]].
+**Tool-call volume and tool-call errors.** Built-in metrics do not give you every business-specific counter you may want. For tool calls, use structured logs and create a log-based metric. Google's monitoring docs show a `tool_calling_count` example where log entries like `tool-<tool-id> invoked by agent-<agent-id>` become a counter with `tool` and `agent` labels.[^monitoring] In a real invoice system, prefer stable IDs such as `tool=parse_pdf_with_document_ai` and `agent=extractor`.
+
+Do not overload metric labels with unbounded values. Supplier name, invoice ID, customer email, and raw filename do not belong in metric labels. Put those in structured logs with retention and access policy. Metric cardinality problems are quiet until your dashboards slow down and your bill grows.
+
+<RunPromptCell
+  model="gemini-3.1-pro-preview"
+  prompt="Design a Cloud Monitoring dashboard for a three-agent invoice pipeline deployed on Gemini Enterprise Agent Platform. Agents: orchestrator, extractor, validator. Available built-in metrics include request_count and request_latencies on a ReasoningEngine resource. You may also create log-based metrics from structured logs. Return a markdown table with columns: panel, signal, grouping labels, alert threshold, and why it matters. Include exactly six panels."
+  expectedOutput="Expected panels include request volume by agent and response code, p95/p99 latency by agent, error-rate ratio, tool-call count by tool and agent from logs, gateway or policy-denial count if logged, and Online Monitor quality or hallucination score once configured. A good answer avoids invoice IDs or supplier names as metric labels."
+/>
 
 ---
 
-## Sampling, retention, and the cost of observability itself
+## Use logs for facts that traces should not carry alone
 
-Observability is not free. Cloud Trace charges for span ingestion above the free tier (2.5M spans/project/month at the time of writing); Cloud Logging charges $0.50 per GiB after the first 50 GiB; high-cardinality metrics in Cloud Monitoring incur a per-metric charge. For a heavy production deployment, the observability bill can land at 3-8% of the inference bill. That is usually worth it; occasionally it is not, and the levers are sampling, retention, and label cardinality.
+Logs are not a substitute for traces. They are the durable event stream that lets you answer questions a trace DAG may not answer cleanly:
 
-Set `sample_rate` to 1.0 in development and 0.1 in production for high-volume agents. Always-trace any span that errored — the OTel SDK supports tail-based sampling via the OpenTelemetry Collector, and the GEAP runtime defaults to it. Route audit-relevant traces to a 7-year BigQuery sink; let the operational Cloud Trace instance retain only 30 days. And avoid putting unbounded user-supplied values (email addresses, document IDs) into metric labels — each unique label combination is a separate billable timeseries, and the unit cost is small until your cardinality hits five digits.
+- Which supplier class was this invoice?
+- Which extraction schema version ran?
+- Which gateway policy decision applied?
+- Which evaluation case was generated from this incident?
+- Which retry attempt finally succeeded?
+
+Agent Runtime supports stdout/stderr routing to `reasoning_engine_stdout` and `reasoning_engine_stderr` by default. That is convenient for early development, but structured logs are better once the pipeline has operational value. Python logging and the Cloud Logging client can write JSON payloads with severity, labels, trace correlation fields, and the `aiplatform.googleapis.com/ReasoningEngine` resource.[^logging]
+
+For the invoice pipeline, use one structured log per major business event:
+
+```json
+{
+  "event": "invoice_extraction_completed",
+  "agent": "extractor",
+  "trace_id": "TRACE_ID",
+  "schema_version": "invoice_v4",
+  "supplier_class": "strategic_vendor",
+  "document_pages": 12,
+  "tool": "parse_pdf_with_document_ai",
+  "duration_ms": 2800,
+  "retry_count": 0
+}
+```
+
+Notice what is missing: invoice number, supplier bank account, raw address, and uploaded filename. Those may be needed in a secure audit store, but they do not belong in ordinary operational logs unless your governance policy explicitly allows it.
+
+The strongest pattern is to log identifiers that let authorized responders join to the right system of record, not the sensitive record itself. That keeps observability useful without turning Cloud Logging into an uncontrolled copy of your finance data.
 
 ---
 
-## Hands-on exercise: instrument the invoice pipeline and induce a failure
+## Evaluation is the quality layer
 
-Take the secured invoice pipeline from Chapter 5. Apply observability:
+Latency, error rate, and trace topology catch runtime failures. They do not prove the agent gave a correct answer. A fast wrong answer is still wrong.
 
-1. Enable `OtelConfig` with `export_to_cloud_trace=True` on all three agents (Orchestrator, Extractor, Validator).
-2. Build the four dashboards in Cloud Monitoring described above. Save them to a workspace named `agents-prod`.
-3. Configure a Vertex AI Model Monitoring job on the Orchestrator with a baseline from your last 1000 successful invocations. Schedule every 6 hours.
-4. Inject a deliberate failure: misconfigure the Extractor to call a non-existent Cloud Storage bucket. Run 10 test invoices.
-5. Open Cloud Trace, filter to `status = ERROR`, and identify the failing span in under 60 seconds. Capture the trace ID.
-6. Open the latency dashboard and confirm the p99 spike is visible. Confirm the alert fired.
-7. Run a non-invoice prompt (e.g., "summarize this medical record") through the Orchestrator. Confirm Vertex AI Model Monitoring flags input drift on the next 6-hour run.
-8. Optional: spin up Langfuse self-hosted on a GCE `e2-small` and configure `additional_otlp_endpoints`. Verify the same trace appears in both Cloud Trace and Langfuse.
+Agent Platform evaluation gives you the quality layer. Google describes three evaluation types:
 
-Success criteria: a screenshot of the Cloud Trace timeline showing the full failure path, and a chart showing the latency p99 spike correlated with the deploy time.
+- Rapid Evaluation for frequent development checks.
+- Test Case Evaluation for scheduled regression testing against a dataset.
+- Online Monitoring for continuous production quality tracking.[^eval]
+
+Use all three, but do not blur them.
+
+**Rapid evaluations** are for local iteration. You changed the orchestrator instruction and want to know whether tool-routing improved on ten examples.
+
+**Offline evaluations** are for regression. Google describes offline evaluation as measuring performance, safety, and quality by analyzing historical data, individual traces, or full sessions against predefined or custom metrics.[^offline] For the invoice pipeline, your first offline set should include 30 cases: clean invoices, rotated scans, duplicate invoice numbers, missing purchase orders, unsupported currencies, and supplier-name ambiguity.
+
+**Online Monitors** are for production drift. Google says Online Monitors run on a scheduled loop: sample data from Cloud Trace and Cloud Logging, evaluate with the Gemini Enterprise Agent Platform Evaluation Service, then write results back to Cloud Logging and Cloud Monitoring.[^online] They can track metrics such as response quality, safety, hallucination rates, and tool-use quality in the observability dashboard.[^online]
+
+This is more useful for agents than trying to force all quality concerns through traditional feature drift. The quality question is not only "did the prompt distribution move?" It is "did the agent still complete the task, use the right tools, handle tool outputs correctly, and avoid inventing unsupported facts?" Agent evaluation metrics and failure clusters are designed around those agent behaviors.
+
+<KnowledgeCheck
+  question="Your invoice pipeline p95 latency is stable, request count is normal, and 5xx errors are near zero. Customer support still reports that the agent is approving invoices without checking purchase-order matches. Which signal is most likely to catch this class of regression?"
+  options={[
+    "Cloud Monitoring request_count grouped by response_code",
+    "Container CPU allocation time",
+    "An Online Monitor or offline evaluation metric for tool-use/task success",
+    "Cloud Logging stdout volume"
+  ]}
+  correctIdx={2}
+  explanation="This is a quality and tool-use regression, not primarily an infrastructure failure. Runtime metrics can look healthy while the agent silently skips a required tool. A trace-backed evaluation metric or offline regression case is the right control."
+/>
+
+---
+
+## Turn incidents into evaluation cases
+
+The fastest way to build a useful evaluation set is to harvest real failures. Every production incident should leave behind one durable test case.
+
+For the invoice pipeline, use this incident-to-eval template:
+
+| Incident evidence | Evaluation case field |
+|---|---|
+| Trace ID | Source trace |
+| User request category | Scenario |
+| Expected tool path | Rubric criterion |
+| Actual tool path | Failure evidence |
+| Correct final behavior | Expected answer |
+| Policy or safety concern | Safety metric |
+
+Example:
+
+```yaml
+case_id: invoice-po-match-017
+source_trace_id: invoice-run-7f3a9c
+scenario: "Invoice has a valid supplier but missing purchase-order match"
+expected_tool_path:
+  - extractor.parse_pdf_with_document_ai
+  - validator.lookup_purchase_order
+  - validator.reject_invoice
+expected_final_behavior: "Reject invoice and explain missing PO match"
+rubric:
+  task_success: "Agent rejects the invoice unless the purchase order exists"
+  tool_use_quality: "Agent must call validator.lookup_purchase_order before final decision"
+  hallucination: "Agent must not invent a purchase-order ID"
+```
+
+Once the case exists, run it offline before every prompt or model-routing change. Then create an Online Monitor that samples production traces where the Validator is expected to run. If the monitor starts reporting tool-use failures, you have caught the regression before support tickets pile up.
+
+Google's evaluation-results docs also describe failure clusters and Automatic Loss Analysis. The predefined loss patterns include tool calling, tool output handling, instruction following, and hallucination categories, including cases where an agent claims an action happened without executing the required tool call or invents details not present in user input or tool output.[^clusters] These categories map directly to the failures that matter in an enterprise invoice workflow.
+
+---
+
+## Use failure clusters to choose the next fix
+
+A weak evaluation report says "score dropped from 0.89 to 0.74." A useful evaluation report says "score dropped because the Validator ignores missing PO matches when the supplier is a strategic vendor."
+
+Failure clusters are the bridge. After an evaluation run, Agent Platform can group failures into semantic clusters and loss patterns so you can see systemic causes instead of reading 100 individual bad traces.[^clusters]
+
+Treat each cluster as a product bug, not a model mood. Assign one owner and one fix type:
+
+| Cluster | Likely fix |
+|---|---|
+| Agent skipped required PO lookup | Orchestrator instruction and tool policy |
+| Tool returned malformed JSON | Tool wrapper/schema validation |
+| Agent invented supplier ID | Grounding and final-answer rubric |
+| Model Armor blocked content unexpectedly | Gateway policy tuning or safer tool output |
+| Extractor timed out on long scans | Tool timeout/retry and document preprocessing |
+
+Prompt optimization comes after diagnosis. Google's prompt-optimization docs frame the Quality Flywheel as evaluation, analysis, then optimization.[^optimize] Keep that order. If the failure is a bad tool timeout, prompt optimization is theater. If the failure is instruction-following under ambiguous supplier names, prompt optimization may be exactly right.
+
+<KnowledgeCheck
+  question="An evaluation run produces a failure cluster: 'Hallucination of Tool or Capability' for 12 invoice cases. The agent told users it had checked a purchase-order system, but traces show no PO lookup tool call. What is the first fix you should try?"
+  options={[
+    "Increase Agent Runtime CPU allocation",
+    "Add a required tool-use rule and regression case for PO lookup before approval",
+    "Lower the Online Monitor sampling percentage",
+    "Move all traces to a longer retention bucket"
+  ]}
+  correctIdx={1}
+  explanation="The cluster says the agent claimed a capability/action without executing the tool. The fix is to constrain the behavior and make it testable: require the PO lookup before approval and add regression coverage. CPU, sampling, and retention do not address the behavioral defect."
+/>
+
+<KnowledgeCheck
+  question="In 2-3 sentences, explain why Cloud Monitoring metrics and Agent Platform evaluation metrics are both required for this chapter's invoice pipeline."
+  options={["self-check"]}
+  correctIdx={0}
+  explanation="Cloud Monitoring metrics show runtime health: request volume, latency, error rates, and resource use. Agent Platform evaluation metrics show task quality: whether the agent followed the right path, used tools correctly, avoided hallucination, and met the rubric. A production agent can be operationally healthy and behaviorally wrong, so both layers are necessary."
+/>
+
+---
+
+## Hands-on exercise: instrument, break, evaluate, and fix
+
+Use the secured invoice pipeline from Chapter 5.
+
+1. Enable telemetry for the staging ADK deployment with `GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY=true`, `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`, and an explicit decision on prompt/response capture.
+2. Confirm traces appear in the Agent Platform Traces tab or Cloud Trace. Run one successful invoice and capture the trace ID.
+3. Add structured logs for three events: extraction completed, validation decision made, and gateway policy decision applied. Include `trace_id`, `agent`, `tool`, `schema_version`, and `duration_ms`; exclude raw invoice identifiers and bank details.
+4. Build a Cloud Monitoring dashboard with request count, p95/p99 latency, error-rate ratio, and a log-based metric for tool-call count.
+5. Inject a failure: configure the Extractor to reference a non-existent document bucket or an invalid Document AI processor ID. Run 10 test invoices.
+6. Open the failed trace and identify the failing span in under 60 seconds. Write down the top-level trace ID, failing span, expected downstream span that did not run, and user-visible symptom.
+7. Convert the failure into one offline evaluation case. The expected behavior should require a clear user-facing error and no invoice approval.
+8. Create an Online Monitor for production-like traffic that samples traces where validation should occur. Track at least one quality or tool-use metric and confirm results appear in the Evaluation dashboard.
+9. Review any failure clusters. Choose one fix type: prompt/tool policy, tool wrapper, gateway policy, retry/timeout, or eval rubric.
+
+Success criteria:
+
+- Traces are visible for both successful and failed invoice runs.
+- The failing span is identified from the trace DAG, not guessed from the endpoint response.
+- The dashboard shows request count, latency, error rate, and tool-call volume.
+- At least one offline evaluation case exists from the induced failure.
+- An Online Monitor is configured with a sampling cap and a named quality or tool-use metric.
+- You can explain whether the next fix belongs in prompt instructions, tool code, gateway policy, or evaluation rubric.
 
 ---
 
 ## What's next
 
-Chapter 7 takes the observability signals you just wired and uses them to make capacity, cost, and scaling decisions — provisioned-throughput vs on-demand, regional vs global endpoints, batch prediction, autoscaling, and per-team cost attribution. See [[gemini-enterprise-agents/07-scale-and-cost]].
-
-For background, see [[glossary/context-window]] and [[glossary/tokenization]] — token-usage metrics make more sense once these are familiar.
+Chapter 7 uses these signals to make scaling and cost decisions. Once you can see request volume, latency, tool-call count, error rate, and quality drift, you can decide when to use on-demand capacity, provisioned throughput, cheaper model routes, context caching, or stricter runbooks. See [[gemini-enterprise-agents/07-scale-and-cost]].
 
 ---
 
-## Further Reading
+## Further reading
 
-[1] Google Cloud. "Cloud Observability for Agents." Gemini Enterprise Agent Platform docs. — https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/observability/overview · retrieved 2026-05-03
+[^trace]: Google Cloud. "Set up tracing." Gemini Enterprise Agent Platform documentation. https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/tracing - retrieved 2026-05-14.
 
-[2] Google Cloud. "Cloud Trace documentation." — https://cloud.google.com/trace/docs · retrieved 2026-05-03
+[^logging]: Google Cloud. "Set up logging." Gemini Enterprise Agent Platform documentation. https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/logging - retrieved 2026-05-14.
 
-[3] Google Cloud. "Vertex AI Model Monitoring overview." — https://cloud.google.com/vertex-ai/docs/model-monitoring/overview · retrieved 2026-05-03
+[^monitoring]: Google Cloud. "Set up monitoring." Gemini Enterprise Agent Platform documentation. https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/monitoring - retrieved 2026-05-14.
 
-[4] OpenTelemetry. "Generative AI semantic conventions." — https://opentelemetry.io/docs/specs/semconv/gen-ai/ · retrieved 2026-05-03
+[^observability]: Google Cloud. "Observability overview." Gemini Enterprise Agent Platform documentation. https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/observability/overview - retrieved 2026-05-14.
 
-[5] OpenTelemetry. "OpenTelemetry specification." — https://opentelemetry.io/docs/specs/otel/ · retrieved 2026-05-03
+[^eval]: Google Cloud. "Evaluate your agents." Gemini Enterprise Agent Platform documentation. https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/evaluate-agents - retrieved 2026-05-14.
 
-[6] Google Cloud. "Cloud Logging documentation." — https://cloud.google.com/logging/docs · retrieved 2026-05-03
+[^offline]: Google Cloud. "Run offline evaluations." Gemini Enterprise Agent Platform documentation. https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/evaluate-offline - retrieved 2026-05-14.
 
-[7] Langfuse. "Langfuse documentation." — https://langfuse.com/docs · retrieved 2026-05-03
+[^online]: Google Cloud. "Continuous evaluation with online monitors." Gemini Enterprise Agent Platform documentation. https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/evaluate-online - retrieved 2026-05-14.
 
-[8] Helicone. "Helicone documentation." — https://docs.helicone.ai/ · retrieved 2026-05-03
+[^clusters]: Google Cloud. "Analyze evaluation results and failure clusters." Gemini Enterprise Agent Platform documentation. https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/view-results - retrieved 2026-05-14.
+
+[^optimize]: Google Cloud. "Optimize agent prompts." Gemini Enterprise Agent Platform documentation. https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/optimize-agent - retrieved 2026-05-14.

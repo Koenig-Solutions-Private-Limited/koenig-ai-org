@@ -6,13 +6,13 @@ prerequisites_chapters: [1, 2, 3, 4, 5, 6]
 duration_min: 45
 reading_time_min: 22
 date: 2026-05-03
-author: course-author
+author: content-author
 agent_drafted_by: course-author
 content_type: chapter
 chapter: 7
 parent_course: gemini-enterprise-agents
 ticket: KOEA-25
-status: g0-blocked
+status: awaiting-g0
 vendor_tag: google
 learning_objectives:
   - "Choose between Provisioned Throughput and on-demand pricing using a measured workload"
@@ -24,10 +24,11 @@ sources:
   - https://cloud.google.com/vertex-ai/generative-ai/pricing
   - https://cloud.google.com/vertex-ai/generative-ai/docs/provisioned-throughput
   - https://docs.cloud.google.com/vertex-ai/generative-ai/docs/model-reference/batch-prediction-api
+  - https://cloud.google.com/vertex-ai/generative-ai/docs/learn/locations
   - https://cloud.google.com/vertex-ai/generative-ai/docs/quotas
   - https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale
-  - https://docs.cloud.google.com/gemini-enterprise-agent-platform/machine-learning/predictions/autoscaling
   - https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
+  - https://cloud.google.com/resource-manager/docs/labels-overview
 ---
 
 # Scale and Cost: Throughput, Quotas, Autoscaling, and Cost Attribution
@@ -40,10 +41,10 @@ A multi-agent system on Gemini Enterprise Agent Platform (GEAP) that costs $200/
 2. On-demand pricing for Gemini 3.1 Pro: $2.00 per 1M input tokens, $8.00 per 1M output tokens (May 2026) [1]
 3. Gemini 3.1 Flash is priced at $0.15 per 1M input / $0.60 per 1M output — roughly 13× cheaper than Pro [1]
 4. Batch prediction discounts the per-token rate by 50% with a 24-hour SLA on completion [3]
-5. Global endpoints (`global-aiplatform.googleapis.com`) auto-route to the nearest available region; regional endpoints (`europe-west4-aiplatform.googleapis.com`) pin traffic for residency [4]
-6. Default per-project quota for Gemini 3.1 Pro is 60 requests-per-minute; raise via support ticket with a documented capacity plan [5]
-7. Agent Runtime autoscales between 0 and `max_replicas`; cold-start latency on scale-from-zero is sub-second for pre-warmed instances and approximately 4-5 seconds for fully cold (average ~4.7s measured at `min_instances=1`) [6]
-8. Anthropic Claude Sonnet 4.6 (priced separately even when invoked from GEAP) is $3.00/$15.00 per 1M tokens — reading prompt-caching docs before sub-agent design saves 40-90% on multi-turn workloads [7]
+5. Vertex AI exposes Google and partner generative models through regional endpoints and a global endpoint; do not use the global endpoint when you need to control the ML-processing region [4]
+6. Generative AI quotas are enforced by project, region, model, and capability; raise them through the quota workflow with a documented capacity plan [5]
+7. Agent Runtime autoscales between 0 and `max_replicas`; pre-warmed instances reduce first-request latency while scale-to-zero saves idle cost [6]
+8. Prompt caching can materially reduce repeated-prefix cost on multi-turn and multi-agent workloads; read the provider-specific caching rules before designing sub-agent handoffs [7]
 
 ---
 
@@ -51,7 +52,25 @@ A multi-agent system on Gemini Enterprise Agent Platform (GEAP) that costs $200/
 
 Three numbers should sit on the wall of every team running agents in production: cost-per-invocation, cost-per-resolved-task, and cost-per-active-user-month. Cost-per-invocation is what your bill divided by invocation count gives you. Cost-per-resolved-task corrects for retries, handoffs, and abandoned conversations — the ratio of bill to *useful* outcomes. Cost-per-active-user-month is the procurement-conversation number; everything else is engineering hygiene.
 
-A typical mid-complexity GEAP deployment we've measured at Koenig: a three-agent invoice pipeline running 2,000 invoices/day, mixing Gemini Pro for the orchestrator and Flash for sub-agents. Average tokens per invocation: 11,400 in, 1,900 out. At on-demand pricing this lands at roughly $0.038 per invoice — about $2,300/month. The same pipeline, naively rebuilt with Pro everywhere, runs $0.110 per invoice — $6,600/month. Same workload, 2.9× more expensive. Model selection is the single largest lever, and the next four sections all bow to it.
+Use this as illustrative arithmetic, not a Koenig benchmark: a three-agent invoice pipeline running 2,000 invoices/day, with Gemini Pro for the orchestrator and Gemini Flash for two sub-agents. If the orchestrator uses 3,000 input tokens and 500 output tokens while the Flash sub-agents use a combined 8,400 input tokens and 1,400 output tokens, the published on-demand prices in source [1] put the mixed-model path near $0.012 per invoice, or about $726/month. Rebuilding the same token shape with Pro everywhere lands near $0.038 per invoice, or about $2,280/month. Same traffic model, about 3.1x more expensive. Model selection is the single largest lever, and the next four sections all bow to it.
+
+<RunPromptCell
+  model="gemini-pro-latest"
+  prompt="Build a cost-per-invoice estimate for this Gemini Enterprise Agent Platform workload. Traffic: 2,000 invoices/day, 30 days/month. Orchestrator uses Gemini Pro for 3,000 input tokens and 500 output tokens per invoice. Two sub-agents use Gemini Flash for a combined 8,400 input tokens and 1,400 output tokens per invoice. Use these prices: Pro $2.00/M input and $8.00/M output; Flash $0.15/M input and $0.60/M output. Show per-invoice cost, monthly cost, and what changes if all three steps use Pro."
+  expectedOutput="The model should compute Pro orchestrator cost plus Flash sub-agent cost, divide by invoice count, and show the all-Pro comparison. Expected range: mixed-model cost around $0.012 per invoice from the stated token split; all-Pro cost around $0.038 per invoice. The monthly estimate should multiply by 60,000 invoices/month."
+/>
+
+<KnowledgeCheck
+  question="Why is cost-per-resolved-task more useful than cost-per-invocation for an agent workflow?"
+  options={[
+    "It ignores token costs so the finance team can focus on subscriptions",
+    "It includes retries, handoffs, and abandoned work instead of counting every model call as equally valuable",
+    "It only applies to batch prediction jobs",
+    "It is the same metric as requests per minute"
+  ]}
+  correctIdx={1}
+  explanation="Cost-per-invocation is easy to calculate but hides whether the invocation produced a useful outcome. Cost-per-resolved-task includes retries, handoffs, and failed or abandoned runs, which is the number a production owner can actually optimize."
+/>
 
 ---
 
@@ -65,31 +84,43 @@ The on-demand vs PT decision reduces to four questions:
 
 **How spiky is your traffic?** A workload that runs 30 minutes a day and idles otherwise is wrong for PT — you would pay for 24 hours of capacity to use 0.5 hours. Save PT for workloads that run continuously: customer-facing chat, real-time fraud screening, internal tools used across all timezones.
 
-**What is your latency floor?** PT cuts p99 latency by roughly 30-50% for Gemini Pro because requests skip the on-demand queue. If your SLA is sub-second p99 and you cannot meet it on on-demand, PT is the most direct fix — usually cheaper than caching tricks or model downgrades.
+**What is your latency floor?** PT gives you reserved capacity instead of relying entirely on shared on-demand capacity. If your p99 misses are driven by capacity contention rather than tool latency, PT is the most direct fix; if p99 is dominated by slow tools or oversized prompts, PT will not solve the root cause.
 
 **Is the workload approval-blocked on cost predictability?** Procurement and finance often dislike usage-based billing because they cannot forecast it. PT is a fixed monthly line item — sometimes the deciding factor for getting an agent project approved at all, even when the math says on-demand is cheaper.
 
-A quick worked example. A team running 25 generation-tokens/second average, 80 tokens/second p95, on Gemini Pro. On-demand cost at $8/1M output tokens: 25 × 86400 × 30 × $8/1e6 ≈ $518/month. PT for one 100-token/second unit: ~$35,000/month. On-demand wins by 67×. The crossover happens around 600 tokens/second sustained — at that point you need 6 PT units (~$210K/month) versus on-demand at ~$12,400/month, plus the latency and predictability benefits of PT. The break-even is workload-shaped: most teams will be on-demand for years before they grow into PT.
+A quick worked example. A team running 25 generation-tokens/second average, 80 tokens/second p95, on Gemini Pro. On-demand output cost at $8/M output tokens is 25 x 86,400 x 30 x $8 / 1,000,000, or about $518/month. One 100-token/second PT unit is a capacity reservation, so the purchase decision is not "which line item is cheaper at average load?" It is "do we need reserved capacity, predictable approval, or p99 protection enough to justify the commitment?" Most teams will stay on-demand until the reliability or procurement constraint is stronger than the raw token-price math.
 
 ---
 
 ## Lever 2: Regional vs global endpoints
 
-Vertex AI exposes two endpoint flavors. The **global endpoint** (`aiplatform.googleapis.com` resolved via `global-aiplatform.googleapis.com`) routes your request to the nearest healthy region with available capacity. It optimizes for latency and resilience: if `us-central1` is throttled, your request silently runs in `us-east4`. [4]
+Vertex AI exposes two endpoint flavors. The **global endpoint** uses the `global` location and can improve availability while reducing resource-exhausted errors. Google warns not to use it when you have ML-processing location requirements, because you cannot control or know which region handles a given request. [4]
 
-The **regional endpoint** (`europe-west4-aiplatform.googleapis.com`) pins traffic to one region. You give up automatic failover and capacity smoothing in exchange for residency guarantees and predictable latency-from-callers-in-region.
+The **regional endpoint** sends requests to the region you specify, such as `europe-west4` or `us-central1`. You give up global capacity smoothing in exchange for an auditable processing-location decision.
 
 The decision rules:
 
 | Constraint | Endpoint |
 |---|---|
-| Data must stay in EU/India for GDPR/DPDP | Regional (`europe-west4`, `asia-south1`) |
+| ML processing must stay in a controlled geography | Regional or multi-region endpoint supported by the model |
 | Multi-region failover desired | Global |
 | Lowest possible latency for one geography | Regional, co-located with caller |
 | Highest possible throughput | Global (capacity is pooled) |
 | Compliance audit demands provable residency | Regional |
 
-A subtle trap: if your agent is deployed regionally for residency but you forget to use the matching regional Vertex endpoint, your inference traffic exits the region. [[gemini-enterprise-agents/05-enterprise-security]] covers this; the operational test is to enable VPC-SC and confirm every model call resolves within the perimeter.
+A subtle trap: if your agent is deployed regionally for residency but you call the global endpoint, you have made the runtime regional while leaving inference processing uncontrolled. [[gemini-enterprise-agents/05-enterprise-security]] covers the perimeter side; the operational test is to record the configured Vertex location for every model call and reject deploys that mix a residency-sensitive agent with `global`.
+
+<KnowledgeCheck
+  question="A regulated workload must keep model processing in an approved geography. Which endpoint choice is the safest default?"
+  options={[
+    "Global, because it has better availability",
+    "Regional or supported multi-region, because the global endpoint does not let you control the processing region",
+    "Any endpoint, because data at rest and ML processing are the same control",
+    "The cheapest endpoint listed on the pricing page"
+  ]}
+  correctIdx={1}
+  explanation="Google's endpoint guidance separates availability from processing-location control. Use the regional or supported multi-region location that matches the residency requirement; reserve global for workloads where availability is the priority and processing location is not constrained."
+/>
 
 ---
 
@@ -118,7 +149,7 @@ A non-obvious tactic: split your agent's reasoning into a synchronous critical p
 
 ## Lever 4: Quotas, rate limits, and runaway-loop protection
 
-Default Gemini 3.1 Pro quota at project creation is 60 requests-per-minute (RPM) and 250,000 input tokens-per-minute (TPM). [5] These ceilings are conservative — both because Google manages global capacity and because they protect *you* from runaway loops you have not yet experienced.
+Generative AI quotas are not one universal number. They vary by model, region, request type, and project, and Google documents separate quota dimensions for requests, tokens, batch prediction, tuning, and Live API usage. [5] Treat the quota page and your project's Quotas console as the source of truth, then set stricter application-level limits before production traffic arrives.
 
 The quota system has three tiers worth understanding:
 
@@ -142,7 +173,25 @@ agent_engines.update(
 )
 ```
 
-The most expensive incident we have seen at Koenig was a sub-agent recursion loop: agent A would transfer to agent B, B would transfer back to A, and a fail-loud condition was not in place. The loop ran for 14 minutes before the operator noticed. Total cost: $1,847 in unintended Gemini Pro spend. The fix was a `concurrent_invocations: 1` per-agent limit and a maximum-handoff-depth setting on the orchestrator. Both were free; the lesson cost two grand.
+Illustrative incident arithmetic: agent A transfers to agent B, B transfers back to A, and no fail-loud condition stops the recursion. If the loop emits 90,000 output tokens/minute for 14 minutes on a model priced at $8/M output tokens, output spend alone is 90,000 x 14 x $8 / 1,000,000 = $10.08. If each loop also resends a large prompt, fans out to tools, and retries on throttling, the incident total can climb quickly. The fix is still cheap: `concurrent_invocations: 1` per-agent limits, max handoff depth on the orchestrator, and an alert that fires on repeated agent pairs.
+
+<RunPromptCell
+  model="gemini-pro-latest"
+  prompt="Act as the on-call engineer for a Gemini Enterprise Agent Platform deployment. A loop detector reports repeated transfers between invoice_orchestrator and vendor_lookup_agent. Current metrics: 40 invocations/minute, 22,000 input tokens/invocation, 2,500 output tokens/invocation, model price $2/M input and $8/M output. Estimate spend per minute, identify the first two controls to apply, and draft a 4-line incident note for finance."
+  expectedOutput="The model should calculate about $2.56/minute: input 40*22000*$2/1e6 = $1.76, output 40*2500*$8/1e6 = $0.80. It should recommend throttling or pausing the affected agents plus adding max handoff depth / repeated-pair loop detection. The finance note should say the number is an estimate, name the affected agents, state the containment action, and promise a final billing-export reconciliation."
+/>
+
+<KnowledgeCheck
+  question="A loop detector sees A -> B -> A repeated six times in one conversation. Which control should fire first?"
+  options={[
+    "Raise project quota so the loop can finish faster",
+    "Switch the model to a larger context window",
+    "Stop or throttle the agent pair and mark the run failed-loud",
+    "Move the workload to batch prediction"
+  ]}
+  correctIdx={2}
+  explanation="Runaway loops are reliability and cost incidents. The immediate control is containment: stop, throttle, or fail-loud before raising quotas or changing models."
+/>
 
 ---
 
@@ -150,12 +199,12 @@ The most expensive incident we have seen at Koenig was a sub-agent recursion loo
 
 Agent Runtime autoscales between zero and a configured maximum. The behavior:
 
-- **Cold start (scale from zero):** approximately 4-5 seconds for first request after idle period (Google-measured average: ~4.7s at default `min_instances=1`). [6]
-- **Pre-warmed instances:** sub-second cold-start by keeping `min_replicas >= 1`.
+- **Scale from zero:** saves idle cost but makes the first request after an idle period pay startup latency. [6]
+- **Pre-warmed instances:** reduce first-request latency by keeping `min_replicas >= 1`.
 - **Scale-up:** new replicas spin up when concurrent invocations exceed `target_concurrency_per_replica`.
 - **Scale-down:** replicas terminate after `idle_timeout_seconds` of no traffic.
 
-The cost-vs-latency tradeoff is in the `min_replicas` and `idle_timeout` knobs. Setting `min_replicas: 0` saves money during quiet hours but every first-request-after-idle pays the cold-start tax. Setting `min_replicas: 3, idle_timeout: 3600` keeps three warm replicas always, which costs roughly $0.06/hour per replica regardless of traffic — $130/month for 3 always-warm replicas — in exchange for sub-second p99.
+The cost-vs-latency tradeoff is in the `min_replicas` and `idle_timeout` knobs. Setting `min_replicas: 0` saves money during quiet hours but every first-request-after-idle pays startup latency. Setting `min_replicas: 3, idle_timeout: 3600` keeps three warm replicas always, which adds a fixed runtime line item in exchange for a tighter p99.
 
 The right autoscaling profile depends on traffic shape:
 
@@ -181,12 +230,12 @@ For internal tools that nobody touches over the weekend, `min_replicas: 0` is co
 
 ## Deploying Preview Endpoints: The Lifecycle Checklist
 
-As of May 2026, many of the most capable models (e.g., **Gemini 3.1 Pro Preview**) are shipped as preview endpoints. While tempting for their reasoning quality, they introduce lifecycle risk. Use this checklist before deploying any `preview` or `experimental` model ID to production:
+As of May 2026, many capable models appear first as preview or experimental model IDs. While tempting for their reasoning quality, they introduce lifecycle risk. Use this checklist before deploying any `preview` or `experimental` model ID to production:
 
 1. **Launch Stage Verification**: Is this `PREVIEW`, `BETA`, or `GA`? GEAP features may only be partially supported on preview endpoints.
 2. **Deprecation Window**: Check the [Gemini API changelog](https://ai.google.dev/gemini-api/docs/changelog) for the sunset date of the specific model ID. Preview IDs often expire in 90 days.
 3. **Quota Differential**: Preview endpoints often have significantly lower RPM/TPM quotas than GA models. Ensure your capacity plan accounts for this ceiling.
-4. **Automated Fallback**: Implement a "stable fallback" in your ADK configuration. If the preview call fails with a 429 or 503, the orchestrator should automatically retry against a GA model (e.g., Gemini 1.5 Pro).
+4. **Automated Fallback**: Implement a stable fallback in your ADK configuration. If the preview call fails with a 429 or 503, the orchestrator should automatically retry against a GA model approved for the same task class.
 5. **Per-Model Logging**: Use GEAP labels to log latency and cost specifically for the preview model. Do not aggregate it with stable model metrics.
 6. **Changelog Review**: Review the Google Cloud AI release notes weekly. Preview models can receive "silent" updates that change output structure or reasoning quality.
 
@@ -211,7 +260,7 @@ agent_engines.create(
 )
 ```
 
-These labels propagate to billing line items, Cloud Monitoring metrics, and audit logs. In the BigQuery billing export, you can group spend by label combinations and produce a per-team chargeback report monthly:
+Google Cloud labels are forwarded to the billing system and can be used in billing reports and BigQuery billing exports. [8] In the BigQuery billing export, you can group spend by label combinations and produce a per-team chargeback report monthly:
 
 ```sql
 SELECT
@@ -227,9 +276,21 @@ GROUP BY team, service
 ORDER BY total_cost DESC
 ```
 
-A team without a `team` label cannot be charged back, which makes the label policy a useful governance lever — make it a required field in the deploy template, and untagged spend lands on the platform team's budget. That is enough negative incentive to drive 100% label compliance within one billing cycle.
+A team without a `team` label cannot be charged back reliably, which makes the label policy a useful governance lever. Make it a required field in the deploy template, and route untagged spend to a visible "unallocated AI" report until the owner fixes the deployment metadata.
 
-**The contrarian angle for this chapter:** Most teams optimize cost in the wrong direction. They obsess over per-token pricing differences (Gemini Flash vs Pro, Claude Sonnet vs Haiku) — which matter, but cap out at maybe 5× efficiency. The bigger savings, often 20-50×, come from killing unnecessary invocations entirely. A retry policy with three retries on a flaky tool turns one user request into 4 model calls. A sub-agent that re-reads the entire conversation history every turn doubles your input tokens. An "always summarize" step before tool routing adds a model call to every interaction. Audit your agent's *call graph* before you negotiate pricing — the cheapest token is the one you do not generate. We rebuilt one customer's pipeline by removing two redundant model calls per turn and dropped cost-per-invocation by 62% before changing a single model. Pricing optimization is the second move; eliminating call-graph waste is the first.
+**The contrarian angle for this chapter:** Most teams optimize cost in the wrong direction. They obsess over per-token pricing differences (Gemini Flash vs Pro, Claude Sonnet vs Haiku), which matter, but they miss larger savings from killing unnecessary invocations entirely. A retry policy with three retries on a flaky tool turns one user request into four model calls. A sub-agent that re-reads the entire conversation history every turn doubles your input tokens. An "always summarize" step before tool routing adds a model call to every interaction. Audit your agent's *call graph* before you negotiate pricing. Illustrative arithmetic: if a request costs $0.10 and two redundant calls account for $0.062 of that cost, deleting them drops cost-per-invocation by 62% before changing a single model. Pricing optimization is the second move; eliminating call-graph waste is the first.
+
+<KnowledgeCheck
+  question="Your billing export shows 18% of Vertex AI spend has no `team` label. What is the best governance response?"
+  options={[
+    "Ignore it because labels are optional metadata",
+    "Require the deploy template to include `team`, `cost_center`, and `environment`, then report unallocated spend until owners fix missing labels",
+    "Delete all unlabeled resources immediately",
+    "Move the workload to a global endpoint"
+  ]}
+  correctIdx={1}
+  explanation="Labels are the practical join key for cost attribution. The durable fix is to make them required at deployment and visible in finance reporting, not to rely on manual cleanup after the invoice arrives."
+/>
 
 ---
 
@@ -254,7 +315,25 @@ Success criteria: a runbook a new on-call engineer can act on without prior cont
 
 Per-1M-token pricing comparisons between Gemini, Claude, and OpenAI's models look simple in marketing tables and are misleading in practice. The list price is one of four cost dimensions; the others are token-efficiency (how many tokens the model needs to produce the same answer), tool-call efficiency (how often it makes redundant calls), and reasoning-quality-per-dollar.
 
-A concrete example. For an invoice-extraction prompt we benchmarked in April 2026, Gemini 3.1 Pro and Claude Sonnet 4.6 both produced acceptable extractions. Gemini averaged 2,100 output tokens at $8/1M = $0.0168 per invoice. Claude Sonnet averaged 1,400 output tokens at $15/1M = $0.0210 per invoice. Sonnet's higher per-token price was offset by its more concise output — but Gemini still won on cost-per-invoice by 25%. On a different workload (legal contract review), Sonnet's reasoning advantage meant fewer retries and lower total cost despite the per-token premium. The rule: benchmark on your real workload before negotiating commercial terms. Vendor pricing pages are insufficient ground truth.
+Illustrative comparison: on one invoice-extraction prompt, assume Gemini Pro emits 2,100 output tokens at $8/M output tokens, or $0.0168 per invoice, while Claude Sonnet emits 1,400 output tokens at $15/M output tokens, or $0.0210 per invoice. The higher per-token price is partly offset by a shorter answer, but Gemini still wins this narrow output-cost example by 20%. On a different workload, a higher-priced model can still win if it needs fewer retries or fewer tool calls. The rule: benchmark on your real workload before negotiating commercial terms. Vendor pricing pages are insufficient ground truth.
+
+<RunPromptCell
+  model="gemini-pro-latest"
+  prompt="Compare two vendors on cost-per-resolved-task, not list price. Vendor A costs $8/M output tokens and averages 2,100 output tokens per successful invoice extraction with a 90% first-pass success rate. Vendor B costs $15/M output tokens and averages 1,400 output tokens per successful extraction with a 97% first-pass success rate. Ignore input tokens for this narrow exercise. Compute raw output cost, retry-adjusted cost using 1/success_rate, and which vendor is cheaper on this workload."
+  expectedOutput="The model should compute Vendor A raw output cost $0.0168 and retry-adjusted cost about $0.0187. Vendor B raw output cost $0.0210 and retry-adjusted cost about $0.0216. Vendor A remains cheaper on this narrow output-only workload, but the margin shrinks once retries are included."
+/>
+
+<KnowledgeCheck
+  question="In a vendor cost benchmark, why is list price alone insufficient?"
+  options={[
+    "Because vendors never publish prices",
+    "Because total cost also depends on token efficiency, tool-call efficiency, retry rate, and whether the answer satisfies the task",
+    "Because only output tokens are billed",
+    "Because batch prediction makes all models free"
+  ]}
+  correctIdx={1}
+  explanation="The same task can use different numbers of input tokens, output tokens, tool calls, and retries across models. Cost-per-task is the decision metric; list price is only one input."
+/>
 
 ---
 
@@ -268,18 +347,18 @@ For deeper reading on adjacent topics, see [[course/claude-tool-use-from-zero]] 
 
 ## Further Reading
 
-[1] Google Cloud. "Vertex AI Generative AI pricing." — https://cloud.google.com/vertex-ai/generative-ai/pricing · retrieved 2026-05-03
+[1] Google Cloud. "Vertex AI Generative AI pricing." — https://cloud.google.com/vertex-ai/generative-ai/pricing · retrieved 2026-05-14
 
-[2] Google Cloud. "Provisioned Throughput for Generative AI on Vertex AI." — https://cloud.google.com/vertex-ai/generative-ai/docs/provisioned-throughput · retrieved 2026-05-03
+[2] Google Cloud. "Provisioned Throughput for Generative AI on Vertex AI." — https://cloud.google.com/vertex-ai/generative-ai/docs/provisioned-throughput · retrieved 2026-05-14
 
 [3] Google Cloud. "Get batch predictions for Gemini." — https://docs.cloud.google.com/vertex-ai/generative-ai/docs/model-reference/batch-prediction-api · retrieved 2026-05-14
 
-[4] Google Cloud. "Vertex AI endpoints overview." — https://cloud.google.com/vertex-ai/docs/general/endpoints · retrieved 2026-05-03
+[4] Google Cloud. "Deployments and endpoints." Generative AI on Vertex AI. — https://cloud.google.com/vertex-ai/generative-ai/docs/learn/locations · retrieved 2026-05-14
 
-[5] Google Cloud. "Quotas and limits for generative AI on Vertex AI." — https://cloud.google.com/vertex-ai/generative-ai/docs/quotas · retrieved 2026-05-03
+[5] Google Cloud. "Quotas and limits for generative AI on Vertex AI." — https://cloud.google.com/vertex-ai/generative-ai/docs/quotas · retrieved 2026-05-14
 
 [6] Google Cloud. "Optimize and scale Agent Runtime performance." Gemini Enterprise Agent Platform docs. — https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale · retrieved 2026-05-14
 
-[7] Anthropic. "Prompt caching." — https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching · retrieved 2026-05-03
+[7] Anthropic. "Prompt caching." — https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching · retrieved 2026-05-14
 
-[8] Google Cloud. "Cost management for Vertex AI." — https://cloud.google.com/vertex-ai/docs/general/cost-management · retrieved 2026-05-03
+[8] Google Cloud. "Labels overview." Resource Manager documentation. — https://cloud.google.com/resource-manager/docs/labels-overview · retrieved 2026-05-14
