@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-1800
 vendor_tag: google
 content_type: article
-status: draft-for-review
+status: g0-blocked
 reading_time_min: 6-7
 primary_query: "notebooklm vs open notebook self-hosted"
 contrarian_angle: "This is not a replacement story — NotebookLM and Open Notebook solve opposite halves of the same workflow; routing between them beats picking one"

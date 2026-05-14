@@ -21,19 +21,44 @@ chapter_count: 5
 # Course outline
 
 ## Chapter 1: The Agentic Shift: From GPTs to Workspace Agents
-Understand the architectural differences between monolithic Custom GPTs and composable Workspace Agents. Learn why this shift is necessary for production-grade applications.
+- **Duration**: 45 min
+
+**Learning objectives:**
+- Contrast the monolithic architecture of Custom GPTs with the composable nature of Workspace Agents.
+- Identify the key technical benefits of migrating to Workspace Agents for production environments.
+- Verify environment setup and prerequisites for building Workspace Agents.
 
 ## Chapter 2: Mapping Capabilities: GPT Actions to Tool Definitions
-Learn to translate your existing OpenAPI specs or informal tool definitions from Custom GPTs into the stricter, more robust tool definitions required by Workspace Agents.
+- **Duration**: 50 min
+
+**Learning objectives:**
+- Map an existing OpenAPI Action spec to a Workspace Agent tool definition.
+- Identify incompatible GPT Action patterns and apply the correct Workspace Agent alternative.
+- Validate a tool schema using the ChatGPT Workspace developer console.
 
 ## Chapter 3: Securing the Handshake: Data & Authentication Migration
-Master the migration of authentication configurations from Custom GPTs to secure, workspace-compliant mechanisms, ensuring your agent connects safely to your backend APIs.
+- **Duration**: 50 min
+
+**Learning objectives:**
+- Migrate API authentication configurations (OAuth/API Key) from Custom GPTs to Workspace-compliant standards.
+- Configure secure environment variables and secrets management for agent backend services.
+- Test the end-to-end authentication handshake between ChatGPT and your custom backend.
 
 ## Chapter 4: Bridging the Gap: Observability & Agent Behavior
-Integrate structured logging and monitoring into your agents to debug performance, trace tool calls, and optimize the agent's behavior for reliable task execution.
+- **Duration**: 45 min
+
+**Learning objectives:**
+- Implement structured logging to trace agent decision paths and tool execution results.
+- Configure monitoring dashboards to track agent latency, error rates, and token usage.
+- Optimize agent system prompts based on observability data to reduce hallucinations and tool-call failures.
 
 ## Chapter 5: Shipping to Production: Deploying & Managing Agents
-The final step: packaging your agent, deploying it to a ChatGPT Workspace, and establishing a CI/CD process for ongoing updates and management.
+- **Duration**: 50 min
+
+**Learning objectives:**
+- Deploy a validated agent to a production ChatGPT Workspace environment.
+- Establish a CI/CD pipeline for automated testing and deployment of agent tool updates.
+- Manage agent permissions and access controls within a team workspace.
 
 ## Capstone project
 Migrate a functional Custom GPT (with custom actions and knowledge files) into a Workspace Agent that operates reliably within a team workspace with full observability and secure authentication.
