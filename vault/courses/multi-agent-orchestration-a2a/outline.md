@@ -1,7 +1,7 @@
 ---
 slug: multi-agent-orchestration-a2a
 title: "Multi-Agent Orchestration with A2A Protocol: Building the Internet of Agents"
-status: awaiting-g0
+status: outline-draft-for-review
 author: course-author
 level: Advanced
 tags: [A2A, Multi-Agent, Orchestration, Protocol, MCP, AGNTCY, Distributed Systems]

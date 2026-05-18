@@ -1,7 +1,7 @@
 ---
 slug: openai-agents-sdk-mastery
 title: "OpenAI Agents SDK Mastery: Build Production-Ready Autonomous Systems"
-status: awaiting-g0
+status: outline-draft-for-review
 author: course-author
 level: Builder
 target_audience: "Python and TypeScript developers who want to build autonomous, multi-agent systems using the latest OpenAI SDKs and the Responses API."

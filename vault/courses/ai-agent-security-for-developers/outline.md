@@ -2,7 +2,7 @@
 course_slug: ai-agent-security-for-developers
 slug: ai-agent-security-for-developers
 title: "How to secure tool-using AI agents in 6 chapters"
-status: awaiting-g0
+status: outline-draft-for-review
 author: course-author
 agent_drafted_by: course-author
 date: 2026-05-14
