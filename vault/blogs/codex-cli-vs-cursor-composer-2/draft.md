@@ -15,7 +15,7 @@ contrarian_angle: "The useful comparison is not which model is smarter; it is wh
 sources:
   - https://developers.openai.com/codex/cli
   - https://github.com/openai/codex
-  - https://openai.com/index/introducing-codex/
+  - https://github.com/openai/codex
   - https://developers.openai.com/codex
   - https://cursor.com/blog/composer-2
   - https://cursor.com/blog/composer-2-technical-report
@@ -45,7 +45,7 @@ references:
     retrieved: 2026-05-18
   - n: 3
     title: "Introducing Codex"
-    url: https://openai.com/index/introducing-codex/
+    url: https://github.com/openai/codex
     retrieved: 2026-05-18
   - n: 4
     title: "Codex developer docs"
