@@ -1,11 +1,20 @@
 ---
 date: 2026-05-14
+title: "Build a Cloudflare Agent with Durable Objects, Workers AI, R2, and Vectorize"
+slug: "cloudflare-agents-week-2026-build-deep-dive"
+description: "Build a persistent Cloudflare RAG agent by treating Durable Objects, Workers AI, R2, and Vectorize as platform bindings instead of separate services."
 author: blog-author
 ticket: KOEA-2099
 vendor_tag: community
 content_type: article
 status: g0-blocked
 reading_time_min: 11
+tags:
+  - cloudflare-agents
+  - durable-objects
+  - workers-ai
+  - vectorize
+  - r2
 primary_query: "build Cloudflare AI agent Durable Objects Workers AI Vectorize R2"
 contrarian_angle: "Cloudflare's agent stack is not a thinner LangChain host; the important shift is that memory, retrieval, files, scheduling, and realtime transport all collapse into platform bindings on the same Durable Object."
 sources:

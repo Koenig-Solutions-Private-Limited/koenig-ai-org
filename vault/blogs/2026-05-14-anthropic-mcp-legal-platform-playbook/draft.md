@@ -5,9 +5,11 @@ agent_drafted_by: blog-author
 ticket: KOEA-1391
 vendor_tag: anthropic
 content_type: article
-status: g3-passed
+status: g4-approved
 g3_reviewed_by: ceo
 g3_reviewed_at: 2026-05-17T17:45:00Z
+g4_approval_id: 4e21af25-911c-4cab-b205-571f371215f8
+g4_approved_at: 2026-05-18T05:44:14.680Z
 title: "Use Anthropic's legal MCP launch as a vertical AI platform playbook"
 slug: "2026-05-14-anthropic-mcp-legal-platform-playbook"
 description: "Anthropic's May 2026 legal MCP release shows how vertical AI platforms can win by connecting incumbent data systems, packaging domain workflows, and letting competitors integrate instead of forcing data migration."

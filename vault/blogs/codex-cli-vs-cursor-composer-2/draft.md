@@ -1,233 +1,142 @@
 ---
+title: "Choose Codex CLI for automation and Cursor Composer 2 for IDE pair programming"
+description: "Codex CLI and Cursor Composer 2 solve different AI coding jobs: one is a terminal-native automation harness, the other is an IDE-native pair-programming loop."
+slug: 2026-05-17-codex-cli-vs-cursor-composer-2
 date: 2026-05-17
-author: content-author
-vendor_tag: openai,cursor
-content_type: blog
-learning_objectives:
-  - "Choose Codex CLI or Cursor Composer 2 based on workflow, not vendor loyalty."
-  - "Evaluate terminal-native automation against IDE-native pair programming."
-  - "Run a small benchmark that measures prompts, verification, and follow-up work."
+author: blog-author
+ticket: KOEA-3775
+vendor_tag: community
+content_type: article
+status: awaiting-g0
+reading_time_min: 7
+tags: [ai-coding-tools, codex-cli, cursor-composer-2, agent-harnesses]
+primary_query: "codex cli vs cursor composer 2"
+contrarian_angle: "The useful comparison is not which model is smarter; it is whether your coding agent should live in an automation harness or inside the editor where the human is steering."
+sources:
+  - https://developers.openai.com/codex/cli
+  - https://github.com/openai/codex
+  - https://openai.com/index/introducing-codex/
+  - https://developers.openai.com/codex
+  - https://cursor.com/blog/composer-2
+  - https://cursor.com/blog/composer-2-technical-report
+  - https://arxiv.org/html/2601.11868v1
+  - https://render.com/blog/ai-coding-agents-benchmark
 whats_new:
-  - "Recreated KOEA-1256 draft from the passed Codex CLI vs Cursor Composer 2 synthesis after the expected vault file was missing locally."
-  - "Frames the comparison as a harness decision: terminal agent vs IDE agent."
-status: g0-blocked
-reading_time_min: 15
+  - Codex CLI and Cursor Composer 2 should be evaluated as different agent harnesses, not as interchangeable coding models.
+learning_objectives:
+  - Pick Codex CLI or Cursor Composer 2 based on workflow topology.
+  - Run a three-task benchmark that measures verification and review cost.
+  - Design a two-lane adoption policy for terminal automation and IDE pair programming.
+faq:
+  - question: "Is Codex CLI better than Cursor Composer 2?"
+    answer: "Codex CLI is better for terminal-native automation, remote worktrees, CI-like task runners, and auditable command transcripts. Cursor Composer 2 is better for actively steered feature work inside the Cursor IDE."
+  - question: "Should a team standardize on Codex CLI or Cursor Composer 2?"
+    answer: "Most teams should standardize the review process, not the vendor. Use Codex CLI for delegated automation tasks and Cursor Composer 2 for IDE pair-programming tasks."
+  - question: "How should I benchmark Codex CLI against Cursor Composer 2?"
+    answer: "Run the same CRUD endpoint, multi-file refactor, and test-generation task in your own repository, then score time to verified output, follow-up prompts, context handling, and review ergonomics."
+references:
+  - n: 1
+    title: "Codex CLI overview"
+    url: https://developers.openai.com/codex/cli
+    retrieved: 2026-05-18
+  - n: 2
+    title: "openai/codex repository"
+    url: https://github.com/openai/codex
+    retrieved: 2026-05-18
+  - n: 3
+    title: "Introducing Codex"
+    url: https://openai.com/index/introducing-codex/
+    retrieved: 2026-05-18
+  - n: 4
+    title: "Codex developer docs"
+    url: https://developers.openai.com/codex
+    retrieved: 2026-05-18
+  - n: 5
+    title: "Introducing Composer 2"
+    url: https://cursor.com/blog/composer-2
+    retrieved: 2026-05-18
+  - n: 6
+    title: "A technical report on Composer 2"
+    url: https://cursor.com/blog/composer-2-technical-report
+    retrieved: 2026-05-18
+  - n: 7
+    title: "Terminal-Bench paper"
+    url: https://arxiv.org/html/2601.11868v1
+    retrieved: 2026-05-18
+  - n: 8
+    title: "Testing AI coding agents"
+    url: https://render.com/blog/ai-coding-agents-benchmark
+    retrieved: 2026-05-18
 ---
 
-# Choose Codex CLI for automation and Cursor Composer 2 for IDE-first coding
+<ArticleMetaPill label="7 min read" />
 
-Codex CLI and Cursor Composer 2 are not two wrappers around the same idea. They are two different answers to the same engineering question: where should an AI coding agent live?
+# Choose Codex CLI for automation and Cursor Composer 2 for IDE pair programming
 
-**Codex CLI wins when the work needs to run from a terminal, a remote shell, a CI job, or an auditable automation harness.** OpenAI describes Codex CLI as a local coding agent that runs from the terminal and can read, change, and run code in the selected directory.<CitationFootnote source="https://developers.openai.com/codex/cli" /> The open-source repository reinforces the same point: Codex is a local coding agent, not an IDE-only assistant.<CitationFootnote source="https://github.com/openai/codex" />
+Codex CLI is the better first pick when an AI coding agent needs to run from a terminal, remote shell, clean worktree, or repeatable automation harness. Cursor Composer 2 is the better first pick when a developer is actively steering the agent inside Cursor, reviewing diffs as they appear, and iterating in the IDE. OpenAI documents Codex CLI as a local terminal coding agent that can read, change, and run code in the selected directory [1]. Cursor presents Composer 2 as its in-house coding model for the Cursor IDE, with benchmark gains and lower pricing than its prior Composer generation [5].
 
-**Cursor Composer 2 wins when the developer wants the agent inside the editor, close to visible diffs, project context, autocomplete, terminal panes, and day-to-day product work.** Cursor positions Composer 2 as its new in-house coding model for the Cursor IDE, with reported gains on CursorBench, Terminal-Bench 2.0, and SWE-bench Multilingual.<CitationFootnote source="https://cursor.com/blog/composer-2" /> Cursor's technical report says the model was trained with continued pretraining and reinforcement learning for end-to-end agent performance, which matters because Composer 2 is optimized for the Cursor workflow rather than for a generic shell.<CitationFootnote source="https://cursor.com/blog/composer-2-technical-report" />
+The mistake is treating this as a model leaderboard. Actually, the harness matters more than the model name. Codex CLI and Cursor Composer 2 answer different operating questions: should the agent be something you can **operate** in a shell, or something you can **pair with** in an editor?
 
-That is the core verdict. If the job looks like automation, choose Codex CLI. If the job looks like pair programming inside a code editor, choose Cursor Composer 2. Mature teams will often use both.
+For adjacent Academy context, read [[openai-agents-sdk-mastery]] for agent runtime architecture, [[picking-a-frontier-model-2026-q2]] for cost-per-task model selection, and [[course/cursor-composer-2]] for Cursor-specific workflows.
 
-For adjacent Academy material, pair this post with [[openai-agents-sdk-mastery]] for agent-runtime architecture and with [[picking-a-frontier-model-2026-q2]] for cost-per-task model selection. For Cursor-specific workflows, use [our full Cursor Composer 2 course](../../courses/cursor-composer-2/).
+## Pick Codex CLI when the agent needs an audit trail
 
-## Use this decision table before you run the benchmark
+Codex CLI fits work that should leave a reproducible trail: prompt, search, edit, command, failure, retry, test, and final summary. OpenAI's Codex CLI docs position it as terminal-native [1], and the open-source repository makes the tool implementation and release history inspectable [2]. That matters when the agent is not just helping a developer type code but performing issue-sized work on behalf of a team.
 
-| Scenario | Better first pick | Why |
+Use Codex CLI first for backlog cleanup, repo-wide investigation, focused test repair, migration chores, and command-heavy debugging. The terminal is not a cosmetic interface here. It is the control surface that makes worktree isolation, shell history, focused test commands, and transcript review natural.
+
+OpenAI's broader Codex materials also point toward asynchronous software-engineering work: Codex is described as a software-engineering agent designed to work on multiple tasks in parallel [3], and the developer docs emphasize adapting to existing project structure and conventions [4]. Even when you are using the local CLI rather than cloud Codex, the same workflow bias shows up: give the agent a bounded task, let it operate, and review the resulting patch.
+
+## Pick Cursor Composer 2 when the human is steering the change
+
+Cursor Composer 2 fits the opposite loop: a developer is already inside Cursor, knows roughly what should change, and wants fast multi-file edits with visible diffs. Cursor's launch post says Composer 2 improves the benchmarks it tracks, including CursorBench, Terminal-Bench 2.0, and SWE-bench Multilingual [5]. The technical report says Composer 2 was trained with continued pretraining followed by large-scale reinforcement learning for end-to-end agent performance [6].
+
+Those facts are useful, but the practical point is narrower. Composer 2 is optimized for the Cursor environment: selected context, editor state, visible hunks, integrated terminal, and quick follow-up prompts. That makes it strong for UI wiring, route/controller work, product feature scaffolding, and bug fixes where the human wants to stay in the review loop every few minutes.
+
+The tradeoff is portability. Composer 2 can be excellent inside Cursor and still be the wrong default for cron-like automation, queue-based branch work, or a CI-style agent runner. If your success metric is "can we replay exactly what happened after the agent touched the repo," the terminal-native tool has the cleaner shape.
+
+## Benchmark the harness with three small tasks
+
+Do not run a giant subjective bakeoff. Run three small tasks in your own repository and score the human cost of getting to a mergeable patch. Terminal-Bench is useful because it focuses on hard command-line tasks rather than generic coding demos [7], while Render's coding-agent benchmark is useful as a reminder that setup speed, deployment friction, and output review all affect real adoption [8].
+
+Use this scorecard for both tools:
+
+| Task | What to measure | Expected winner |
 |---|---|---|
-| You need a headless agent over SSH, tmux, CI, or a remote development box | Codex CLI | It runs in the terminal and fits shell-native automation.<CitationFootnote source="https://developers.openai.com/codex/cli" /> |
-| You are building a product feature while reviewing diffs in the editor | Cursor Composer 2 | Composer 2 is embedded in Cursor's IDE workflow and optimized for multi-file edit loops.<CitationFootnote source="https://cursor.com/blog/composer-2" /> |
-| You need a reproducible patch trail and command log | Codex CLI | The CLI shape makes prompts, commands, and verification steps easier to capture in automation logs.<CitationFootnote source="https://github.com/openai/codex" /> |
-| You want fast visible iteration on UI, API wiring, and project-local context | Cursor Composer 2 | Cursor's harness keeps the agent next to files, terminal state, and review surfaces.<CitationFootnote source="https://cursor.com/blog/composer-2-technical-report" /> |
-| You are cost-sensitive and doing many IDE iterations | Cursor Composer 2 | Cursor announced lower Composer 2 pricing, including standard and fast variants.<CitationFootnote source="https://cursor.com/blog/composer-2" /> |
-| You are running backlog tasks in parallel | Codex CLI | OpenAI's broader Codex direction emphasizes software-engineering agents that can work on tasks in parallel.<CitationFootnote source="https://openai.com/index/introducing-codex/" /> |
-
-<Callout type="info">
-Do not compare these tools only by model score. Compare the whole harness: where the agent runs, what context it can see, how you review changes, how you verify output, and how easy it is to replay the work.
-</Callout>
-
-## Run the same three tasks in both tools
-
-The cleanest benchmark is not a grand leaderboard. It is a small, repeatable test inside your own codebase.
-
-Use three tasks:
-
-1. **A REST endpoint with CRUD operations.** Measure time to first working code, follow-up prompts, and whether the generated route follows local conventions.
-2. **A multi-file refactor.** Rename a domain model across schema, service, API, tests, and UI references. Measure coherence across files.
-3. **A background test task.** Ask the agent to add coverage for a module with no tests. Measure whether it can run the right test target and repair failures.
-
-The goal is not to prove that one vendor is universally smarter. The goal is to discover which harness helps your team ship verified changes with less supervision.
+| Add one CRUD endpoint | Time to verified route, follow-up prompts, local convention fit | Cursor if the developer is steering in IDE; Codex if the task is delegated |
+| Rename one domain model | Search coverage, stale references, focused tests, transcript clarity | Codex for exhaustive command-driven verification |
+| Add missing tests | Whether the agent finds the right target and repairs one failure | Codex for background work; Cursor for interactive test design |
 
 <RunPromptCell
-  title="Benchmark task 1: add a CRUD endpoint"
-  prompt={`In this repository, add a CRUD endpoint for saved prompt templates.
+  title="Run a fair Codex CLI vs Cursor Composer 2 benchmark"
+  prompt={`In this repository, complete the same task twice: once with Codex CLI and once with Cursor Composer 2.
 
-Requirements:
-- Follow the existing API route and service patterns.
+Task:
+- Add a CRUD endpoint for saved prompt templates.
 - Scope every record to the current company.
-- Add request validation and consistent HTTP errors.
-- Add the smallest relevant tests.
-- Run the focused test target and summarize what passed.`}
-  expectedOutput={`A patch touching the route/service/shared contract/test files, plus a short verification note. For Codex CLI, expect a terminal-first transcript with commands. For Cursor Composer 2, expect IDE-visible diffs and follow-up edits in the current workspace. <!-- TODO: verify with QA -->`}
+- Follow existing route, service, shared-type, and test patterns.
+- Run the smallest relevant test command.
+
+Record:
+- minutes to first compiling patch
+- number of follow-up prompts
+- exact verification command and result
+- review notes: stale conventions, missing validation, or unclear diff`}
+  expectedOutput={`A two-row benchmark table comparing Codex CLI and Cursor Composer 2 by verified output, follow-up prompts, and review effort. The winner is the tool that reaches a mergeable patch with the lowest human supervision cost, not the tool that types the most code.`}
 />
 
-<RunPromptCell
-  title="Benchmark task 2: rename a core model"
-  prompt={`Rename the domain concept "promptTemplate" to "agentTemplate" across the codebase.
+## Adopt two lanes instead of one winner
 
-Rules:
-- Preserve database compatibility unless a migration is explicitly needed.
-- Update server, shared types, UI labels, tests, and docs references.
-- Do not touch unrelated files.
-- Run a search at the end proving no stale public references remain.`}
-  expectedOutput={`A coherent multi-file refactor with a final stale-reference search. This is where Codex CLI should show strength in auditable search/edit loops, while Composer 2 should show strength in IDE-guided review of related files. <!-- TODO: verify with QA -->`}
-/>
+The practical policy is simple: use Cursor Composer 2 for actively steered feature work and Codex CLI for delegated automation work.
 
-## Codex CLI is strongest when the agent is part of your operating system
+Cursor Composer 2 should be the default when a product engineer is building in the editor, watching diffs, selecting context manually, and nudging the implementation. Codex CLI should be the default when the task can be written down, checked out into a clean worktree, executed with commands, and reviewed from a transcript. A team that forces every task into one tool will either make automation too editor-bound or make pair programming too detached from the developer's live context.
 
-Codex CLI's biggest advantage is that it behaves like a developer tool you can put in a shell pipeline. That sounds less glamorous than an IDE demo, but it is exactly what many teams need.
+The hybrid workflow is often strongest. Use Cursor Composer 2 to shape an uncertain feature while the design is still moving. Then hand a bounded cleanup task to Codex CLI: add tests, run stale-reference searches, verify a migration, or update docs. Or reverse it: ask Codex CLI to investigate the repository and produce the narrow plan, then use Cursor Composer 2 for the human-guided implementation.
 
-Terminal-native agents are easier to run on remote machines, in branch worktrees, in CI-like sandboxes, and inside repeatable issue workflows. The Codex CLI docs emphasize local terminal execution and the ability to read, change, and run code in the selected directory.<CitationFootnote source="https://developers.openai.com/codex/cli" /> The GitHub project makes the implementation and release history inspectable, which is useful for teams that care about agent governance and local controls.<CitationFootnote source="https://github.com/openai/codex" />
+<KnowledgeCheck>
+Question: What is the most defensible reason to choose Codex CLI over Cursor Composer 2 for a task?
 
-That terminal shape also changes how you review the agent. A Codex run can leave a transcript of commands, file edits, tests, failures, retries, and final verification. In a serious engineering organization, that matters as much as raw code quality. A correct patch without a clear verification trail still creates review drag.
+Answer: Choose Codex CLI when the task needs terminal-native operation, clean worktree isolation, command transcripts, focused verification, or repeatable automation outside the IDE. Choose Cursor Composer 2 when the human developer is actively steering and reviewing the work inside Cursor.
+</KnowledgeCheck>
 
-The broader OpenAI Codex positioning also points toward asynchronous engineering work. OpenAI describes Codex as a software-engineering agent designed to work on multiple tasks in parallel.<CitationFootnote source="https://openai.com/index/introducing-codex/" /> Even when you are using the local CLI rather than a cloud agent, that framing fits the work Codex is best at: issue-sized tasks, background refactors, test repair, migration chores, and codebase-wide investigation.
-
-The tradeoff is that Codex CLI asks the developer to be comfortable in terminal workflows. That is a feature for platform teams and a cost for people who prefer to keep review, context selection, and edits inside an IDE.
-
-<KnowledgeCheck
-  questions={[
-    {
-      type: "multiple_choice",
-      prompt: "Which task is the best first fit for Codex CLI?",
-      options: [
-        "Running a headless refactor task in a remote worktree",
-        "Tweaking a UI while watching visual diffs in the editor",
-        "Using Cursor Tab autocomplete for line-level edits",
-        "Selecting files manually in a VS Code-style sidebar"
-      ],
-      answer: "Running a headless refactor task in a remote worktree"
-    },
-    {
-      type: "free_form",
-      prompt: "Name one review advantage of a terminal-native coding agent.",
-      grading_hint: "Accept answers about command transcripts, reproducible verification, CI/shell integration, logs, or clearer audit trails."
-    }
-  ]}
-/>
-
-## Cursor Composer 2 is strongest when the agent is part of your editor
-
-Cursor Composer 2's advantage is not only the model. It is the model inside Cursor.
-
-That distinction matters. Cursor reports that Composer 2 improves its internal and coding benchmarks, including CursorBench, Terminal-Bench 2.0, and SWE-bench Multilingual.<CitationFootnote source="https://cursor.com/blog/composer-2" /> But for day-to-day engineering, the more important claim is workflow fit. Composer is built for the IDE loop: pick context, ask for a change, inspect diffs, accept or reject hunks, run the integrated terminal, and ask for another pass.
-
-Cursor's technical report says Composer 2 uses continued pretraining and large-scale reinforcement learning to improve end-to-end agent performance.<CitationFootnote source="https://cursor.com/blog/composer-2-technical-report" /> That is relevant because the "end-to-end" environment is not a neutral benchmark harness. It is Cursor's IDE surface. A model trained and evaluated around that workflow can feel faster than a terminal agent for the kind of work that stays in the editor.
-
-Composer 2 is especially attractive for product engineers who are already living in Cursor. It keeps the agent near the code review surface. It makes multi-file edits visually inspectable. It reduces the friction of asking for another pass. It also has a sharp commercial story: Cursor announced lower Composer 2 pricing than its prior Composer generation, with standard and fast options for different latency and cost preferences.<CitationFootnote source="https://cursor.com/blog/composer-2" />
-
-The tradeoff is portability. Composer 2 is not the obvious first pick when the workflow starts outside the editor: cron-like automation, remote issue runners, branch queues, or reproducible terminal transcripts. You can still use Cursor for serious engineering, but the harness is designed around a human developer in an IDE.
-
-<RunPromptCell
-  title="Benchmark task 3: add tests in the background"
-  prompt={`Find a module in this repository with meaningful behavior and weak test coverage.
-
-Add focused tests that cover:
-- one successful path
-- one validation or error path
-- one regression-prone edge case
-
-Run only the relevant test command first. If it fails, repair the tests or code once, then report final status.`}
-  expectedOutput={`A short test-focused patch and a verification summary. Codex CLI should make the command loop easy to audit. Cursor Composer 2 should make test/code navigation fast inside the IDE. <!-- TODO: verify with QA -->`}
-/>
-
-## Treat benchmark claims as directional, not final
-
-Both vendors have useful benchmark claims. Neither gives you a perfect apples-to-apples answer for your team.
-
-OpenAI's public Codex materials emphasize local CLI execution, project adaptation, and a broader software-engineering-agent workflow.<CitationFootnote source="https://developers.openai.com/codex" /> Cursor's Composer 2 launch reports benchmark improvements and concrete pricing changes.<CitationFootnote source="https://cursor.com/blog/composer-2" /> Cursor's technical report gives more detail on training stages and agent-performance optimization.<CitationFootnote source="https://cursor.com/blog/composer-2-technical-report" />
-
-The research synthesis also flagged community and third-party comparison material: Termdock discusses Codex CLI in the context of SWE-bench-style claims, Terminal-Bench provides benchmark context for hard terminal tasks, and Render's agent benchmark is useful as a workflow signal rather than a universal verdict.<CitationFootnote source="https://www.termdock.com/en/blog/claude-code-vs-codex-cli" /><CitationFootnote source="https://arxiv.org/html/2601.11868v1" /><CitationFootnote source="https://render.com/blog/ai-coding-agents-benchmark" />
-
-Use these sources to shape hypotheses, then test on your own work. A model that wins a benchmark may still lose your repo if it cannot follow your conventions, run your tests, or fit your review process. A cheaper model may still cost more per completed task if it needs many follow-up prompts. A slower terminal tool may still be cheaper organizationally if it leaves a better audit trail.
-
-<Callout type="warn">
-Do not measure only "time until the agent stops talking." Measure time until a reviewer would merge the patch: code compiles, focused tests pass, conventions are followed, and the explanation matches the diff.
-</Callout>
-
-## Score the harness, not just the output
-
-Use a five-part scorecard for each benchmark task:
-
-| Metric | What to record | Why it matters |
-|---|---|---|
-| Time to first working output | Minutes until code compiles or the focused test can run | Fast drafts are useful only if they become verified patches |
-| Follow-up prompts | Number of correction prompts | Supervision cost is real engineering cost |
-| Verification quality | Exact commands run and final result | A patch without verification is not done |
-| Context handling | Whether the agent found the right files and respected boundaries | This exposes harness fit quickly |
-| Review ergonomics | How easy it was to inspect, reject, or replay changes | The human review loop decides adoption |
-
-For Codex CLI, I would weight verification quality and replayability heavily. For Cursor Composer 2, I would weight review ergonomics and context handling heavily. That does not bias the result; it matches each tool's intended environment.
-
-## Adopt a two-lane workflow instead of forcing one standard
-
-The common mistake is trying to make one AI coding tool absorb every workflow. That looks tidy in procurement, but it usually creates worse engineering habits. A terminal agent and an IDE agent should have different defaults, different review expectations, and different success metrics.
-
-For a team already using Cursor, the simplest policy is: **Cursor Composer 2 is the default for actively steered feature work.** A developer opens the relevant files, keeps the diff visible, asks Composer for the first pass, and reviews the change in small chunks. This is the right shape for UI wiring, route/controller work, targeted bug fixes, and tasks where the human already knows the desired direction but wants speed. Cursor's own Composer 2 launch and technical report both frame the model around the Cursor coding environment, so judge it by how well it improves that environment.<CitationFootnote source="https://cursor.com/blog/composer-2" /><CitationFootnote source="https://cursor.com/blog/composer-2-technical-report" />
-
-For platform, infrastructure, and queue-based engineering, use the opposite default: **Codex CLI is the default for delegated work.** Put it in a clean worktree. Give it a ticket-sized instruction. Let it search, edit, run commands, and summarize verification. Then review the patch like any other contributor. That is the natural fit for a tool OpenAI documents as terminal-native and local to the selected directory.<CitationFootnote source="https://developers.openai.com/codex/cli" />
-
-The hybrid pattern is strongest when the handoff is explicit. Use Cursor Composer 2 to sketch or interactively shape the feature while the architecture is still moving. Once the design stabilizes, hand a bounded cleanup task to Codex CLI: add tests, run a stale-reference search, update docs, or verify the migration path. Or reverse it: ask Codex CLI to do a repo-wide investigation and produce a small plan, then use Cursor Composer 2 for the human-guided implementation.
-
-This also keeps review standards honest. Cursor output should be judged by how quickly a human can inspect and steer it. Codex output should be judged by how completely it can explain what it changed and how it verified the result. If you use the same scorecard for both, you will accidentally reward the wrong behavior.
-
-<KnowledgeCheck
-  questions={[
-    {
-      type: "multiple_choice",
-      prompt: "What is the most defensible way to compare Codex CLI and Cursor Composer 2?",
-      options: [
-        "Run the same tasks in your own codebase and score verification, follow-ups, context handling, and review ergonomics",
-        "Pick the tool with the highest vendor benchmark claim",
-        "Pick the cheapest per-token model without measuring completed-task cost",
-        "Use whichever tool generated the longest patch"
-      ],
-      answer: "Run the same tasks in your own codebase and score verification, follow-ups, context handling, and review ergonomics"
-    },
-    {
-      type: "multiple_choice",
-      prompt: "Why is per-token price not the same as per-task cost?",
-      options: [
-        "A cheaper model can require more retries, more review time, or more follow-up prompts",
-        "Token price never changes",
-        "Benchmarks always include human review time",
-        "IDE tools cannot be benchmarked"
-      ],
-      answer: "A cheaper model can require more retries, more review time, or more follow-up prompts"
-    }
-  ]}
-/>
-
-## The verdict: use both, but give each the right job
-
-Here is the no-hedge version.
-
-**Codex CLI wins the automation lane.** Use it for background issue work, repo-wide investigation, command-heavy debugging, remote sessions, CI-like runners, scripted experiments, and patches where the command transcript is part of the deliverable. Its terminal-native design is not incidental; it is the reason to choose it.<CitationFootnote source="https://developers.openai.com/codex/cli" />
-
-**Cursor Composer 2 wins the IDE pair-programming lane.** Use it when a developer is actively shaping a feature in Cursor, reviewing diffs as they appear, leaning on project context, and iterating quickly across code and tests. Its IDE integration is not incidental; it is the reason to choose it.<CitationFootnote source="https://cursor.com/blog/composer-2" />
-
-**For the three benchmark tasks in this brief, my expected split is:**
-
-1. **CRUD endpoint:** Cursor Composer 2 likely wins for speed if the developer is already in Cursor and the endpoint follows obvious local patterns.
-2. **Multi-file refactor:** Codex CLI likely wins when the rename needs exhaustive search, command-line verification, and a clean transcript.
-3. **Background test task:** Codex CLI likely wins when the task is delegated asynchronously; Cursor Composer 2 likely wins when the developer wants to steer the test design interactively.
-
-That is not fence-sitting. It is the practical buying rule. Choose Codex CLI when the job needs an agent you can operate. Choose Cursor Composer 2 when the job needs an agent you can pair with. The winning move is not loyalty to a vendor; it is matching the agent harness to the job.
-
-<RunPromptCell
-  title="Make the final tool choice"
-  prompt={`Given our benchmark results, write a one-page adoption recommendation.
-
-Include:
-- which tool wins for CRUD feature work
-- which tool wins for multi-file refactors
-- which tool wins for background test generation
-- one workflow where we should use both
-- the top risk if we standardize on only one`}
-  expectedOutput={`A decision memo that separates terminal automation from IDE pair programming, includes evidence from the three benchmark runs, and recommends a default plus exceptions. <!-- TODO: verify with QA -->`}
-/>
+The verdict is not vendor loyalty. Codex CLI wins the automation lane; Cursor Composer 2 wins the IDE pair-programming lane. Teams that learn both patterns will make better adoption decisions than teams that argue from benchmark screenshots alone. For a hands-on path through the Cursor side of that split, start with [[course/cursor-composer-2]].

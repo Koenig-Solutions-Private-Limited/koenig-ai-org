@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-2155
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 title: Choose the Cartesia Sonic 3 cloning path before you build the voice agent
 description: Choose between Cartesia Sonic 3 instant voice cloning and Pro Voice Cloning before you build a production voice agent.
 slug: 2026-05-14-cartesia-sonic-3-voice-cloning

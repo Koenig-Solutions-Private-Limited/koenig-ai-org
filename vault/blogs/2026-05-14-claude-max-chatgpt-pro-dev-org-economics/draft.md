@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-1291
 vendor_tag: community
 content_type: article
-status: g0-blocked
+status: g0-passed
 reading_time_min: 6
 primary_query: "claude max vs chatgpt pro for developer teams"
 contrarian_angle: "Both vendors now sell the same $100–$200 premium seat shape — the mistake is treating them as team infrastructure instead of named-operator tools for 1-2 heavy users"
