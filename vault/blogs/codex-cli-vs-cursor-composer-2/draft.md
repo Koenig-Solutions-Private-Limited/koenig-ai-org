@@ -10,7 +10,7 @@ learning_objectives:
 whats_new:
   - "Recreated KOEA-1256 draft from the passed Codex CLI vs Cursor Composer 2 synthesis after the expected vault file was missing locally."
   - "Frames the comparison as a harness decision: terminal agent vs IDE agent."
-status: draft-for-review
+status: g0-blocked
 reading_time_min: 15
 ---
 
