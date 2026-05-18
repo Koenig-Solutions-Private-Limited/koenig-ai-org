@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-2099
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: g0-blocked
 reading_time_min: 11
 primary_query: "build Cloudflare AI agent Durable Objects Workers AI Vectorize R2"
 contrarian_angle: "Cloudflare's agent stack is not a thinner LangChain host; the important shift is that memory, retrieval, files, scheduling, and realtime transport all collapse into platform bindings on the same Durable Object."
