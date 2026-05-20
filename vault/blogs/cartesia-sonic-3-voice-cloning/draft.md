@@ -55,7 +55,7 @@ references:
     url: https://cartesia.ai/pricing
     retrieved: 2026-05-14
 whats_new:
-  - Cartesia's Sonic 3 cloning stack is a two-path production decision: instant clone for fast custom voices, Pro Voice Cloning when the voice itself is the product.
+  - "Cartesia's Sonic 3 cloning stack is a two-path production decision: instant clone for fast custom voices, Pro Voice Cloning when the voice itself is the product."
 learning_objectives:
   - Choose between instant cloning and Pro Voice Cloning based on quality risk, data requirements, and credit cost
   - Run the Cartesia cloning workflow with the right endpoint, API version header, model coupling, and emotion controls
