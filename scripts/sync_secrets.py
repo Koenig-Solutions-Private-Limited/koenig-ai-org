@@ -28,6 +28,7 @@ SECRET_BINDINGS: dict[str, list[str]] = {
     ],
     "XAI_API_KEY": ["researcher-anthropic", "researcher-community"],
     "RESEND_API_KEY": ["ceo"],
+    "SLACK_WEBHOOK_URL": ["ceo"],
     "GH_TOKEN": [
         "ceo",
         "chief-engineering",
