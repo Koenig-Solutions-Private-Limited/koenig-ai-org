@@ -1,13 +1,13 @@
 ---
 date: 2026-05-14
 title: "Build a Cloudflare Agent with Durable Objects, Workers AI, R2, and Vectorize"
-slug: "cloudflare-agents-week-2026-build-deep-dive"
+slug: "2026-05-14-cloudflare-agents-week-2026-build-deep-dive"
 description: "Build a persistent Cloudflare RAG agent by treating Durable Objects, Workers AI, R2, and Vectorize as platform bindings instead of separate services."
 author: blog-author
 ticket: KOEA-2099
 vendor_tag: community
 content_type: article
-status: g0-blocked
+status: draft-for-review
 reading_time_min: 11
 tags:
   - cloudflare-agents
@@ -108,11 +108,23 @@ tag = "v1"
 new_sqlite_classes = ["ChatAgent"]
 ```
 
-That file is the real architecture diagram. The agent has one local state boundary (`CHAT_AGENT`), one model binding (`AI`), one blob store (`DOCS`), and one semantic index (`VECTORIZE`). Everything else is TypeScript.
+That file is the real architecture diagram. The agent has one local state boundary (`CHAT_AGENT`), one model binding (`AI`), one blob store (`DOCS`), and one semantic index (`VECTORIZE`). Everything else is TypeScript. If you are coming from hosted SDK design, the shift is from framework-managed [[glossary/agent-orchestration|agent orchestration]] to platform-managed bindings.
+
+<KnowledgeCheck
+  question="Why is the Durable Object binding the right boundary for a Cloudflare chat agent?"
+  options={[
+    "It lets all users share one global SQL database for lower latency",
+    "It gives each named agent instance durable state, WebSockets, and scheduling behind one routing key",
+    "It replaces Workers AI so no model binding is needed",
+    "It makes Vectorize dimensions mutable after index creation"
+  ]}
+  correct={1}
+  explanation="The Durable Object-backed Agent is the named stateful boundary. It keeps session state, realtime connections, and scheduled work together while the other bindings handle models, blobs, and retrieval."
+/>
 
 ## Put chat state in the Agent, source files in R2, and chunks in Vectorize
 
-Separate state by access pattern. The Agent Durable Object should keep conversation messages, per-user settings, scheduled work, and small state that must follow the live session. R2 should keep full source documents and generated artifacts because Cloudflare positions R2 for large unstructured data with no egress bandwidth fees ([R2 pricing](https://developers.cloudflare.com/r2/pricing/), retrieved 2026-05-14). Vectorize should keep only embedding vectors plus retrieval metadata.
+Separate state by access pattern. The Agent Durable Object should keep conversation messages, per-user settings, scheduled work, and small [[glossary/agent-memory|agent memory]] that must follow the live session. R2 should keep full source documents and generated artifacts because Cloudflare positions R2 for large unstructured data with no egress bandwidth fees ([R2 pricing](https://developers.cloudflare.com/r2/pricing/), retrieved 2026-05-14). Vectorize should keep only embedding vectors plus retrieval metadata.
 
 Here is the minimal environment surface:
 
@@ -281,6 +293,18 @@ The production caveat is single-threading. Durable Objects are excellent session
 
 Cost depends on hibernation. Durable Object pricing charges requests, storage, and duration; the pricing docs state that duration applies while JavaScript is actively executing or while the object is idle but not eligible for hibernation ([Durable Objects pricing](https://developers.cloudflare.com/durable-objects/platform/pricing/), retrieved 2026-05-14). For chat, hibernate WebSockets and avoid background timers that keep the isolate hot.
 
+<KnowledgeCheck
+  question="What is the correct shard key for a production Cloudflare Agent?"
+  options={[
+    "One Durable Object for the entire application",
+    "A stable user, workspace, document, tenant, or workflow identity",
+    "A random ID on every request so state never persists",
+    "The Vectorize index name"
+  ]}
+  correct={1}
+  explanation="Durable Objects are stateful and single-threaded, so production systems should route by a stable identity boundary such as user, workspace, tenant, document, or workflow."
+/>
+
 ## Know the limits before you turn this into a product
 
 The build is small, but the product constraints are real. Workers AI pricing is neuron-based with a daily free allocation and model-specific rates ([Workers AI pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/), retrieved 2026-05-14). Vectorize has explicit index, vector, metadata, and top-K limits ([Vectorize limits](https://developers.cloudflare.com/vectorize/platform/limits/), retrieved 2026-05-14). Durable Objects have CPU, storage, and duration rules. R2 has cheap storage but Class A write costs.
@@ -302,7 +326,7 @@ The main engineering trap is overusing the Durable Object database because it fe
 
 Test the pipeline in three passes before trusting the chat answer. First, call `/ingest` with a tiny text fixture and confirm the returned chunk count matches your splitter. Second, issue a query whose answer appears verbatim in one chunk and log the Vectorize match IDs before the model sees them. Third, ask the chat agent the same question and require it to cite the source key returned by the retrieval tool. That isolates ingestion bugs from retrieval bugs from model-grounding bugs.
 
-The same separation helps when you add auth. The route handler should authenticate the user and derive `ownerId`; the Durable Object name, R2 key prefix, and Vectorize namespace should all come from that same identity boundary. If those three diverge, you have built a cross-tenant retrieval bug. Cloudflare's platform makes the primitives cheap to compose, but it does not remove the need for one clear tenancy key across storage, retrieval, and chat routing.
+The same separation helps when you add auth. The route handler should authenticate the user and derive `ownerId`; the Durable Object name, R2 key prefix, and Vectorize namespace should all come from that same identity boundary. If those three diverge, you have built a cross-tenant retrieval bug. Cloudflare's platform makes the primitives cheap to compose, but it does not remove the need for one clear tenancy key across storage, retrieval, and chat routing. That is the same boundary discipline we teach in [[course/ai-agent-security-for-developers|AI Agent Security for Developers]].
 
 For production, add two boring controls early: a maximum document size before R2 upload and a maximum number of chunks per ingestion call. Without those limits, one bad upload can create a large embedding bill or a noisy namespace that degrades retrieval for the user. The Agent should also store the ingestion status in its own state so the UI can say "indexed 12 chunks" instead of letting users infer freshness from answer quality.
 
