@@ -35,6 +35,15 @@ Why: The vault is the single source of truth. Re-flagging issues already escalat
 4. **Cost circuit-breaker.** If any agent's monthly spend hits 90% of budget, alert immediately + page CEO. If 100%, request pause via PATCH on agent.
 5. **Loop detection.** If same parent ticket triggers ≥10 child tickets in 60 min, that's a runaway loop — page CEO + propose burst-suppression.
 
+## Check 5 API fallback contract
+
+When SQL evidence is unavailable and you must use API fallback for heartbeat failures:
+
+1. Call `/api/companies/:companyId/heartbeat-runs?status=failed&limit=500` (status filter is mandatory).
+2. Verify every returned row has `status === "failed"` before counting failures.
+3. For source identity, use `adapterType` first, then `agentName`, and only then fall back to `unknown`.
+4. If rows violate the failed-only contract, do not emit a spike alert from fallback data; escalate data-quality mismatch to Chief Engineering.
+
 ## How you collaborate
 
 - **With CEO**: hourly summary in `vault/_audit/watchdog-alerts/<date>-hourly.md`. CEO reads in daily-triage.
