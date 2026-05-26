@@ -8,6 +8,7 @@ import {
   agentSkillSyncSchema,
   agentMineInboxQuerySchema,
   AGENT_DEFAULT_MAX_CONCURRENT_RUNS,
+  HEARTBEAT_RUN_STATUSES,
   createAgentKeySchema,
   createAgentHireSchema,
   createAgentSchema,
@@ -16,6 +17,7 @@ import {
   resetAgentSessionSchema,
   testAdapterEnvironmentSchema,
   type AgentSkillSnapshot,
+  type HeartbeatRunStatus,
   type InstanceSchedulerHeartbeatAgent,
   upsertAgentInstructionsFileSchema,
   updateAgentInstructionsBundleSchema,
@@ -2562,8 +2564,16 @@ export function agentRoutes(
     assertCompanyAccess(req, companyId);
     const agentId = req.query.agentId as string | undefined;
     const limitParam = req.query.limit as string | undefined;
+    const statusParam = req.query.status as string | undefined;
+    const status = statusParam ? statusParam.trim() : undefined;
+    if (status && !HEARTBEAT_RUN_STATUSES.includes(status as HeartbeatRunStatus)) {
+      res.status(400).json({
+        error: `Invalid heartbeat run status. Expected one of: ${HEARTBEAT_RUN_STATUSES.join(", ")}`,
+      });
+      return;
+    }
     const limit = limitParam ? Math.max(1, Math.min(1000, parseInt(limitParam, 10) || 200)) : undefined;
-    const runs = await heartbeat.list(companyId, agentId, limit);
+    const runs = await heartbeat.list(companyId, agentId, limit, status as HeartbeatRunStatus | undefined);
     res.json(runs);
   });
 

@@ -55,6 +55,8 @@ export interface HeartbeatRun {
   contextSnapshot: Record<string, unknown> | null;
   createdAt: Date;
   updatedAt: Date;
+  agentName?: string | null;
+  adapterType?: string | null;
   outputSilence?: HeartbeatRunOutputSilence;
 }
 
