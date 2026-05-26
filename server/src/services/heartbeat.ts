@@ -109,7 +109,7 @@ import {
   readContinuationAttempt,
 } from "./recovery/index.js";
 import { isAutomaticRecoverySuppressedByPauseHold } from "./recovery/pause-hold-guard.js";
-import { recoveryService } from "./recovery/service.js";
+import { isIntentionallySuppressedStaleTriageIssue, recoveryService } from "./recovery/service.js";
 import { productivityReviewService } from "./productivity-review.js";
 import { withAgentStartLock } from "./agent-start-lock.js";
 import { redactCurrentUserText, redactCurrentUserValue } from "../log-redaction.js";
@@ -6310,6 +6310,9 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
       }
 
       if (await isAutomaticRecoverySuppressedByPauseHold(db, issue.companyId, issue.id, treeControlSvc)) {
+        return { kind: "released" as const };
+      }
+      if (await isIntentionallySuppressedStaleTriageIssue(tx, issue.companyId, issue.id, issue.status)) {
         return { kind: "released" as const };
       }
 
