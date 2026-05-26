@@ -12,8 +12,13 @@ audio_file: vault/courses/picking-a-frontier-model-2026-q2/ch02-audio.mp3
 duration_audio_sec: 624
 audio_bitrate_kbps: 128
 audio_lufs: -15.93
-status: assets-ready — audio re-run complete, awaiting QA
+status: g3-passed
+g3_issue: KOEA-2169
+g3_passed_at: 2026-05-26T12:12:00Z
+g4_approval_id: 88461ffc-4cf7-48ec-836d-f21734d579a6
 notes:
+  - CEO G3 alignment passed after QA audio spot-check KOEA-2169 confirmed the
+    MP3 artifact, metadata, voiceover source, and public mirror URL.
   - Chapter frontmatter says status:draft-for-review (not g0-passed) — dispatched
     by Paperclip issue KOE-62 as authoritative G0 signal; flagged for follow-up.
   - Voiceover script exists at voiceover-02.md (580s, 1450 words) and was used
