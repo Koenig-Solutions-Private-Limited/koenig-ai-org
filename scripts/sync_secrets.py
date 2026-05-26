@@ -135,7 +135,11 @@ def bind_secret_to_agent(
     return "updated"
 
 
-def verify_ceo_bindings(by_slug: dict[str, dict[str, Any]]) -> int:
+def verify_ceo_bindings(
+    paperclip_url: str, company_id: str, auth_token: str | None
+) -> int:
+    agents = http("GET", f"{paperclip_url}/api/companies/{company_id}/agents", auth_token)
+    by_slug = {a["urlKey"]: a for a in agents}
     ceo = by_slug.get("ceo")
     if not ceo:
         print("ERROR: agent 'ceo' not found for binding verification", file=sys.stderr)
@@ -227,7 +231,9 @@ def main() -> int:
     )
     if args.verify_ceo_bindings:
         print()
-        verify_code = verify_ceo_bindings(by_slug)
+        verify_code = verify_ceo_bindings(
+            args.paperclip_url, args.company_id, args.auth_token
+        )
         if verify_code != 0:
             return verify_code
     return 0
