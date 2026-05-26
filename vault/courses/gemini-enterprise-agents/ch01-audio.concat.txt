@@ -1,4 +1,0 @@
-file 'ch01-audio.part01.mp3'
-file 'ch01-audio.part02.mp3'
-file 'ch01-audio.part03.mp3'
-file 'ch01-audio.part04.mp3'
