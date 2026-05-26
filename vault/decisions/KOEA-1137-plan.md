@@ -7,6 +7,8 @@ parent: KOEA-1137
 planner_ticket: KOEA-1139
 tags: [plan, publish-action, publish-verifier, g5, academy, koea-1137]
 status: ready-for-review
+revision: r2
+revision_note: "2026-05-26 plan-audit request resolved: published_url is mandatory slug URL scope"
 ---
 
 # Plan: unblock G5 by fixing the publish pipeline + classifying 6 stale candidates
@@ -45,7 +47,8 @@ implementation + verification path.
   `/repos/.../actions/runs?event=repository_dispatch`, matches by
   `display_title == "publish-{issue_id}"` and `created_at >= dispatched_at`,
   then PATCHes either:
-  - `success` → `publish_state=published`, `published_url=https://academy.kspl.tech`,
+  - `success` → `publish_state=published`,
+    `published_url=https://academy.kspl.tech/blog/<slug>`,
     `published_at=<now>`, and POSTs to the publish-verifier heartbeat to trigger G5.
   - `failure|cancelled|timed_out|action_required|startup_failure` →
     `publish_state=dispatch_failed` + `dispatch_failure_reason`.
@@ -164,7 +167,7 @@ phantom G5 SKIPs.
 Smallest viable patchset (do **not** implement in this ticket — file the
 subtasks under KOEA-1137 once this plan is plan-audited):
 
-### 1. `scripts/publish-action.sh` — three concrete edits
+### 1. `scripts/publish-action.sh` — four concrete edits
 
 a. **Add auth to every Paperclip API call.** Source `PAPERCLIP_BOARD_TOKEN`
    (or `PAPERCLIP_API_KEY`) from `.env.koenig` and pass it on each `curl`:
@@ -189,8 +192,14 @@ c. **Surface skipped runs.** When `GH_PAT_DISPATCH` is missing, log a single
    `WARN: skipping — fix .env.koenig` line **and** also write a sentinel file
    under `~/.paperclip/logs/publish-action.skipped` so the watchdog can alert.
 
+d. **Set slug-specific published URLs.** In Phase 2 success handling, write
+   `metadata.published_url=https://academy.kspl.tech/blog/<slug>` using the
+   issue slug that Phase 1 already dispatches. This is mandatory implementation
+   scope, not a reviewer choice: G5's pre-flight probe should be able to `curl`
+   the stored URL directly without deriving a blog path from separate metadata.
+
 No structural rewrite is needed — the two-phase polling design is sound; only
-the auth/config plumbing is broken.
+the auth/config/url plumbing is broken.
 
 ### 2. `.env.koenig`
 
@@ -291,7 +300,8 @@ poll shows green.
 Create as children of KOEA-1137 after plan-audit:
 
 1. **KOEA-1137a** — eng: patch `scripts/publish-action.sh` (auth header,
-   de-hardcoded company id, loud skip logging) + update `.env.example`.
+   de-hardcoded company id, loud skip logging, slug-specific `published_url`)
+   + update `.env.example`.
 2. **KOEA-1137b** — host (Vardaan): add `GH_PAT_DISPATCH` and `COMPANY_ID`
    to `.env.koenig`; run `load-launchd-agents.sh publish-action`. Depends on
    KOEA-1137a.
@@ -306,20 +316,21 @@ Create as children of KOEA-1137 after plan-audit:
 Each is small enough for a single executor heartbeat. KOEA-1137a and
 KOEA-1137d are independent and can run in parallel.
 
-## Open questions for plan-audit
+## Plan-audit notes
 
-1. Should `published_url` carry the slug (`/blog/<slug>`) or stay at the
-   bare `https://academy.kspl.tech` (current Phase 2 behaviour)? G5's URL
-   probe wants the slug; staying bare would force every G5 run to derive
-   the path itself. Recommendation: **change Phase 2 to set
-   `published_url=https://academy.kspl.tech/blog/<slug>`** using the slug
-   already on the issue. This is a one-line fix and would unblock the
-   verifier's `curl -sI "$URL"` check directly.
-2. Is the canonical company UUID `2a77f89b-33f0-4133-a20c-77ddaac5e744`
+Resolved per KOEA-1141 feedback on 2026-05-26: `published_url` must carry the
+slug path. The executor must change Phase 2 to store
+`https://academy.kspl.tech/blog/<slug>` on successful dispatch or manual
+advance; bare `https://academy.kspl.tech` is not acceptable because G5 needs a
+directly probeable URL.
+
+Remaining questions:
+
+1. Is the canonical company UUID `2a77f89b-33f0-4133-a20c-77ddaac5e744`
    universal across local + Docker instances, or per-environment? If the
    latter, the script must read it from `$PAPERCLIP_COMPANY_ID` at runtime
    rather than `.env.koenig`.
-3. Are there any other vault slugs already deployed but missing the
+2. Are there any other vault slugs already deployed but missing the
    matching Paperclip publish ticket? A full inventory pass
    (`vault/blogs/*` vs Paperclip `publish_state` table) would tell us
    whether the six candidates are the entire backlog or a sample.
