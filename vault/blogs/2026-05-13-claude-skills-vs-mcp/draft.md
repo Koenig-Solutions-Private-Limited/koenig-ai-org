@@ -8,7 +8,7 @@ slug: 2026-05-13-claude-skills-vs-mcp
 vendor: anthropic
 vendor_tag: anthropic
 content_type: article
-status: draft-for-review
+status: g3-passed
 tags:
   - anthropic
   - claude-code
