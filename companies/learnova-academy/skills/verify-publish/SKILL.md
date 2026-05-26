@@ -26,7 +26,7 @@ You verify; others fix.
 
 ### 0. Probe-scope rule (HARD — added 2026-05-13 per KOEA-1393)
 
-Run **only** the numbered checks 1–10 below. Do **not** invent additional
+Run **only** the numbered checks 1–11 below. Do **not** invent additional
 URL probes (e.g. `/slides/<slug>.pptx`, `/audio/<slug>.mp3`,
 `/transcripts/<slug>.txt`) by guessing a convention. The academy site
 currently has no `/slides/` route — `learnova-academy/scripts/sync-vault.mjs`
@@ -155,6 +155,26 @@ test -n "$AUTHOR" && curl -sI "$AUTHOR" | head -1
 ```
 
 Author URL must resolve to `/authors/<slug>` returning 200 + valid `Person` or `Organization` JSON-LD. **HARD BLOCK** if author is a raw agent slug like `blog-author` or returns 404.
+
+### 11. Slides link check (explicit-link gated; never speculative)
+
+```bash
+HTML=$(curl -s "$URL")
+SLIDE_PATH=$(printf '%s' "$URL" \
+  | sed -E 's#https?://[^/]+/(blog|courses)/([^/?#]+).*#/slides/\2.pptx#')
+
+if printf '%s' "$HTML" | rg -q "$SLIDE_PATH"; then
+  STATUS=$(curl -sI -o /dev/null -w "%{http_code}" "https://academy.kspl.tech$SLIDE_PATH")
+  echo "slides_link=present path=$SLIDE_PATH status=$STATUS"
+else
+  echo "slides_link=absent path=$SLIDE_PATH status=n/a (skip)"
+fi
+```
+
+Rules:
+- If no visible link to `/slides/<slug>.pptx` is present in fetched HTML, mark slides as `n/a` and skip asset probing.
+- Only when the link is present may you fetch the linked slides URL.
+- Never guess or probe `https://academy.kspl.tech/slides/<slug>.pptx` without a visible link.
 
 ### Decide + comment (LOCKED 2026-05-01 — STRUCTURED ONLY)
 
