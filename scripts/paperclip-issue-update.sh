@@ -5,7 +5,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  scripts/paperclip-issue-update.sh [--issue-id ID] [--status STATUS] [--comment TEXT] [--dry-run]
+  scripts/paperclip-issue-update.sh [--issue-id ID] [--status STATUS] [--comment TEXT] [--metadata-patch-json JSON] [--dry-run]
 
 Reads a multiline markdown comment from stdin when stdin is piped. This preserves
 newlines when building the JSON payload for PATCH /api/issues/{issueId}.
@@ -36,6 +36,7 @@ require_command() {
 issue_id="${PAPERCLIP_TASK_ID:-}"
 status=""
 comment_arg=""
+metadata_patch_json=""
 dry_run=0
 
 while [[ $# -gt 0 ]]; do
@@ -50,6 +51,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --comment)
       comment_arg="${2:-}"
+      shift 2
+      ;;
+    --metadata-patch-json)
+      metadata_patch_json="${2:-}"
       shift 2
       ;;
     --dry-run)
@@ -82,13 +87,22 @@ fi
 
 require_command jq
 
+if [[ -n "$metadata_patch_json" ]]; then
+  if ! printf '%s' "$metadata_patch_json" | jq -e . >/dev/null 2>&1; then
+    printf 'Invalid JSON passed to --metadata-patch-json\n' >&2
+    exit 1
+  fi
+fi
+
 payload="$(
   jq -nc \
     --arg status "$status" \
     --arg comment "$comment" \
+    --arg metadataPatchJson "$metadata_patch_json" \
     '
       (if $status == "" then {} else {status: $status} end) +
-      (if $comment == "" then {} else {comment: $comment} end)
+      (if $comment == "" then {} else {comment: $comment} end) +
+      (if $metadataPatchJson == "" then {} else {metadataPatch: ($metadataPatchJson | fromjson)} end)
     '
 )"
 

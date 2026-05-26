@@ -164,6 +164,7 @@ function makeIssue(overrides: Record<string, unknown> = {}) {
     title: "Owned active issue",
     executionPolicy: null,
     executionState: null,
+    metadata: null,
     hiddenAt: null,
     ...overrides,
   };
@@ -435,6 +436,60 @@ describe("agent issue mutation checkout ownership", () => {
     expect(res.status).toBe(200);
     expect(mockIssueService.assertCheckoutOwner).not.toHaveBeenCalled();
     expect(mockIssueService.update).toHaveBeenCalled();
+  });
+
+  it("allows authorized publish verifier G5 patch on done issue with metadataPatch only", async () => {
+    mockIssueService.getById.mockResolvedValue(
+      makeIssue({ status: "done", assigneeAgentId: ownerAgentId, metadata: { previous: "value" } }),
+    );
+    mockAccessService.hasPermission.mockImplementation(async (
+      _companyId: string,
+      _principalType: string,
+      principalId: string,
+      permissionKey: string,
+    ) => principalId === peerAgentId && permissionKey === "tasks:write_publish_verifications");
+
+    const res = await request(await createApp(peerActor()))
+      .patch(`/api/issues/${issueId}`)
+      .send({
+        comment: "✅ G5 PASS - verification complete",
+        metadataPatch: {
+          g5_verified_at: "2026-05-13T00:00:00.000Z",
+          g5_verdict: "pass",
+        },
+      });
+
+    expect(res.status, JSON.stringify(res.body)).toBe(200);
+    expect(mockIssueService.assertCheckoutOwner).not.toHaveBeenCalled();
+    expect(mockIssueService.update).toHaveBeenCalledWith(
+      issueId,
+      expect.objectContaining({
+        metadata: {
+          previous: "value",
+          g5_verified_at: "2026-05-13T00:00:00.000Z",
+          g5_verdict: "pass",
+        },
+      }),
+    );
+  });
+
+  it("rejects non-G5 done issue patch attempts from peer agent without ownership", async () => {
+    mockIssueService.getById.mockResolvedValue(makeIssue({ status: "done", assigneeAgentId: ownerAgentId }));
+
+    const res = await request(await createApp(peerActor()))
+      .patch(`/api/issues/${issueId}`)
+      .send({
+        comment: "regular done-note",
+        metadataPatch: {
+          g5_verified_at: "2026-05-13T00:00:00.000Z",
+          g5_verdict: "pass",
+        },
+      });
+
+    expect(res.status, JSON.stringify(res.body)).toBe(403);
+    expect(res.body.error).toBe("Agent cannot mutate another agent's issue");
+    expect(mockIssueService.assertCheckoutOwner).not.toHaveBeenCalled();
+    expect(mockIssueService.update).not.toHaveBeenCalled();
   });
 
   it.each([

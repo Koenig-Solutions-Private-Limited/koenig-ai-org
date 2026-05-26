@@ -123,6 +123,7 @@ export const issueExecutionStateSchema = z.object({
   lastDecisionId: z.string().uuid().nullable(),
   lastDecisionOutcome: z.enum(ISSUE_EXECUTION_DECISION_OUTCOMES).nullable(),
 });
+const issueMetadataSchema = z.record(z.string(), z.unknown());
 
 const issueRequestDepthInputSchema = z
   .number()
@@ -150,6 +151,7 @@ export const createIssueSchema = z.object({
   executionWorkspaceId: z.string().uuid().optional().nullable(),
   executionWorkspacePreference: z.enum(ISSUE_EXECUTION_WORKSPACE_PREFERENCES).optional().nullable(),
   executionWorkspaceSettings: issueExecutionWorkspaceSettingsSchema.optional().nullable(),
+  metadata: issueMetadataSchema.optional().nullable(),
   labelIds: z.array(z.string().uuid()).optional(),
 });
 
@@ -183,6 +185,7 @@ export const updateIssueSchema = createIssueSchema.partial().extend({
   resume: z.boolean().optional(),
   interrupt: z.boolean().optional(),
   hiddenAt: z.string().datetime().nullable().optional(),
+  metadataPatch: issueMetadataSchema.optional(),
 });
 
 export type UpdateIssue = z.infer<typeof updateIssueSchema>;

@@ -109,6 +109,7 @@ type ExecutionStageWakeContext = {
   lastDecisionOutcome: ParsedExecutionState["lastDecisionOutcome"];
   allowedActions: string[];
 };
+const G5_VERDICTS = new Set(["pass", "block"]);
 
 function executionPrincipalsEqual(
   left: ParsedExecutionState["currentParticipant"] | null,
@@ -658,6 +659,47 @@ export function issueRoutes(
       });
     }
     return true;
+  }
+
+  function isG5DoneMetadataPatch(value: unknown): value is { g5_verified_at?: string; g5_verdict?: "pass" | "block" } {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+    const patch = value as Record<string, unknown>;
+    const keys = Object.keys(patch);
+    if (keys.length === 0) return false;
+    if (!keys.every((key) => key === "g5_verified_at" || key === "g5_verdict")) return false;
+    if (patch.g5_verified_at !== undefined) {
+      if (typeof patch.g5_verified_at !== "string" || Number.isNaN(Date.parse(patch.g5_verified_at))) {
+        return false;
+      }
+    }
+    if (patch.g5_verdict !== undefined) {
+      if (typeof patch.g5_verdict !== "string" || !G5_VERDICTS.has(patch.g5_verdict)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  async function isAuthorizedG5DoneArtifactWrite(
+    req: Request,
+    issue: { companyId: string; status: string },
+  ): Promise<boolean> {
+    if (req.actor.type !== "agent" || !req.actor.agentId) return false;
+    if (issue.status !== "done") return false;
+
+    const { comment, metadataPatch, ...otherFields } = req.body as Record<string, unknown>;
+    if (Object.keys(otherFields).length > 0) return false;
+    if (typeof comment !== "string" || (!comment.startsWith("✅ G5") && !comment.startsWith("❌ G5"))) {
+      return false;
+    }
+    if (!isG5DoneMetadataPatch(metadataPatch)) return false;
+
+    return access.hasPermission(
+      issue.companyId,
+      "agent",
+      req.actor.agentId,
+      "tasks:write_publish_verifications",
+    );
   }
 
   async function assertExplicitResumeIntentAllowed(
@@ -1929,7 +1971,8 @@ export function issueRoutes(
     }
     assertCompanyAccess(req, existing.companyId);
     assertNoAgentHostWorkspaceCommandMutation(req, collectIssueWorkspaceCommandPaths(req.body));
-    if (!(await assertAgentIssueMutationAllowed(req, res, existing))) return;
+    const allowG5DoneArtifactWrite = await isAuthorizedG5DoneArtifactWrite(req, existing);
+    if (!allowG5DoneArtifactWrite && !(await assertAgentIssueMutationAllowed(req, res, existing))) return;
 
     const actor = getActorInfo(req);
     const isClosed = isClosedIssueStatus(existing.status);
@@ -1950,6 +1993,7 @@ export function issueRoutes(
       resume: resumeRequested,
       interrupt: interruptRequested,
       hiddenAt: hiddenAtRaw,
+      metadataPatch,
       ...updateFields
     } = req.body;
     const shouldCancelActiveRunForCancelledStatus =
@@ -2051,6 +2095,16 @@ export function issueRoutes(
         : previousExecutionPolicy;
     if (normalizedAssigneeAgentId !== undefined) {
       updateFields.assigneeAgentId = normalizedAssigneeAgentId;
+    }
+    if (metadataPatch && isG5DoneMetadataPatch(metadataPatch)) {
+      const existingMetadata =
+        existing.metadata && typeof existing.metadata === "object" && !Array.isArray(existing.metadata)
+          ? (existing.metadata as Record<string, unknown>)
+          : {};
+      updateFields.metadata = {
+        ...existingMetadata,
+        ...metadataPatch,
+      };
     }
 
     const transition = applyIssueExecutionPolicyTransition({
