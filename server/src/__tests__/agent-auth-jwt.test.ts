@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createLocalAgentJwt, verifyLocalAgentJwt } from "../agent-auth-jwt.js";
+import { createLocalAgentJwt, inspectLocalAgentJwt, verifyLocalAgentJwt } from "../agent-auth-jwt.js";
 
 describe("agent local JWT", () => {
   const secretEnv = "PAPERCLIP_AGENT_JWT_SECRET";
@@ -83,6 +83,28 @@ describe("agent local JWT", () => {
     vi.setSystemTime(new Date("2026-01-01T00:00:00.000Z"));
     const token = createLocalAgentJwt("agent-1", "company-1", "claude_local", "run-1");
 
+    vi.setSystemTime(new Date("2026-01-01T00:00:05.000Z"));
+    expect(verifyLocalAgentJwt(token!)).toBeNull();
+  });
+
+  it("inspects expired tokens against an injected API clock", () => {
+    process.env[ttlEnv] = "1";
+    vi.setSystemTime(new Date("2026-01-01T00:00:00.000Z"));
+    const token = createLocalAgentJwt("agent-1", "company-1", "claude_local", "run-1");
+
+    const inspection = inspectLocalAgentJwt(token!, {
+      now: Math.floor(new Date("2026-01-01T00:00:05.000Z").getTime() / 1000),
+    });
+
+    expect(inspection).toMatchObject({
+      expired: true,
+      runId: "run-1",
+      agentId: "agent-1",
+      companyId: "company-1",
+      adapterType: "claude_local",
+      hasPaperclipShape: true,
+      signatureValid: true,
+    });
     vi.setSystemTime(new Date("2026-01-01T00:00:05.000Z"));
     expect(verifyLocalAgentJwt(token!)).toBeNull();
   });
