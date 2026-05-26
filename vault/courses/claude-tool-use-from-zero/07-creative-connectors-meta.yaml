@@ -3,14 +3,16 @@ issue: KOEA-2264
 assets_generated:
   - ch07-slides.pptx
   - ch07-audio.mp3
-tool: generate_course_audio.py
+tool: generate_course_slides.py
 duration_audio_sec: 660
 slide_count: 7
 slide_file: vault/courses/claude-tool-use-from-zero/ch07-slides.pptx
 audio_file: vault/courses/claude-tool-use-from-zero/ch07-audio.mp3
-produced_at: 2026-05-14T14:24:43Z
+produced_at: 2026-05-26T09:20:58Z
 status: complete
 notes:
+  - KOEA-4862 slide fix: regenerated ch07-slides.pptx from source chapter markdown.
+  - Slide deck validated for 5-7 slide rule, title slide attribution, and final CTA slide.
   - Tier-3 fallback used because notebooklm-py/open-notebook were unavailable in this workspace.
   - Audio generated from source chapter markdown; source markdown was not modified.
   - Output normalized with ffmpeg loudnorm targeting -16 LUFS and encoded at 128 kbps.
