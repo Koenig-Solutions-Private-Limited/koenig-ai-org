@@ -7,7 +7,7 @@ author: blog-author
 ticket: KOEA-5069
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 7
 tags: [ai-coding-tools, codex-cli, cursor-composer-2, agent-harnesses]
 primary_query: "codex cli vs cursor composer 2"
