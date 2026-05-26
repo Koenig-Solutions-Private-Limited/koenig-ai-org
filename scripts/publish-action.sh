@@ -12,8 +12,9 @@
 
 set -euo pipefail
 
-REPO_ROOT="/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org"
-ENV_FILE="$REPO_ROOT/.env.koenig"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="${REPO_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+ENV_FILE="${ENV_FILE:-$REPO_ROOT/.env.koenig}"
 PAPERCLIP_URL="${PAPERCLIP_URL:-http://localhost:3100}"
 COMPANY_ID="${COMPANY_ID:-${KOENIG_COMPANY_ID:-2a77f89b-33f0-4133-a20c-77ddaac5e744}}"
 GH_DISPATCH_REPO="Koenig-Solutions-Private-Limited/learnovaBeast"
