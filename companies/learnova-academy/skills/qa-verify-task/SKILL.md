@@ -44,13 +44,31 @@ Expected: all green. Any failure → BLOCK.
 
 ### 3. Browser walkthrough (if frontend)
 
-Write a Playwright script `/tmp/qa-walk.cjs` that walks through the verification checks listed in the plan's "Verification" section (see `qa-playwright-walkthrough` skill for the template).
+**3a. Browser-use launch smoke (required)** — follow `qa-browser-use-launch` before any walkthrough:
 
 ```bash
-node /tmp/qa-walk.cjs
+BROWSER_USE=/Users/vardaankoenig/Documents/Paperclip/learnovaBeast/learnova-academy/.venv-qa/bin/browser-use
+SESSION="koea-${PAPERCLIP_TASK_ID:-qa}-g2"
+
+timeout 20s "$BROWSER_USE" doctor
+timeout 20s "$BROWSER_USE" --json --session "$SESSION" open https://example.com
+timeout 20s "$BROWSER_USE" --json --session "$SESSION" state
+```
+
+Launch smoke must pass (exit 0, `Example Domain` in state). Timeout or `success:false` → BLOCK and route to Chief Engineering. Do **not** use direct Python `BrowserSession(...).start()` snippets for normal G2 — they hang on CDP lifecycle in the current runtime.
+
+**3b. Task walkthrough (same CLI session)** — navigate and assert plan verification checks via the same named session:
+
+```bash
+timeout 20s "$BROWSER_USE" --json --session "$SESSION" open "<target-url>"
+timeout 20s "$BROWSER_USE" --json --session "$SESSION" state
+# repeat per verification check; inspect state output for assertions
+timeout 10s "$BROWSER_USE" --json --session "$SESSION" close || true
 ```
 
 Each verification check must pass. Any failure → BLOCK with the specific check that failed.
+
+**Playwright fallback** — use `qa-playwright-walkthrough` only when the ticket plan or Chief Engineering explicitly accepts Playwright evidence instead of browser-use. Playwright is not the default G2 path.
 
 ### 4. Adjacent regression check
 
@@ -134,10 +152,13 @@ A PASS or BLOCK comment + Paperclip ticket flip.
 ## Notes
 
 - Don't fix anything yourself.
-- Don't skip the browser walkthrough — unit tests miss UI bugs.
+- Don't skip the browser walkthrough or launch smoke — unit tests miss UI bugs.
+- Run `qa-browser-use-launch` before task navigation; forbid direct Python `BrowserSession` for normal G2.
+- Playwright is fallback-only unless the ticket plan or Chief Engineering accepts it.
 - For content fact-checks, fetch the URL; never validate via LLM.
 - Lighthouse only on changed pages.
-- If the Playwright walkthrough fails with a browser launch error (not a UI bug), restart dev server once; if persists, escalate to Chief Engineering — may be a Chromium/container environment issue.
+- Launch smoke timeout or `success:false` → BLOCK + Chief Engineering (runtime/env), not Playwright substitution
+- Playwright walkthrough fails with browser launch error (not a UI bug) → restart dev server once; if persists, escalate to Chief Engineering
 
 ## Escalation
 

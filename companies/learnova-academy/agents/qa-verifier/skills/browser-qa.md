@@ -125,16 +125,30 @@ done
 
 **Escalate to Chief Engineering any time you use Path 3 for a visual/CSS change** — static DOM analysis is not a substitute for rendered visual check. Document which checks were static vs visual in your PASS/BLOCK comment.
 
-## Path 4 — Mac-local (future state, when browser-use adapter is wired)
+## Path 4 — browser-use CLI (primary G2 contract on Mac runtime)
 
-When the `browser-use` adapter is registered in Paperclip and assigned to this agent:
+Use the installed `browser-use` CLI with named sessions, JSON output, and bounded timeouts. Full contract: `qa-browser-use-launch` skill.
 
 ```bash
-# The adapter runs natively on the Mac with Chrome available
-browser-use --script qa-walkthrough.py --url http://localhost:3010
+BROWSER_USE=/Users/vardaankoenig/Documents/Paperclip/learnovaBeast/learnova-academy/.venv-qa/bin/browser-use
+SESSION="koea-${PAPERCLIP_TASK_ID:-qa}-g2"
+
+timeout 20s "$BROWSER_USE" doctor
+timeout 20s "$BROWSER_USE" --json --session "$SESSION" open https://example.com
+timeout 20s "$BROWSER_USE" --json --session "$SESSION" state
+
+# Task URL (local dev or live)
+timeout 20s "$BROWSER_USE" --json --session "$SESSION" open "http://localhost:3010/blog/my-slug"
+timeout 20s "$BROWSER_USE" --json --session "$SESSION" state
+
+timeout 10s "$BROWSER_USE" --json --session "$SESSION" close || true
 ```
 
-See `adapters/browser-use/` for adapter implementation status. This is the intended long-term path (KOEA-251).
+Do **not** hand-roll direct Python `BrowserSession(...).start()` for normal G2 — use the CLI contract above.
+
+**Playwright** (Path 1) and **Lighthouse** (Path 2) remain separate fallback/performance tooling. Playwright is not a substitute for the browser-use launch gate unless Chief Engineering or the ticket plan explicitly accepts fallback evidence.
+
+Context: [KOEA-5776](/KOEA/issues/KOEA-5776) stabilized this contract after `BrowserStartEvent` / `BrowserLaunchEvent` watchdog timeouts from raw Python session startup.
 
 ## Escalation: Docker image missing system libs
 
