@@ -660,6 +660,21 @@ export function issueRoutes(
     return true;
   }
 
+  async function hasAgentCrossAssigneeHealthCommentPermission(
+    req: Request,
+    issue: { companyId: string },
+  ): Promise<boolean> {
+    if (req.actor.type !== "agent") return false;
+    const actorAgentId = req.actor.agentId;
+    if (!actorAgentId) return false;
+    return access.hasPermission(
+      issue.companyId,
+      "agent",
+      actorAgentId,
+      "tasks:comment_cross_assignee_health",
+    );
+  }
+
   async function assertExplicitResumeIntentAllowed(
     req: Request,
     res: Response,
@@ -3353,7 +3368,8 @@ export function issueRoutes(
       return;
     }
     assertCompanyAccess(req, issue.companyId);
-    if (!(await assertAgentIssueMutationAllowed(req, res, issue))) return;
+    const hasCrossAssigneeHealthCommentPermission = await hasAgentCrossAssigneeHealthCommentPermission(req, issue);
+    if (!hasCrossAssigneeHealthCommentPermission && !(await assertAgentIssueMutationAllowed(req, res, issue))) return;
     const closedExecutionWorkspace = await getClosedIssueExecutionWorkspace(issue);
     if (closedExecutionWorkspace) {
       respondClosedIssueExecutionWorkspace(res, closedExecutionWorkspace);
