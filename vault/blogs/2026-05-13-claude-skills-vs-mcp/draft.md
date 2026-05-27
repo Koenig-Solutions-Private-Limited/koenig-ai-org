@@ -100,7 +100,8 @@ faq:
   - question: "When should I use MCP instead of Claude Skills?"
     answer: "Use MCP when Claude needs live access to an external system such as a database, GitHub, Slack, a ticket tracker, or an internal API."
   - question: "Can Claude Skills and MCP be used together?"
-    answer: "Yes. The strongest production pattern is usually hybrid: a Skill encodes the repeatable workflow, while MCP exposes the live reads and writes the workflow needs."---
+    answer: "Yes. The strongest production pattern is usually hybrid: a Skill encodes the repeatable workflow, while MCP exposes the live reads and writes the workflow needs."
+---
 
 # Choose Claude Skills for workflows and MCP for live systems
 
