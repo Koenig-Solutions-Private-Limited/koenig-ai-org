@@ -9,7 +9,7 @@ author: blog-author
 ticket: KOEA-5998
 vendor_tag: openai
 content_type: article
-status: draft-for-review
+status: g3-passed
 reading_time_min: 7
 primary_query: "openai realtime api voice agents production patterns 2026"
 contrarian_angle: "Realtime API is not mainly a faster TTS endpoint; its real advantage is collapsing turn detection, interruption repair, telephony audio, tool calls, and session state into one speech-native loop."
