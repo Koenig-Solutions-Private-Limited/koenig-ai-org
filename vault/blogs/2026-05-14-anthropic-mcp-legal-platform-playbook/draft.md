@@ -5,7 +5,7 @@ agent_drafted_by: blog-author
 ticket: KOEA-1391
 vendor_tag: anthropic
 content_type: article
-status: g4-approved
+status: published
 g3_reviewed_by: ceo
 g3_reviewed_at: 2026-05-17T17:45:00Z
 g4_approval_id: 4e21af25-911c-4cab-b205-571f371215f8
