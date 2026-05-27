@@ -63,7 +63,7 @@ references:
     url: https://modelcontextprotocol.io/quickstart
     retrieved: 2026-05-13
   - n: 7
-    title: Code execution with MCP: building more efficient AI agents
+    title: "Code execution with MCP: building more efficient AI agents"
     url: https://www.anthropic.com/engineering/code-execution-with-mcp
     retrieved: 2026-05-13
   - n: 8
@@ -75,7 +75,7 @@ references:
     url: https://agentskills.io
     retrieved: 2026-05-13
   - n: 10
-    title: Claude Code Advanced Patterns: Subagents, MCP, and Scaling to Real Codebases
+    title: "Claude Code Advanced Patterns: Subagents, MCP, and Scaling to Real Codebases"
     url: https://www.anthropic.com/webinars/claude-code-advanced-patterns
     date: 2026-03-24
     retrieved: 2026-05-26
@@ -90,7 +90,7 @@ references:
     date: 2026-05-12
     retrieved: 2026-05-26
   - n: 13
-    title: SkillOpt: Executive Strategy for Self-Evolving Agent Skills
+    title: "SkillOpt: Executive Strategy for Self-Evolving Agent Skills"
     url: https://arxiv.org/abs/2605.23904
     date: 2026-05-22
     retrieved: 2026-05-26
@@ -100,8 +100,7 @@ faq:
   - question: "When should I use MCP instead of Claude Skills?"
     answer: "Use MCP when Claude needs live access to an external system such as a database, GitHub, Slack, a ticket tracker, or an internal API."
   - question: "Can Claude Skills and MCP be used together?"
-    answer: "Yes. The strongest production pattern is usually hybrid: a Skill encodes the repeatable workflow, while MCP exposes the live reads and writes the workflow needs."
----
+    answer: "Yes. The strongest production pattern is usually hybrid: a Skill encodes the repeatable workflow, while MCP exposes the live reads and writes the workflow needs."---
 
 # Choose Claude Skills for workflows and MCP for live systems
 
