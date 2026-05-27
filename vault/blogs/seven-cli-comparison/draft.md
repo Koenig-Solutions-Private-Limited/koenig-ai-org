@@ -7,7 +7,7 @@ author: blog-author
 ticket: KOEA-2240
 vendor_tag: community
 content_type: article
-status: g4-approved
+status: published
 g3_reviewed_by: ceo
 g3_reviewed_at: 2026-05-14T11:59:00Z
 reading_time_min: 14
