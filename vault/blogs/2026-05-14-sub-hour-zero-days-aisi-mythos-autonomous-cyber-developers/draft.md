@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-2090
 vendor_tag: community
 content_type: article
-status: g0-blocked
+status: awaiting-g0
 title: "Ship fixes faster than Mythos-speed exploit chains can arrive"
 slug: "2026-05-14-sub-hour-zero-days-aisi-mythos-autonomous-cyber-developers"
 description: "AISI's Claude Mythos and GPT-5.5 cyber evaluations crossed a practical developer threshold: the bottleneck is no longer finding vulnerabilities, but safely shipping fixes before exploit chains compress to hours."

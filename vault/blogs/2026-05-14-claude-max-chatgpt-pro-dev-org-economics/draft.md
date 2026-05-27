@@ -8,7 +8,7 @@ ticket: KOEA-5271
 original_ticket: KOEA-1291
 vendor_tag: community
 content_type: article
-status: awaiting-g0
+status: g0-blocked
 tags:
   - ai-pricing
   - claude-max
