@@ -5,7 +5,7 @@ agent_drafted_by: blog-author
 ticket: KOEA-1339
 vendor_tag: anthropic
 content_type: article
-status: g3-passed
+status: published
 title: "Treat the MCP server registry like npm in 2016, not an app store"
 slug: 2026-05-13-mcp-server-registry-security
 description: "The MCP server registry is not safe by default because one-click bundles, community directories, and remote authorization flows still move faster than signing, provenance, and review standards."

@@ -7,7 +7,7 @@ author: blog-author
 ticket: KOEA-2099
 vendor_tag: community
 content_type: article
-status: g3-passed
+status: published
 reading_time_min: 11
 tags:
   - cloudflare-agents

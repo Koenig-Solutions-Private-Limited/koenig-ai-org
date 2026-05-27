@@ -7,7 +7,7 @@ author: blog-author
 ticket: KOEA-5270
 vendor_tag: google
 content_type: article
-status: g3-passed
+status: published
 reading_time_min: 7
 primary_query: "NotebookLM vs Open Notebook"
 contrarian_angle: "Open Notebook should not replace NotebookLM; it belongs underneath NotebookLM as the private automation layer."
