@@ -29,17 +29,18 @@ hands_on_exercise: "Migrate a three-tool code-reviewer agent from Claude Code SD
 sources:
   - https://code.claude.com/docs/en/agent-sdk/overview
   - https://claude.com/blog/agent-capabilities-api
-  - https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk
+  - https://github.com/anthropics/claude-agent-sdk-typescript/releases
   - https://code.claude.com/docs/en/agent-sdk/mcp
   - https://platform.claude.com/docs/en/managed-agents/overview
   - https://github.com/anthropics/claude-agent-sdk-typescript/blob/main/CHANGELOG.md
+  - https://docs.claude.com/en/docs/claude-code/sdk/migration-guide
 ---
 
 # What changed when Claude Code SDK became Claude Agent SDK
 
 The Claude Agent SDK is Anthropic's official library for embedding an autonomous agent loop — including built-in file operations, shell execution, web access, and subagent spawning — directly into a Python or TypeScript application, renamed from the Claude Code SDK in April 2026 alongside the public beta of Claude Managed Agents. This chapter sets up the migration path for [[course/production-agents-claude-agent-sdk-mcp-connector/02-managed-agents-when-to-use|Managed Agents]], [[course/production-agents-claude-agent-sdk-mcp-connector/03-mcp-connector-multi-server|MCP connectors]], and [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|production observability]].
 
-On April 8, 2026, Anthropic simultaneously shipped the renamed SDK, the Managed Agents REST API, and an explicit MCP connector guide. The rename wasn't a rebrand of the package alone; it came with a branding prohibition — partners may no longer call their products "Claude Code" or use Claude Code ASCII art — and with a note that Opus 4.7 requires SDK version v0.2.111 or later [1].
+On April 8, 2026, Anthropic simultaneously shipped the renamed SDK, the Managed Agents REST API, and an explicit MCP connector guide. The rename wasn't a rebrand of the package alone; it came with a branding prohibition — partners may no longer call their products "Claude Code" or use Claude Code ASCII art — and with an SDK migration guide that names package changes, option-type changes, and configuration-loading changes you need to audit before shipping [6].
 
 > **Prerequisites**: None — this is Chapter 1.
 >
@@ -49,8 +50,8 @@ On April 8, 2026, Anthropic simultaneously shipped the renamed SDK, the Managed 
 
 ## Key facts
 
-1. The npm package changed from `@anthropic-ai/claude-code-sdk` to `@anthropic-ai/claude-agent-sdk`; the PyPI package changed from `claude-code` to `claude-agent-sdk` [1].
-2. Opus 4.7 (`claude-opus-4-7`) requires Agent SDK v0.2.111 or later; older SDK versions throw a `thinking.type.enabled` API error when targeting Opus 4.7 [1].
+1. The npm package changed from `@anthropic-ai/claude-code` to `@anthropic-ai/claude-agent-sdk`; the PyPI package changed from `claude-code-sdk` to `claude-agent-sdk` [6].
+2. The options type/class changed from `ClaudeCodeOptions` to `ClaudeAgentOptions` in both TypeScript and Python examples [6].
 3. The TypeScript SDK bundles a native Claude Code binary for your platform as an optional dependency — you no longer need a separate Claude Code installation [1].
 4. Authentication on Amazon Bedrock, Google Vertex AI, and Microsoft Azure Foundry is controlled entirely by environment variables (`CLAUDE_CODE_USE_BEDROCK`, `CLAUDE_CODE_USE_VERTEX`, `CLAUDE_CODE_USE_FOUNDRY`), not constructor arguments [1].
 5. The branding guidelines explicitly prohibit partners from using the names "Claude Code," "Claude Code Agent," or Claude Code-branded ASCII art — a signal that the SDK is now a platform, not a feature of a specific product [1].
@@ -62,7 +63,7 @@ Most developers saw the April 2026 announcement and ran `npm install @anthropic-
 
 The rename matters strategically because it de-couples the SDK from Claude Code the developer product. Claude Code is a terminal app; the Claude Agent SDK is now a general-purpose platform library. By prohibiting partners from calling their products "Claude Code," Anthropic is drawing a hard line: Claude Code is the consumer app, the Agent SDK is the infrastructure you build on. If you're building a product on top of this SDK, that distinction matters for your own naming and positioning.
 
-There's also a real technical signal in the version requirement. Requiring v0.2.111 for Opus 4.7 means Anthropic is now coupling model releases to SDK versions in a way they weren't before. You need to track SDK versions actively, not just pin to a major.
+There's also a real technical signal in the migration guide: configuration that Claude Code users may have treated as implicit now deserves an explicit audit. Your package manager can make the import rename look trivial, but stale settings, old package names, and different defaults are what usually break production agents.
 
 ## Installing the renamed SDK
 
@@ -70,7 +71,7 @@ There's also a real technical signal in the version requirement. Requiring v0.2.
 
 ```bash
 # Remove the old package
-npm uninstall @anthropic-ai/claude-code-sdk
+npm uninstall @anthropic-ai/claude-code
 
 # Install the renamed package
 npm install @anthropic-ai/claude-agent-sdk
@@ -80,7 +81,7 @@ npm install @anthropic-ai/claude-agent-sdk
 
 ```bash
 # Remove the old package
-pip uninstall claude-code
+pip uninstall claude-code-sdk
 
 # Install the renamed package
 pip install claude-agent-sdk
@@ -91,11 +92,11 @@ After installing, verify the version:
 ```bash
 # TypeScript: check package.json
 cat package.json | grep claude-agent-sdk
-# → "@anthropic-ai/claude-agent-sdk": "^0.2.111"
+# → "@anthropic-ai/claude-agent-sdk": "^0.1.0" or later
 
 # Python: check installed version
 pip show claude-agent-sdk
-# → Version: 0.2.111 (or later)
+# → Version: 0.1.0 (or later)
 ```
 
 ## Updating your imports
@@ -105,8 +106,8 @@ Every import in your existing code needs to change. This is a search-and-replace
 ### TypeScript — before
 
 ```typescript
-import { query } from "@anthropic-ai/claude-code-sdk";
-import type { ClaudeCodeOptions } from "@anthropic-ai/claude-code-sdk";
+import { query } from "@anthropic-ai/claude-code";
+import type { ClaudeCodeOptions } from "@anthropic-ai/claude-code";
 ```
 
 ### TypeScript — after
@@ -131,7 +132,7 @@ from claude_agent_sdk import query, ClaudeAgentOptions
 ```
 
 <Callout type="warn">
-Do a project-wide search for `claude_code_sdk` and `claude-code-sdk` before shipping. Import aliases (`as sdk`) can hide stale references that only surface at runtime. Also check `.mcp.json` files and any shell scripts that reference the old binary name.
+Do a project-wide search for `claude_code_sdk`, `claude-code-sdk`, and `@anthropic-ai/claude-code` before shipping. Import aliases (`as sdk`) can hide stale references that only surface at runtime. Also check `.mcp.json` files and any shell scripts that reference the old binary name.
 </Callout>
 
 ## The `query()` API in 2 minutes
@@ -265,8 +266,8 @@ The `ANTHROPIC_API_KEY` environment variable is still checked first. If it's set
 
 <RunPromptCell
   model="claude-sonnet-4-6"
-  prompt="Find all TypeScript files in this project that import from '@anthropic-ai/claude-code-sdk' and list their paths."
-  expectedOutput="The agent uses Grep with pattern '@anthropic-ai/claude-code-sdk' and glob '**/*.ts', returns a list of file paths that still use the old import. This is the first step of a real migration audit."
+  prompt="Find all TypeScript files in this project that import from '@anthropic-ai/claude-code' and list their paths."
+  expectedOutput="The agent uses Grep with pattern '@anthropic-ai/claude-code' and glob '**/*.ts', returns a list of file paths that still use the old import. This is the first step of a real migration audit."
 />
 
 ## Hands-on exercise
@@ -314,10 +315,10 @@ Your tasks:
 />
 
 <KnowledgeCheck
-  question="Your team has pinned to `@anthropic-ai/claude-agent-sdk@^0.2.100` and wants to use `claude-opus-4-7`. What will happen and what should you do?"
+  question="Your team migrated the package imports, but CI still behaves differently from developer laptops. What is the first configuration surface you should audit?"
   options={["self-check"]}
   correctIdx={0}
-  explanation="Self-check: Opus 4.7 requires v0.2.111 or later. With ^0.2.100, npm will install the latest 0.2.x patch — which may or may not be ≥ 0.2.111 depending on when you run install. The safe fix is to pin to `^0.2.111` or later. If you see a `thinking.type.enabled` API error, that's the symptom of this version mismatch."
+  explanation="Self-check: audit settings and system-prompt loading first. In production or CI, pass `settingSources` deliberately so global user settings do not leak into runs and so project settings are loaded only when intended. Package migration fixes imports; configuration migration fixes reproducibility."
 />
 
 ## Subagents: orchestrating specialized agents
@@ -408,7 +409,7 @@ In [[course/production-agents-claude-agent-sdk-mcp-connector/02-managed-agents-w
 
 [1] Claude Agent SDK Overview — https://code.claude.com/docs/en/agent-sdk/overview · retrieved 2026-04-30
 [2] Agent Capabilities API announcement — https://claude.com/blog/agent-capabilities-api · retrieved 2026-04-30
-[3] @anthropic-ai/claude-agent-sdk on npm — https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk · retrieved 2026-04-30
+[3] Claude Agent SDK TypeScript releases — https://github.com/anthropics/claude-agent-sdk-typescript/releases · retrieved 2026-05-27
 [4] Claude Agent SDK MCP documentation — https://code.claude.com/docs/en/agent-sdk/mcp · retrieved 2026-04-30
 [5] Claude Managed Agents Overview — https://platform.claude.com/docs/en/managed-agents/overview · retrieved 2026-04-30
-[6] Claude Agent SDK TypeScript CHANGELOG — https://github.com/anthropics/claude-agent-sdk-typescript/blob/main/CHANGELOG.md · retrieved 2026-05-14
+[6] Claude Agent SDK migration guide — https://docs.claude.com/en/docs/claude-code/sdk/migration-guide · retrieved 2026-05-27

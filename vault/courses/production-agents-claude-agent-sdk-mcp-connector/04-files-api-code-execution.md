@@ -33,6 +33,7 @@ sources:
   - https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool
   - https://platform.claude.com/docs/en/api/files-list
   - https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention
+  - https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/code-execution-tool
 ---
 
 # Files API + code execution: the complete agent IO surface
@@ -50,9 +51,9 @@ The Files API solves a real problem. Without it, a 20-page PDF costs you full ba
 ## Key facts
 
 1. The Files API beta header is `files-api-2025-04-14` — required on every request [1].
-2. Maximum file size: 500 MB per file; total workspace storage: 500 GB per organization [1].
+2. Maximum file size: 500 MB per file; total workspace storage: 100 GB per organization [1].
 3. File storage operations (upload, download, list, retrieve, delete) are **free**; file content is billed as input tokens when referenced in a Messages request [1].
-4. Code execution pricing: 50 free hours per day, then $0.05 per hour; announced at the May 2025 agent capabilities launch [2].
+4. Code execution is billed as container runtime, currently documented at $0.05 per hour with a 5-minute minimum, in addition to normal token costs [7].
 5. Files uploaded via the Files API are **not eligible for Zero Data Retention (ZDR)** — they are retained until explicitly deleted [1].
 6. The Files API is **not available on Amazon Bedrock or Google Vertex AI** — Anthropic-direct API only [1].
 7. You can only **download** files created by skills or the code execution tool — not files you uploaded yourself [1].
@@ -134,7 +135,7 @@ questions = [
 
 for question in questions:
     response = client.beta.messages.create(
-        model="claude-opus-4-7",
+        model="claude-sonnet-4-5",
         max_tokens=1024,
         messages=[{
             "role": "user",
@@ -160,7 +161,7 @@ For images, use the `image` content block type:
 
 ```python
 response = client.beta.messages.create(
-    model="claude-opus-4-7",
+    model="claude-sonnet-4-5",
     max_tokens=512,
     messages=[{
         "role": "user",
@@ -198,7 +199,7 @@ The "upload once" pitch is accurate for bandwidth. Here's the complete billing p
 - Every time a `file_id` is included in a Messages request, the file content is counted as input tokens
 
 **Billed as compute time:**
-- Code execution: 50 free hours/day, then $0.05/hr
+- Code execution: container runtime at the documented hourly rate, with the documented minimum session charge
 
 The implications for a document-heavy agent:
 - Uploading a 5 MB PDF once: free
@@ -220,9 +221,9 @@ with open("sales_data.csv", "rb") as f:
 
 # Run code execution with the uploaded file
 response = client.beta.messages.create(
-    model="claude-opus-4-7",
+    model="claude-sonnet-4-5",
     max_tokens=4096,
-    tools=[{"type": "code_execution_20250522", "name": "code_execution"}],
+    tools=[{"type": "code_execution_20250825", "name": "code_execution"}],
     messages=[{
         "role": "user",
         "content": [
@@ -239,7 +240,7 @@ response = client.beta.messages.create(
             },
         ],
     }],
-    betas=["files-api-2025-04-14"],
+    betas=["files-api-2025-04-14", "code-execution-2025-08-25"],
 )
 
 # Extract the output file_id from the response
@@ -261,7 +262,7 @@ print("Chart downloaded to monthly_totals.png")
 ```
 
 <RunPromptCell
-  model="claude-opus-4-7"
+  model="claude-sonnet-4-5"
   prompt="I have a CSV with columns: month, product, revenue. Using the code execution tool, compute the top 3 products by total revenue and create a horizontal bar chart. Return the file_id of the saved PNG."
   expectedOutput="Claude writes Python code using pandas and matplotlib. The code reads the CSV from the container, computes `.groupby('product')['revenue'].sum().nlargest(3)`, generates a horizontal bar chart with `plt.barh()`, saves it as `top_products.png`. The tool_result block includes a `file_id` for the output PNG that can be passed to `client.beta.files.download()`."
 />
@@ -298,7 +299,7 @@ When you use the same file across many Messages calls in a short window, extende
 
 ```python
 response = client.beta.messages.create(
-    model="claude-opus-4-7",
+    model="claude-sonnet-4-5",
     max_tokens=1024,
     messages=[{
         "role": "user",
@@ -351,7 +352,7 @@ def query_document(document_id: str, question: str) -> str:
     file_id = row["file_id"]
     
     response = client.beta.messages.create(
-        model="claude-opus-4-7",
+        model="claude-sonnet-4-5",
         max_tokens=1024,
         messages=[{
             "role": "user",
@@ -378,7 +379,7 @@ def sync_file_storage(max_age_days: int = 90):
     return len(stale)
 ```
 
-The 500 GB per-organization limit seems generous until you have thousands of PDFs. Build the cleanup stage from day one.
+The 100 GB per-organization limit seems generous until you have thousands of PDFs. Build the cleanup stage from day one.
 
 ## What the Files API does NOT support
 
@@ -390,7 +391,7 @@ Knowing the limits prevents surprises:
 - **Not an immutable store**: Files can be deleted by any API key in your workspace. There's no access control within a workspace.
 
 <RunPromptCell
-  model="claude-opus-4-7"
+  model="claude-sonnet-4-5"
   prompt="I uploaded a PDF contract using the Files API. I now want to ask three questions about it: (1) what are the payment terms, (2) what are the termination conditions, and (3) who are the parties. Walk me through the most cost-efficient way to run all three queries."
   expectedOutput="Claude explains: upload the PDF once (free), then make three separate Messages API calls each referencing the same file_id. To minimize token cost, enable the 1-hour extended prompt caching TTL so the PDF tokens are cached after the first call — the second and third calls pay only cache read tokens (much cheaper) rather than full input tokens. Include citations: {enabled: true} to get inline references to specific clauses."
 />
@@ -432,7 +433,7 @@ Steps:
   question="You want to download a PNG chart that Claude generated during a code execution call. Describe the correct sequence of API calls, including the beta headers needed."
   options={["self-check"]}
   correctIdx={0}
-  explanation="Self-check: (1) Make a Messages API call with the code_execution tool enabled and the beta header `files-api-2025-04-14`. (2) In the response, find the tool_result block that contains a `file_id` for the generated output. (3) Call `GET /v1/files/{file_id}/content` with the header `anthropic-beta: files-api-2025-04-14` to download the PNG bytes. Note: you can only download files that were CREATED by code execution or skills — not files you uploaded yourself."
+  explanation="Self-check: (1) Make a Messages API call with the code_execution tool enabled and the beta headers `files-api-2025-04-14` and `code-execution-2025-08-25`. (2) In the response, find the tool_result block that contains a `file_id` for the generated output. (3) Call `GET /v1/files/{file_id}/content` with the header `anthropic-beta: files-api-2025-04-14` to download the PNG bytes. Note: you can only download files that were CREATED by code execution or skills — not files you uploaded yourself."
 />
 
 ## What's next
@@ -447,4 +448,4 @@ In [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deplo
 [4] Code Execution Tool — https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool · retrieved 2026-04-30
 [5] Files API Reference — https://platform.claude.com/docs/en/api/files-list · retrieved 2026-05-14
 [6] Anthropic API and data retention — https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention · retrieved 2026-05-14
-[5] Anthropic Data Retention — https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention · retrieved 2026-04-30
+[7] Current code execution tool reference — https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/code-execution-tool · retrieved 2026-05-27
