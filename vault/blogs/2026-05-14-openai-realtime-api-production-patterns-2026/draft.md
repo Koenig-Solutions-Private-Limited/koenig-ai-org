@@ -6,25 +6,26 @@ hero_image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=f
 tags: [openai, realtime-api, voice-agents, production-ai]
 date: 2026-05-14
 author: blog-author
-ticket: KOEA-5272
+ticket: KOEA-5998
 vendor_tag: openai
 content_type: article
-status: awaiting-g0
+status: draft-for-review
 reading_time_min: 7
 primary_query: "openai realtime api voice agents production patterns 2026"
 contrarian_angle: "Realtime API is not mainly a faster TTS endpoint; its real advantage is collapsing turn detection, interruption repair, telephony audio, tool calls, and session state into one speech-native loop."
 sources:
-  - https://platform.openai.com/docs/guides/rate-limits
-  - https://platform.openai.com/docs/guides/realtime-models-prompting
-  - https://platform.openai.com/docs/changelog
+  - https://developers.openai.com/api/docs/models/gpt-realtime-2
+  - https://developers.openai.com/
+  - https://cdn.openai.com/API/docs/realtime-prompting-guide.pdf
   - https://github.com/openai/openai-agents-python/releases/tag/v0.17.4
+  - https://github.com/openai/openai-python/blob/main/api.md
   - https://www.latent.space/p/realtime-api
   - https://cartesia.ai/vs/cartesia-vs-openai-tts
   - https://www.eesel.ai/blog/realtime-api-vs-whisper-vs-tts-api
-  - https://platform.openai.com/docs/api-reference/realtime-client-events/input_audio_buffer/clear?lang=node.js
+  - https://learn.microsoft.com/en-us/azure/ai-services/openai/realtime-audio-reference
   - https://community.openai.com/t/realtime-api-instruction-limit-16-384-tokens-is-too-low-for-production-voice-agents-with-tool-calling/1378932
 retrieved:
-  - "OpenAI docs and changelog: 2026-05-27"
+  - "OpenAI developer docs, SDK references, and Microsoft Azure OpenAI event reference: 2026-05-27"
   - "GitHub Agents SDK release: 2026-05-27"
   - "Research synthesis sources: 2026-05-13"
 whats_new:
@@ -57,11 +58,11 @@ The missed point is that Realtime is not a faster text-to-speech endpoint. Carte
 
 ## Choose Realtime for conversation, not for every audio workflow
 
-Realtime is worth the premium when the product promise is "talk to the agent." OpenAI's Realtime docs now sit alongside voice-agent, WebRTC, WebSocket, SIP, session, VAD, tool, and cost guides, which is the right mental model: this is a runtime for live speech applications, not a media conversion API.<CitationFootnote source="https://platform.openai.com/docs/guides/realtime-models-prompting">OpenAI Realtime prompting guide</CitationFootnote>
+Realtime is worth the premium when the product promise is "talk to the agent." OpenAI's current Realtime model page describes `gpt-realtime-2` as a speech-to-speech model for complex voice-agent workflows with configurable reasoning effort, tool use, and Realtime endpoints; the developer portal also foregrounds new Realtime voice, translation, and transcription models.<CitationFootnote source="https://developers.openai.com/api/docs/models/gpt-realtime-2">OpenAI `gpt-realtime-2` model reference</CitationFootnote><CitationFootnote source="https://developers.openai.com/">OpenAI developer portal Realtime model overview</CitationFootnote> That is the right mental model: this is a runtime for live speech applications, not a media conversion API.
 
 Use Realtime for inbound support, tutoring, live translation, scheduling, IVR, sales intake, and any workflow where the user will talk over the assistant. The pipeline version of the same system has three serial boxes: STT, reasoning, and TTS. That is useful when the work is batch transcription, a narrated report, voicemail summarization, or a push-to-talk tool where a pause is acceptable. It is the wrong default when the user expects a human-like turn.
 
-OpenAI's platform changelog is also part of the story: the Realtime surface is no longer just a launch demo; it has model, telephony, and developer-tooling updates that changed the production calculus in 2026.<CitationFootnote source="https://platform.openai.com/docs/changelog">OpenAI platform changelog</CitationFootnote> The May 26 Agents Python SDK v0.17.4 release added support for Realtime custom voice objects and fixed adjacent tool/MCP reliability issues, which matters because most useful voice agents are tool-using agents, not isolated speakers.<CitationFootnote source="https://github.com/openai/openai-agents-python/releases/tag/v0.17.4">OpenAI Agents Python v0.17.4 release notes</CitationFootnote>
+The Realtime surface is no longer just a launch demo; it has a model family, production transports, and SDK-level support that changed the production calculus in 2026. OpenAI's official Python SDK describes the Realtime API as a low-latency multimodal WebSocket interface for text, audio, and function calling, while the May 26 Agents Python SDK v0.17.4 release added support for Realtime custom voice objects and fixed adjacent tool/MCP reliability issues.<CitationFootnote source="https://github.com/openai/openai-python/blob/main/api.md">OpenAI Python SDK Realtime API surface</CitationFootnote><CitationFootnote source="https://github.com/openai/openai-agents-python/releases/tag/v0.17.4">OpenAI Agents Python v0.17.4 release notes</CitationFootnote> That matters because most useful voice agents are tool-using agents, not isolated speakers.
 
 ## Measure the full turn, not only TTS latency
 
@@ -73,7 +74,7 @@ Instrument those as separate timestamps. Log user speech end, VAD decision, firs
 
 ## Build around interruptions before you polish the prompt
 
-Interruption handling is where many demos become fragile. When the user talks over the model, the client must stop playback and the application must repair the model's conversation state. OpenAI's Realtime client-event reference describes `conversation.item.truncate` as the event for truncating assistant audio that has been sent to the client but not yet played, so server-side state matches what the user actually heard.<CitationFootnote source="https://platform.openai.com/docs/api-reference/realtime-client-events/input_audio_buffer/clear?lang=node.js">OpenAI Realtime client event reference for conversation.item.truncate</CitationFootnote>
+Interruption handling is where many demos become fragile. When the user talks over the model, the client must stop playback and the application must repair the model's conversation state. The Azure OpenAI Realtime audio reference describes `conversation.item.truncate` as the client event used to truncate a previous assistant message's audio, and OpenAI's official SDK exposes the matching `ConversationItemTruncateEvent` type.<CitationFootnote source="https://learn.microsoft.com/en-us/azure/ai-services/openai/realtime-audio-reference">Azure OpenAI Realtime audio event reference for `conversation.item.truncate`</CitationFootnote><CitationFootnote source="https://github.com/openai/openai-python/blob/main/api.md">OpenAI Python SDK Realtime event types</CitationFootnote> The production requirement is the same: server-side state should match what the user actually heard.
 
 That is not cosmetic. If the assistant says, "Your appointment is at four, and the confirmation code is..." but the user interrupts after "Your appointment," the next turn must not assume the user heard the time or code. A production agent needs audio-player cancellation, conversation truncation, and tool-side idempotency in the same path.
 
@@ -96,11 +97,28 @@ expected_output: |
   The answer should warn that cost rises with session length and name controls such as VAD tuning, interruption truncation, session summaries/rollover, rate-limit logging, and a cheaper async pipeline fallback.
 </RunPromptCell>
 
+<RunPromptCell>
+prompt: |
+  Estimate the architecture risk for this voice-agent workload:
+  - 20,000 live support calls/month
+  - average call length: 5 minutes
+  - 35% of calls need a CRM lookup
+  - 25% of calls become asynchronous follow-up work
+  - the team can tolerate 2-3 second latency only for follow-up, not live calls
+
+  Recommend where to use OpenAI Realtime and where to use a cheaper pipeline.
+  Include the cost-control mechanisms you would require before launch.
+expected_output: |
+  Use OpenAI Realtime for the live call path because interruption, tool use, and sub-second turn-taking matter.
+  Route asynchronous follow-up through STT/text/TTS or text-only processing.
+  Require session summarization, session rollover, production/development project isolation, rate-limit logging, context pruning, and a fallback path for non-live work.
+</RunPromptCell>
+
 ## Budget for session growth instead of per-minute media
 
 Realtime costs are easy to underestimate because a live call is not just one audio input and one audio output. The research synthesis cites Realtime input audio at $32 per 1M input audio tokens, cached input at a steep discount, and output audio at $64 per 1M; it also summarizes estimates of about $0.11 for a 1-minute session, $0.92 for 5 minutes, and $5.28 for 15 minutes as history accumulates.<CitationFootnote source="https://www.latent.space/p/realtime-api">Latent Space Realtime API cost breakdown</CitationFootnote>
 
-That curve is the reason the first production version needs summarization and rollover logic. Long calls should periodically compress prior turns, store tool state outside the model session, prune irrelevant items, and route non-live follow-up work through a cheaper asynchronous path. The OpenAI rate-limit guide is part of cost control too: live sessions compete for request and token limits at org and project scope, so teams should log remaining/reset headers and isolate production projects from development traffic.<CitationFootnote source="https://platform.openai.com/docs/guides/rate-limits">OpenAI rate limits guide</CitationFootnote>
+That curve is the reason the first production version needs summarization and rollover logic. Long calls should periodically compress prior turns, store tool state outside the model session, prune irrelevant items, and route non-live follow-up work through a cheaper asynchronous path. Rate limits are part of cost control too: OpenAI's `gpt-realtime-2` model reference lists tiered request and token limits, so teams should log remaining/reset headers where exposed and isolate production projects from development traffic.<CitationFootnote source="https://developers.openai.com/api/docs/models/gpt-realtime-2">OpenAI `gpt-realtime-2` pricing and rate-limit reference</CitationFootnote>
 
 The instruction and session limits are also operational design constraints. The research synthesis cites a 15-minute session cap and a community-reported 16,384-token instruction/tool-schema pressure point for production voice agents.<CitationFootnote source="https://community.openai.com/t/realtime-api-instruction-limit-16-384-tokens-is-too-low-for-production-voice-agents-with-tool-calling/1378932">OpenAI Community discussion of Realtime instruction limits</CitationFootnote> Whether that exact ceiling changes, the product lesson is stable: do not load every policy, tool, and workflow into every call. Keep fast tools always available, load specialized tools on demand, and summarize before reconnecting.
 
@@ -121,4 +139,4 @@ correct: 1
 explanation: "A voice agent is judged on the whole turn and on interruption repair. TTS TTFA is useful, but it does not include the rest of the live agent loop."
 </KnowledgeCheck>
 
-The practical takeaway: ship OpenAI Realtime when speech is the interface, not merely the file format. Keep Whisper plus TTS for cheaper asynchronous work, benchmark Cartesia for pure speech output, and make interruption repair, session rollover, rate limits, and cost logging part of version one. For hands-on agent orchestration patterns, continue with [[course/openai-agents-sdk-mastery]]; for model and voice-provider selection practice, pair it with [[course/picking-a-frontier-model-2026-q2]].
+The practical takeaway: ship OpenAI Realtime when speech is the interface, not merely the file format. Keep Whisper plus TTS for cheaper asynchronous work, benchmark Cartesia for pure speech output, and make interruption repair, session rollover, rate limits, and cost logging part of version one. For hands-on agent orchestration patterns, continue with [[course/openai-agents-sdk-mastery]]; for voice-agent production practice, pair it with [[course/voice-agents-production]] and [[course/picking-a-frontier-model-2026-q2]].
