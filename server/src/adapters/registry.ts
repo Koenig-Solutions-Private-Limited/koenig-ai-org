@@ -549,10 +549,20 @@ export function findServerAdapter(type: string): ServerAdapterModule | null {
   return adaptersByType.get(type) ?? null;
 }
 
+/** Legacy adapter type aliases resolved at runtime lookup only (not listed separately). */
+const RUNTIME_ADAPTER_TYPE_ALIASES: Readonly<Record<string, string>> = {
+  cursor_local: "cursor",
+};
+
+function normalizeRuntimeAdapterType(type: string): string {
+  return RUNTIME_ADAPTER_TYPE_ALIASES[type] ?? type;
+}
+
 export function findActiveServerAdapter(type: string): ServerAdapterModule | null {
-  if (pausedOverrides.has(type)) {
-    const fallback = builtinFallbacks.get(type);
+  const normalizedType = normalizeRuntimeAdapterType(type);
+  if (pausedOverrides.has(normalizedType)) {
+    const fallback = builtinFallbacks.get(normalizedType);
     if (fallback) return fallback;
   }
-  return adaptersByType.get(type) ?? null;
+  return adaptersByType.get(normalizedType) ?? null;
 }
