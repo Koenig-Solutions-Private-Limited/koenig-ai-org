@@ -1,10 +1,20 @@
 ---
+title: "Buy Claude Max or ChatGPT Pro for your heaviest developer, not your whole team"
+description: "Claude Max and ChatGPT Pro are premium named-user seats for heavy developers. Dev orgs should buy them for 1-2 operators, not as default team infrastructure."
+slug: 2026-05-14-claude-max-chatgpt-pro-dev-org-economics
 date: 2026-05-14
 author: blog-author
-ticket: KOEA-1291
+ticket: KOEA-5271
+original_ticket: KOEA-1291
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: awaiting-g0
+tags:
+  - ai-pricing
+  - claude-max
+  - chatgpt-pro
+  - developer-tools
+  - ai-procurement
 reading_time_min: 6
 primary_query: "claude max vs chatgpt pro for developer teams"
 contrarian_angle: "Both vendors now sell the same $100–$200 premium seat shape — the mistake is treating them as team infrastructure instead of named-operator tools for 1-2 heavy users"
@@ -27,6 +37,15 @@ pre_publication_checks:
   - Verify live Anthropic Max 20x price at anthropic.com/pricing (conflict: $200 vs $400 in research notes; synthesis settles on $200 from help center)
   - Verify OpenAI Business seat price at openai.com/pricing (conflict between $20 and $25/user/month in source notes)
   - Do NOT cite the 1,379-message breakeven from third-party sources without rebuilding from token assumptions
+faq:
+  - question: "Should a developer team buy Claude Max or ChatGPT Pro for everyone?"
+    answer: "No. Buy premium seats only for named heavy operators who regularly hit coding or research limits. Use Team, Business, Enterprise, or API metering for shared team workflows."
+  - question: "When does Claude Max make sense for a developer?"
+    answer: "Claude Max makes sense when a Claude Code-heavy developer regularly hits capacity limits during long debugging, refactoring, or research sessions."
+  - question: "When does ChatGPT Pro make sense for a developer?"
+    answer: "ChatGPT Pro makes sense when one developer uses Codex, deep research, long-context reasoning, and general ChatGPT heavily enough that predictable premium capacity is worth $100-$200 per month."
+  - question: "Should automated agents use Claude Max or ChatGPT Pro?"
+    answer: "No. Automated queues, CI review, background agents, and product workflows should use API metering with budgets and auditability."
 references:
   - n: 1
     title: "Claude Plans and Pricing — Anthropic"
@@ -86,7 +105,7 @@ For **Claude Max**, the signal is Claude Code hours. The [Max plan](https://supp
 
 For **ChatGPT Pro**, the signal is breadth: does this person use Codex, deep research, long-context reasoning, and general ChatGPT heavily in the same workflow? Pro bundles all of it at a predictable monthly cap.[[6]](https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers) It's most defensible for a developer who alternates between code generation, code review, research synthesis, and planning in one interface — making otherwise variable premium usage predictable.
 
-**A quick break-even calculation:** At Anthropic's [Opus 4.7 API rate of $5/M input and $25/M output](https://docs.anthropic.com/en/docs/about-claude/models#pricing)[[4]](https://docs.anthropic.com/en/docs/about-claude/models#pricing), a heavy interactive user doing 30 turns/day at 2K input and 4K output tokens crosses ~$100/month at about 22 working days. Below that volume, API metering is cheaper. At 40+ turns/day — realistic for an agentic coding workflow — the subscription saves real money.
+**A quick break-even calculation:** At Anthropic's [Opus 4.7 API rate of $5/M input and $25/M output](https://docs.anthropic.com/en/docs/about-claude/models#pricing)[[4]](https://docs.anthropic.com/en/docs/about-claude/models#pricing), a heavy interactive user doing 45 turns/day at 2K input and 4K output tokens crosses ~$100/month at about 22 working days. Below that volume, API metering is cheaper. Above it — realistic for an agentic coding workflow — the subscription saves real money.
 
 ## The team breakpoint: business plans outperform pooled individual accounts
 
@@ -111,32 +130,39 @@ The clean rule: subscriptions are for named human operators who use the tool int
 
 ## Runnable example: break-even calculation
 
-```bash
-# Estimate monthly Opus 4.7 API cost vs Claude Max subscription
-# Adjust TURNS_PER_DAY to your actual usage pattern
+<RunPromptCell>
+prompt: |
+  # Estimate monthly Opus 4.7 API cost vs Claude Max subscription
+  # Adjust TURNS_PER_DAY to your actual usage pattern
 
-python3 - <<'EOF'
-TURNS_PER_DAY = 30        # 15 turns × 2 sessions
-WORKING_DAYS  = 22
-INPUT_TOKENS  = 2000      # per turn
-OUTPUT_TOKENS = 4000      # per turn
+  python3 - <<'EOF'
+  TURNS_PER_DAY = 30        # 15 turns x 2 sessions
+  WORKING_DAYS  = 22
+  INPUT_TOKENS  = 2000      # per turn
+  OUTPUT_TOKENS = 4000      # per turn
 
-monthly_input  = TURNS_PER_DAY * WORKING_DAYS * INPUT_TOKENS
-monthly_output = TURNS_PER_DAY * WORKING_DAYS * OUTPUT_TOKENS
+  monthly_input  = TURNS_PER_DAY * WORKING_DAYS * INPUT_TOKENS
+  monthly_output = TURNS_PER_DAY * WORKING_DAYS * OUTPUT_TOKENS
 
-cost_input  = monthly_input  / 1_000_000 * 5    # Opus 4.7: $5/M input
-cost_output = monthly_output / 1_000_000 * 25   # Opus 4.7: $25/M output
-api_total   = cost_input + cost_output
+  cost_input  = monthly_input  / 1_000_000 * 5    # Opus 4.7: $5/M input
+  cost_output = monthly_output / 1_000_000 * 25   # Opus 4.7: $25/M output
+  api_total   = cost_input + cost_output
 
-print(f"Monthly input tokens:   {monthly_input:,}")
-print(f"Monthly output tokens:  {monthly_output:,}")
-print(f"Estimated API cost:     ${api_total:.2f}")
-print(f"Claude Max seat ($100): $100.00")
-print(f"Recommendation:         {'API cheaper' if api_total < 100 else 'Subscription saves money'}")
-EOF
-```
+  print(f"Monthly input tokens:   {monthly_input:,}")
+  print(f"Monthly output tokens:  {monthly_output:,}")
+  print(f"Estimated API cost:     ${api_total:.2f}")
+  print(f"Claude Max seat ($100): $100.00")
+  print(f"Recommendation:         {'API cheaper' if api_total < 100 else 'Subscription saves money'}")
+  EOF
+expected_output: |
+  Monthly input tokens:   1,320,000
+  Monthly output tokens:  2,640,000
+  Estimated API cost:     $72.60
+  Claude Max seat ($100): $100.00
+  Recommendation:         API cheaper
+</RunPromptCell>
 
-Expected output at 30 turns/day: API cost ≈ **$99.00** — right at the break-even. Push to 40 turns/day and the subscription saves ~$30/month; drop to 20 turns and API saves ~$33/month. Run this with your own numbers before committing to a seat.
+Expected output at 30 turns/day: API cost is **$72.60** under the stated token assumptions. Push to 45 turns/day and the seat crosses break-even; drop to 20 turns and API saves roughly $50/month. Run this with your own numbers before committing to a seat.
 
 ---
 
