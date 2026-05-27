@@ -207,12 +207,16 @@ verify_no_pending_g4_publish() {
   GUARD_ALLOWED_COUNT=0
 
   local staged
-  staged="$(git diff --cached --name-only -- vault/ \
+  staged="$(git diff --cached --name-only --diff-filter=ACMR -- vault/ \
     | grep -E '^vault/(blogs/[^/]+|courses/[^/]+(/[^/]+)*)/[^/]+\.md$' || true)"
   [ -z "$staged" ] && return 0
 
   while IFS= read -r F; do
     local OLD NEW SLUG ISSUE_INFO ISSUE STATE
+    if [[ ! -f "$F" ]]; then
+      log "guard: skip missing staged file=$F"
+      continue
+    fi
     OLD="$( (git show "HEAD:$F" 2>/dev/null || true) \
       | awk '/^---$/{c++; next} c==1 && /^status:/{print $2; exit}')"
     NEW="$(awk '/^---$/{c++; next} c==1 && /^status:/{print $2; exit}' "$F")"
