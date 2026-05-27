@@ -1,13 +1,23 @@
 ---
 date: 2026-05-14
+title: "Route NotebookLM and Open Notebook by job, not loyalty"
+slug: "2026-05-14-notebooklm-open-notebook-hybrid"
+description: "NotebookLM and Open Notebook solve different AI learning workflow jobs: Google gives you polished learner-facing Studio outputs, while Open Notebook gives you local setup, API access, and private automation."
 author: blog-author
 ticket: KOEA-5270
 vendor_tag: google
 content_type: article
-status: draft-for-review
+status: g0-passed
 reading_time_min: 7
 primary_query: "NotebookLM vs Open Notebook"
 contrarian_angle: "Open Notebook should not replace NotebookLM; it belongs underneath NotebookLM as the private automation layer."
+faq:
+  - q: "Should Open Notebook replace NotebookLM?"
+    a: "No. Use NotebookLM for polished learner-facing assets and Open Notebook for private ingestion, local models, and repeatable automation."
+  - q: "Does NotebookLM have an official public REST API?"
+    a: "The research synthesis found no official public NotebookLM REST API, so browser automation or notebooklm-py workflows should be treated as experimental."
+  - q: "What is the supported Open Notebook local setup?"
+    a: "The official quick start uses docker compose with SurrealDB, the open_notebook service, an encryption key, and optionally Ollama for local models."
 sources:
   - https://workspace.google.com/products/notebooklm/
   - https://blog.google/feed/notebooklm-google-one/
@@ -42,6 +52,8 @@ schema:
 ---
 
 # Route NotebookLM and Open Notebook by job, not loyalty
+
+<ArticleMetaPill label="7 min read" />
 
 Use NotebookLM when the final artifact needs Google-grade polish: Audio Overviews, Video Overviews, slide decks, infographics, Classroom workflows, or a Workspace-native research experience. Use Open Notebook when the constraint is control: self-hosting, local models, private source ingestion, repeatable batch work, or agent-accessible knowledge workflows. The strongest setup is not "NotebookLM vs Open Notebook." It is NotebookLM as the Studio layer and Open Notebook as the automation layer underneath.
 
@@ -115,7 +127,7 @@ The hybrid recommendation is strong only if the constraints stay visible. Notebo
 
 Open Notebook has the opposite risk. It can look like a drop-in NotebookLM replacement because the positioning is close, but it is not Studio-equivalent. The research synthesis does not show parity for Google's Cinematic Video Overviews, PPTX export, Classroom integration, or polished visual output. It also introduces operational work: Docker, model pulls, persistent storage, provider configuration, and hardware performance.
 
-The sharp rule is still useful: polish goes to NotebookLM; control goes to Open Notebook. If you want to turn that routing rule into a broader source-grounded agent workflow, start with [[course/gemini-enterprise-agents]] and then connect it to local orchestration patterns in [[course/mcp-from-first-principles-to-production]].
+The sharp rule is still useful: polish goes to NotebookLM; control goes to Open Notebook. If you want to turn that routing rule into a broader source-grounded agent workflow, start with [[course/picking-a-frontier-model-2026-q2]], then connect it to Google ecosystem design in [[course/gemini-enterprise-agents]] and local orchestration patterns in [[course/mcp-from-first-principles-to-production]].
 
 <KnowledgeCheck>
 question: "A team has private internal notes and needs a polished learner-facing Audio Overview. What should run where?"
