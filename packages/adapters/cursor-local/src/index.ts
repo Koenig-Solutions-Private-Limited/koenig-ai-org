@@ -75,8 +75,9 @@ Operational fields:
 - graceSec (number, optional): SIGTERM grace period in seconds
 
 Notes:
-- Runs are executed with: agent -p --output-format stream-json ...
-- Prompts are piped to Cursor via stdin.
+- Runs are executed with: agent -p --output-format stream-json ... [prompt]
+- Supported command forms: "agent" (default) or top-level "cursor" with print-mode flags; do not use "cursor agent".
+- Prompts are passed as the final positional argument (not stdin).
 - Sessions are resumed with --resume when stored session cwd matches current cwd.
 - Paperclip auto-injects local skills into "~/.cursor/skills" when missing, so Cursor can discover "$paperclip" and related skills on local runs.
 - Paperclip auto-adds --yolo unless one of --trust/--yolo/-f is already present in extraArgs.
