@@ -23,6 +23,53 @@ mkdir -p "$LOG_DIR"
 LOG="$LOG_DIR/publish-action.log"
 cd "$REPO_ROOT"
 
+published_url_for_slug() {
+  local slug="${1:-}"
+  if [[ -z "$slug" ]]; then
+    echo "$PROD_URL"
+    return 0
+  fi
+  if [[ -f "$REPO_ROOT/vault/blogs/$slug/draft.md" ]]; then
+    echo "$PROD_URL/blog/$slug"
+    return 0
+  fi
+  echo "$PROD_URL"
+}
+
+run_published_url_self_test() {
+  local expected actual failures=0
+
+  expected="https://academy.kspl.tech/blog/2026-05-14-anthropic-mcp-legal-platform-playbook"
+  actual="$(published_url_for_slug "2026-05-14-anthropic-mcp-legal-platform-playbook")"
+  if [[ "$actual" != "$expected" ]]; then
+    echo "FAIL blog slug: expected=$expected got=$actual" >&2
+    failures=$((failures + 1))
+  fi
+
+  expected="https://academy.kspl.tech"
+  actual="$(published_url_for_slug "")"
+  if [[ "$actual" != "$expected" ]]; then
+    echo "FAIL blank slug: expected=$expected got=$actual" >&2
+    failures=$((failures + 1))
+  fi
+
+  actual="$(published_url_for_slug "nonexistent-non-blog-slug")"
+  if [[ "$actual" != "$expected" ]]; then
+    echo "FAIL non-blog slug: expected=$expected got=$actual" >&2
+    failures=$((failures + 1))
+  fi
+
+  if [[ "$failures" -gt 0 ]]; then
+    return 1
+  fi
+  echo "published_url self-test ok"
+}
+
+if [[ "${1:-}" == "--self-test-published-url" ]]; then
+  run_published_url_self_test
+  exit $?
+fi
+
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG"; }
 
 tg_alert() {
@@ -399,7 +446,7 @@ result = []
 for i in items:
     md = i.get('metadata') or {}
     if md.get('publish_state') == 'dispatching':
-        result.append({'id': i['id'], 'dispatched_at': md.get('dispatched_at', '')})
+        result.append({'id': i['id'], 'dispatched_at': md.get('dispatched_at', ''), 'slug': md.get('slug', '')})
 print(json.dumps(result))
 ")"
 
@@ -423,8 +470,9 @@ match = next((a['id'] for a in agents if a.get('urlKey') == 'publish-verifier'),
 print(match)
 ")"
 
-  while IFS=$'\t' read -r ISSUE_ID DISPATCHED_AT; do
-    log "Phase 2: checking GH Actions run for issue=$ISSUE_ID dispatched_at=${DISPATCHED_AT:-unknown}"
+  while IFS=$'\t' read -r ISSUE_ID DISPATCHED_AT SLUG; do
+    PUBLISHED_URL="$(published_url_for_slug "$SLUG")"
+    log "Phase 2: checking GH Actions run for issue=$ISSUE_ID dispatched_at=${DISPATCHED_AT:-unknown} slug=${SLUG:-none} published_url=$PUBLISHED_URL"
     RUN_STATUS="$(python3 -c "
 import json, sys
 from datetime import datetime, timezone
@@ -458,10 +506,10 @@ else:
     log "Phase 2: run status for $ISSUE_ID = $RUN_STATUS"
     case "$RUN_STATUS" in
       success)
-        log "Phase 2: marking $ISSUE_ID published url=$PROD_URL"
+        log "Phase 2: marking $ISSUE_ID published url=$PUBLISHED_URL"
         curl -sX PATCH -H "Authorization: Bearer ${PAPERCLIP_BOARD_TOKEN}" "$PAPERCLIP_URL/api/issues/$ISSUE_ID" \
           -H "Content-Type: application/json" \
-          -d "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'published','published_url':'$PROD_URL','published_at':'$(date -u +%Y-%m-%dT%H:%M:%SZ)'}}))")" \
+          -d "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'published','published_url':'$PUBLISHED_URL','published_at':'$(date -u +%Y-%m-%dT%H:%M:%SZ)'}}))")" \
           -o /dev/null
         if [[ -n "$PV_AGENT_ID" ]]; then
           log "Phase 2: triggering publish-verifier (G5) for $ISSUE_ID"
@@ -489,7 +537,7 @@ else:
 import json, sys
 items = json.load(sys.stdin)
 for i in items:
-    print(i['id'] + '\t' + i.get('dispatched_at', ''))
+    print(i['id'] + '\t' + i.get('dispatched_at', '') + '\t' + i.get('slug', ''))
 ")
 
   rm -f "$GH_RUNS_TMP"
