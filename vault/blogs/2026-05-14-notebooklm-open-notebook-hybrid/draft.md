@@ -1,10 +1,10 @@
 ---
 date: 2026-05-14
 author: blog-author
-ticket: KOEA-1293
+ticket: KOEA-5270
 vendor_tag: google
 content_type: article
-status: g0-blocked
+status: draft-for-review
 reading_time_min: 7
 primary_query: "NotebookLM vs Open Notebook"
 contrarian_angle: "Open Notebook should not replace NotebookLM; it belongs underneath NotebookLM as the private automation layer."
@@ -18,6 +18,8 @@ sources:
   - https://github.com/lfnovo/open-notebook
   - https://www.open-notebook.ai/get-started
   - https://github.com/lfnovo/open-notebook/blob/main/docs/0-START-HERE/quick-start-local.md
+  - https://github.com/lfnovo/open-notebook/blob/main/docker-compose.yml
+  - https://github.com/lfnovo/open-notebook/blob/main/docs/7-DEVELOPMENT/api-reference.md
 whats_new:
   - NotebookLM is becoming the polished Google learning Studio; Open Notebook is the controllable local automation layer, so the winning setup routes jobs instead of choosing one product.
 learning_objectives:
@@ -57,11 +59,11 @@ So the decision rule is simple: if the output is a learner-facing artifact and G
 
 ## Pick Open Notebook for private automation
 
-Open Notebook is the better choice when the workflow needs to be operated, scripted, or kept local. Its GitHub repository describes it as an MIT-licensed, private, multi-model, local alternative to NotebookLM (https://github.com/lfnovo/open-notebook). The project documentation emphasizes self-hosting, Docker deployment, and Ollama support for fully local operation (https://www.open-notebook.ai/get-started).
+Open Notebook is the better choice when the workflow needs to be operated, scripted, or kept local. Its GitHub repository describes it as an MIT-licensed, private, multi-model, local alternative to NotebookLM and says the project exposes a REST API while NotebookLM does not (https://github.com/lfnovo/open-notebook). The project documentation emphasizes self-hosting, Docker deployment, and Ollama support for fully local operation (https://www.open-notebook.ai/get-started).
 
 That changes the trust boundary. A local Open Notebook deployment can ingest internal Markdown, PDFs, and research files without making Google Workspace the default system of record. The privacy claim is only valid when the deployment actually uses local models or an approved private provider; Open Notebook can also be configured with cloud models. But that configurability is the point. You can choose where inference happens.
 
-The setup cost is real. The local quick start lists Docker Desktop and local model choices such as `mistral`, `neural-chat`, and `llama2`, with memory and VRAM implications (https://github.com/lfnovo/open-notebook/blob/main/docs/0-START-HERE/quick-start-local.md). That is more friction than opening NotebookLM in a browser. It is also what makes Open Notebook useful for teams that need repeatable ingestion, predictable storage, and agent-friendly workflows.
+The setup cost is real. The official quick start is not a one-container shortcut: it creates a `docker-compose.yml` with `surrealdb`, `open_notebook`, and, for fully local AI, `ollama`; the Open Notebook service uses the `lfnovo/open_notebook:v1-latest` image and exposes the web UI on `8502` plus the API on `5055` (https://github.com/lfnovo/open-notebook/blob/main/docs/0-START-HERE/quick-start-local.md). The repository compose file also requires an `OPEN_NOTEBOOK_ENCRYPTION_KEY` and SurrealDB connection settings (https://github.com/lfnovo/open-notebook/blob/main/docker-compose.yml). That is more friction than opening NotebookLM in a browser, but it is what makes Open Notebook useful for teams that need repeatable ingestion, predictable storage, and agent-friendly workflows.
 
 Use Open Notebook when you need a backend, not a polished front end.
 
@@ -76,7 +78,7 @@ The hybrid architecture works because the products have different centers of gra
 | Google Classroom use | NotebookLM | Classroom notebooks are native to Google. | Best fit is education environments already using Workspace. |
 | Private research over sensitive docs | Open Notebook | Self-hosting and local models can keep data inside your environment. | Privacy depends on configuration. |
 | Batch ingestion and rough synthesis | Open Notebook | Docker/local setup fits repeatable internal workflows. | You own operations and model quality. |
-| Agent or API orchestration | Open Notebook | NotebookLM has no official public REST API in the research synthesis. | Unofficial NotebookLM automation should be treated as brittle. |
+| Agent or API orchestration | Open Notebook | Open Notebook documents a REST API on `localhost:5055`; NotebookLM has no official public REST API in the research synthesis. | Use documented Open Notebook routes, not guessed NotebookLM-style paths. |
 | Nontechnical adoption | NotebookLM | Workspace UX beats local setup. | Less control over the execution layer. |
 
 This is the non-obvious takeaway: NotebookLM is becoming more valuable precisely because it is less infrastructure-like. Open Notebook is becoming more valuable precisely because it is more infrastructure-like.
@@ -85,7 +87,7 @@ This is the non-obvious takeaway: NotebookLM is becoming more valuable precisely
 
 The practical workflow has three steps. First, collect sources in the system that matches the sensitivity of the material. Public course references, classroom readings, and learner-safe material can start in Gemini or NotebookLM. Internal notes, unpublished drafts, customer research, or private repositories should start in Open Notebook.
 
-Second, use Open Notebook for rough work: ingest the sources, ask repeatable questions, extract claims, and produce a rough synthesis. This is where local control pays off. You can rerun the same prompts against updated sources, keep intermediate notes in your own vault, and route the outputs through an agent workflow.
+Second, use Open Notebook for rough work: ingest the sources, ask repeatable questions, extract claims, and produce a rough synthesis. This is where local control pays off. The supported API shape is a resource flow, not `POST /api/notebooks/{id}/query`: create or list notebooks with `GET/POST /notebooks`, add content with `GET/POST /sources`, then query via `POST /chat/execute` or streaming `POST /ask`; the FastAPI Swagger UI at `http://localhost:5055/docs` is the primary live schema reference (https://github.com/lfnovo/open-notebook/blob/main/docs/7-DEVELOPMENT/api-reference.md).
 
 Third, move the publishable subset into NotebookLM when the goal is polish. Use NotebookLM for learner-facing study guides, flashcards, Audio Overviews, Video Overviews, infographics, and slide exports. Treat it as a Studio stage, not the system that must own the entire pipeline.
 
@@ -109,7 +111,7 @@ expected_output: |
 
 ## Keep the caveats visible
 
-The hybrid recommendation is strong only if the constraints stay visible. NotebookLM is quota-bound, and limits vary by plan, age, region, and Workspace tier. NotebookLM also should not be presented as a stable automation backend without an official public REST API. If a workflow depends on `notebooklm-py` or browser automation, call it experimental and brittle.
+The hybrid recommendation is strong only if the constraints stay visible. NotebookLM is quota-bound, and limits vary by plan, age, region, and Workspace tier. NotebookLM also should not be presented as a stable automation backend without an official public REST API. If a workflow depends on `notebooklm-py` or browser automation, call it experimental and brittle. For Open Notebook, prefer the documented compose flow and the published API reference; do not cargo-cult single-container commands or invented `/api/notebooks/{id}/query` routes.
 
 Open Notebook has the opposite risk. It can look like a drop-in NotebookLM replacement because the positioning is close, but it is not Studio-equivalent. The research synthesis does not show parity for Google's Cinematic Video Overviews, PPTX export, Classroom integration, or polished visual output. It also introduces operational work: Docker, model pulls, persistent storage, provider configuration, and hardware performance.
 

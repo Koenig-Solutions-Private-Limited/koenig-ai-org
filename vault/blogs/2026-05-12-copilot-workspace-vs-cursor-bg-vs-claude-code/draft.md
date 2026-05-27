@@ -28,13 +28,20 @@ whats_new:
 learning_objectives:
   - Choose between Copilot, Cursor, and Claude Code based on where you want agent state, review flow, and recovery logic to live
   - Explain how pricing and governance differ once coding assistants become long-running agents rather than autocomplete tools
+faq:
+  - question: "Is GitHub Copilot cloud agent better than Cursor Background Agents?"
+    answer: "Copilot is better when GitHub is the system of record for issues, branches, reviews, budgets, and audit trails. Cursor is better when you want delegated implementation and PR review to keep running after you leave the editor."
+  - question: "When should a team choose Claude Code instead of a hosted coding agent?"
+    answer: "Choose Claude Code when the team needs terminal-native control over hooks, MCP servers, local tools, logs, retries, and custom harness behavior."
+  - question: "What is the main difference between Copilot, Cursor, and Claude Code?"
+    answer: "The durable difference is where the execution loop lives: GitHub for Copilot, Cursor's managed background environment for Cursor, and the operator's terminal or scripts for Claude Code."
 ---
 
 # Choose Copilot for GitHub-native planning, Cursor for background throughput, and Claude Code for programmable control
 
 If you are comparing GitHub Copilot Workspace-style workflows, Cursor Background Agents, and Claude Code in 2026, the short answer is simple: pick Copilot when your team wants research, planning, code review, and billing to stay inside GitHub; pick Cursor when you want cloud agents and PR review running in the background; pick Claude Code when you need the loop to live in your terminal, hooks, and scripts instead of a vendor UI.[1][3][6][11][12]
 
-Most comparison posts obsess over model screenshots and benchmark tables. The harder, more durable question is where the agent actually runs when a ticket stalls at hour two. GitHub puts that loop inside the repo and organization controls, Cursor puts it in a vendor-managed background workflow optimized for always-on execution, and Claude Code hands the loop to you as a terminal-native tool with subagents, hooks, and MCP connectivity.[1][6][11][12]
+Most comparisons obsess over benchmarks. The harder question is where the [[glossary/agentic-loop]] runs when a ticket stalls at hour two. GitHub puts that loop inside repo controls, Cursor puts it in a vendor-managed background workflow, and Claude Code hands it to you as a terminal-native tool with subagents, hooks, and MCP connectivity.[1][6][11][12]
 
 ## Pick Copilot when GitHub is already your operating system
 
@@ -50,13 +57,13 @@ Cursor is the strongest choice when you want background execution to be a produc
 
 Bugbot makes the same design choice visible in code review. Cursor says Bugbot runs in the background on new PRs and that more than 70% of its flags are resolved before merge; it can also send fixes back through the editor or a Background Agent.[6] That is a meaningful workflow distinction from tools that stop at inline suggestions. Cursor is not only helping write code; it is trying to become a standing review and remediation layer around the PR itself.[6]
 
-The benchmark story also supports Cursor's positioning. Its Composer 2 technical report claims 61.3 on CursorBench, 73.7 on SWE-bench Multilingual, and 61.7 on Terminal-Bench, while the CursorBench methodology write-up argues that real coding tasks are underspecified, multi-file, and increasingly saturated on public benchmarks.[7][8] You should read those numbers with healthy skepticism because they are vendor-run evals, but the direction matches the product: Cursor is betting that background agents win when the job is large, ambiguous, and worth parallelizing.[7][8][9]
+The benchmark story supports Cursor's positioning. Its Composer 2 technical report claims 61.3 on CursorBench, 73.7 on SWE-bench Multilingual, and 61.7 on Terminal-Bench, while the CursorBench methodology argues that real coding tasks are underspecified, multi-file, and increasingly saturated on public benchmarks.[7][8] Read those numbers with skepticism because they are vendor-run evals, but the direction matches the product: Cursor is betting that background agents win when the job is large, ambiguous, and worth parallelizing; the same tradeoff shows up in [[course/cursor-composer-2]].[7][8][9]
 
 ## Pick Claude Code when you need to own the loop, tools, and logs
 
 Claude Code is the most opinionated option in the opposite direction: it is an agentic coding tool that lives in your terminal, and Anthropic's docs emphasize file edits, terminal commands, git workflows, subagents, hooks, skills, and MCP connectivity rather than a hosted project board.[11][12] That makes Claude Code less turnkey for manager-friendly dashboards and more attractive for engineers who want the agent embedded in shell scripts, CI jobs, or a custom internal harness.
 
-This ownership model matters more than the raw UI. When the loop lives in your terminal, you decide how sessions start, where logs go, which tools are allowed, and how failures are retried. Anthropic's docs explicitly frame Claude Code as customizable through hooks, `CLAUDE.md`, and MCP, and the open-source repository reinforces the terminal-native, plugin-friendly posture.[11][12] For regulated environments or teams building their own internal agent platform, that control can be more valuable than a prettier background-task panel.
+This ownership model matters more than the raw UI. When the loop lives in your terminal, you decide how sessions start, where logs go, which tools are allowed, and how failures are retried. Anthropic frames Claude Code as customizable through hooks, `CLAUDE.md`, and MCP, and the repository reinforces the terminal-native, plugin-friendly posture.[11][12] For regulated environments or teams building their own [[glossary/agent-harness]], that control can beat a prettier background-task panel.
 
 The pricing also signals the intended buyer. Anthropic includes Claude Code in the $20/month Pro plan and higher tiers, while positioning Opus 4.7 as its flagship for advanced software engineering and long-horizon autonomy.[13][14] In other words: Claude Code is not trying to be the cheapest managed PR bot. It is trying to be the programmable agent surface you can bend around your own workflow.[13][14]
 
