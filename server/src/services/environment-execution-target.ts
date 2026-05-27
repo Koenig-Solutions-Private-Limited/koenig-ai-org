@@ -10,6 +10,19 @@ import type { EnvironmentRuntimeService } from "./environment-runtime.js";
 
 export const DEFAULT_SANDBOX_REMOTE_CWD = "/tmp";
 
+const CURSOR_ADAPTER_TYPES = new Set(["cursor", "cursor_local"]);
+
+function adapterSupportsRemoteExecution(adapterType: string): boolean {
+  return (
+    adapterType === "codex_local" ||
+    adapterType === "claude_local" ||
+    adapterType === "gemini_local" ||
+    adapterType === "opencode_local" ||
+    adapterType === "pi_local" ||
+    CURSOR_ADAPTER_TYPES.has(adapterType)
+  );
+}
+
 export async function resolveEnvironmentExecutionTarget(input: {
   db: Db;
   companyId: string;
@@ -33,14 +46,7 @@ export async function resolveEnvironmentExecutionTarget(input: {
   }
 
   if (input.environment.driver === "sandbox") {
-    if (
-      input.adapterType !== "codex_local" &&
-      input.adapterType !== "claude_local" &&
-      input.adapterType !== "gemini_local" &&
-      input.adapterType !== "opencode_local" &&
-      input.adapterType !== "pi_local" &&
-      input.adapterType !== "cursor"
-    ) {
+    if (!adapterSupportsRemoteExecution(input.adapterType)) {
       return null;
     }
 
@@ -104,17 +110,7 @@ export async function resolveEnvironmentExecutionTarget(input: {
     };
   }
 
-  if (
-    (
-      input.adapterType !== "codex_local" &&
-      input.adapterType !== "claude_local" &&
-      input.adapterType !== "gemini_local" &&
-      input.adapterType !== "opencode_local" &&
-      input.adapterType !== "pi_local" &&
-      input.adapterType !== "cursor"
-    ) ||
-    input.environment.driver !== "ssh"
-  ) {
+  if (!adapterSupportsRemoteExecution(input.adapterType) || input.environment.driver !== "ssh") {
     return null;
   }
 
