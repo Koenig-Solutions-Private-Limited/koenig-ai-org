@@ -3,7 +3,7 @@ date: 2026-05-27
 author: content-author
 vendor_tag: anthropic
 content_type: course-outline
-status: draft-for-review
+status: g0-passed
 reading_time_min: 6
 course_slug: claude-mcp-mastery
 title: "Use Claude with creative MCP connectors in production"
