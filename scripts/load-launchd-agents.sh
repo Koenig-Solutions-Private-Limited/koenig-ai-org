@@ -29,6 +29,14 @@ PLISTS=(
 
 FILTER="${1:-}"
 
+sync_publish_action_runtime() {
+  local sync_script="$REPO_DIR/scripts/sync-publish-action-runtime.sh"
+  if [[ ! -x "$sync_script" ]]; then
+    chmod +x "$sync_script"
+  fi
+  "$sync_script"
+}
+
 load_plist() {
   local label="$1"
   local src="$PLIST_SRC/${label}.plist"
@@ -37,6 +45,10 @@ load_plist() {
   if [[ ! -f "$src" ]]; then
     echo "  SKIP  $label (source not found at $src)"
     return
+  fi
+
+  if [[ "$label" == "com.koenig.publish-action" ]]; then
+    sync_publish_action_runtime
   fi
 
   # Unload if already loaded (suppress error if not loaded)
