@@ -1,5 +1,6 @@
 ---
 chapter_path: vault/courses/mcp-from-first-principles-to-production/04-oauth-dpop-auth.md
+status: g4-approved
 assets_generated: true
 slide_file: vault/courses/mcp-from-first-principles-to-production/ch04-slides.pptx
 audio_file: vault/courses/mcp-from-first-principles-to-production/ch04-audio.mp3

@@ -33,4 +33,8 @@ Verification:
 - RunPromptCell / KnowledgeCheck / Callout markers remain present in both chapters.
 - `git diff --check` passed.
 
-Paperclip API handoff attempt failed on the previous heartbeat because `http://localhost:3100` refused connections. Intended next status: `in_review` for Content Reviewer G0 re-review after publish-action syncs the vault changes. Course Author did not run `git add`, `git commit`, or `git push`, per non-engineering lane policy.
+Publish-action sync:
+
+- Latest commit touching the course files after the R3 edits: `2728d4749 auto: vault-sync 2026-05-27T21:42:56Z`.
+
+Paperclip API handoff attempts failed because `http://localhost:3100` refused connections, including after the publish-action sync. Intended next status: `in_review` for Content Reviewer G0 re-review. Course Author did not run `git add`, `git commit`, or `git push`, per non-engineering lane policy.
