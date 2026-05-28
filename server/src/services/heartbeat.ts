@@ -6188,7 +6188,6 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
             tx,
           );
           if (reopenedIssue) {
-            await routinesSvc.syncRunStatusForIssue(reopenedIssue.id);
             issue = {
               ...issue,
               identifier: reopenedIssue.identifier,
