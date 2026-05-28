@@ -49,12 +49,14 @@ import { queueIssueAssignmentWakeup, type IssueAssignmentWakeupDeps } from "./is
 import { logActivity } from "./activity-log.js";
 import {
   buildRoutineExecutionConflictDetails,
+  OPEN_ROUTINE_EXECUTION_ISSUE_STATUSES,
   ROUTINE_EXECUTION_CONFLICT_ERROR_CODE,
+  ROUTINE_EXECUTION_LIVE_RUN_STATUSES,
 } from "./routine-execution-bind.js";
 import type { PluginWorkerManager } from "./plugin-worker-manager.js";
 
-const OPEN_ISSUE_STATUSES = ["backlog", "todo", "in_progress", "in_review", "blocked"];
-const LIVE_HEARTBEAT_RUN_STATUSES = ["queued", "running", "scheduled_retry"];
+const OPEN_ISSUE_STATUSES = [...OPEN_ROUTINE_EXECUTION_ISSUE_STATUSES];
+const LIVE_HEARTBEAT_RUN_STATUSES = [...ROUTINE_EXECUTION_LIVE_RUN_STATUSES];
 const TERMINAL_ISSUE_STATUSES = new Set(["done", "cancelled"]);
 const MAX_CATCH_UP_RUNS = 25;
 const WEEKDAY_INDEX: Record<string, number> = {
