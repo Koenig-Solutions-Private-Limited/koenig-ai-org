@@ -1506,6 +1506,66 @@ export function extractWakeCommentIds(
   return out;
 }
 
+type DeferredWakeCommentSnapshot = {
+  id: string;
+  authorAgentId: string | null;
+  authorUserId: string | null;
+  createdAt: Date;
+};
+
+export function isDeferredCommentWakeReopenWorthy(input: {
+  issueStatus: string;
+  assigneeAgentId: string | null;
+  deferredCommentIds: string[];
+  deferredWakeReason: string | null;
+  requestedByActorType: string | null;
+  deferredComments: DeferredWakeCommentSnapshot[];
+  latestComment: DeferredWakeCommentSnapshot | null;
+}): boolean {
+  const baseReopenCandidate =
+    input.deferredCommentIds.length > 0 &&
+    (input.issueStatus === "done" || input.issueStatus === "cancelled") &&
+    (
+      input.requestedByActorType === "user" ||
+      input.deferredWakeReason === "issue_reopened_via_comment"
+    );
+
+  if (!baseReopenCandidate) return false;
+  if (input.deferredComments.length === 0) return false;
+
+  const deferredIdSet = new Set(input.deferredCommentIds);
+  const latestComment = input.latestComment;
+  if (!latestComment) return true;
+  if (deferredIdSet.has(latestComment.id)) return true;
+
+  const latestDeferredCreatedAt = input.deferredComments.reduce(
+    (max, row) => (row.createdAt > max ? row.createdAt : max),
+    input.deferredComments[0]!.createdAt,
+  );
+
+  const latestSupersedesDeferred =
+    latestComment.createdAt > latestDeferredCreatedAt ||
+    (
+      latestComment.createdAt.getTime() === latestDeferredCreatedAt.getTime() &&
+      !deferredIdSet.has(latestComment.id)
+    );
+
+  if (!latestSupersedesDeferred) return true;
+
+  if (
+    input.assigneeAgentId &&
+    latestComment.authorAgentId === input.assigneeAgentId
+  ) {
+    return false;
+  }
+
+  if (input.deferredWakeReason === "issue_reopened_via_comment") {
+    return true;
+  }
+
+  return Boolean(latestComment.authorUserId);
+}
+
 function mergeWakeCommentIds(...values: Array<unknown>): string[] {
   const merged: string[] = [];
   const append = (value: unknown) => {
@@ -6158,15 +6218,52 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
         }
         const deferredCommentIds = extractWakeCommentIds(deferredContextSeed);
         const deferredWakeReason = readNonEmptyString(deferredContextSeed.wakeReason);
+        const deferredCommentRows =
+          deferredCommentIds.length > 0
+            ? await tx
+              .select({
+                id: issueComments.id,
+                authorAgentId: issueComments.authorAgentId,
+                authorUserId: issueComments.authorUserId,
+                createdAt: issueComments.createdAt,
+              })
+              .from(issueComments)
+              .where(
+                and(
+                  eq(issueComments.companyId, issue.companyId),
+                  eq(issueComments.issueId, issue.id),
+                  inArray(issueComments.id, deferredCommentIds),
+                ),
+              )
+            : [];
+        const latestCommentRow = await tx
+          .select({
+            id: issueComments.id,
+            authorAgentId: issueComments.authorAgentId,
+            authorUserId: issueComments.authorUserId,
+            createdAt: issueComments.createdAt,
+          })
+          .from(issueComments)
+          .where(
+            and(
+              eq(issueComments.companyId, issue.companyId),
+              eq(issueComments.issueId, issue.id),
+            ),
+          )
+          .orderBy(desc(issueComments.createdAt), desc(issueComments.id))
+          .limit(1)
+          .then((rows) => rows[0] ?? null);
         // Only human/comment-reopen interactions should revive completed issues;
         // system follow-ups such as retry or cleanup wakes must not reopen closed work.
-        const shouldReopenDeferredCommentWake =
-          deferredCommentIds.length > 0 &&
-          (issue.status === "done" || issue.status === "cancelled") &&
-          (
-            deferred.requestedByActorType === "user" ||
-            deferredWakeReason === "issue_reopened_via_comment"
-          );
+        const shouldReopenDeferredCommentWake = isDeferredCommentWakeReopenWorthy({
+          issueStatus: issue.status,
+          assigneeAgentId: issue.assigneeAgentId,
+          deferredCommentIds,
+          deferredWakeReason,
+          requestedByActorType: deferred.requestedByActorType,
+          deferredComments: deferredCommentRows,
+          latestComment: latestCommentRow,
+        });
         let reopenedActivity: LogActivityInput | null = null;
 
         if (shouldReopenDeferredCommentWake) {
