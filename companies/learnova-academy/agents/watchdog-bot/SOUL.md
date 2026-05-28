@@ -59,7 +59,7 @@ Why: The vault is the single source of truth. Re-flagging issues already escalat
 For failure-spike detection, do not hand-write SQL in the heartbeat loop. Use:
 
 - `scripts/watchdog/check5-failure-spikes.sql` for the frozen signature expression.
-- `scripts/watchdog/check5-failure-spikes.mjs --create-issues` for issue creation with:
+- `scripts/watchdog/check5-failure-spikes.sh --create-issues` for issue creation with:
   - 4-hour duplicate cooldown
   - Chief Engineering routing
   - top 3 run IDs in each alert description
