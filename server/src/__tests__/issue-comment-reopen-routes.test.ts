@@ -881,6 +881,36 @@ describe.sequential("issue comment reopen routes", () => {
     expect(mockHeartbeatService.wakeup).not.toHaveBeenCalled();
   });
 
+  it("allows checkout-management override agents to resume another agent's issue via POST comments", async () => {
+    mockIssueService.getById.mockResolvedValue(makeIssue("done"));
+    mockIssueService.update.mockImplementation(async (_id: string, patch: Record<string, unknown>) => ({
+      ...makeIssue("done"),
+      ...patch,
+    }));
+    mockAccessService.hasPermission.mockImplementation(
+      async (_companyId: string, _actorType: string, _actorId: string, permission: string) =>
+        permission === "tasks:manage_active_checkouts",
+    );
+
+    const res = await request(await installActor(createApp(), agentActor("44444444-4444-4444-8444-444444444444")))
+      .post("/api/issues/11111111-1111-4111-8111-111111111111/comments")
+      .send({ body: "restart managed work", resume: true });
+
+    expect(res.status).toBe(201);
+    expect(mockIssueService.update).toHaveBeenCalledWith(
+      "11111111-1111-4111-8111-111111111111",
+      { status: "todo" },
+    );
+    expect(mockIssueService.addComment).toHaveBeenCalled();
+    expect(mockHeartbeatService.wakeup).toHaveBeenCalledWith(
+      "22222222-2222-4222-8222-222222222222",
+      expect.objectContaining({
+        reason: "issue_reopened_via_comment",
+        payload: expect.objectContaining({ resumeIntent: true, followUpRequested: true }),
+      }),
+    );
+  });
+
   it("rejects explicit resume intent under an active pause hold", async () => {
     mockIssueService.getById.mockResolvedValue(makeIssue("done"));
     mockIssueTreeControlService.getActivePauseHoldGate.mockResolvedValue({

@@ -3376,23 +3376,31 @@ export function issueRoutes(
       req.actor.type === "agent" &&
       issue.assigneeAgentId !== null &&
       issue.assigneeAgentId !== req.actor.agentId;
-    if (crossAssigneeObserverComment && (resumeRequested || reopenRequested || interruptRequested)) {
-      res.status(403).json({
-        error: "Cross-assignee observer comments cannot resume, reopen, or interrupt issues",
-        details: {
-          issueId: issue.id,
-          assigneeAgentId: issue.assigneeAgentId,
-          actorAgentId: req.actor.agentId,
-        },
-      });
-      return;
-    }
     if (
       !(await assertAgentIssueMutationAllowed(req, res, issue, {
         mutationKind: crossAssigneeObserverComment ? "cross_assignee_comment" : "default",
       }))
     ) {
       return;
+    }
+    if (crossAssigneeObserverComment && (resumeRequested || reopenRequested || interruptRequested)) {
+      const actorAgentId = req.actor.agentId;
+      const assigneeAgentId = issue.assigneeAgentId;
+      if (
+        !actorAgentId ||
+        !assigneeAgentId ||
+        !(await hasActiveCheckoutManagementOverride(actorAgentId, issue.companyId, assigneeAgentId))
+      ) {
+        res.status(403).json({
+          error: "Cross-assignee observer comments cannot resume, reopen, or interrupt issues",
+          details: {
+            issueId: issue.id,
+            assigneeAgentId: issue.assigneeAgentId,
+            actorAgentId: req.actor.agentId,
+          },
+        });
+        return;
+      }
     }
     const closedExecutionWorkspace = await getClosedIssueExecutionWorkspace(issue);
     if (closedExecutionWorkspace) {
