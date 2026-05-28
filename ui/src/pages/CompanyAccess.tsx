@@ -34,6 +34,7 @@ const permissionLabels: Record<PermissionKey, string> = {
   "tasks:assign": "Assign tasks",
   "tasks:assign_scope": "Assign scoped tasks",
   "tasks:manage_active_checkouts": "Manage active task checkouts",
+  "issue.comments:create_cross_assignee": "Comment on tasks assigned to other agents",
   "joins:approve": "Approve join requests",
   "environments:manage": "Manage environments",
 };
