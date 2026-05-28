@@ -110,6 +110,13 @@ import {
 } from "./recovery/index.js";
 import { isAutomaticRecoverySuppressedByPauseHold } from "./recovery/pause-hold-guard.js";
 import { recoveryService } from "./recovery/service.js";
+import {
+  buildRoutineExecutionConflictDetails,
+  buildRoutineExecutionConflictMessage,
+  findRoutineExecutionBindConflict,
+  ROUTINE_EXECUTION_CONFLICT_ERROR_CODE,
+  stampRoutineExecutionRunId,
+} from "./routine-execution-bind.js";
 import { productivityReviewService } from "./productivity-review.js";
 import { withAgentStartLock } from "./agent-start-lock.js";
 import { redactCurrentUserText, redactCurrentUserValue } from "../log-redaction.js";
@@ -3864,17 +3871,151 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
     }
 
     const claimedAt = new Date();
-    const claimed = await db
-      .update(heartbeatRuns)
-      .set({
-        status: "running",
-        startedAt: run.startedAt ?? claimedAt,
-        updatedAt: claimedAt,
-      })
-      .where(and(eq(heartbeatRuns.id, run.id), eq(heartbeatRuns.status, "queued")))
-      .returning()
-      .then((rows) => rows[0] ?? null);
-    if (!claimed) return null;
+    const claimedIssueId = readNonEmptyString(context.issueId);
+    const claimedAgent = claimedIssueId ? await getAgent(run.agentId) : null;
+
+    type ClaimQueuedRunTxResult =
+      | { kind: "lost_race" }
+      | { kind: "claimed"; run: typeof heartbeatRuns.$inferSelect }
+      | {
+          kind: "conflict";
+          run: typeof heartbeatRuns.$inferSelect;
+          conflict: Awaited<ReturnType<typeof findRoutineExecutionBindConflict>> & object;
+        };
+
+    const txResult = await db.transaction(async (tx): Promise<ClaimQueuedRunTxResult> => {
+      const claimed = await tx
+        .update(heartbeatRuns)
+        .set({
+          status: "running",
+          startedAt: run.startedAt ?? claimedAt,
+          updatedAt: claimedAt,
+        })
+        .where(and(eq(heartbeatRuns.id, run.id), eq(heartbeatRuns.status, "queued")))
+        .returning()
+        .then((rows) => rows[0] ?? null);
+      if (!claimed) return { kind: "lost_race" };
+
+      if (!claimedIssueId || !claimedAgent) {
+        return { kind: "claimed", run: claimed };
+      }
+
+      await tx.execute(
+        sql`select id from issues where company_id = ${claimed.companyId} and id = ${claimedIssueId} for update`,
+      );
+
+      const issue = await tx
+        .select()
+        .from(issues)
+        .where(
+          and(
+            eq(issues.id, claimedIssueId),
+            eq(issues.companyId, claimed.companyId),
+          ),
+        )
+        .then((rows) => rows[0] ?? null);
+
+      if (!issue || issue.assigneeAgentId !== claimed.agentId) {
+        return { kind: "claimed", run: claimed };
+      }
+
+      const bindResult = await stampRoutineExecutionRunId(tx, {
+        issue,
+        runId: claimed.id,
+        agentNameKey: normalizeAgentNameKey(claimedAgent.name),
+        lockedAt: claimedAt,
+        assigneeAgentId: claimed.agentId,
+      });
+
+      if (bindResult.ok) {
+        return { kind: "claimed", run: claimed };
+      }
+
+      const conflictMessage = buildRoutineExecutionConflictMessage(bindResult.conflict);
+      const conflictDetails = buildRoutineExecutionConflictDetails(bindResult.conflict, {
+        wakeReason: readNonEmptyString(context.wakeReason),
+        commentId: extractWakeCommentIds(context)[0] ?? null,
+      });
+      const cancelled = await tx
+        .update(heartbeatRuns)
+        .set({
+          status: "cancelled",
+          finishedAt: claimedAt,
+          error: conflictMessage,
+          errorCode: ROUTINE_EXECUTION_CONFLICT_ERROR_CODE,
+          updatedAt: claimedAt,
+          resultJson: {
+            ...parseObject(run.resultJson),
+            stopReason: ROUTINE_EXECUTION_CONFLICT_ERROR_CODE,
+            effectiveTimeoutSec: 0,
+            timeoutConfigured: false,
+            timeoutSource: "routine_execution_bind_guard",
+            timeoutFired: false,
+            ...conflictDetails,
+          },
+        })
+        .where(eq(heartbeatRuns.id, claimed.id))
+        .returning()
+        .then((rows) => rows[0] ?? null);
+      if (!cancelled) return { kind: "lost_race" };
+
+      await tx
+        .update(issues)
+        .set({
+          executionRunId: null,
+          executionAgentNameKey: null,
+          executionLockedAt: null,
+          updatedAt: claimedAt,
+        })
+        .where(
+          and(
+            eq(issues.companyId, claimed.companyId),
+            eq(issues.id, claimedIssueId),
+            eq(issues.executionRunId, claimed.id),
+          ),
+        );
+
+      if (run.wakeupRequestId) {
+        await tx
+          .update(agentWakeupRequests)
+          .set({
+            status: "cancelled",
+            finishedAt: claimedAt,
+            error: conflictMessage,
+            updatedAt: claimedAt,
+          })
+          .where(eq(agentWakeupRequests.id, run.wakeupRequestId));
+      }
+
+      return { kind: "conflict", run: cancelled, conflict: bindResult.conflict };
+    });
+
+    if (txResult.kind === "lost_race") return null;
+
+    if (txResult.kind === "conflict") {
+      await appendRunEvent(txResult.run, await nextRunEventSeq(txResult.run.id), {
+        eventType: "lifecycle",
+        stream: "system",
+        level: "info",
+        message: buildRoutineExecutionConflictMessage(txResult.conflict),
+        payload: buildRoutineExecutionConflictDetails(txResult.conflict, {
+          wakeReason: readNonEmptyString(context.wakeReason),
+          commentId: extractWakeCommentIds(context)[0] ?? null,
+        }),
+      });
+      logger.info(
+        {
+          runId: txResult.run.id,
+          issueId: claimedIssueId,
+          activeIssueId: txResult.conflict.activeIssueId,
+          activeRunId: txResult.conflict.activeRunId,
+        },
+        "claimQueuedRun: coalesced routine execution bind conflict",
+      );
+      return null;
+    }
+
+    const claimed = txResult.run;
 
     publishLiveEvent({
       companyId: claimed.companyId,
@@ -3894,31 +4035,6 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
     publishRunLifecyclePluginEvent(claimed);
 
     await setWakeupStatus(claimed.wakeupRequestId, "claimed", { claimedAt });
-
-    // Fix A (lazy locking): stamp executionRunId now that the run is actually running,
-    // not at queue time. Guard is idempotent — safe if called more than once.
-    const claimedIssueId = readNonEmptyString(parseObject(claimed.contextSnapshot).issueId);
-    if (claimedIssueId) {
-      const claimedAgent = await getAgent(claimed.agentId);
-      await db
-        .update(issues)
-        .set({
-          executionRunId: claimed.id,
-          executionAgentNameKey: normalizeAgentNameKey(claimedAgent?.name),
-          executionLockedAt: claimedAt,
-          updatedAt: claimedAt,
-        })
-        .where(
-          and(
-            eq(issues.id, claimedIssueId),
-            eq(issues.companyId, claimed.companyId),
-            // Mention/context runs can touch an issue, but only the current assignee
-            // owns the issue execution lock shown as the active run.
-            eq(issues.assigneeAgentId, claimed.agentId),
-            or(isNull(issues.executionRunId), eq(issues.executionRunId, claimed.id)),
-          ),
-        );
-    }
 
     return claimed;
   }
@@ -6228,6 +6344,44 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
           payload: promotedPayload,
         });
 
+        const routineConflict = await findRoutineExecutionBindConflict(tx, issue);
+        if (routineConflict) {
+          const conflictMessage = buildRoutineExecutionConflictMessage(routineConflict);
+          const conflictNow = new Date();
+          await tx
+            .update(agentWakeupRequests)
+            .set({
+              status: "cancelled",
+              finishedAt: conflictNow,
+              error: conflictMessage,
+              updatedAt: conflictNow,
+            })
+            .where(eq(agentWakeupRequests.id, deferred.id));
+
+          const eventSeq = await tx
+            .select({ maxSeq: sql<number>`coalesce(max(${heartbeatRunEvents.seq}), 0)` })
+            .from(heartbeatRunEvents)
+            .where(eq(heartbeatRunEvents.runId, run.id))
+            .then((rows) => rows[0]?.maxSeq ?? 0);
+
+          await tx.insert(heartbeatRunEvents).values({
+            companyId: run.companyId,
+            runId: run.id,
+            agentId: run.agentId,
+            seq: Number(eventSeq) + 1,
+            eventType: "lifecycle",
+            stream: "system",
+            level: "info",
+            message: conflictMessage,
+            payload: buildRoutineExecutionConflictDetails(routineConflict, {
+              deferredWakeupRequestId: deferred.id,
+              wakeReason: deferredWakeReason,
+              commentIds: deferredCommentIds,
+            }),
+          });
+          continue;
+        }
+
         const sessionBefore =
           readNonEmptyString(promotedContextSnapshot.resumeSessionDisplayId) ??
           await resolveSessionBeforeForWakeup(deferredAgent, promotedTaskKey);
@@ -6264,16 +6418,36 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
           })
           .where(eq(agentWakeupRequests.id, deferred.id));
 
-        await tx
-          .update(issues)
-          .set({
-            executionRunId: newRun.id,
-            executionAgentNameKey: normalizeAgentNameKey(deferredAgent.name),
-            executionLockedAt: now,
-            updatedAt: now,
-          })
-          // Promoted mention wakes are issue-scoped, not issue ownership transfers.
-          .where(and(eq(issues.id, issue.id), eq(issues.assigneeAgentId, deferredAgent.id)));
+        const bindResult = await stampRoutineExecutionRunId(tx, {
+          issue,
+          runId: newRun.id,
+          agentNameKey: normalizeAgentNameKey(deferredAgent.name),
+          lockedAt: now,
+          assigneeAgentId: deferredAgent.id,
+        });
+        if (!bindResult.ok) {
+          const conflictMessage = buildRoutineExecutionConflictMessage(bindResult.conflict);
+          await tx
+            .update(heartbeatRuns)
+            .set({
+              status: "cancelled",
+              finishedAt: now,
+              error: conflictMessage,
+              errorCode: ROUTINE_EXECUTION_CONFLICT_ERROR_CODE,
+              updatedAt: now,
+            })
+            .where(eq(heartbeatRuns.id, newRun.id));
+          await tx
+            .update(agentWakeupRequests)
+            .set({
+              status: "cancelled",
+              finishedAt: now,
+              error: conflictMessage,
+              updatedAt: now,
+            })
+            .where(eq(agentWakeupRequests.id, deferred.id));
+          continue;
+        }
 
         return {
           kind: "promoted" as const,
