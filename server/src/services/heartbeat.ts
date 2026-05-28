@@ -1461,6 +1461,8 @@ function shouldAutoCheckoutIssueForWake(input: {
   if (!wakeReason) return false;
   if (wakeReason === "issue_comment_mentioned") return false;
   if (wakeReason.startsWith("execution_")) return false;
+  // Deferred/plain comment wakes on blocked issues deliver context only; checkout would drift status to in_progress.
+  if (issueStatus === "blocked" && wakeReason !== "issue_reopened_via_comment") return false;
 
   return true;
 }
