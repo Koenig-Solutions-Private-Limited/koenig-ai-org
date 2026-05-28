@@ -592,10 +592,13 @@ export function issueRoutes(
     return false;
   }
 
+  type AgentIssueMutationKind = "default" | "cross_assignee_comment";
+
   async function assertAgentIssueMutationAllowed(
     req: Request,
     res: Response,
     issue: { id: string; companyId: string; status: string; assigneeAgentId: string | null },
+    options?: { mutationKind?: AgentIssueMutationKind },
   ) {
     if (req.actor.type !== "agent") return true;
     const actorAgentId = req.actor.agentId;
@@ -607,6 +610,17 @@ export function issueRoutes(
       return true;
     }
     if (issue.assigneeAgentId !== actorAgentId) {
+      if (
+        options?.mutationKind === "cross_assignee_comment" &&
+        (await access.hasPermission(
+          issue.companyId,
+          "agent",
+          actorAgentId,
+          "issue.comments:create_cross_assignee",
+        ))
+      ) {
+        return true;
+      }
       if (await hasActiveCheckoutManagementOverride(actorAgentId, issue.companyId, issue.assigneeAgentId)) {
         return true;
       }
@@ -3353,17 +3367,38 @@ export function issueRoutes(
       return;
     }
     assertCompanyAccess(req, issue.companyId);
-    if (!(await assertAgentIssueMutationAllowed(req, res, issue))) return;
-    const closedExecutionWorkspace = await getClosedIssueExecutionWorkspace(issue);
-    if (closedExecutionWorkspace) {
-      respondClosedIssueExecutionWorkspace(res, closedExecutionWorkspace);
-      return;
-    }
 
     const actor = getActorInfo(req);
     const reopenRequested = req.body.reopen === true;
     const resumeRequested = req.body.resume === true;
     const interruptRequested = req.body.interrupt === true;
+    const crossAssigneeObserverComment =
+      req.actor.type === "agent" &&
+      issue.assigneeAgentId !== null &&
+      issue.assigneeAgentId !== req.actor.agentId;
+    if (crossAssigneeObserverComment && (resumeRequested || reopenRequested || interruptRequested)) {
+      res.status(403).json({
+        error: "Cross-assignee observer comments cannot resume, reopen, or interrupt issues",
+        details: {
+          issueId: issue.id,
+          assigneeAgentId: issue.assigneeAgentId,
+          actorAgentId: req.actor.agentId,
+        },
+      });
+      return;
+    }
+    if (
+      !(await assertAgentIssueMutationAllowed(req, res, issue, {
+        mutationKind: crossAssigneeObserverComment ? "cross_assignee_comment" : "default",
+      }))
+    ) {
+      return;
+    }
+    const closedExecutionWorkspace = await getClosedIssueExecutionWorkspace(issue);
+    if (closedExecutionWorkspace) {
+      respondClosedIssueExecutionWorkspace(res, closedExecutionWorkspace);
+      return;
+    }
     if (resumeRequested === true && !(await assertExplicitResumeIntentAllowed(req, res, issue))) return;
     if (resumeRequested !== true && reopenRequested === true && req.actor.type === "agent") {
       if (!(await assertExplicitResumeIntentAllowed(req, res, issue))) return;
