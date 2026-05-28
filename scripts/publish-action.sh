@@ -301,7 +301,7 @@ finalize_phase0_sync() {
   fi
 
   local dirty
-  dirty="$(git status --porcelain 2>&1 | grep -vE '^.. vault/\.obsidian/workspace\.json$|^\?\? vault/\.obsidian/workspace\.json$' || true)"
+  dirty="$(git status --porcelain 2>&1 | grep -vE '^.. vault/\.obsidian/' || true)"
   if [ -n "$dirty" ]; then
     log "origin-master-guard: BLOCK reason=dirty-worktree"
     PHASE0_SYNC_OK=0
