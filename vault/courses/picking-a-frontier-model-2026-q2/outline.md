@@ -29,6 +29,14 @@ sources:
   - https://www.anthropic.com/news
   - https://help.openai.com/en/articles/9624314-model-release-notes
   - https://ai.google.dev/gemini-api/docs/changelog
+  - https://openai.com/index/trusted-access-for-cyber/
+  - https://openai.com/index/gpt-5-5-with-trusted-access-for-cyber/
+  - https://deploymentsafety.openai.com/gpt-5-5/gpt-5-5.pdf
+  - https://www.anthropic.com/glasswing
+  - https://www.anthropic.com/research/glasswing-initial-update
+  - https://www.aisi.gov.uk/blog/our-evaluation-of-openais-gpt-5-5-cyber-capabilities
+  - https://aws.amazon.com/bedrock/openai/
+  - https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-openai.html
   - /data/claude-tool-use-determinism/2026-Q2/
 ---
 
@@ -118,19 +126,20 @@ The standard comparison post asks: *which model is the smartest?* We ask: *which
 
 ---
 
-### Chapter 5: Governance and Security Access — GPT-5.5-Cyber & Codex on Bedrock
+### Chapter 5: Governance and specialized cyber access — TAC, Project Glasswing, and Bedrock controls
 
 - **Duration**: 50 min
 - **Prerequisites**: Chapter 1
 - **Learning objectives**:
   1. Define the "Trusted Access for Cyber" program and its role in accelerating defensive AI workflows while mitigating risk
-  2. Explain the governance benefits of deploying OpenAI models and Codex via Amazon Bedrock (IAM, PrivateLink, VPC controls)
-  3. Compare specialized access tiers (e.g., Anthropic's Project Glasswing vs. OpenAI's Trusted Access) for security and research teams
-  4. Evaluate the "Codex governance case": choosing between local Codex Desktop, OpenAI Enterprise, and centralized Bedrock endpoints based on audit requirements
-- **Key concepts**: Trusted Access for Cyber, Model Safeguards vs. Permissive Access, Enterprise Governance on Bedrock, Data Residency, Agentic Compliance, Codex Desktop v0.125.0 Governance
-- **Contrarian angle**: Specialized model access is the new "priority support." For high-stakes security work, the delta between a standard model's refusals and a Trusted Access model's permissiveness is a bigger productivity lever than any reasoning benchmark. Furthermore, Bedrock's value proposition isn't the model—it's the IAM policy you wrap around it.
-- **Hands-on exercise**: Draft a mock application for OpenAI's Trusted Access for Cyber program. Specify three defensive use cases (e.g., reverse engineering, patch review, malware study) and define the necessary Paperclip-style governance controls (approvals, logging) for your team's deployment.
-- **v3-citation-authority requirements**: Wikipedia-style lead, key-facts list, ≥6 citations (OpenAI, AWS, AISI benchmarks), ≥3 internal wikilinks, References footer
+  2. Compare OpenAI's TAC path with Anthropic's Project Glasswing and Cyber Verification Program as two different models for gated cyber capability release
+  3. Separate three deployment questions that are often conflated: model access eligibility, endpoint governance, and agent/tool approval controls
+  4. Evaluate whether OpenAI-direct, OpenAI Enterprise, OpenAI models on Amazon Bedrock, or Anthropic/Glasswing-style access better fits a security team's audit and control needs
+  5. Write a governance case study for a cyber-capable coding workflow that names allowed use cases, denied use cases, audit fields, escalation paths, and reviewer gates
+- **Key concepts**: Trusted Access for Cyber, GPT-5.5-Cyber limited preview, Codex Security plugin, Project Glasswing, Mythos Preview, Cyber Verification Program, endpoint governance, OpenAI models on Amazon Bedrock, IAM and regional controls, auditability, approved-use scoping, misuse monitoring
+- **Contrarian angle**: Specialized cyber access is not just a model-selection perk; it is an operating model. The winning team is not the team with the most permissive model. It is the team that can prove who is eligible, what workflows are allowed, which endpoints and tools are in scope, how risky outputs are reviewed, and how misuse signals are detected. Bedrock matters in this chapter only where it changes endpoint governance and AWS-side controls; it should not be presented as a blanket substitute for OpenAI's TAC eligibility or Codex product governance.
+- **Hands-on exercise**: Write a one-page trusted-access cyber governance case study for a defensive security team. The learner chooses one scenario (critical-infrastructure vulnerability triage, open-source supply-chain patch review, malware reverse-engineering support, or internal red-team validation), then fills out: eligibility signals, permitted workflows, blocked workflows, model/access path, endpoint controls, tool approvals, logging fields, misuse alerts, and human escalation. The deliverable must explicitly distinguish model access (TAC or Glasswing-style gating) from deployment controls (OpenAI-direct, Enterprise, or Bedrock) and agent controls (tools, approvals, sandboxing, logs).
+- **v3-citation-authority requirements**: Wikipedia-style lead, key-facts list, ≥6 citations from primary sources (OpenAI TAC announcement, OpenAI GPT-5.5-Cyber announcement, GPT-5.5 system card, Anthropic Project Glasswing, Anthropic Glasswing update or Mythos system card, AISI GPT-5.5 cyber evaluation, AWS Bedrock OpenAI model docs), ≥3 internal wikilinks, References footer
 
 ---
 
