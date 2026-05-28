@@ -4,7 +4,6 @@
 set -euo pipefail
 
 COMMIT_MSG_FILE="${1:?commit-msg file required}"
-ROOT="$(git rev-parse --show-toplevel)"
 
 COMMIT_MSG_REGEX='^\s*(rev\s*[0-9]+:|updated?\b|fixed?\b|standardized\b|bumped\b|refactored\b|chore\b|wip\b|added?\b|removed?\b|merged?\b)'
 
@@ -34,8 +33,7 @@ check_seo_description() {
 }
 
 parse_frontmatter_field() {
-  local file="$1"
-  local field="$2"
+  local field="$1"
   awk -v field="$field" '
     BEGIN { in_fm=0; found=0 }
     NR==1 && $0 ~ /^---$/ { in_fm=1; next }
@@ -49,22 +47,27 @@ parse_frontmatter_field() {
       exit
     }
     END { if (!found) print "" }
-  ' "$file"
+  '
 }
 
+failed=0
 while IFS= read -r -d '' path; do
   [[ "$path" == vault/blogs/*/draft.md ]] || continue
-  full="$ROOT/$path"
-  [[ -f "$full" ]] || continue
 
-  status="$(parse_frontmatter_field "$full" status)"
+  staged_content="$(git show ":$path" 2>/dev/null || true)"
+  [[ -n "$staged_content" ]] || continue
+
+  status="$(printf '%s\n' "$staged_content" | parse_frontmatter_field status)"
   case "$status" in
     g0-passed|g3-passed|published) ;;
     *) continue ;;
   esac
 
-  seo_description="$(parse_frontmatter_field "$full" seo_description)"
-  check_seo_description "$seo_description" "$path" "$status"
+  seo_description="$(printf '%s\n' "$staged_content" | parse_frontmatter_field seo_description)"
+  if ! check_seo_description "$seo_description" "$path" "$status"; then
+    failed=1
+    break
+  fi
 done < <(git diff --cached --name-only -z -- 'vault/blogs/*/draft.md')
 
-exit 0
+exit "$failed"

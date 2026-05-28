@@ -44,4 +44,30 @@ run_case "rule-1-missing" yes $'---\nstatus: g0-passed\ntitle: Test\n---\n\nBody
 run_case "rule-2-named-fixture" yes $'---\nstatus: g0-passed\nseo_description: Updated Resolume and Blender descriptions for accuracy\ntitle: Test\n---\n\nBody'
 run_case "rule-3-accept-good" no $'---\nstatus: g0-passed\nseo_description: '"$GOOD_DESC"$'\ntitle: Test\n---\n\nBody'
 
+run_partial_stage_case() {
+  local slug="partial-stage-$$-$RANDOM"
+  local case_dir="$TMP/case-$RANDOM"
+  local bad_body=$'---\nstatus: g0-passed\nseo_description: Updated Resolume and Blender descriptions for accuracy\ntitle: Test\n---\n\nBody'
+  local good_body=$'---\nstatus: g0-passed\nseo_description: '"$GOOD_DESC"$'\ntitle: Test\n---\n\nBody'
+
+  mkdir -p "$case_dir/vault/blogs/$slug"
+  printf '%s\n' "$bad_body" > "$case_dir/vault/blogs/$slug/draft.md"
+
+  (
+    cd "$case_dir"
+    git init -q
+    git config user.email test@example.com
+    git config user.name test
+    git add "vault/blogs/$slug/draft.md"
+    printf '%s\n' "$good_body" > "vault/blogs/$slug/draft.md"
+    if "$HOOK" /dev/null 2>"$TMP/err"; then
+      echo "FAIL partial-stage-bypass: expected rejection from staged bad seo_description" >&2
+      exit 1
+    fi
+    echo "PASS partial-stage-bypass (rejected staged bad): $(tr '\n' ' ' < "$TMP/err")"
+  )
+}
+
+run_partial_stage_case
+
 echo "All commit-msg-blog-seo smoke tests passed."
