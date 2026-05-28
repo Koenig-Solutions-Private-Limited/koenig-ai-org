@@ -1506,6 +1506,17 @@ export function extractWakeCommentIds(
   return out;
 }
 
+export function hasExplicitDeferredCommentReopenIntent(
+  deferredContextSeed: Record<string, unknown>,
+  deferredWakeReason: string | null,
+): boolean {
+  if (deferredWakeReason !== "issue_reopened_via_comment") return false;
+  if (deferredContextSeed.resumeIntent === true) return true;
+  if (deferredContextSeed.followUpRequested === true) return true;
+  if (readNonEmptyString(deferredContextSeed.reopenedFrom)) return true;
+  return false;
+}
+
 function mergeWakeCommentIds(...values: Array<unknown>): string[] {
   const merged: string[] = [];
   const append = (value: unknown) => {
@@ -6158,15 +6169,12 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
         }
         const deferredCommentIds = extractWakeCommentIds(deferredContextSeed);
         const deferredWakeReason = readNonEmptyString(deferredContextSeed.wakeReason);
-        // Only human/comment-reopen interactions should revive completed issues;
-        // system follow-ups such as retry or cleanup wakes must not reopen closed work.
+        // Only explicit route-level reopen intent should revive terminal issues.
+        // Plain issue_commented deferred wakes deliver comment context without status drift.
         const shouldReopenDeferredCommentWake =
           deferredCommentIds.length > 0 &&
           (issue.status === "done" || issue.status === "cancelled") &&
-          (
-            deferred.requestedByActorType === "user" ||
-            deferredWakeReason === "issue_reopened_via_comment"
-          );
+          hasExplicitDeferredCommentReopenIntent(deferredContextSeed, deferredWakeReason);
         let reopenedActivity: LogActivityInput | null = null;
 
         if (shouldReopenDeferredCommentWake) {
@@ -6180,6 +6188,7 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
             tx,
           );
           if (reopenedIssue) {
+            await routinesSvc.syncRunStatusForIssue(reopenedIssue.id);
             issue = {
               ...issue,
               identifier: reopenedIssue.identifier,
