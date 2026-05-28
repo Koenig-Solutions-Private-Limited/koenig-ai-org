@@ -437,6 +437,93 @@ describe("agent issue mutation checkout ownership", () => {
     expect(mockIssueService.update).toHaveBeenCalled();
   });
 
+  function mockIssuesCommentAnyGrant() {
+    mockAccessService.hasPermission.mockImplementation(async (
+      _companyId: string,
+      _principalType: string,
+      principalId: string,
+      permissionKey: string,
+    ) => principalId === peerAgentId && permissionKey === "issues:comment_any");
+  }
+
+  it("allows a granted peer agent to add inert comments across assignees", async () => {
+    mockIssueService.getById.mockResolvedValue(makeIssue({ status: "todo", assigneeAgentId: ownerAgentId }));
+    mockIssuesCommentAnyGrant();
+
+    const res = await request(await createApp(peerActor()))
+      .post(`/api/issues/${issueId}/comments`)
+      .send({ body: "watchdog operational nudge" });
+
+    expect(res.status, JSON.stringify(res.body)).toBe(201);
+    expect(mockIssueService.addComment).toHaveBeenCalledWith(
+      issueId,
+      "watchdog operational nudge",
+      expect.objectContaining({ agentId: peerAgentId }),
+    );
+    expect(mockIssueService.update).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["patch", (app: express.Express) => request(app).patch(`/api/issues/${issueId}`).send({ title: "still blocked" })],
+    [
+      "assignee change",
+      (app: express.Express) => request(app).patch(`/api/issues/${issueId}`).send({ assigneeAgentId: peerAgentId }),
+    ],
+    [
+      "document upsert",
+      (app: express.Express) =>
+        request(app).put(`/api/issues/${issueId}/documents/plan`).send({ format: "markdown", body: "# still blocked" }),
+    ],
+    ["work product update", (app: express.Express) => request(app).patch("/api/work-products/product-1").send({ title: "Blocked" })],
+    [
+      "attachment upload",
+      (app: express.Express) =>
+        request(app)
+          .post(`/api/companies/${companyId}/issues/${issueId}/attachments`)
+          .attach("file", Buffer.from("report"), { filename: "report.txt", contentType: "text/plain" }),
+    ],
+  ])("does not allow %s with issues:comment_any grant only", async (_name, sendRequest) => {
+    mockIssueService.getById.mockResolvedValue(makeIssue({ status: "todo", assigneeAgentId: ownerAgentId }));
+    mockIssuesCommentAnyGrant();
+
+    const res = await sendRequest(await createApp(peerActor()));
+
+    expect(res.status, JSON.stringify(res.body)).toBe(403);
+    expect(res.body.error).toBe("Agent cannot mutate another agent's issue");
+    expect(mockIssueService.addComment).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["resume", { resume: true }],
+    ["reopen", { reopen: true }],
+    ["interrupt", { interrupt: true }],
+  ])("does not allow comment %s side effects with issues:comment_any grant only", async (_name, payload) => {
+    mockIssueService.getById.mockResolvedValue(makeIssue({ status: "done", assigneeAgentId: ownerAgentId }));
+    mockIssuesCommentAnyGrant();
+
+    const res = await request(await createApp(peerActor()))
+      .post(`/api/issues/${issueId}/comments`)
+      .send({ body: "attempted side effect", ...payload });
+
+    expect(res.status, JSON.stringify(res.body)).toBeGreaterThanOrEqual(403);
+    expect(res.status).toBeLessThan(500);
+    expect(mockIssueService.addComment).not.toHaveBeenCalled();
+    expect(mockIssueService.update).not.toHaveBeenCalled();
+  });
+
+  it("denies cross-company comment even when issues:comment_any would otherwise match", async () => {
+    mockIssuesCommentAnyGrant();
+
+    const res = await request(await createApp(peerActor({ companyId: "99999999-9999-4999-8999-999999999999" })))
+      .post(`/api/issues/${issueId}/comments`)
+      .send({ body: "cross company attempt" });
+
+    expect(res.status, JSON.stringify(res.body)).toBe(403);
+    expect(res.body.error).toBe("Agent key cannot access another company");
+    expect(mockAccessService.hasPermission).not.toHaveBeenCalled();
+    expect(mockIssueService.addComment).not.toHaveBeenCalled();
+  });
+
   it.each([
     ["todo", "patch", (app: express.Express) => request(app).patch(`/api/issues/${issueId}`).send({ title: "Todo update" })],
     ["todo", "comment", (app: express.Express) => request(app).post(`/api/issues/${issueId}/comments`).send({ body: "Todo noise" })],
