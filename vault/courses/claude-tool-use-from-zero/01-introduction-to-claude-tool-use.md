@@ -18,6 +18,7 @@ sources:
   - https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/overview
   - https://docs.anthropic.com/en/api/messages
   - https://docs.anthropic.com/en/docs/test-and-evaluate/strengthen-guardrails/increase-consistency
+  - https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan
 tags:
   - course/claude-tool-use-from-zero
   - claude
@@ -32,6 +33,8 @@ This chapter gets you from "Claude can answer questions" to "Claude can decide w
 Claude tool use is not magic plugin installation. In the Anthropic Messages API, you describe tools with names, descriptions, and JSON input schemas. When Claude decides a tool is needed, the response contains a `tool_use` content block and the API response stop reason is `tool_use`.[^1] Your application runs the actual code, then sends a follow-up message containing a `tool_result`. Claude never reaches into your runtime by itself; your host application remains the executor and policy boundary.
 
 That boundary matters. If your tool fetches a stock price, deletes a file, sends an invoice, or queries a customer database, Claude only proposes the call. Your software decides whether the call is valid, authorized, observable, and safe.
+
+**May 2026 billing update:** tool-use learners also need to separate "which Claude surface am I using?" from "who pays for execution?" Anthropic's Claude plan support page says that starting June 15, 2026, Claude Agent SDK usage and the non-interactive `claude -p` command no longer count toward normal Claude plan usage limits; they draw from a separate monthly Agent SDK credit, and extra usage can flow to standard API rates only when extra usage is enabled.[^4] Interactive Claude chat and ordinary Claude Code usage remain a different usage bucket. In practice, your first tool-use experiments should log the execution surface (`Messages API`, `Agent SDK`, `claude -p`, or interactive Claude Code) beside token counts so you can explain an unexpected bill before it becomes a production incident.
 
 ## Prerequisites check
 
@@ -133,6 +136,8 @@ The second failure is hidden side effects. A tool named `sync_customer` might re
 
 The third failure is treating model output as trusted JSON. Even when using tool schemas, validate inputs in your own runtime. Consistency guidance from Anthropic emphasizes strengthening outputs through constraints and checks, not wishful parsing.[^3]
 
+The fourth failure is treating cost as an afterthought. A demo that works in interactive Claude may have different limits from a script that runs through the Agent SDK or `claude -p`. For production connectors, record both tool-call behavior and billing path in the same run log: model, client surface, tool name, validated input, token counts if available, and whether the call used subscription credits, Agent SDK credits, or API billing.
+
 <KnowledgeCheck
   questions={[
     {
@@ -199,3 +204,4 @@ Chapter 2 moves from one client-side function to MCP, the protocol that lets hos
 [^1]: Anthropic, "Tool use with Claude", https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/overview
 [^2]: Anthropic, "Messages API", https://docs.anthropic.com/en/api/messages
 [^3]: Anthropic, "Increase output consistency", https://docs.anthropic.com/en/docs/test-and-evaluate/strengthen-guardrails/increase-consistency
+[^4]: Anthropic Help Center, "Use the Claude Agent SDK with your Claude plan", https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan

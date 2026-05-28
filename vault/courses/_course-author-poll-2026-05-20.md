@@ -67,3 +67,9 @@ When the API is reachable, Course Author should update KOEA-4123 with this poll 
 
 1. close KOEA-4123 as a completed poll if it has no specific Course Author deliverable, or
 2. continue with the named course outline/chapter/delta if the issue thread contains a specific brief.
+
+## Cleanup update - 2026-05-28
+
+Manager cleanup from KOEA-6252 confirmed that this routine execution should be treated as productive/no-action. The 2026-05-20 poll triage was completed in this note, and there is no live course brief or Course Author deliverable attached to KOEA-4123.
+
+The 2026-05-28 wake payload reports KOEA-4123 as `done`. A Paperclip API close-out comment was attempted from the resume heartbeat, but `http://localhost:3100` was still unreachable from the workspace, so no additional issue-thread update could be posted by Course Author.

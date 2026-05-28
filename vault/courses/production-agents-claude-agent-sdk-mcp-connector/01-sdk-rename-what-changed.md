@@ -33,6 +33,7 @@ sources:
   - https://code.claude.com/docs/en/agent-sdk/mcp
   - https://platform.claude.com/docs/en/managed-agents/overview
   - https://github.com/anthropics/claude-agent-sdk-typescript/blob/main/CHANGELOG.md
+  - https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan
 ---
 
 # What changed when Claude Code SDK became Claude Agent SDK
@@ -55,6 +56,7 @@ On April 8, 2026, Anthropic simultaneously shipped the renamed SDK, the Managed 
 4. Authentication on Amazon Bedrock, Google Vertex AI, and Microsoft Azure Foundry is controlled entirely by environment variables (`CLAUDE_CODE_USE_BEDROCK`, `CLAUDE_CODE_USE_VERTEX`, `CLAUDE_CODE_USE_FOUNDRY`), not constructor arguments [1].
 5. The branding guidelines explicitly prohibit partners from using the names "Claude Code," "Claude Code Agent," or Claude Code-branded ASCII art — a signal that the SDK is now a platform, not a feature of a specific product [1].
 6. Session state is stored as JSONL on your filesystem and can be resumed by passing `resume: sessionId` in your options [1].
+7. Starting June 15, 2026, Anthropic says Agent SDK usage, `claude -p`, and third-party apps built on the Agent SDK use a separate monthly Agent SDK credit instead of the normal Claude plan usage bucket; additional usage can bill at standard API rates only if extra usage is enabled [7].
 
 ## The rename isn't cosmetic
 
@@ -63,6 +65,18 @@ Most developers saw the April 2026 announcement and ran `npm install @anthropic-
 The rename matters strategically because it de-couples the SDK from Claude Code the developer product. Claude Code is a terminal app; the Claude Agent SDK is now a general-purpose platform library. By prohibiting partners from calling their products "Claude Code," Anthropic is drawing a hard line: Claude Code is the consumer app, the Agent SDK is the infrastructure you build on. If you're building a product on top of this SDK, that distinction matters for your own naming and positioning.
 
 There's also a real technical signal in the version requirement. Requiring v0.2.111 for Opus 4.7 means Anthropic is now coupling model releases to SDK versions in a way they weren't before. You need to track SDK versions actively, not just pin to a major.
+
+## The June 15 billing split changes your migration checklist
+
+The May 18 verified research packet added a billing boundary that belongs in every Agent SDK migration plan. Anthropic's support docs state that, beginning June 15, 2026, Agent SDK usage and `claude -p` usage no longer draw from the ordinary Claude plan usage limit. They draw from a separate monthly Agent SDK credit, and overflow only turns into standard API-rate extra usage if the account has extra usage enabled [7].
+
+That is not a reason to avoid the Agent SDK. It is a reason to stop saying "we are on a Claude Max plan, so this script is covered" without checking the execution surface. A production readiness checklist now needs three lines:
+
+1. Identify whether each workload runs through interactive Claude Code, `claude -p`, the Agent SDK, Managed Agents, or the raw API.
+2. Log the selected billing path with each run, especially in CI and scheduled jobs.
+3. Add a monthly budget alarm for Agent SDK credit exhaustion before enabling extra usage.
+
+The anti-pattern is blending interactive development, CI automation, and customer-facing agent workloads under one vague "Claude subscription" assumption. They now have different operational limits and different failure modes.
 
 ## Installing the renamed SDK
 
@@ -412,3 +426,4 @@ In [[course/production-agents-claude-agent-sdk-mcp-connector/02-managed-agents-w
 [4] Claude Agent SDK MCP documentation — https://code.claude.com/docs/en/agent-sdk/mcp · retrieved 2026-04-30
 [5] Claude Managed Agents Overview — https://platform.claude.com/docs/en/managed-agents/overview · retrieved 2026-04-30
 [6] Claude Agent SDK TypeScript CHANGELOG — https://github.com/anthropics/claude-agent-sdk-typescript/blob/main/CHANGELOG.md · retrieved 2026-05-14
+[7] Anthropic Help Center, Use the Claude Agent SDK with your Claude plan — https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan · retrieved 2026-05-28

@@ -57,6 +57,8 @@ tags:
 
 Frontier model evaluation is the practice of measuring AI model capabilities along structured axes to predict production performance, rather than performance on standardized academic tests. As of Q2 2026, three models dominate serious production AI workloads: Claude Opus 4.7, GPT-5.5, and Gemini 3.1 Pro. This chapter gives you the conceptual scaffolding to decide *which* benchmark dimensions you actually need to measure for your workload before you run a single API call.
 
+**May 18 source refresh:** OpenAI's GPT-5.5 release page was re-surfaced in the research scan because the page positions GPT-5.5 as especially improved for agentic coding, computer use, knowledge work, and early scientific research, with API availability noted in an April 24 update.[5] Treat that as a reason to include GPT-5.5 in your benchmark set, not as a reason to skip the benchmark. Vendor positioning is an input to the scorecard; measured tool-use determinism, cost-per-task, and context fidelity still decide the production recommendation.
+
 ## Key facts
 
 1. **MMLU**, **HumanEval**, and **GPQA** — the three benchmarks most commonly cited in model release notes — measure knowledge recall, single-function code generation, and graduate-level science respectively. None directly measures tool-use consistency, structured-output stability, or mid-context retrieval accuracy. [1][2]
@@ -239,7 +241,7 @@ In [Chapter 2](/learn/picking-a-frontier-model-2026-q2/02-tool-use-determinism-b
 
 [4] Patil, S. et al. Berkeley Function-Calling Leaderboard (BFCL) V4 — https://gorilla.cs.berkeley.edu/leaderboard.html · retrieved 2026-04-30
 
-[5] OpenAI. Introducing GPT-5.5 — https://openai.com/index/introducing-gpt-5-5/ · retrieved 2026-04-30
+[5] OpenAI. Introducing GPT-5.5 — https://openai.com/index/introducing-gpt-5-5/ · refreshed 2026-05-18
 
 [6] Liu, N. et al. (2023). "Lost in the Middle: How Language Models Use Long Contexts" — https://arxiv.org/abs/2307.03172 · retrieved 2026-04-30
 

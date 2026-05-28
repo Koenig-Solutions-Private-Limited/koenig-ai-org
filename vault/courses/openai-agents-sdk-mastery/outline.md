@@ -4,12 +4,16 @@ title: "OpenAI Agents SDK Mastery: Build Production-Ready Autonomous Systems"
 status: outline-draft-for-review
 author: course-author
 level: Builder
+last_delta_reason: "2026-05-18 OpenAI GPT-5.5 agentic positioning and Codex mobile continuation"
 target_audience: "Python and TypeScript developers who want to build autonomous, multi-agent systems using the latest OpenAI SDKs and the Responses API."
 tags:
   - OpenAI Agents SDK
   - Agent Orchestration
   - Production Agents
   - Realtime API
+sources:
+  - https://openai.com/index/introducing-gpt-5-5/
+  - https://openai.com/index/work-with-codex-from-anywhere/
 prerequisites:
   - "Proficiency in Python or TypeScript"
   - "Basic understanding of LLM APIs (Chat Completions)"
@@ -32,9 +36,10 @@ chapter_count: 10
 **Learning objectives:**
 1. Compare the legacy Chat Completions API with the new Responses API model.
 2. Configure the development environment using Codex CLI and SDK credentials.
-3. Build a "Hello World" agent using the `Agent` class and the base SDK loop.
-**Key concepts:** SDK Architecture, Responses API vs Chat Completions, Environment Setup, The Agent Loop.
-**Hands-on exercise:** Initialize a basic agent that responds to system queries using the new SDK syntax.
+3. Choose an appropriate current OpenAI model for an agent loop, using GPT-5.5's agentic-coding/computer-use positioning as a testable hypothesis rather than a default.
+4. Build a "Hello World" agent using the `Agent` class and the base SDK loop.
+**Key concepts:** SDK Architecture, Responses API vs Chat Completions, Environment Setup, The Agent Loop, GPT-5.5 for long-running agentic work.
+**Hands-on exercise:** Initialize a basic agent that responds to system queries using the new SDK syntax, then record model ID, tool-call count, elapsed time, and whether a human approval was needed.
 
 ## Chapter 2: Tool Orchestration & Pydantic Safety
 **Duration:** 60 mins
@@ -113,8 +118,9 @@ chapter_count: 10
 1. Build a simulation test suite using "Agent-on-Agent" evaluation.
 2. Create and maintain "Golden Datasets" for regression testing.
 3. Calculate performance metrics (accuracy, cost, latency) for agent chains.
-**Key concepts:** Simulation testing, LLM-as-a-judge, Golden datasets, Performance benchmarks.
-**Hands-on exercise:** Create an automated eval script that scores an agent's tool-calling accuracy.
+4. Separate model-release claims from your own harness metrics before upgrading production agents.
+**Key concepts:** Simulation testing, LLM-as-a-judge, Golden datasets, Performance benchmarks, harness engineering.
+**Hands-on exercise:** Create an automated eval script that scores an agent's tool-calling accuracy across two model IDs, then write a one-paragraph upgrade decision memo.
 
 ## Chapter 10: Capstone Project: Enterprise AI Triage Bot
 **Duration:** 60 mins
