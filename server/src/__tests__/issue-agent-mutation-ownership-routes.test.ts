@@ -437,6 +437,86 @@ describe("agent issue mutation checkout ownership", () => {
     expect(mockIssueService.update).toHaveBeenCalled();
   });
 
+  it("allows a granted peer agent to add cross-assignee observer comments", async () => {
+    mockIssueService.getById.mockResolvedValue(makeIssue({ status: "blocked", assigneeAgentId: ownerAgentId }));
+    mockAccessService.hasPermission.mockImplementation(async (
+      _companyId: string,
+      _principalType: string,
+      principalId: string,
+      permissionKey: string,
+    ) => principalId === peerAgentId && permissionKey === "issue.comments:create_cross_assignee");
+
+    const res = await request(await createApp(peerActor()))
+      .post(`/api/issues/${issueId}/comments`)
+      .send({ body: "watchdog observer nudge" });
+
+    expect(res.status, JSON.stringify(res.body)).toBe(201);
+    expect(mockIssueService.addComment).toHaveBeenCalledWith(
+      issueId,
+      "watchdog observer nudge",
+      expect.objectContaining({ agentId: peerAgentId }),
+    );
+  });
+
+  it.each([
+    ["resume", { resume: true }],
+    ["reopen", { reopen: true }],
+    ["interrupt", { interrupt: true }],
+  ])("rejects cross-assignee observer comments that request %s", async (_name, payload) => {
+    mockIssueService.getById.mockResolvedValue(makeIssue({ status: "blocked", assigneeAgentId: ownerAgentId }));
+    mockAccessService.hasPermission.mockResolvedValue(true);
+
+    const res = await request(await createApp(peerActor()))
+      .post(`/api/issues/${issueId}/comments`)
+      .send({ body: "blocked observer action", ...payload });
+
+    expect(res.status, JSON.stringify(res.body)).toBe(403);
+    expect(res.body.error).toBe("Cross-assignee observer comments cannot resume, reopen, or interrupt issues");
+    expect(mockIssueService.addComment).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["patch", (app: express.Express) => request(app).patch(`/api/issues/${issueId}`).send({ title: "still blocked" })],
+    [
+      "document upsert",
+      (app: express.Express) =>
+        request(app).put(`/api/issues/${issueId}/documents/plan`).send({ format: "markdown", body: "# still blocked" }),
+    ],
+    [
+      "attachment upload",
+      (app: express.Express) =>
+        request(app)
+          .post(`/api/companies/${companyId}/issues/${issueId}/attachments`)
+          .attach("file", Buffer.from("report"), { filename: "report.txt", contentType: "text/plain" }),
+    ],
+  ])("does not allow %s with cross-assignee comment-only permission", async (_name, sendRequest) => {
+    mockIssueService.getById.mockResolvedValue(makeIssue({ status: "todo", assigneeAgentId: ownerAgentId }));
+    mockAccessService.hasPermission.mockImplementation(async (
+      _companyId: string,
+      _principalType: string,
+      principalId: string,
+      permissionKey: string,
+    ) => principalId === peerAgentId && permissionKey === "issue.comments:create_cross_assignee");
+
+    const res = await sendRequest(await createApp(peerActor()));
+
+    expect(res.status, JSON.stringify(res.body)).toBe(403);
+    expect(res.body.error).toBe("Agent cannot mutate another agent's issue");
+  });
+
+  it("denies cross-company comment even when cross-assignee comment permission would otherwise match", async () => {
+    mockAccessService.hasPermission.mockResolvedValue(true);
+
+    const res = await request(await createApp(peerActor({ companyId: "99999999-9999-4999-8999-999999999999" })))
+      .post(`/api/issues/${issueId}/comments`)
+      .send({ body: "cross company attempt" });
+
+    expect(res.status, JSON.stringify(res.body)).toBe(403);
+    expect(res.body.error).toBe("Agent key cannot access another company");
+    expect(mockAccessService.hasPermission).not.toHaveBeenCalled();
+    expect(mockIssueService.addComment).not.toHaveBeenCalled();
+  });
+
   it.each([
     ["todo", "patch", (app: express.Express) => request(app).patch(`/api/issues/${issueId}`).send({ title: "Todo update" })],
     ["todo", "comment", (app: express.Express) => request(app).post(`/api/issues/${issueId}/comments`).send({ body: "Todo noise" })],
