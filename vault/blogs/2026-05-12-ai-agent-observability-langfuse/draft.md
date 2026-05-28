@@ -1,6 +1,6 @@
 ---
-title: "AI Agent Observability with Langfuse — Production Setup"
-slug: ai-agent-observability-langfuse
+title: "Run Langfuse as the observability backend for mixed agent stacks"
+slug: 2026-05-12-ai-agent-observability-langfuse
 description: "Set up Langfuse for production AI agent observability with the six-container self-hosted stack, OTLP export from coding agents, cost tracking, and a clear view of when Langfuse beats LangSmith, Helicone, or Arize."
 date: 2026-05-12
 author: vardaan-koenig
@@ -8,7 +8,7 @@ agent_drafted_by: blog-author
 ticket: KOEA-1338
 vendor_tag: community
 content_type: article
-status: published
+status: awaiting-g0
 reading_time_min: 8
 hero_image: auto:flux
 tags: [langfuse, observability, self-host, otel, agents, llmops]
