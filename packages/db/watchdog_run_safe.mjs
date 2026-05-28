@@ -45,11 +45,12 @@ if(fs.existsSync(log)){
 }
 if(publishStale){
   publishStatus='FAILING (alerting)';
-  if(process.env.TELEGRAM_BOT_TOKEN&&process.env.TELEGRAM_CHAT_ID){
+  const publishTitle=`[WATCHDOG] publish-action.sh silent >10min — last tick: ${lastTick}`;
+  const r=await ensureIssue(publishTitle,'Watchdog detected no publish-action success tick in last 10 minutes.','critical');
+  if(r.created&&process.env.TELEGRAM_BOT_TOKEN&&process.env.TELEGRAM_CHAT_ID){
     const txt=encodeURIComponent(`Watchdog alert: publish-action.sh silent >10min. Last tick: ${lastTick}`);
     await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${txt}`,{method:'POST'}).catch(()=>{});
   }
-  await ensureIssue(`[WATCHDOG] publish-action.sh silent >10min — last tick: ${lastTick}`,'Watchdog detected no publish-action success tick in last 10 minutes.','critical');
 }else publishStatus=`OK (last tick: ${Math.floor((NOW-new Date(lastTick))/60000)}min ago)`;
 
 // 2 approvals
