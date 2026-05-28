@@ -125,6 +125,158 @@ A core requirement in legal workflows is to ensure PII (Personally Identifiable 
   expectedOutput="A valid MCP tool definition where `document_path` is the primary input and `pii_types` is an enum-constrained array. The description must emphasize that processing happens locally on the server."
 />
 
+### Runnable Example: A Local Legal Redaction MCP Server
+
+The schema above is useful for design review, but legal connectors become real only when the boundary is enforced in code. The official TypeScript SDK exposes `McpServer` for registering tools and `StdioServerTransport` for local MCP servers, which makes it a good fit for a small teaching connector that you can run from a terminal [9]. The example below is intentionally narrow: it redacts U.S. Social Security Number patterns from text that belongs to a matter, returns only cleaned text to the client, and records an audit event without storing the raw identifier.
+
+This is not a vendor API and not legal advice. It is a runnable MCP server pattern for the control-plane behavior you want around legal data.
+
+Create a fresh folder:
+
+```bash
+mkdir legal-redaction-mcp
+cd legal-redaction-mcp
+npm init -y
+npm install @modelcontextprotocol/sdk zod
+npm install -D typescript tsx @types/node
+```
+
+Then edit `package.json` so Node treats the file as an ES module and gives you a start command:
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "start": "tsx server.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "tsx": "latest",
+    "typescript": "latest"
+  }
+}
+```
+
+Now create `server.ts`:
+
+```ts
+import { createHash } from "node:crypto";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+
+const ssnPattern = /\b\d{3}-\d{2}-\d{4}\b/g;
+
+type AuditEvent = {
+  matterId: string;
+  redactionType: "SSN";
+  count: number;
+  fingerprints: string[];
+  occurredAt: string;
+};
+
+const auditLog: AuditEvent[] = [];
+
+function fingerprint(value: string) {
+  return createHash("sha256").update(value).digest("hex").slice(0, 16);
+}
+
+function redactSsn(text: string) {
+  const matches = Array.from(text.matchAll(ssnPattern), (match) => match[0]);
+  return {
+    redactedText: text.replace(ssnPattern, "[REDACTED_SSN]"),
+    matches
+  };
+}
+
+const server = new McpServer({
+  name: "legal-redaction-teaching-server",
+  version: "0.1.0"
+});
+
+server.tool(
+  "redact_legal_text",
+  "Redact SSN patterns locally before text is returned to Claude. This teaching tool never logs raw SSNs.",
+  {
+    matter_id: z
+      .string()
+      .regex(/^MAT-\d{4}$/)
+      .describe("Matter identifier used to keep the audit trail scoped, for example MAT-2042."),
+    text: z
+      .string()
+      .min(1)
+      .describe("Legal text to redact locally inside the MCP server process.")
+  },
+  async ({ matter_id, text }) => {
+    const result = redactSsn(text);
+    auditLog.push({
+      matterId: matter_id,
+      redactionType: "SSN",
+      count: result.matches.length,
+      fingerprints: result.matches.map(fingerprint),
+      occurredAt: new Date().toISOString()
+    });
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            {
+              matter_id,
+              redacted_text: result.redactedText,
+              redaction_count: result.matches.length,
+              audit_event: auditLog.at(-1)
+            },
+            null,
+            2
+          )
+        }
+      ]
+    };
+  }
+);
+
+const transport = new StdioServerTransport();
+await server.connect(transport);
+```
+
+You can connect this server to any MCP-compatible client that supports stdio servers. For example, a local client configuration can point to `npm start` in this folder. Once connected, ask the client to call:
+
+```json
+{
+  "matter_id": "MAT-2042",
+  "text": "Witness Jane Doe listed 123-45-6789 in the intake packet."
+}
+```
+
+The expected tool result is:
+
+```json
+{
+  "matter_id": "MAT-2042",
+  "redacted_text": "Witness Jane Doe listed [REDACTED_SSN] in the intake packet.",
+  "redaction_count": 1,
+  "audit_event": {
+    "matterId": "MAT-2042",
+    "redactionType": "SSN",
+    "count": 1,
+    "fingerprints": ["01a54629efb95228"],
+    "occurredAt": "2026-05-28T00:00:00.000Z"
+  }
+}
+```
+
+Your exact fingerprint and timestamp will differ, but two facts must stay invariant: the returned text must not contain the original SSN, and the audit record must describe what happened without logging the raw value. This follows the PII minimization logic in NIST SP 800-122: reduce collection, exposure, and retention of sensitive identifiers wherever possible [6].
+
+<Callout type="warn">
+Do not expand this teaching server into a broad `redact_anything` tool. Production legal connectors should name the matter boundary, supported redaction types, confirmation requirements, and audit behavior explicitly. A tool that accepts arbitrary text and vague instructions pushes compliance back onto the model.
+</Callout>
+
 ## Implementation Walkthrough: E-Discovery Search
 
 E-discovery is the process by which parties in a legal case must provide relevant documents to each other. It often involves searching across terabytes of data. Using MCP, we can create a search tool that queries an e-discovery platform like **Everlaw** or **Relativity**.
@@ -214,6 +366,7 @@ Execute the tool using a mock input containing an SSN.
 6. McCallister, Erika; Grance, Tim; Scarfone, Karen. "Guide to Protecting the Confidentiality of Personally Identifiable Information (PII)." *NIST Special Publication 800-122*. 2010. [Link](https://csrc.nist.gov/pubs/sp/800/122/final) (retrieved 2026-05-14).
 7. Ironclad. "Ironclad MCP Server." *Ironclad Support*. 2026. [Link](https://support.ironcladapp.com/hc/en-us/articles/39887091143319-Ironclad-MCP-Server) (retrieved 2026-05-14).
 8. Everlaw. "Anthropic MCP integration." *Everlaw*. 2026-05. [Link](https://www.everlaw.com/blog/ai-and-advanced-analytics/anthropic-mcp-integration/) (retrieved 2026-05-14).
+9. Model Context Protocol. "TypeScript SDK." *GitHub*. [Link](https://github.com/modelcontextprotocol/typescript-sdk) (retrieved 2026-05-28).
 
 ## What's next
 Congratulations on completing the Builder track! In the final **Capstone Project**, you will apply everything you've learned to build a production-ready MCP "Agentic Connector" that bridges a secure corporate system to Claude, complete with full observability and a documented compliance trail.
