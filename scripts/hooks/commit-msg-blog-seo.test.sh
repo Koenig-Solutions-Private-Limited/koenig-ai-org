@@ -39,9 +39,11 @@ run_case() {
 }
 
 GOOD_DESC="Learn how Anthropic MCP connectors wire Resolume and Blender into agent workflows with cited benchmarks and production guardrails for creative teams."
+REMOVE_DESC="Remove outdated patterns while teaching practical AI agent workflows with cited benchmarks and production guardrails for operators."
 
 run_case "rule-1-missing" yes $'---\nstatus: g0-passed\ntitle: Test\n---\n\nBody'
 run_case "rule-2-named-fixture" yes $'---\nstatus: g0-passed\nseo_description: Updated Resolume and Blender descriptions for accuracy\ntitle: Test\n---\n\nBody'
 run_case "rule-3-accept-good" no $'---\nstatus: g0-passed\nseo_description: '"$GOOD_DESC"$'\ntitle: Test\n---\n\nBody'
+run_case "rule-4-remove-is-allowed" no $'---\nstatus: g0-passed\nseo_description: '"$REMOVE_DESC"$'\ntitle: Test\n---\n\nBody'
 
 echo "All commit-msg-blog-seo smoke tests passed."

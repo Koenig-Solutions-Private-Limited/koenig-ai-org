@@ -6,7 +6,7 @@ set -euo pipefail
 COMMIT_MSG_FILE="${1:?commit-msg file required}"
 ROOT="$(git rev-parse --show-toplevel)"
 
-COMMIT_MSG_REGEX='^\s*(rev\s*[0-9]+:|updated?\b|fixed?\b|standardized\b|bumped\b|refactored\b|chore\b|wip\b|added?\b|removed?\b|merged?\b)'
+COMMIT_MSG_REGEX='^\s*(rev\s*[0-9]+:|updated?\b|fixed?\b|standardized\b|bumped\b|refactored\b|chore\b|wip\b|added?\b|removed\b|merged?\b)'
 
 check_seo_description() {
   local value="$1"
@@ -52,6 +52,8 @@ parse_frontmatter_field() {
   ' "$file"
 }
 
+failures=0
+
 while IFS= read -r -d '' path; do
   [[ "$path" == vault/blogs/*/draft.md ]] || continue
   full="$ROOT/$path"
@@ -64,7 +66,9 @@ while IFS= read -r -d '' path; do
   esac
 
   seo_description="$(parse_frontmatter_field "$full" seo_description)"
-  check_seo_description "$seo_description" "$path" "$status"
+  if ! check_seo_description "$seo_description" "$path" "$status"; then
+    failures=1
+  fi
 done < <(git diff --cached --name-only -z -- 'vault/blogs/*/draft.md')
 
-exit 0
+exit "$failures"
