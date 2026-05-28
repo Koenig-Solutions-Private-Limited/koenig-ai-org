@@ -118,13 +118,14 @@ paperclip_curl_json() {
   local endpoint="$2"
   local output_file="$3"
   local data_file="${4:-}"
+  local bearer_token="${5:-${PAPERCLIP_API_KEY:-}}"
   local error_file status reason
   error_file="$(mktemp)"
   register_temp_file "$error_file"
 
   local auth_args=()
-  if [ -n "${PAPERCLIP_API_KEY:-}" ]; then
-    auth_args=(-H "Authorization: Bearer ${PAPERCLIP_API_KEY}")
+  if [ -n "$bearer_token" ]; then
+    auth_args=(-H "Authorization: Bearer ${bearer_token}")
   fi
 
   local curl_args=(-sS --connect-timeout 10 --max-time 30 -X "$method" "$PAPERCLIP_URL$endpoint")
@@ -170,7 +171,7 @@ PY
     return 1
   fi
 
-  paperclip_curl_json PATCH "/api/issues/$issue_id" "$response_file" "$payload_file"
+  paperclip_curl_json PATCH "/api/issues/$issue_id" "$response_file" "$payload_file" "${PAPERCLIP_BOARD_TOKEN:-}"
 }
 
 github_curl_json() {
@@ -837,7 +838,7 @@ retry_pending_dispatch_ledgers
 
 G4_ISSUES_RESPONSE="$(mktemp)"
 register_temp_file "$G4_ISSUES_RESPONSE"
-if paperclip_curl_json GET "/api/companies/$COMPANY_ID/issues" "$G4_ISSUES_RESPONSE"; then
+if paperclip_curl_json GET "/api/companies/$COMPANY_ID/issues?limit=2000" "$G4_ISSUES_RESPONSE"; then
   G4_ISSUES_JSON="$(phase1_extract_g4_issues "$G4_ISSUES_RESPONSE")"
 else
   G4_ISSUES_JSON="[]"
@@ -902,7 +903,7 @@ log "Phase 2: scanning for publish_state=dispatching issues..."
 
 DISPATCHING_RESPONSE="$(mktemp)"
 register_temp_file "$DISPATCHING_RESPONSE"
-if paperclip_curl_json GET "/api/companies/$COMPANY_ID/issues" "$DISPATCHING_RESPONSE"; then
+if paperclip_curl_json GET "/api/companies/$COMPANY_ID/issues?limit=2000" "$DISPATCHING_RESPONSE"; then
   DISPATCHING_JSON="$(phase2_extract_dispatching_issues "$DISPATCHING_RESPONSE")"
 else
   DISPATCHING_JSON="[]"
