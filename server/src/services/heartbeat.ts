@@ -5640,7 +5640,7 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
       }
       const adapterRuntimeConfig = buildLocalAgentJwtSafeRuntimeConfig({
         runtimeConfig,
-        adapterSupportsLocalAgentJwt: adapter.supportsLocalAgentJwt,
+        adapterSupportsLocalAgentJwt: adapter.supportsLocalAgentJwt === true,
         expected: {
           runId: run.id,
           agentId: agent.id,
