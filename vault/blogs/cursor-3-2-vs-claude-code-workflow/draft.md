@@ -7,6 +7,7 @@ vendor_tag: community
 content_type: article
 status: published
 reading_time_min: 7
+seo_description: "Compare Cursor 3.2 and Claude Code for agentic coding: IDE-native parallel subagents versus programmable CLI/SDK loop control."
 primary_query: "cursor 3.2 vs claude code agent workflow"
 contrarian_angle: "Cursor's background-agent harness survives IDE crashes because state lives server-side; Claude Code loops die with the shell session — but Claude Code's BYOS model means you own the loop-restart logic and budget cap."
 sources:

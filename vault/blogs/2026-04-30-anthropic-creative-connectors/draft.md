@@ -19,6 +19,7 @@ status: published
 title: "How to use Anthropic's 9 new creative connectors in your workflow"
 slug: "2026-04-30-anthropic-creative-connectors"
 description: "Anthropic launched 9 MCP-based connectors for Blender, Adobe Creative Cloud, Ableton Live, and Resolume in April 2026, letting Claude orchestrate 3D, audio, and design workflows via natural language."
+seo_description: "Anthropic creative connectors bring Claude into Blender, Adobe, Ableton, and Resolume via MCP so teams can script 3D, audio, and design workflows."
 reading_time_min: 4
 sources:
   - https://www.anthropic.com/news/claude-for-creative-work

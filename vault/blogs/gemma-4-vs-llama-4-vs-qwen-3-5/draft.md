@@ -8,6 +8,7 @@ vendor_tag: community
 content_type: article
 status: published
 reading_time_min: 6
+seo_description: "Choose between Gemma 4, Llama 4, and Qwen3 by deployment shape: edge/offline inference, single-GPU long context, or cloud-batch MoE economics."
 primary_query: "gemma 4 vs llama 4 vs qwen3 best open weights llm 2026"
 contrarian_angle: "Benchmark leaderboards are the wrong lens — deployment shape (edge, single-GPU, cloud-batch) determines the winner before you read a single accuracy number"
 sources:

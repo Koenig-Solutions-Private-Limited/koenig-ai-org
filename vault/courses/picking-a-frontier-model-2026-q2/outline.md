@@ -28,6 +28,11 @@ related_blogs:
 sources:
   - https://www.anthropic.com/news
   - https://help.openai.com/en/articles/9624314-model-release-notes
+  - https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/
+  - https://deepmind.google/models/model-cards/gemini-3-1-pro/
+  - https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview
+  - https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-flash-tts/
+  - https://ai.google.dev/gemini-api/docs/speech-generation
   - https://ai.google.dev/gemini-api/docs/changelog
   - https://openai.com/index/trusted-access-for-cyber/
   - https://openai.com/index/gpt-5-5-with-trusted-access-for-cyber/
@@ -49,6 +54,8 @@ Every quarter, someone publishes a "best AI model" post with a 15-model table of
 This course is built around a different premise: **evaluation is an engineering discipline, not a reading exercise.** Rather than telling you which model wins, we show you the evaluation framework we built, run it with you, and teach you to run it yourself on your specific workload. The 10×3×5 determinism benchmark at the center of Chapter 2 came out of debugging a production agentic pipeline that was failing non-deterministically one run in three — a failure mode invisible on any public leaderboard.
 
 By the end you will have run real prompts, measured real variance, modeled real cost, and written a memo that a skeptical engineering manager would accept. That's the bar.
+
+**Gemini 3.1 course-delta note, verified 2026-05-28**: this course treats `gemini-3.1-pro-preview` as Google's current preview reasoning and long-context model for benchmark comparison, not as an audio-generation model. Google's launch post says Gemini 3.1 Pro began rolling out on 2026-02-19 across developer, enterprise, and consumer surfaces; the DeepMind model card documents text, image, audio, and video inputs with text output; and the Gemini API model page documents 1,048,576 input tokens, 65,536 output tokens, function calling, structured outputs, caching, code execution, and no audio generation. Scripted audio belongs to the separate `gemini-3.1-flash-tts-preview` surface described in Google's Flash TTS launch post and speech-generation guide. Any lab that uses a preview model ID must keep that ID configurable and require a changelog/deprecation check before production use.
 
 ## The contrarian angle
 
@@ -103,7 +110,7 @@ The standard comparison post asks: *which model is the smartest?* We ask: *which
   4. Choose the right context window strategy (chunking vs. full-context vs. hybrid) for multi-document workloads
   5. Understand why 1M token context is not the same as 1M token *understanding*
 - **Key concepts**: effective context window, needle-in-haystack, retrieval depth degradation, context poisoning, chunking strategy, RAG vs. long-context tradeoffs
-- **Contrarian angle**: Gemini 3.1 Pro's 1M token context is genuinely impressive at retrieval — but its reasoning quality at depth 800K degrades in ways that make it unreliable for synthesis tasks. Opus 4.7's 200K window, used correctly with structured chunking, outperforms Gemini on synthesis tasks at comparable total document volume.
+- **Contrarian angle**: Gemini 3.1 Pro's 1M-class context is genuinely impressive at retrieval — but its reasoning quality at high depth degrades in ways that make it unreliable for synthesis tasks unless measured. Opus 4.7's 1M-class window, used with structured chunking, can outperform Gemini on synthesis tasks at comparable total document volume; learners must prove the claim on their own documents rather than trusting the advertised window.
 - **Hands-on exercise**: Run the provided needle-in-haystack script on a document set of your choice at three depths (50K / 200K / target max). Record retrieval accuracy and note any reasoning degradation in the answer quality.
 - **v3-citation-authority requirements**: Wikipedia-style lead, key-facts list, ≥5 citations, ≥3 internal wikilinks, References footer
 

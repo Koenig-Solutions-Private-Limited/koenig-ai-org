@@ -4,7 +4,7 @@ chapter_num: 2
 chapter_slug: tool-use-determinism-benchmark
 title: "Tool-use determinism — our 10×3×5 benchmark"
 hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch02-hero.svg"
-status: draft-for-review
+status: awaiting-g0
 author: "Koenig AI Instructor"
 agent_drafted_by: ca965eff-ea59-4030-91de-47845d3600c6
 vendor_tag: koenig-ai-academy
@@ -32,7 +32,8 @@ references:
   - "[^3]: OpenAI. 'Structured Outputs.' Model release notes. https://help.openai.com/en/articles/9624314-model-release-notes — GPT-5.5 strict JSON schema enforcement capabilities."
   - "[^4]: Anthropic. 'Model temperature and sampling.' Claude model documentation. https://www.anthropic.com/news — temperature=0 behavior across API requests."
   - "[^5]: Shen, Y. et al. (2023). 'HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in HuggingFace.' https://arxiv.org/abs/2303.17580."
-  - "[^6]: Google. 'Gemini API changelog.' https://ai.google.dev/gemini-api/docs/changelog — Gemini 3.1 Pro structured output and tool-use capability notes."
+  - "[^6]: Google. 'Gemini 3.1 Pro Preview.' https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview — model capabilities, context limits, structured outputs, function calling, and custom-tools endpoint."
+  - "[^7]: Google. 'Gemini 3.1 Pro: A smarter model for your most complex tasks.' https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/ — rollout, preview status, surfaces, and ARC-AGI-2 claim."
 slides: courses/picking-a-frontier-model-2026-q2/ch02-slides.pptx
 voiceover_script: courses/picking-a-frontier-model-2026-q2/voiceover-02.md
 tags:
@@ -154,7 +155,7 @@ Full results are in `/data/claude-tool-use-determinism/2026-Q2/results.json`. Su
 
 4. **Category 9 (ambiguous input) is the universal weakness.** All three models show their lowest determinism here. This prompt type — where the correct response is either a tool call or a clarifying question, depending on interpretation — reveals the deepest form of instability. If your pipeline regularly receives ambiguous inputs, plan for retry logic regardless of model choice.
 
-5. **Gemini 3.1 Pro requires specific parameter hygiene.** For the best results in tool-use evals, ensure you are using current Gemini 3.1 API controls. Avoid mixing legacy `thinking_budget` parameters (from the experimental 2.5/3 series) with newer `thinking_level` guidance. Furthermore, benchmark **schema adherence** (whether the model fills every required field) rather than just JSON validity; Gemini's determinism is most sensitive to schema completeness. [^6]
+5. **Gemini 3.1 Pro requires surface hygiene.** Google's launch post says 3.1 Pro is still a preview release while Google validates agentic workflow updates, and the Gemini API model page documents function calling, structured outputs, code execution, caching, and a separate `gemini-3.1-pro-preview-customtools` endpoint for workflows that mix bash and custom tools. It also documents text output only and no audio generation. For tool-use evals, benchmark **schema adherence** (whether the model fills every required field), not just JSON validity, and keep the model ID configurable so a preview or custom-tools endpoint can be swapped without rewriting your benchmark. [^6][^7]
 
 ### The most common failure modes
 
@@ -323,5 +324,6 @@ You now have empirical determinism scores for your prompts — and an understand
 
 [^5]: Shen, Y. et al. (2023). "HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in HuggingFace." https://arxiv.org/abs/2303.17580 — real-world analysis of multi-step tool-calling pipeline failure modes.
 
-[^6]: Google. "Gemini API changelog." https://ai.google.dev/gemini-api/docs/changelog — Gemini 3.1 Pro structured output and tool-use capability notes.
+[^6]: Google. "Gemini 3.1 Pro Preview." https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview — model capabilities, context limits, structured outputs, function calling, and custom-tools endpoint; retrieved 2026-05-28.
 
+[^7]: Google. "Gemini 3.1 Pro: A smarter model for your most complex tasks." https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/ — preview rollout surfaces and agentic-workflow caveat; retrieved 2026-05-28.

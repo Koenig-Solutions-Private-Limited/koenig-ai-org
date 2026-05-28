@@ -20,6 +20,7 @@ learning_objectives:
 slug: claude-security-beta-devsecops
 tags: [anthropic, devsecops, security, claude-security, opus-4-7, vulnerability-scanning]
 excerpt: "Claude Security beta ships with scan-to-patch in a single sitting — but the real story is Anthropic's Opus 4.7 embed into six major security platforms, building a DevSecOps moat most commentary missed."
+seo_description: "Claude Security beta matters less as a scanner than as an Opus 4.7 DevSecOps wedge across CrowdStrike, Wiz, Palo Alto, and enterprise security workflows."
 faq:
   - question: "What does Claude Security beta provide for enterprise security teams?"
     answer: "Claude Security provides zero-integration vulnerability scanning that finds bugs, explains them, and generates targeted patches in a single session — reducing what previously took days of engineer/security back-and-forth to one sitting."

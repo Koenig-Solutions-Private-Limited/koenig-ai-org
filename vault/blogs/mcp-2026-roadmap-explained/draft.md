@@ -7,6 +7,7 @@ content_type: article
 status: published
 reading_time_min: 6
 primary_query: "MCP 2026 roadmap what changes for builders"
+seo_description: "Learn what the MCP 2026 roadmap changes for builders: stateless transport, DPoP security, enterprise extensions, and Working Group governance."
 contrarian_angle: "The four technical features are table stakes — the real story is Anthropic handing spec governance to Working Groups, creating the first credible community veto path in any major AI protocol"
 sources:
   - https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/

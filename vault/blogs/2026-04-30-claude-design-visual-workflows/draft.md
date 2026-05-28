@@ -10,6 +10,7 @@ status: published
 title: "How Claude Design orchestrates visual workflows across Blender, Adobe CC, and Ableton via MCP"
 slug: "2026-04-30-claude-design-visual-workflows"
 description: "Claude Design and eight MCP connectors let designers build end-to-end creative pipelines across Blender, Adobe Creative Cloud, and Ableton from a single Claude conversation — eliminating manual handoffs between tools."
+seo_description: "Learn how Claude Design uses MCP connectors to orchestrate Blender, Adobe Creative Cloud, and Ableton workflows without replacing creative tools."
 tags:
   - claude
   - mcp
