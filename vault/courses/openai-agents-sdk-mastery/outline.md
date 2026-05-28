@@ -4,7 +4,7 @@ title: "OpenAI Agents SDK Mastery: Build Production-Ready Autonomous Systems"
 status: outline-draft-for-review
 author: course-author
 level: Builder
-last_delta_reason: "2026-05-18 OpenAI GPT-5.5 agentic positioning and Codex mobile continuation"
+last_delta_reason: "2026-05-18 community shift from prompt engineering to harness engineering"
 target_audience: "Python and TypeScript developers who want to build autonomous, multi-agent systems using the latest OpenAI SDKs and the Responses API."
 tags:
   - OpenAI Agents SDK
@@ -12,8 +12,9 @@ tags:
   - Production Agents
   - Realtime API
 sources:
-  - https://openai.com/index/introducing-gpt-5-5/
-  - https://openai.com/index/work-with-codex-from-anywhere/
+  - https://www.reddit.com/r/PromptEngineering/comments/1t95hyf/is_prompt_engineering_actually_dead_or_are_we/
+  - https://np.reddit.com/r/ClaudeAI/comments/1rozbqb/are_agents_actually_useful_for_complex_tasks/
+  - https://daringfireball.net/2026/05/ai_is_technology_not_a_product
 prerequisites:
   - "Proficiency in Python or TypeScript"
   - "Basic understanding of LLM APIs (Chat Completions)"
@@ -36,10 +37,10 @@ chapter_count: 10
 **Learning objectives:**
 1. Compare the legacy Chat Completions API with the new Responses API model.
 2. Configure the development environment using Codex CLI and SDK credentials.
-3. Choose an appropriate current OpenAI model for an agent loop, using GPT-5.5's agentic-coding/computer-use positioning as a testable hypothesis rather than a default.
-4. Build a "Hello World" agent using the `Agent` class and the base SDK loop.
-**Key concepts:** SDK Architecture, Responses API vs Chat Completions, Environment Setup, The Agent Loop, GPT-5.5 for long-running agentic work.
-**Hands-on exercise:** Initialize a basic agent that responds to system queries using the new SDK syntax, then record model ID, tool-call count, elapsed time, and whether a human approval was needed.
+3. Build a "Hello World" agent using the `Agent` class and the base SDK loop.
+4. Record the minimum harness metadata needed to debug an agent run: model ID, tool calls, elapsed time, approval state, and final outcome.
+**Key concepts:** SDK Architecture, Responses API vs Chat Completions, Environment Setup, The Agent Loop, Run metadata.
+**Hands-on exercise:** Initialize a basic agent that responds to system queries using the new SDK syntax, then save a one-run execution record with model ID, tool-call count, elapsed time, and whether a human approval was needed.
 
 ## Chapter 2: Tool Orchestration & Pydantic Safety
 **Duration:** 60 mins
@@ -57,9 +58,10 @@ chapter_count: 10
 **Learning objectives:**
 1. Implement the Handoff pattern to transfer control between specialized agents.
 2. Build a central "Router Agent" that classifies intent and delegates tasks.
-3. Maintain conversation context across agent transfers.
-**Key concepts:** Agent handoffs, Routing patterns, Context preservation, Specialized workers.
-**Hands-on exercise:** Build a multi-agent system where a Support agent hands off technical queries to a Dev agent.
+3. Define explicit subagent contracts before implementation: assigned scope, allowed tools, handoff inputs, and completion criteria.
+4. Maintain conversation context across agent transfers.
+**Key concepts:** Agent handoffs, Routing patterns, Context preservation, Specialized workers, Subagent contracts.
+**Hands-on exercise:** Build a multi-agent system where a Support agent hands off technical queries to a Dev agent, then add a short contract file that states each agent's scope and handoff boundary.
 
 ## Chapter 4: Memory & Persistence: Migration Paths
 **Duration:** 60 mins
@@ -118,9 +120,9 @@ chapter_count: 10
 1. Build a simulation test suite using "Agent-on-Agent" evaluation.
 2. Create and maintain "Golden Datasets" for regression testing.
 3. Calculate performance metrics (accuracy, cost, latency) for agent chains.
-4. Separate model-release claims from your own harness metrics before upgrading production agents.
-**Key concepts:** Simulation testing, LLM-as-a-judge, Golden datasets, Performance benchmarks, harness engineering.
-**Hands-on exercise:** Create an automated eval script that scores an agent's tool-calling accuracy across two model IDs, then write a one-paragraph upgrade decision memo.
+4. Turn harness metrics into an explicit release gate before changing prompts, tools, or models.
+**Key concepts:** Simulation testing, LLM-as-a-judge, Golden datasets, Performance benchmarks, Harness engineering, Release gates.
+**Hands-on exercise:** Create an automated eval script that scores an agent's tool-calling accuracy, cost, and latency against a golden dataset, then write a one-paragraph release-gate decision memo.
 
 ## Chapter 10: Capstone Project: Enterprise AI Triage Bot
 **Duration:** 60 mins
