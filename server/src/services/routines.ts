@@ -47,6 +47,10 @@ import { parseCron, validateCron } from "./cron.js";
 import { heartbeatService } from "./heartbeat.js";
 import { queueIssueAssignmentWakeup, type IssueAssignmentWakeupDeps } from "./issue-assignment-wakeup.js";
 import { logActivity } from "./activity-log.js";
+import {
+  buildRoutineExecutionConflictDetails,
+  ROUTINE_EXECUTION_CONFLICT_ERROR_CODE,
+} from "./routine-execution-bind.js";
 import type { PluginWorkerManager } from "./plugin-worker-manager.js";
 
 const OPEN_ISSUE_STATUSES = ["backlog", "todo", "in_progress", "in_review", "blocked"];
@@ -717,6 +721,25 @@ export function routineService(
       .then((rows) => rows[0]?.issues ?? null);
   }
 
+  function logRoutineDispatchCoalesceConflict(
+    activeIssue: typeof issues.$inferSelect,
+    routineId: string,
+    targetIssueId: string | null = null,
+  ) {
+    logger.info(
+      buildRoutineExecutionConflictDetails({
+        errorCode: ROUTINE_EXECUTION_CONFLICT_ERROR_CODE,
+        targetIssueId: targetIssueId ?? activeIssue.id,
+        activeIssueId: activeIssue.id,
+        activeIssueIdentifier: activeIssue.identifier,
+        activeRunId: activeIssue.executionRunId,
+        originId: activeIssue.originId ?? routineId,
+        originFingerprint: activeIssue.originFingerprint,
+      }),
+      "dispatchRoutineRun: coalesced routine execution dispatch conflict",
+    );
+  }
+
   async function finalizeRun(runId: string, patch: Partial<typeof routineRuns.$inferInsert>, executor: Db = db) {
     return executor
       .update(routineRuns)
@@ -905,6 +928,7 @@ export function routineService(
         const activeIssue = await findLiveExecutionIssue(input.routine, txDb, dispatchFingerprint);
         if (activeIssue && input.routine.concurrencyPolicy !== "always_enqueue") {
           const status = input.routine.concurrencyPolicy === "skip_if_active" ? "skipped" : "coalesced";
+          logRoutineDispatchCoalesceConflict(activeIssue, input.routine.id);
           if (manualRunnerUserId) {
             await touchIssueForUserInbox(txDb, {
               companyId: input.routine.companyId,
@@ -965,6 +989,7 @@ export function routineService(
           const existingIssue = await findLiveExecutionIssue(input.routine, txDb, dispatchFingerprint);
           if (!existingIssue) throw error;
           const status = input.routine.concurrencyPolicy === "skip_if_active" ? "skipped" : "coalesced";
+          logRoutineDispatchCoalesceConflict(existingIssue, input.routine.id, createdIssue?.id ?? null);
           if (manualRunnerUserId) {
             await touchIssueForUserInbox(txDb, {
               companyId: input.routine.companyId,
