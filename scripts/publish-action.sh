@@ -12,15 +12,16 @@
 
 set -euo pipefail
 
-REPO_ROOT="/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org"
-ENV_FILE="$REPO_ROOT/.env.koenig"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="${REPO_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+ENV_FILE="${ENV_FILE:-$REPO_ROOT/.env.koenig}"
 PAPERCLIP_URL="${PAPERCLIP_URL:-http://localhost:3100}"
 COMPANY_ID="${COMPANY_ID:-${KOENIG_COMPANY_ID:-2a77f89b-33f0-4133-a20c-77ddaac5e744}}"
 GH_DISPATCH_REPO="Koenig-Solutions-Private-Limited/learnovaBeast"
 PROD_URL="https://academy.kspl.tech"
-LOG_DIR="/paperclip/logs"
+LOG_DIR="${LOG_DIR:-/paperclip/logs}"
 mkdir -p "$LOG_DIR"
-LOG="$LOG_DIR/publish-action.log"
+LOG="${LOG:-$LOG_DIR/publish-action.log}"
 cd "$REPO_ROOT"
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG"; }
@@ -264,6 +265,134 @@ verify_no_pending_g4_publish() {
   return 0
 }
 
+PUBLISH_CANONICAL_REMOTE="${PUBLISH_CANONICAL_REMOTE:-origin}"
+PUBLISH_CANONICAL_BRANCH="${PUBLISH_CANONICAL_BRANCH:-master}"
+PHASE0_SYNC_OK=1
+
+on_canonical_branch() {
+  local current
+  current="$(git branch --show-current)"
+  if [ "$current" != "$PUBLISH_CANONICAL_BRANCH" ]; then
+    log "origin-master-guard: BLOCK reason=branch-mismatch current=$current expected=$PUBLISH_CANONICAL_BRANCH"
+    return 1
+  fi
+  return 0
+}
+
+finalize_phase0_sync() {
+  if ! on_canonical_branch; then
+    PHASE0_SYNC_OK=0
+    return 1
+  fi
+
+  if ! git fetch "$PUBLISH_CANONICAL_REMOTE" "$PUBLISH_CANONICAL_BRANCH" >>"$LOG" 2>&1; then
+    log "origin-master-guard: BLOCK reason=fetch-failed remote=$PUBLISH_CANONICAL_REMOTE branch=$PUBLISH_CANONICAL_BRANCH"
+    PHASE0_SYNC_OK=0
+    return 1
+  fi
+
+  local local_head remote_head
+  local_head="$(git rev-parse HEAD)"
+  remote_head="$(git rev-parse "$PUBLISH_CANONICAL_REMOTE/$PUBLISH_CANONICAL_BRANCH" 2>/dev/null || echo "")"
+  if [ -z "$remote_head" ] || [ "$local_head" != "$remote_head" ]; then
+    log "origin-master-guard: BLOCK reason=head-mismatch local=$local_head remote=${remote_head:-missing}"
+    PHASE0_SYNC_OK=0
+    return 1
+  fi
+
+  local dirty
+  dirty="$(git status --porcelain 2>&1 | grep -vE '^.. vault/\.obsidian/workspace\.json$|^\?\? vault/\.obsidian/workspace\.json$' || true)"
+  if [ -n "$dirty" ]; then
+    log "origin-master-guard: BLOCK reason=dirty-worktree"
+    PHASE0_SYNC_OK=0
+    return 1
+  fi
+
+  log "origin-master-guard: Phase 0 sync OK head=$local_head"
+  return 0
+}
+
+resolve_artifact_path() {
+  local slug="$1"
+  local draft_path="$2"
+  if [ -n "$draft_path" ] && [ -f "$REPO_ROOT/$draft_path" ]; then
+    echo "$draft_path"
+    return 0
+  fi
+  if [ -n "$slug" ]; then
+    if [ -f "$REPO_ROOT/vault/blogs/$slug/draft.md" ]; then
+      echo "vault/blogs/$slug/draft.md"
+      return 0
+    fi
+    local course_path
+    course_path="$(find "$REPO_ROOT/vault/courses" -type f -path "*/$slug/draft.md" 2>/dev/null | head -1 || true)"
+    if [ -n "$course_path" ]; then
+      echo "${course_path#"$REPO_ROOT/"}"
+      return 0
+    fi
+  fi
+  return 1
+}
+
+artifact_on_origin_master_matches() {
+  local artifact_path="$1"
+  local local_sha remote_sha
+  if [ ! -f "$REPO_ROOT/$artifact_path" ]; then
+    log "origin-master-guard: BLOCK reason=local-artifact-missing path=$artifact_path"
+    return 1
+  fi
+  local_sha="$(git hash-object "$REPO_ROOT/$artifact_path")"
+  remote_sha="$(git rev-parse "$PUBLISH_CANONICAL_REMOTE/$PUBLISH_CANONICAL_BRANCH:$artifact_path" 2>/dev/null || echo "")"
+  if [ -z "$remote_sha" ]; then
+    log "origin-master-guard: BLOCK reason=blob-missing-on-origin path=$artifact_path"
+    return 1
+  fi
+  if [ "$local_sha" != "$remote_sha" ]; then
+    log "origin-master-guard: BLOCK reason=blob-mismatch path=$artifact_path local=$local_sha remote=$remote_sha"
+    return 1
+  fi
+  return 0
+}
+
+patch_issue_metadata_merge() {
+  local issue_id="$1"
+  local updates_json="$2"
+  local issue_tmp payload_tmp auth_token
+  issue_tmp="$(mktemp)"
+  payload_tmp="$(mktemp)"
+  auth_token="${PAPERCLIP_BOARD_TOKEN:-${PAPERCLIP_API_KEY:-}}"
+  if [ -z "$auth_token" ]; then
+    log "origin-master-guard: metadata-patch-skipped issue=$issue_id reason=missing-auth"
+    rm -f "$issue_tmp" "$payload_tmp"
+    return 1
+  fi
+  if ! curl -sf -H "Authorization: Bearer $auth_token" \
+    "$PAPERCLIP_URL/api/issues/$issue_id" -o "$issue_tmp"; then
+    log "origin-master-guard: metadata-fetch-failed issue=$issue_id"
+    rm -f "$issue_tmp" "$payload_tmp"
+    return 1
+  fi
+  python3 - "$issue_tmp" "$updates_json" > "$payload_tmp" <<'PY'
+import json
+import sys
+
+issue = json.load(open(sys.argv[1], encoding="utf-8"))
+updates = json.loads(sys.argv[2])
+metadata = dict(issue.get("metadata") or {})
+metadata.update(updates)
+print(json.dumps({"metadata": metadata}))
+PY
+  if ! curl -sfX PATCH -H "Authorization: Bearer $auth_token" \
+    "$PAPERCLIP_URL/api/issues/$issue_id" \
+    -H "Content-Type: application/json" \
+    --data @"$payload_tmp" -o /dev/null; then
+    rm -f "$issue_tmp" "$payload_tmp"
+    return 1
+  fi
+  rm -f "$issue_tmp" "$payload_tmp"
+  return 0
+}
+
 if [[ ! -f "$ENV_FILE" ]]; then
   log "ERROR: $ENV_FILE not found. Skipping publish-action run."
   exit 0
@@ -284,67 +413,82 @@ fi
 CURRENT_BRANCH="$(git branch --show-current)"
 log "Phase 0: vault-sync starting on branch=$CURRENT_BRANCH"
 
-git config user.email "publish-action@kspl.tech"
-git config user.name  "Koenig Publish Action"
-
-VAULT_DIRTY="$(git status --porcelain vault/ 2>&1 | grep -vE '^.. vault/\.obsidian/|\.DS_Store|__pycache__|\.pyc$' || true)"
-
-if [ -z "$VAULT_DIRTY" ]; then
-  log "Phase 0: no vault changes — skipping commit"
+if ! on_canonical_branch; then
+  PHASE0_SYNC_OK=0
+  log "Phase 0: canonical branch guard failed — skipping vault commit/push"
 else
-  CHANGE_COUNT=$(echo "$VAULT_DIRTY" | wc -l | tr -d ' ')
-  log "Phase 0: $CHANGE_COUNT vault file changes detected"
-  git add -A vault/
-  git reset HEAD vault/.obsidian/workspace.json 2>/dev/null || true
-  git checkout -- vault/.obsidian/workspace.json 2>/dev/null || true
+  git config user.email "publish-action@kspl.tech"
+  git config user.name  "Koenig Publish Action"
 
-  verify_no_pending_g4_publish
-  WATCHDOG_ISSUE=""
-  if [ "${#BLOCKED_FILES[@]}" -gt 0 ]; then
-    for i in "${!BLOCKED_FILES[@]}"; do
-      F="${BLOCKED_FILES[$i]}"
-      log "guard: BLOCK file=$F old=${BLOCKED_OLD_STATUS[$i]} new=${BLOCKED_NEW_STATUS[$i]}"
-      log "guard:   slug=${BLOCKED_SLUGS[$i]} issue=${BLOCKED_ISSUES[$i]} publish_state=${BLOCKED_STATES[$i]}"
-      log "guard:   action=unstaged; commit will exclude this file"
-      git reset HEAD -- "$F" >/dev/null 2>&1 || true
-    done
-    WATCHDOG_ISSUE="$(create_guard_watchdog_issue || true)"
-    tg_alert "${#BLOCKED_FILES[@]} vault files blocked at pending-G4 gate. See publish-action.log${WATCHDOG_ISSUE:+ and $WATCHDOG_ISSUE}."
-    log "Phase 0 guard: ${#BLOCKED_FILES[@]} blocked, $GUARD_ALLOWED_COUNT allowed, watchdog=${WATCHDOG_ISSUE:-none}"
-  fi
+  VAULT_DIRTY="$(git status --porcelain vault/ 2>&1 | grep -vE '^.. vault/\.obsidian/|\.DS_Store|__pycache__|\.pyc$' || true)"
 
-  STAGED_COUNT="$(git diff --cached --name-only -- vault/ | wc -l | tr -d ' ')"
-  CHANGED_DIRS="$(git diff --cached --name-only -- vault/ | python3 -c "
+  if [ -z "$VAULT_DIRTY" ]; then
+    log "Phase 0: no vault changes — skipping commit"
+  else
+    CHANGE_COUNT=$(echo "$VAULT_DIRTY" | wc -l | tr -d ' ')
+    log "Phase 0: $CHANGE_COUNT vault file changes detected"
+    git add -A vault/
+    git reset HEAD vault/.obsidian/workspace.json 2>/dev/null || true
+    git checkout -- vault/.obsidian/workspace.json 2>/dev/null || true
+
+    verify_no_pending_g4_publish
+    WATCHDOG_ISSUE=""
+    if [ "${#BLOCKED_FILES[@]}" -gt 0 ]; then
+      for i in "${!BLOCKED_FILES[@]}"; do
+        F="${BLOCKED_FILES[$i]}"
+        log "guard: BLOCK file=$F old=${BLOCKED_OLD_STATUS[$i]} new=${BLOCKED_NEW_STATUS[$i]}"
+        log "guard:   slug=${BLOCKED_SLUGS[$i]} issue=${BLOCKED_ISSUES[$i]} publish_state=${BLOCKED_STATES[$i]}"
+        log "guard:   action=unstaged; commit will exclude this file"
+        git reset HEAD -- "$F" >/dev/null 2>&1 || true
+      done
+      WATCHDOG_ISSUE="$(create_guard_watchdog_issue || true)"
+      tg_alert "${#BLOCKED_FILES[@]} vault files blocked at pending-G4 gate. See publish-action.log${WATCHDOG_ISSUE:+ and $WATCHDOG_ISSUE}."
+      log "Phase 0 guard: ${#BLOCKED_FILES[@]} blocked, $GUARD_ALLOWED_COUNT allowed, watchdog=${WATCHDOG_ISSUE:-none}"
+    fi
+
+    STAGED_COUNT="$(git diff --cached --name-only -- vault/ | wc -l | tr -d ' ')"
+    CHANGED_DIRS="$(git diff --cached --name-only -- vault/ | python3 -c "
 import os
 import sys
 dirs = sorted({os.path.dirname(line.strip()) for line in sys.stdin if line.strip()})
 print(' '.join(dirs[:10]))
 ")"
-  COMMIT_MSG="auto: vault-sync $(date -u +%Y-%m-%dT%H:%M:%SZ)
+    COMMIT_MSG="auto: vault-sync $(date -u +%Y-%m-%dT%H:%M:%SZ)
 
 Files: $STAGED_COUNT
 Dirs: $CHANGED_DIRS
 
 Auto-committed by publish-action.sh V3.0.
 Co-Authored-By: Paperclip-Agents <agents@kspl.tech>"
-  if git commit -m "$COMMIT_MSG" 2>&1 | tee -a "$LOG"; then
-    log "Phase 0: commit succeeded; pushing origin/$CURRENT_BRANCH"
-    if git push origin "$CURRENT_BRANCH" 2>&1 | tee -a "$LOG"; then
-      log "Phase 0: push succeeded ✓"
+    if [ "$STAGED_COUNT" = "0" ]; then
+      log "Phase 0 guard: all staged vault changes excluded; continuing without commit"
+    elif git commit -m "$COMMIT_MSG" 2>&1 | tee -a "$LOG"; then
+      log "Phase 0: commit succeeded; pushing $PUBLISH_CANONICAL_REMOTE/$PUBLISH_CANONICAL_BRANCH"
+      if git push "$PUBLISH_CANONICAL_REMOTE" "$PUBLISH_CANONICAL_BRANCH" 2>&1 | tee -a "$LOG"; then
+        log "Phase 0: push succeeded ✓"
+      else
+        log "Phase 0: PUSH FAILED"
+        PHASE0_SYNC_OK=0
+        tg_alert "git push $PUBLISH_CANONICAL_REMOTE $PUBLISH_CANONICAL_BRANCH failed; check $LOG"
+      fi
     else
-      log "Phase 0: PUSH FAILED"
-      tg_alert "git push origin $CURRENT_BRANCH failed; check $LOG"
+      log "Phase 0: nothing to commit (likely all changes were excluded)"
     fi
-  else
-    log "Phase 0: nothing to commit (likely all changes were excluded)"
+  fi
+
+  if [ "$PHASE0_SYNC_OK" = "1" ]; then
+    finalize_phase0_sync || true
   fi
 fi
 
 # ── Phase 1: g4-approved → repository_dispatch ───────────────────────────────
 
-log "Phase 1: scanning for publish_state=g4-approved issues..."
+if [ "$PHASE0_SYNC_OK" != "1" ]; then
+  log "Phase 1: SKIPPED — Phase 0 origin/master sync guard failed (PHASE0_SYNC_OK=0)"
+else
+  log "Phase 1: scanning for publish_state=g4-approved issues..."
 
-G4_ISSUES_JSON="$(curl -s -H "Authorization: Bearer ${PAPERCLIP_API_KEY}" "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues?limit=2000" | python3 -c "
+  G4_ISSUES_JSON="$(curl -s -H "Authorization: Bearer ${PAPERCLIP_API_KEY}" "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues?limit=2000" | python3 -c "
 import json, sys
 items = json.load(sys.stdin)
 if isinstance(items, dict): items = items.get('items', [])
@@ -352,46 +496,70 @@ result = []
 for i in items:
     md = i.get('metadata') or {}
     if i.get('status') == 'done' and md.get('publish_state') == 'g4-approved':
-        result.append({'id': i['id'], 'slug': md.get('slug', i['id'])})
+        result.append({'id': i['id'], 'slug': md.get('slug'), 'draft_path': md.get('draft_path')})
 print(json.dumps(result))
 ")"
 
-if [[ -z "$G4_ISSUES_JSON" ]] || [[ "$G4_ISSUES_JSON" == "[]" ]]; then
-  log "Phase 1: no g4-approved issues found."
-elif [[ -z "$GH_PAT_DISPATCH" ]]; then
-  log "Phase 1: SKIPPED — GH_PAT_DISPATCH not set."
-else
-  while IFS=$'\t' read -r ISSUE_ID SLUG; do
-    log "Phase 1: dispatching publish-ready for issue=$ISSUE_ID slug=$SLUG"
-    DISPATCH_HTTP="$(curl -s -o /dev/null -w "%{http_code}" -X POST \
-      "https://api.github.com/repos/$GH_DISPATCH_REPO/dispatches" \
-      -H "Authorization: Bearer $GH_PAT_DISPATCH" \
-      -H "Accept: application/vnd.github+json" \
-      -H "X-GitHub-Api-Version: 2022-11-28" \
-      -d "$(python3 -c "import json; print(json.dumps({'event_type':'publish-ready','client_payload':{'issue_id':'$ISSUE_ID','slug':'$SLUG'}}))")")"
-    if [[ "$DISPATCH_HTTP" == "204" ]]; then
-      DISPATCHED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-      log "Phase 1: dispatch accepted (204) for $ISSUE_ID — setting dispatching at $DISPATCHED_AT"
-      curl -sX PATCH -H "Authorization: Bearer ${PAPERCLIP_BOARD_TOKEN}" "$PAPERCLIP_URL/api/issues/$ISSUE_ID" \
-        -H "Content-Type: application/json" \
-        -d "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'dispatching','dispatched_at':'$DISPATCHED_AT'}}))")" \
-        -o /dev/null
-    else
-      log "Phase 1: dispatch FAILED (HTTP $DISPATCH_HTTP) for $ISSUE_ID"
-    fi
-  done < <(echo "$G4_ISSUES_JSON" | python3 -c "
+  if [[ -z "$G4_ISSUES_JSON" ]] || [[ "$G4_ISSUES_JSON" == "[]" ]]; then
+    log "Phase 1: no g4-approved issues found."
+  elif [[ -z "$GH_PAT_DISPATCH" ]]; then
+    log "Phase 1: SKIPPED — GH_PAT_DISPATCH not set."
+  else
+    while IFS=$'\t' read -r ISSUE_ID SLUG DRAFT_PATH; do
+      [ -n "$ISSUE_ID" ] || continue
+      ARTIFACT_PATH="$(resolve_artifact_path "$SLUG" "$DRAFT_PATH" || true)"
+      if [ -z "$ARTIFACT_PATH" ]; then
+        log "origin-master-guard: BLOCK issue=$ISSUE_ID reason=missing-artifact-path slug=${SLUG:-none} draft_path=${DRAFT_PATH:-none}"
+        continue
+      fi
+      if ! artifact_on_origin_master_matches "$ARTIFACT_PATH"; then
+        log "origin-master-guard: BLOCK issue=$ISSUE_ID reason=artifact-not-on-origin-master path=$ARTIFACT_PATH"
+        continue
+      fi
+      log "Phase 1: dispatching publish-ready for issue=$ISSUE_ID slug=${SLUG:-unknown} artifact=$ARTIFACT_PATH"
+      DISPATCH_HTTP="$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+        "https://api.github.com/repos/$GH_DISPATCH_REPO/dispatches" \
+        -H "Authorization: Bearer $GH_PAT_DISPATCH" \
+        -H "Accept: application/vnd.github+json" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        -d "$(python3 -c "import json; print(json.dumps({'event_type':'publish-ready','client_payload':{'issue_id':'$ISSUE_ID','slug':'${SLUG:-}'}}))")")"
+      if [[ "$DISPATCH_HTTP" == "204" ]]; then
+        DISPATCHED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        log "Phase 1: dispatch accepted (204) for $ISSUE_ID — setting dispatching at $DISPATCHED_AT"
+        METADATA_JSON="$(python3 - "$DISPATCHED_AT" "$SLUG" "$DRAFT_PATH" <<'PY'
+import json
+import sys
+
+payload = {"publish_state": "dispatching", "dispatched_at": sys.argv[1]}
+if sys.argv[2]:
+    payload["slug"] = sys.argv[2]
+if sys.argv[3]:
+    payload["draft_path"] = sys.argv[3]
+print(json.dumps(payload))
+PY
+)"
+        patch_issue_metadata_merge "$ISSUE_ID" "$METADATA_JSON" || \
+          log "Phase 1: metadata patch failed for $ISSUE_ID after dispatch accepted"
+      else
+        log "Phase 1: dispatch FAILED (HTTP $DISPATCH_HTTP) for $ISSUE_ID"
+      fi
+    done < <(echo "$G4_ISSUES_JSON" | python3 -c "
 import json, sys
 items = json.load(sys.stdin)
 for i in items:
-    print(i['id'] + '\t' + i['slug'])
+    print(i['id'] + '\t' + (i.get('slug') or '') + '\t' + (i.get('draft_path') or ''))
 ")
+  fi
 fi
 
 # ── Phase 2: dispatching → poll GH Actions → published / dispatch_failed ─────
 
-log "Phase 2: scanning for publish_state=dispatching issues..."
+if [ "$PHASE0_SYNC_OK" != "1" ]; then
+  log "Phase 2: SKIPPED — Phase 0 origin/master sync guard failed (PHASE0_SYNC_OK=0)"
+else
+  log "Phase 2: scanning for publish_state=dispatching issues..."
 
-DISPATCHING_JSON="$(curl -s -H "Authorization: Bearer ${PAPERCLIP_API_KEY}" "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues?limit=2000" | python3 -c "
+  DISPATCHING_JSON="$(curl -s -H "Authorization: Bearer ${PAPERCLIP_API_KEY}" "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues?limit=2000" | python3 -c "
 import json, sys
 items = json.load(sys.stdin)
 if isinstance(items, dict): items = items.get('items', [])
@@ -399,23 +567,28 @@ result = []
 for i in items:
     md = i.get('metadata') or {}
     if md.get('publish_state') == 'dispatching':
-        result.append({'id': i['id'], 'dispatched_at': md.get('dispatched_at', '')})
+        result.append({
+            'id': i['id'],
+            'dispatched_at': md.get('dispatched_at', ''),
+            'slug': md.get('slug'),
+            'draft_path': md.get('draft_path'),
+        })
 print(json.dumps(result))
 ")"
 
-if [[ -z "$DISPATCHING_JSON" ]] || [[ "$DISPATCHING_JSON" == "[]" ]]; then
-  log "Phase 2: no dispatching issues found."
-elif [[ -z "$GH_PAT_DISPATCH" ]]; then
-  log "Phase 2: SKIPPED — GH_PAT_DISPATCH not set."
-else
-  GH_RUNS_TMP="$(mktemp)"
-  curl -s \
-    "https://api.github.com/repos/$GH_DISPATCH_REPO/actions/runs?event=repository_dispatch&per_page=20" \
-    -H "Authorization: Bearer $GH_PAT_DISPATCH" \
-    -H "Accept: application/vnd.github+json" \
-    -H "X-GitHub-Api-Version: 2022-11-28" > "$GH_RUNS_TMP"
+  if [[ -z "$DISPATCHING_JSON" ]] || [[ "$DISPATCHING_JSON" == "[]" ]]; then
+    log "Phase 2: no dispatching issues found."
+  elif [[ -z "$GH_PAT_DISPATCH" ]]; then
+    log "Phase 2: SKIPPED — GH_PAT_DISPATCH not set."
+  else
+    GH_RUNS_TMP="$(mktemp)"
+    curl -s \
+      "https://api.github.com/repos/$GH_DISPATCH_REPO/actions/runs?event=repository_dispatch&per_page=20" \
+      -H "Authorization: Bearer $GH_PAT_DISPATCH" \
+      -H "Accept: application/vnd.github+json" \
+      -H "X-GitHub-Api-Version: 2022-11-28" > "$GH_RUNS_TMP"
 
-  PV_AGENT_ID="$(curl -s -H "Authorization: Bearer ${PAPERCLIP_API_KEY}" "$PAPERCLIP_URL/api/companies/$COMPANY_ID/agents" | python3 -c "
+    PV_AGENT_ID="$(curl -s -H "Authorization: Bearer ${PAPERCLIP_API_KEY}" "$PAPERCLIP_URL/api/companies/$COMPANY_ID/agents" | python3 -c "
 import json, sys
 data = json.load(sys.stdin)
 agents = data if isinstance(data, list) else data.get('items', [])
@@ -423,9 +596,10 @@ match = next((a['id'] for a in agents if a.get('urlKey') == 'publish-verifier'),
 print(match)
 ")"
 
-  while IFS=$'\t' read -r ISSUE_ID DISPATCHED_AT; do
-    log "Phase 2: checking GH Actions run for issue=$ISSUE_ID dispatched_at=${DISPATCHED_AT:-unknown}"
-    RUN_STATUS="$(python3 -c "
+    while IFS=$'\t' read -r ISSUE_ID DISPATCHED_AT SLUG DRAFT_PATH; do
+      [ -n "$ISSUE_ID" ] || continue
+      log "Phase 2: checking GH Actions run for issue=$ISSUE_ID dispatched_at=${DISPATCHED_AT:-unknown}"
+      RUN_STATUS="$(python3 -c "
 import json, sys
 from datetime import datetime, timezone
 data = json.load(open('$GH_RUNS_TMP'))
@@ -455,44 +629,82 @@ if match:
 else:
     print('not_found')
 ")"
-    log "Phase 2: run status for $ISSUE_ID = $RUN_STATUS"
-    case "$RUN_STATUS" in
-      success)
-        log "Phase 2: marking $ISSUE_ID published url=$PROD_URL"
-        curl -sX PATCH -H "Authorization: Bearer ${PAPERCLIP_BOARD_TOKEN}" "$PAPERCLIP_URL/api/issues/$ISSUE_ID" \
-          -H "Content-Type: application/json" \
-          -d "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'published','published_url':'$PROD_URL','published_at':'$(date -u +%Y-%m-%dT%H:%M:%SZ)'}}))")" \
-          -o /dev/null
-        if [[ -n "$PV_AGENT_ID" ]]; then
-          log "Phase 2: triggering publish-verifier (G5) for $ISSUE_ID"
-          curl -sX POST "$PAPERCLIP_URL/api/agents/$PV_AGENT_ID/heartbeat/invoke" \
-            -H "Content-Type: application/json" \
-            -d "$(python3 -c "import json; print(json.dumps({'context':{'issue_id':'$ISSUE_ID'}}))")" \
-            -o /dev/null
-        fi
-        ;;
-      failure|cancelled|timed_out|action_required|startup_failure)
-        log "Phase 2: marking $ISSUE_ID dispatch_failed (run_status=$RUN_STATUS)"
-        curl -sX PATCH -H "Authorization: Bearer ${PAPERCLIP_BOARD_TOKEN}" "$PAPERCLIP_URL/api/issues/$ISSUE_ID" \
-          -H "Content-Type: application/json" \
-          -d "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'dispatch_failed','dispatch_failure_reason':'GH Actions run status: $RUN_STATUS'}}))")" \
-          -o /dev/null
-        ;;
-      not_found|in_progress|queued|waiting|pending)
-        log "Phase 2: run not yet complete ($RUN_STATUS) for $ISSUE_ID — will re-check next poll"
-        ;;
-      *)
-        log "Phase 2: unknown run status '$RUN_STATUS' for $ISSUE_ID — skipping"
-        ;;
-    esac
-  done < <(echo "$DISPATCHING_JSON" | python3 -c "
+      log "Phase 2: run status for $ISSUE_ID = $RUN_STATUS"
+      case "$RUN_STATUS" in
+        success)
+          ARTIFACT_PATH="$(resolve_artifact_path "$SLUG" "$DRAFT_PATH" || true)"
+          if [ -z "$ARTIFACT_PATH" ]; then
+            log "origin-master-guard: BLOCK issue=$ISSUE_ID reason=missing-artifact-path slug=${SLUG:-none} draft_path=${DRAFT_PATH:-none}"
+            continue
+          fi
+          if ! artifact_on_origin_master_matches "$ARTIFACT_PATH"; then
+            log "origin-master-guard: BLOCK issue=$ISSUE_ID reason=artifact-not-on-origin-master path=$ARTIFACT_PATH"
+            continue
+          fi
+          log "Phase 2: marking $ISSUE_ID published url=$PROD_URL"
+          PUBLISHED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          METADATA_JSON="$(python3 - "$PROD_URL" "$PUBLISHED_AT" "$SLUG" "$DRAFT_PATH" <<'PY'
+import json
+import sys
+
+payload = {
+    "publish_state": "published",
+    "published_url": sys.argv[1],
+    "published_at": sys.argv[2],
+}
+if sys.argv[3]:
+    payload["slug"] = sys.argv[3]
+if sys.argv[4]:
+    payload["draft_path"] = sys.argv[4]
+print(json.dumps(payload))
+PY
+)"
+          patch_issue_metadata_merge "$ISSUE_ID" "$METADATA_JSON" || \
+            log "Phase 2: metadata patch failed for $ISSUE_ID"
+          if [[ -n "$PV_AGENT_ID" ]]; then
+            log "Phase 2: triggering publish-verifier (G5) for $ISSUE_ID"
+            curl -sX POST "$PAPERCLIP_URL/api/agents/$PV_AGENT_ID/heartbeat/invoke" \
+              -H "Content-Type: application/json" \
+              -d "$(python3 -c "import json; print(json.dumps({'context':{'issue_id':'$ISSUE_ID'}}))")" \
+              -o /dev/null
+          fi
+          ;;
+        failure|cancelled|timed_out|action_required|startup_failure)
+          log "Phase 2: marking $ISSUE_ID dispatch_failed (run_status=$RUN_STATUS)"
+          METADATA_JSON="$(python3 - "$RUN_STATUS" "$SLUG" "$DRAFT_PATH" <<'PY'
+import json
+import sys
+
+payload = {
+    "publish_state": "dispatch_failed",
+    "dispatch_failure_reason": "GH Actions run status: " + sys.argv[1],
+}
+if sys.argv[2]:
+    payload["slug"] = sys.argv[2]
+if sys.argv[3]:
+    payload["draft_path"] = sys.argv[3]
+print(json.dumps(payload))
+PY
+)"
+          patch_issue_metadata_merge "$ISSUE_ID" "$METADATA_JSON" || \
+            log "Phase 2: metadata patch failed for $ISSUE_ID"
+          ;;
+        not_found|in_progress|queued|waiting|pending)
+          log "Phase 2: run not yet complete ($RUN_STATUS) for $ISSUE_ID — will re-check next poll"
+          ;;
+        *)
+          log "Phase 2: unknown run status '$RUN_STATUS' for $ISSUE_ID — skipping"
+          ;;
+      esac
+    done < <(echo "$DISPATCHING_JSON" | python3 -c "
 import json, sys
 items = json.load(sys.stdin)
 for i in items:
-    print(i['id'] + '\t' + i.get('dispatched_at', ''))
+    print(i['id'] + '\t' + i.get('dispatched_at', '') + '\t' + (i.get('slug') or '') + '\t' + (i.get('draft_path') or ''))
 ")
 
-  rm -f "$GH_RUNS_TMP"
+    rm -f "$GH_RUNS_TMP"
+  fi
 fi
 
 log "publish-action complete."
