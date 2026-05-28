@@ -28,6 +28,20 @@ function formatFastModeSupportedModels(): string {
   return `${CODEX_LOCAL_FAST_MODE_SUPPORTED_MODELS.join(", ")} or manually configured model IDs`;
 }
 
+const CODEX_BYPASS_FLAG = "--dangerously-bypass-approvals-and-sandbox";
+
+function stripBypassFlag(args: string[]): { args: string[]; bypassRequested: boolean } {
+  let bypassRequested = false;
+  const filtered = args.filter((arg) => {
+    if (arg === CODEX_BYPASS_FLAG) {
+      bypassRequested = true;
+      return false;
+    }
+    return true;
+  });
+  return { args: filtered, bypassRequested };
+}
+
 export function buildCodexExecArgs(
   config: unknown,
   options: { resumeSessionId?: string | null } = {},
@@ -45,11 +59,13 @@ export function buildCodexExecArgs(
     record.dangerouslyBypassApprovalsAndSandbox,
     asBoolean(record.dangerouslyBypassSandbox, false),
   );
-  const extraArgs = readExtraArgs(record);
+  const rawExtraArgs = readExtraArgs(record);
+  const { args: extraArgs, bypassRequested: bypassInExtraArgs } = stripBypassFlag(rawExtraArgs);
+  const shouldBypass = bypass || bypassInExtraArgs;
 
   const args = ["exec", "--json"];
   if (search) args.unshift("--search");
-  if (bypass) args.push("--dangerously-bypass-approvals-and-sandbox");
+  if (shouldBypass) args.push(CODEX_BYPASS_FLAG);
   if (model) args.push("--model", model);
   if (modelReasoningEffort) {
     args.push("-c", `model_reasoning_effort=${JSON.stringify(modelReasoningEffort)}`);
