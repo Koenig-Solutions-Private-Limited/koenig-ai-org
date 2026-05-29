@@ -35,13 +35,24 @@ schema:
     - "OpenAI Realtime API"
     - "Voice agents"
     - "Production AI systems"
+title: "Deploy OpenAI Realtime Voice Agents by Budgeting the Audio Loop"
+description: "OpenAI Realtime API voice agents are production-ready when you treat them as live audio systems: pick the transport, gate tools, tune VAD, and budget by session."
+slug: "2026-05-28-openai-realtime-api-voice-agents-production"
+tags: ['openai', 'realtime-api', 'voice-agents', 'webrtc', 'production-architecture']
+faq:
+  - question: "Why is Realtime API priced higher than chat completions?"
+    answer: "Because every session is a persistent audio stream with continuous input + output tokens, not request/response. OpenAI prices GPT-Realtime-2 audio at $32 per 1M input tokens and $64 per 1M output tokens. Budget by session-minute, not per-call."
+  - question: "When should I use WebRTC vs WebSocket vs SIP?"
+    answer: "WebRTC when browser or mobile clients capture and play audio directly. WebSocket when a server already receives raw audio from a media pipeline (Twilio, Daily, LiveKit). SIP for telephony — do not fake telephony through a browser stack."
+  - question: "What is the cheapest fallback for production?"
+    answer: "When session-length cost exceeds your margin, fall back to a Whisper-to-LLM-to-TTS chain with Kokoro or Cartesia Sonic. You lose natural turn-taking but cut cost by ~75% for stable scripts."
 ---
 
 # Deploy OpenAI Realtime Voice Agents by Budgeting the Audio Loop
 
 OpenAI Realtime API voice agents are production-ready when you treat them as live audio systems: pick the transport first, keep tools behind server controls, tune voice activity detection, and model cost by session length. OpenAI documents Realtime as the path for low-latency voice agents that listen, reason, speak, and call tools, with WebRTC for browser/mobile audio, WebSocket for server media pipelines, and SIP for telephony ([OpenAI Realtime overview](https://developers.openai.com/api/docs/guides/realtime)).
 
-The missed point is economic, not conversational. Most teams ask whether Realtime replaces a Whisper -> LLM -> TTS chain. It often does for natural turn-taking. But the production question is whether your margin survives a persistent audio session whose history, interruptions, retries, and tool delays are all happening while the meter runs. OpenAI prices GPT-Realtime-2 audio at $32 per 1M input tokens, $0.40 per 1M cached input tokens, and $64 per 1M output tokens ([OpenAI pricing](https://openai.com/api/pricing/)). That is a different business model from a request/response chatbot.
+The missed point is economic, not conversational. Most teams ask whether Realtime replaces a Whisper -> LLM -> TTS chain. It often does for natural turn-taking. But the production question is whether your margin survives a persistent audio session whose history, interruptions, retries, and tool delays are all happening while the meter runs. OpenAI prices GPT-Realtime-2 audio at $32 per 1M input tokens, $0.40 per 1M cached input tokens, and $64 per 1M output tokens ([OpenAI pricing](https://platform.openai.com/docs/pricing)). That is a different business model from a request/response chatbot.
 
 ## Choose WebRTC for apps, WebSocket for media backends, and SIP for phones
 
@@ -69,7 +80,7 @@ Build a spreadsheet with five columns before you write code: average call length
 2. **Reasoning latency:** model effort, prompt size, tool choice, guardrail pass.
 3. **Recovery latency:** interruptions, barge-in, retries, escalation.
 
-OpenAI""'s GPT-Realtime-2 pricing makes cached audio input much cheaper than uncached input, but output audio is still priced separately ([OpenAI pricing](https://openai.com/api/pricing/)). That should change your UX. Keep the agent concise, do not narrate database fields, and summarize state after tool calls instead of reading full records. A voice agent that talks twice as much is not just annoying; it is structurally more expensive.
+OpenAI""'s GPT-Realtime-2 pricing makes cached audio input much cheaper than uncached input, but output audio is still priced separately ([OpenAI pricing](https://platform.openai.com/docs/pricing)). That should change your UX. Keep the agent concise, do not narrate database fields, and summarize state after tool calls instead of reading full records. A voice agent that talks twice as much is not just annoying; it is structurally more expensive.
 
 ## Use TTS fallback for degradation, not as a fake Realtime clone
 
@@ -87,10 +98,10 @@ This is where the contrarian answer lands: Realtime is the premium interactive s
 
 The first runnable production step is not "open a microphone." It is creating a server endpoint that mints a short-lived Realtime client secret and keeps your main API key off the device.
 
-OpenAI's API reference describes `POST /v1/realtime/client_secrets` as the endpoint for generating ephemeral client secrets for client-side Realtime applications, so this belongs on your backend rather than in frontend code ([Realtime client secrets](https://platform.openai.com/docs/api-reference/realtime-sessions)).
+OpenAI's API reference describes `POST /v1/realtime/client_secrets` as the endpoint for generating ephemeral client secrets for client-side Realtime applications, so this belongs on your backend rather than in frontend code ([Realtime client secrets](https://developers.openai.com/api/docs/guides/realtime)).
 
 <curl>
-curl https://api.openai.com/v1/realtime/client_secrets \
+curl https://developers.openai.com/api/docs/guides/realtime \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -127,3 +138,9 @@ Question: A browser-based support agent needs live interruption, account lookups
 Answer: Choose the audio transport and authority boundary first: WebRTC from browser/mobile audio to a server-controlled Realtime session, with read-only tools allowed immediately and cancellation tools confirmed before execution. The model prompt comes after that boundary is clear.
 
 If you are building this for real, the next skill is not prompt polishing; it is designing tools, handoffs, guardrails, and observability around a voice loop. That is the production layer covered in [[course/openai-agents-sdk-mastery]].
+
+## Related from the academy
+
+- [[blog/2026-05-14-openai-realtime-api-production-patterns-2026]]
+- [[blog/2026-04-30-voice-agents-2026-tts-latency-benchmark]]
+

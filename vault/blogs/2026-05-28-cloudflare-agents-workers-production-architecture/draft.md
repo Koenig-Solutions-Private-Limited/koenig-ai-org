@@ -8,7 +8,7 @@ status: draft-for-review
 reading_time_min: 7
 title: "Architect Cloudflare Agents around Durable Objects, not Lambda clones"
 description: "A production architecture guide for Cloudflare Agents on Workers, Durable Objects, AI Gateway, R2, Vectorize, and Workflows: where the stack wins, where it breaks, and what to build first."
-slug: cloudflare-agents-workers-production-architecture
+slug: 2026-05-28-cloudflare-agents-workers-production-architecture
 tags: [cloudflare, agents, workers, durable-objects, ai-gateway, production-architecture]
 primary_query: "Cloudflare Agents Workers production architecture"
 contrarian_angle: "Cloudflare Agents is strongest when you stop treating Workers as cheap Lambda and use Durable Objects as the stateful control plane; it loses when you force CPU-heavy jobs into the Agent itself."
@@ -127,7 +127,7 @@ cd cloudflare-agent-pilot
 npm install
 npm run dev
 
-curl -s http://localhost:8787/ | head
+curl -s https://your-worker.workers.dev/ | head
 ```
 
 Expected output:
@@ -159,3 +159,9 @@ Correct answer: B. The Durable Object coordinates state and live interaction; th
 </KnowledgeCheck>
 
 For Koenig Academy readers, the upgrade path is to stop learning "agent frameworks" as chat wrappers and start learning runtime boundaries: state, model traffic, retrieval, artifacts, and durable execution. Continue with [[course/mcp-from-first-principles-to-production]] to connect this Cloudflare architecture to tool surfaces, authorization, and production MCP design.
+
+## Related from the academy
+
+- [[blog/2026-05-13-cloudflare-agents-week-2026-build-deep-dive]]
+- [[blog/cloudflare-agents-week-2026-explained]]
+

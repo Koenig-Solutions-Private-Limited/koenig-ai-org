@@ -65,6 +65,17 @@ references:
     title: "Cursor community Composer 2 testing discussion"
     url: https://www.reddit.com/r/cursor/comments/1ryb2jt/has_anyone_actually_tested_composer_2_vs_claude/
     retrieved: 2026-05-14
+title: "Route Cursor Composer 2 to the IDE lane, not every engineering task"
+description: "Composer 2 is the cheap IDE iteration lane. Reserve Claude Code and Codex CLI for headless review, batch refactors, and CI work where task class — not benchmark rank — should pick the tool."
+slug: "2026-05-28-cursor-3-composer-2-workflow-patterns"
+tags: ['cursor', 'composer-2', 'claude-code', 'codex-cli', 'engineering-workflows', 'ai-coding-tools']
+faq:
+  - question: "Why not just use Composer 2 for everything?"
+    answer: "Composer 2 is optimized for IDE pair programming — fast iteration with the file tree in context. It is not a headless batch tool. For CI automation, large-scale codebase refactors, or batch code review, Codex CLI is purpose-built for the headless lane. Picking by task class beats picking by benchmark."
+  - question: "When should I escalate from Composer to Claude Code?"
+    answer: "When the task needs long-running context across multiple files + sustained reasoning, when the change touches >5 files, or when you need durable session state. Claude Code's terminal-first model is the right fit. Composer 2 thrives in tight inner loops; Claude Code thrives in deep work blocks."
+  - question: "How do I write a handoff packet between lanes?"
+    answer: "Capture: (1) the task statement, (2) the files touched + key line ranges, (3) constraints (must-not-break tests, perf budgets, security rules), (4) the contrarian angle you've taken, (5) what to verify before considering done. A 200-line handoff packet beats a 5000-line conversation transcript."
 ---
 
 # Route Cursor Composer 2 to the IDE lane, not every engineering task
@@ -159,3 +170,8 @@ Answer: Hand a narrow packet to Claude Code or Codex instead of continuing broad
 </KnowledgeCheck>
 
 The actionable takeaway is not to replace Cursor with Claude Code or Codex. It is to make Cursor Composer 2 the cheap discovery lane, then move stabilized work into a controlled terminal or review lane. Teams that want this pattern end to end should start with [[course/cursor-composer-2]], then pair it with [[course/ai-coding-agents]] for routing, verification, and review workflows.
+
+## Related from the academy
+
+- [[blog/cursor-3-2-vs-claude-code-workflow]]
+
