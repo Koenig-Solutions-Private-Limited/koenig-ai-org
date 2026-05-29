@@ -32,6 +32,7 @@ import {
   issueWorkProducts,
   projects,
   projectWorkspaces,
+  routineRuns,
   workspaceOperations,
 } from "@paperclipai/db";
 import { conflict, HttpError, notFound } from "../errors.js";
@@ -1461,6 +1462,8 @@ function shouldAutoCheckoutIssueForWake(input: {
   if (!wakeReason) return false;
   if (wakeReason === "issue_comment_mentioned") return false;
   if (wakeReason.startsWith("execution_")) return false;
+  // Deferred/plain comment wakes on blocked issues deliver context only; checkout would drift status to in_progress.
+  if (issueStatus === "blocked" && wakeReason !== "issue_reopened_via_comment") return false;
 
   return true;
 }
@@ -1504,6 +1507,17 @@ export function extractWakeCommentIds(
     out.push(value);
   }
   return out;
+}
+
+export function hasExplicitDeferredCommentReopenIntent(
+  deferredContextSeed: Record<string, unknown>,
+  deferredWakeReason: string | null,
+): boolean {
+  if (deferredWakeReason !== "issue_reopened_via_comment") return false;
+  if (deferredContextSeed.resumeIntent === true) return true;
+  if (deferredContextSeed.followUpRequested === true) return true;
+  if (readNonEmptyString(deferredContextSeed.reopenedFrom)) return true;
+  return false;
 }
 
 function mergeWakeCommentIds(...values: Array<unknown>): string[] {
@@ -6040,6 +6054,7 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
       ? await resolveSessionBeforeForWakeup(recoveryAgent, taskKey)
       : null;
     const recoveryAgentNameKey = normalizeAgentNameKey(recoveryAgent?.name);
+    let routineExecutionAutoClosedIssueId: string | null = null;
 
     const promotionResult = await db.transaction(async (tx) => {
       if (contextIssueId) {
@@ -6076,6 +6091,37 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
             updatedAt: new Date(),
           })
           .where(eq(issues.id, issue.id));
+      }
+
+      if (
+        run.status === "succeeded" &&
+        issue.originKind === "routine_execution" &&
+        issue.assigneeAgentId === run.agentId &&
+        (issue.status === "in_progress" || issue.status === "todo")
+      ) {
+        const closedIssue = await issuesSvc.update(
+          issue.id,
+          { status: "done" },
+          tx,
+        );
+        if (closedIssue) {
+          issue = {
+            ...issue,
+            status: closedIssue.status,
+            identifier: closedIssue.identifier ?? issue.identifier,
+          };
+          routineExecutionAutoClosedIssueId = issue.id;
+          if (issue.originRunId) {
+            await tx
+              .update(routineRuns)
+              .set({
+                status: "completed",
+                completedAt: new Date(),
+                updatedAt: new Date(),
+              })
+              .where(eq(routineRuns.id, issue.originRunId));
+          }
+        }
       }
 
       while (true) {
@@ -6158,14 +6204,15 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
         }
         const deferredCommentIds = extractWakeCommentIds(deferredContextSeed);
         const deferredWakeReason = readNonEmptyString(deferredContextSeed.wakeReason);
-        // Only human/comment-reopen interactions should revive completed issues;
-        // system follow-ups such as retry or cleanup wakes must not reopen closed work.
+        // Human (user) comments revive a just-closed issue so follow-ups get handled.
+        // Agent/system comments do NOT reopen on their own (prevents zombie-reopen churn)
+        // unless they carry explicit route-level reopen intent.
         const shouldReopenDeferredCommentWake =
           deferredCommentIds.length > 0 &&
           (issue.status === "done" || issue.status === "cancelled") &&
           (
             deferred.requestedByActorType === "user" ||
-            deferredWakeReason === "issue_reopened_via_comment"
+            hasExplicitDeferredCommentReopenIntent(deferredContextSeed, deferredWakeReason)
           );
         let reopenedActivity: LogActivityInput | null = null;
 
@@ -6403,6 +6450,13 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
         run: queuedRun,
       };
     });
+
+    if (routineExecutionAutoClosedIssueId) {
+      logger.info(
+        { issueId: routineExecutionAutoClosedIssueId, runId: run.id },
+        "auto-closed successful routine execution issue",
+      );
+    }
 
     if (promotionResult?.kind === "blocked") {
       await recovery.escalateStrandedAssignedIssue({

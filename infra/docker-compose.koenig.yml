@@ -136,8 +136,9 @@ services:
     # user.max_user_namespaces raises the nested-namespace limit (0 by default in linuxkit).
     security_opt:
       - seccomp:unconfined
-    sysctls:
-      user.max_user_namespaces: "15000"
+    # sysctls user.max_user_namespaces removed 2026-05-29 — breaks Docker Desktop on Mac
+    # (kernel namespace error). Memory: V7 Phase 2 PR #16 was the original culprit; same
+    # symptom returned during a scheduler-stall recovery. Reinstate only on Linux hosts.
     depends_on:
       db:
         condition: service_healthy
