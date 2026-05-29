@@ -5,6 +5,8 @@
 #          learnovaBeast GitHub Actions, sets publish_state=dispatching + dispatched_at.
 # Phase 2: Scans for publish_state=dispatching → polls GH Actions for matching run,
 #          sets publish_state=published or dispatch_failed.
+# L5 (KOEA-6715): learnovaBeast publish.yml runs Lighthouse on preview before prod;
+#          failed CWV (LCP>2.5s, INP>200ms, CLS>0.1) → workflow failure → dispatch_failed.
 #
 # Requires GH_PAT_DISPATCH (repo+workflow scopes on learnovaBeast) in $ENV_FILE.
 # Wired to launchd via com.koenig.publish-action.plist (every 60s).

@@ -32,6 +32,9 @@ For every content item where publish-action.sh sets `metadata.publish_state=publ
 7. Run a lightweight Lighthouse-style HTML inspection (no full Lighthouse): page weight, render-blocking resources, INP-likely indicators
 8. PASS or BLOCK with structured comment back to the relevant party
 
+**L5 (KOEA-6715):** Full Lighthouse CI runs in `learnovaBeast` publish workflow *before*
+prod deploy. G5 runs only after `publish_state=published`. A CWV failure never reaches G5.
+
 ## Definition of Done
 
 PASS message:

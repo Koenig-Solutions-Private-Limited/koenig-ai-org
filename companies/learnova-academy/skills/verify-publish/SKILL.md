@@ -17,6 +17,18 @@ You verify; others fix.
 - 7 checks: status, JSON-LD, citations, og:image, sitemap, llms.txt, page weight
 - PASS routes to CEO retro; BLOCK routes per matrix below
 
+### L5 — Lighthouse CI (pre-prod, KOEA-6715)
+
+**L5 is enforced in CI, not in this G5 heartbeat.** `learnovaBeast` `publish.yml`
+deploys a Vercel preview, runs `@lhci/cli` via `treosh/lighthouse-ci-action`, and
+**blocks prod deploy** when mobile CWV exceeds gates: LCP > 2500 ms, INP > 200 ms,
+CLS > 0.1. `publish-action.sh` Phase 2 maps a failed publish workflow to
+`metadata.publish_state=dispatch_failed` — no `published` state, so G5 must not run.
+
+PR previews are audited separately by `.github/workflows/lighthouse.yml` on
+`deployment_status`. Operator secrets: `LHCI_GITHUB_APP_TOKEN`,
+`VERCEL_AUTOMATION_BYPASS_SECRET` (optional, for protected previews).
+
 ## Inputs
 
 - Paperclip ticket with `metadata.publish_state=published` and `metadata.published_url` set (KOE-101: "published" is not a valid Paperclip status enum)
