@@ -1,7 +1,7 @@
 ---
 slug: openai-agents-sdk-mastery
 title: "OpenAI Agents SDK Mastery: Build Production-Ready Autonomous Systems"
-status: outline-draft-for-review
+status: g4-approved
 author: course-author
 level: Builder
 last_delta_reason: "2026-05-18 community shift from prompt engineering to harness engineering"

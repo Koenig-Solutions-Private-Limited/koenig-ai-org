@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: claude-tool-use-from-zero
 title: "Introduction to Claude's Tool Use"
-status: draft-for-review
+status: g4-approved
 author: course-author
 ticket: KOEA-2461
 learning_objectives:

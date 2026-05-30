@@ -4,7 +4,8 @@ chapter_num: 4
 chapter_slug: cost-per-task
 title: "Cost-per-task — pricing vs. actual bill on real workloads"
 hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch04-hero.svg"
-status: draft-for-review
+status: g4-approved
+last_delta_reason: "2026-05-30 KOEA-6468: add sidecar cost-routing pattern section"
 author: "Koenig AI Instructor"
 agent_drafted_by: ca965eff-ea59-4030-91de-47845d3600c6
 vendor_tag: koenig-ai-academy
@@ -33,6 +34,7 @@ references:
   - "[^3]: Google. 'Gemini API pricing.' https://ai.google.dev/pricing — Gemini 3.1 Pro input/output/context caching pricing as of Q2 2026. Changelog: https://ai.google.dev/gemini-api/docs/changelog."
   - "[^4]: Koenig AI Academy internal cost model data, Q2 2026. Derived from 10×3×5 benchmark dataset (/data/claude-tool-use-determinism/2026-Q2/) with retry simulation applied at workload scale."
   - "[^5]: Patil, S. et al. Berkeley Function-Calling Leaderboard (BFCL) V4. https://gorilla.cs.berkeley.edu/leaderboard.html — analysis of tool-call reliability impact on pipeline cost."
+  - "[^6]: r/ClaudeAI — 'I gave Claude Code a $0.02/call coworker and stopped hitting limits' — https://www.reddit.com/r/ClaudeAI/comments/1t1o43w/ retrieved 2026-05-26. Pattern synthesis: vault/research/community/2026-05-26.md item 3."
 slides: courses/picking-a-frontier-model-2026-q2/ch04-slides.pptx
 audio: courses/picking-a-frontier-model-2026-q2/voiceover-04.mp3
 voiceover_script: courses/picking-a-frontier-model-2026-q2/voiceover-04.md
@@ -290,6 +292,32 @@ For classification at this scale, **Gemini 3.1 Pro wins decisively** — saving 
 
 ---
 
+## The sidecar cost-routing pattern
+
+Community power users — particularly Claude Code builders hitting weekly quota limits — are building **sidecar routing** setups: one premium model handles planning and complex judgment calls; a cheaper or local model executes the mechanical steps. [^6] The pattern emerges naturally under quota pressure, but the economics hold even without it.
+
+Rough cost sketch for a 5-step coding agent. Step 1 is task decomposition (requires deep reasoning); steps 2–5 are file reads, lints, and test calls (mechanical tool execution). Token profile: planner step ~3,000 input / 800 output; each executor step ~1,000 input / 200 output. Approximate per-task costs before retry multiplier:
+
+| Routing | Planner step | Executor steps (×4) | Subtotal |
+|---|---|---|---|
+| All Opus 4.7 | ~$0.030 | ~$0.010 × 4 = $0.040 | **~$0.070** |
+| All Gemini 3.1 Pro | ~$0.014 | ~$0.004 × 4 = $0.016 | **~$0.030** |
+| Sidecar: Opus plan → Gemini exec | ~$0.030 | ~$0.004 × 4 = $0.016 | **~$0.046** |
+| Sidecar: Opus plan → local Qwen3-7B Q8_0 | ~$0.030 | ~$0 (on-prem) | **~$0.030** |
+
+The Opus → local sidecar delivers Opus-quality task decomposition at roughly the same per-task cost as all-Gemini. The retry multiplier reinforces this: execution steps on simple-schema tools (category 1–2 from Chapter 2) typically achieve ≥ 90% determinism even on cheaper or quantized models, keeping the retry penalty low and the sidecar advantage intact.
+
+**Three conditions for sidecar routing to make sense:**
+1. Your pipeline has clearly separable planning and execution phases.
+2. Execution steps are mechanical enough that a cheaper or quantized model handles them reliably (determinism ≥ 90% on your schemas — verify with a Chapter 2-style benchmark run on the cheaper model).
+3. You have retry logic: when the executor fails, retry locally or escalate to the premium model.
+
+<Callout type="warn">
+**Context hand-off adds latency.** Passing the planner's output to a different executor model adds one extra model round-trip — typically 200–400ms on local setups, or one additional API call for cloud executors. Profile your p95 latency before adopting sidecar routing on user-facing, latency-sensitive paths. [^6]
+</Callout>
+
+---
+
 ## Hands-on exercise
 
 **Build a cost-per-task model for your use case using your Chapter 2 benchmark data.**
@@ -400,4 +428,6 @@ For further reading on how these models perform on specific workloads, see [Opus
 [^4]: Koenig AI Academy internal cost model data, Q2 2026. Derived from 10×3×5 benchmark dataset (`/data/claude-tool-use-determinism/2026-Q2/`) with retry simulation applied at workload scale.
 
 [^5]: Patil, S. et al. *Berkeley Function-Calling Leaderboard (BFCL) V4*. https://gorilla.cs.berkeley.edu/leaderboard.html — analysis of tool-call reliability impact on pipeline cost.
+
+[^6]: r/ClaudeAI — "I gave Claude Code a $0.02/call coworker and stopped hitting limits" — https://www.reddit.com/r/ClaudeAI/comments/1t1o43w/ · retrieved 2026-05-26. Community pattern synthesis in vault/research/community/2026-05-26.md, item 3: "Claude power users are actively arbitraging around usage limits with cheaper sidecars and fallback workflows."
 
