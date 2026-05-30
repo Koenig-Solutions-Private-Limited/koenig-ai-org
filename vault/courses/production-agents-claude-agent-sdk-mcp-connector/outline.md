@@ -1,6 +1,6 @@
 ---
 course_slug: production-agents-claude-agent-sdk-mcp-connector
-title: "Production Agents with Claude Agent SDK + MCP Connector"
+title: "How to Deploy Claude Agent SDK in Production (Docker, Kubernetes, Multi-tenant)"
 status: awaiting-g0
 author: course-author
 agent_drafted_by: course-author
@@ -31,7 +31,41 @@ sources:
   - https://platform.claude.com/docs/en/build-with-claude/files
 ---
 
-# Production Agents with Claude Agent SDK + MCP Connector
+# How to Deploy Claude Agent SDK in Production (Docker, Kubernetes, Multi-tenant)
+
+<!-- FAQPage JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the Claude Agent SDK?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The Claude Agent SDK (formerly Claude Code SDK) is Anthropic's official Python and TypeScript library for building production AI agents. It provides the query() API, built-in tool support, MCP connector integration, session management, and observability hooks for deploying agents at scale."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I deploy Claude Agent SDK to production?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "To deploy the Claude Agent SDK in production: (1) Install the SDK via pip or npm, (2) configure your ANTHROPIC_API_KEY, (3) implement PreToolUse and PostToolUse hooks for audit logging and cost circuit breakers, (4) wire MCP servers for external tool access, (5) containerize with Docker and deploy to Kubernetes or your preferred cloud runtime. This course covers each step with working code examples."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What replaced the Claude Code SDK?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Anthropic renamed the Claude Code SDK to the Claude Agent SDK in April 2026. The package names changed (anthropic-claude-code → anthropic-agent-sdk for Python; @anthropic-ai/claude-code → @anthropic-ai/agent-sdk for TypeScript), but the core query() API remained compatible. The rename signals Anthropic's focus on production agent deployments beyond CLI tooling."
+      }
+    }
+  ]
+}
+</script>
 
 ## Why this course
 
