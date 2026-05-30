@@ -6,6 +6,7 @@ ticket: KOEA-1342
 vendor_tag: community
 content_type: article
 status: g3-passed
+seo_description: "Compare GitHub Copilot cloud agent, Cursor Background Agent, and Claude Code: the decision is where the execution loop lives, not benchmark scores."
 reading_time_min: 7
 hero_image: auto:flux
 primary_query: "github copilot workspace vs cursor background agents vs claude code"
