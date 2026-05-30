@@ -1,7 +1,9 @@
 ---
 course_slug: gemini-enterprise-agents
 title: "Build Production AI Agents with Gemini Enterprise Agent Platform"
-status: awaiting-g0
+status: g0-blocked
+last_updated: "2026-05-30"
+seo_keyphrase: "Gemini Enterprise Agent Platform"
 last_delta: 2026-05-14
 last_delta_reason: "Gemini 3.1 Pro + Flash TTS vendor update"
 author: course-author
@@ -163,6 +165,44 @@ Time: 60 min
 ## Why this beats alternatives
 
 Most GEAP content stops at "deploy your first agent." This is the first course to integrate **Gemini 3.1 Pro**'s reasoning, **Flash TTS**'s expressive voice, and **Agent Gateway**'s enterprise security. We don't just teach you to code; we teach you to defend your deployment to a CISO.
+
+---
+
+## FAQ
+
+<!-- FAQPage JSON-LD for SEO — do not edit manually -->
+```json-ld
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is Gemini Enterprise Agent Platform?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Gemini Enterprise Agent Platform (GEAP) is Google Cloud's production-ready agent runtime, GA since April 23 2026. It bundles Agent Runtime, Agent Gateway, Agent Identity, Model Armor, Agent Registry, and Cloud Observability under four pillars — Build, Scale, Govern, and Optimize — so enterprises can deploy and operate AI agents with DevSecOps baked in."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does Gemini Enterprise Agent Platform differ from Vertex AI?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Vertex AI is Google Cloud's ML platform for training, tuning, and serving models. Gemini Enterprise Agent Platform builds on top of Vertex AI and adds agent-specific infrastructure: persistent Sessions and Memory Bank for stateful reasoning, Agent Gateway for traffic enforcement and tool-call interception, Agent Identity (SPIFFE) for per-agent credentials, and Agent Sandbox for secure code and browser execution. GEAP is where you run agents; Vertex AI is where you develop models."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I build agents on Gemini Enterprise Agent Platform?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Install `google-cloud-aiplatform[agent_engines,adk]`, wrap your Python functions as tools with type hints, and define an `AdkApp`. Configure Sessions for in-session state and Memory Bank for long-term context, then deploy to Agent Runtime with `AdkApp.create()`. Secure your deployment by assigning an Agent Identity and routing traffic through Agent Gateway before going to production."
+      }
+    }
+  ]
+}
+```
 
 ---
 
