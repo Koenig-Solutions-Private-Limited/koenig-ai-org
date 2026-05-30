@@ -17,7 +17,7 @@ learning_outcomes:
   - "Implement global agent discovery and naming using AGNTCY (Internet of Agents) patterns"
   - "Design resilient, asynchronous agent workflows that handle state consistency across distributed networks"
   - "Secure agent-to-agent communication using DPoP-bound tokens and trust-based authorization"
-total_duration_min: 480
+total_duration_min: 545
 chapter_count: 10
 capstone_project_min: 120
 ---
