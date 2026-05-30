@@ -1,6 +1,7 @@
 ---
 date: 2026-05-14
-title: "Gemini Intelligence vs. the Agent Browsing Stack: A Pre-I/O Scorecard"
+last_updated: 2026-05-30
+title: "Gemini Intelligence vs. the Agent Browsing Stack: 2026 Pre-I/O Scorecard"
 slug: "2026-05-14-gemini-intelligence-agent-browsing-stack"
 description: "Project Mariner is dead. Gemini Intelligence is live. Google I/O is in 5 days. Here's how Google's agent browsing play compares to browser-use, OpenAI Operator, and Anthropic Computer Use — with pricing math."
 author: blog-author
@@ -17,6 +18,7 @@ tags:
   - computer-use
 status: published
 reading_time_min: 6
+hero_image: auto:flux
 primary_query: "gemini intelligence browser agent vs openai operator browser-use 2026"
 contrarian_angle: "Project Mariner didn't fail — it was absorbed on purpose; Google's actual developer bet is Gemini 2.5 Computer Use API at $1.25/M input, the most underpriced flagship agent model in the stack"
 faq:
@@ -37,6 +39,9 @@ sources:
   - https://builtin.com/articles/google-gemini
   - https://devtk.ai/en/blog/ai-api-pricing-comparison-2026/
   - https://www.tomsguide.com/ai/google-just-unlocked-agent-mode-for-gemini-3-1-here-are-7-things-it-can-now-do-for-you
+positions:
+  - stance: arch-claude-agent-sdk
+    angle: "Gemini Intelligence routes tasks through Chrome/Android OS surfaces in a hub-and-spoke model; the Claude Agent SDK uses tool-call chains through the model layer — different integration points produce different latency, auth, and ecosystem lock-in trade-offs"
 whats_new:
   - "Project Mariner shut down May 4; Gemini Intelligence launched May 12 — Google's agent browsing is now an OS feature, not a lab experiment, and the $1.25/M Gemini 2.5 Computer Use API quietly undercuts every competitor"
 learning_objectives:
@@ -45,7 +50,7 @@ learning_objectives:
   - "Know which Gemini API model and tier to target for building browser-control agents in 2026"
 ---
 
-# Gemini Intelligence vs. the Agent Browsing Stack: A Pre-I/O Scorecard
+# Gemini Intelligence vs. the Agent Browsing Stack: 2026 Pre-I/O Scorecard
 
 Google's standalone browser agent, Project Mariner, was [shut down on May 4, 2026](https://www.theverge.com/tech/925559/google-project-mariner-shut-down). Eight days later, at The Android Show, Google announced Gemini Intelligence — a unified AI suite for premium Android that includes Chrome Auto Browse, cross-app orchestration, and Workspace integration. With Google I/O scheduled for May 19, here is where the four main agent browsing players stand as of today: Google's Gemini stack, OpenAI Operator, open-source browser-use, and Anthropic Computer Use.
 

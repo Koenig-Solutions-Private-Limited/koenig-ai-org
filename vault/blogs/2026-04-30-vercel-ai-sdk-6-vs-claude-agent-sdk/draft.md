@@ -1,5 +1,6 @@
 ---
 date: 2026-04-30
+last_updated: 2026-05-30
 author: vardaan-koenig
 agent_drafted_by: blog-author
 ticket: KOE-94
@@ -37,6 +38,13 @@ references:
     title: "AI Gateway — Vercel Documentation"
     url: https://vercel.com/docs/ai-gateway
     retrieved: 2026-04-30
+positions:
+  - stance: tools-vercel-ai-sdk
+    role: canonical
+    summary: "Vercel AI SDK 6 is the leading provider-agnostic agent harness; ToolLoopAgent is the right primitive when portability and loop control matter."
+  - stance: arch-claude-agent-sdk
+    role: canonical
+    summary: "Claude Agent SDK server tools eliminate operational overhead for sandboxed code execution and hosted web search in Claude-first architectures."
 whats_new:
   - Both agent SDKs shipped in 2025–2026 — the deciding factor is operational ownership of the execution loop, not code ergonomics
 learning_objectives:
@@ -44,17 +52,19 @@ learning_objectives:
   - Compare a 5-tool agent in both SDKs by line count, cost, and observability surface
   - Make a concrete pick based on who should own the execution loop
 faq:
-  - question: "Should I use Vercel AI SDK 6 or the Claude Agent SDK for my project?"
-    answer: "Use Vercel AI SDK 6 for interactive apps that need portability across AI providers and full control over each loop iteration. Choose the Claude Agent SDK when you want Anthropic to manage the execution loop, retries, and tool dispatch automatically."
-  - question: "How do a 5-tool agent's line count and observability compare between the two SDKs?"
-    answer: "Claude Agent SDK requires roughly 40% less boilerplate for a 5-tool agent, while Vercel AI SDK 6 surfaces every step of the loop for custom logging and cost tracking — making it better for compliance-heavy or cost-sensitive deployments."
-  - question: "Which SDK should own the agent execution loop in an automated pipeline?"
-    answer: "For automated CI/CD or batch pipelines where loop control belongs to your infrastructure, Vercel AI SDK 6 is the better fit. For product features where Anthropic-managed reliability and simpler code matter more, the Claude Agent SDK wins."
+  - question: "What is Vercel AI SDK 6?"
+    answer: "Vercel AI SDK 6 is a provider-agnostic TypeScript library released December 22, 2025 that introduced ToolLoopAgent — a multi-step agent loop primitive that runs in your own infrastructure and supports any AI provider via a single model string. It ships with DevTools middleware, full MCP OAuth support, and over 20 million monthly downloads."
+  - question: "When should you use Claude Agent SDK instead of Vercel AI SDK 6?"
+    answer: "Choose the Claude Agent SDK when you need Anthropic-managed server tools: sandboxed Python code execution (no container to operate), hosted web search, or the hosted MCP Connector. It is the right choice for Claude-first architectures where operational simplicity and vendor-managed SLAs matter more than provider portability."
+  - question: "Which is better for production agentic workloads?"
+    answer: "It depends on who should own the execution loop. Vercel AI SDK 6 is better when you need provider portability, explicit loop control for compliance logging, or cost transparency across custom tools. Claude Agent SDK is better when you want Anthropic to manage code execution and web search infrastructure, trading portability for dramatically lower operational overhead."
 ---
 
 # Vercel AI SDK 6 or Claude Agent SDK: The Decision Is Who Runs the Loop
 
-Vercel AI SDK 6 is a provider-agnostic TypeScript library released December 22, 2025 that introduced `ToolLoopAgent` — a multi-step agent loop that runs entirely in your own infrastructure, across any supported LLM provider. [1] Anthropic's Agent Capabilities API, launched May 22, 2025 and now bundled as part of the Claude Agent SDK (rebranded from Claude Code SDK on April 28, 2026), ships three server tools — sandboxed code execution at $0.05/container-hour after 50 free daily hours, hosted web search, and an MCP Connector — that execute on Anthropic's managed compute, not yours. [2] By mid-2026 both are the dominant frameworks for production agent work, and the choice between them requires exactly one architectural decision.
+Choose Vercel AI SDK 6 when you need provider portability and explicit control over every loop step — it runs in your infrastructure and supports any LLM via a single string. Choose Claude Agent SDK when you want Anthropic to manage code execution, web search, and MCP connectors server-side. The decision turns on one architectural question: who should own the execution loop?
+
+Vercel AI SDK 6 introduced `ToolLoopAgent` on December 22, 2025 — a multi-step agent loop that runs entirely in your own infrastructure, across any supported LLM provider. [1] Anthropic's Agent Capabilities API, launched May 22, 2025 and now bundled as part of the Claude Agent SDK (rebranded from Claude Code SDK on April 28, 2026), ships three server tools — sandboxed code execution at $0.05/container-hour after 50 free daily hours, hosted web search, and an MCP Connector — that execute on Anthropic's managed compute, not yours. [2] By mid-2026 both are the dominant frameworks for production agent work.
 
 ## Key facts
 

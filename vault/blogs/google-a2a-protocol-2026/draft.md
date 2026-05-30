@@ -3,6 +3,8 @@ title: "Use Google A2A for cross-agent delegation, not as an MCP replacement"
 description: "Google A2A matters in 2026 because it standardizes durable task state, auth interruptions, and artifact exchange across agents, while MCP still handles tools and context inside each agent."
 slug: 2026-05-13-google-a2a-protocol
 date: 2026-05-13
+last_updated: 2026-05-30
+year: 2026
 author: vardaan-koenig
 author_slug: vardaan-koenig
 author_credentials: "Founder & Head of AI Academy, Koenig Solutions"
@@ -45,6 +47,11 @@ faq:
   - question: "Where does AGNTCY fit?"
     answer: "AGNTCY sits above raw delegation and aims at a fuller internet-of-agents stack with discovery, identity, messaging, and observability, while A2A stays narrower."
 hero_image: auto:flux
+positions:
+  - stance: arch-claude-agent-sdk
+    angle: "A2A complements Claude's orchestration hub-and-spoke topology: the orchestrator (Claude Agent SDK) owns the plan and delegates tasks to remote specialist agents over A2A, keeping each agent's internal MCP tools and permissions behind its own boundary"
+  - stance: open-closed-prefer-oss
+    angle: "A2A is a Linux Foundation-governed open protocol — prefer it over proprietary delegation APIs because it avoids lock-in and already has 150+ partners across cloud, SaaS, and observability vendors"
 references:
   - n: 1
     title: "Announcing the Agent2Agent Protocol (A2A)"

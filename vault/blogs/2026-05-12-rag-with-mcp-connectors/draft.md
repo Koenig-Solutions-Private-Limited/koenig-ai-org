@@ -1,6 +1,7 @@
 ---
 date: 2026-05-12
-title: "Build production RAG by putting MCP connectors in front of retrieval, not inside every app"
+last_updated: 2026-05-30
+title: "Build production RAG with MCP connectors in 2026 — one control plane, not one implementation per app"
 slug: 2026-05-12-rag-with-mcp-connectors
 description: "MCP connectors give production RAG a single control plane for auth, discovery, and retrieval—here's how to architect that boundary so it stays inside your latency budget."
 author: blog-author
@@ -50,6 +51,11 @@ references:
     title: "modelcontextprotocol/modelcontextprotocol"
     url: https://github.com/modelcontextprotocol/modelcontextprotocol
     retrieved: 2026-05-12
+positions:
+  - stance: arch-claude-agent-sdk
+    angle: "MCP connectors give the Claude Agent SDK a stable retrieval surface: one boundary for auth, discovery, and context access instead of per-app retrieval plumbing"
+  - stance: open-closed-cli-first
+    angle: "The open MCP specification is the right primitive for CLI-first retrieval pipelines — the protocol runs anywhere without vendor lock-in, making it a natural fit for terminal-driven agent workflows"
 whats_new:
   - Production RAG gets better when MCP connectors become the control plane around retrieval, not another place to stuff embeddings
 learning_objectives:
@@ -64,9 +70,9 @@ faq:
     answer: "It centralizes auth, access control, and discovery in one server layer instead of copying credentials and ACL logic into every agent runtime, frontend, and SDK. That makes failures easier to audit and policy easier to enforce."
 ---
 
-# Build production RAG by putting MCP connectors in front of retrieval, not inside every app
+# Build production RAG with MCP connectors in 2026 — one control plane, not one implementation per app
 
-To build production RAG with MCP connectors in 2026, put a single MCP boundary in front of your knowledge systems, expose read-heavy retrieval through MCP primitives, and keep connector overhead inside your latency budget. MCP already gives you standardized read access through Resources and standardized action access through Tools ([server concepts](https://modelcontextprotocol.io/docs/learn/server-concepts), [Resources spec](https://modelcontextprotocol.io/specification/2025-06-18/server/resources)). OpenAI's MCP server guide now documents a production path where a remote MCP server is attached to the Responses API as an `mcp` tool, while Cloudflare's Agents stack shows the complementary runtime pattern: durable application state plus vector retrieval behind one boundary ([OpenAI MCP server guide](https://developers.openai.com/api/docs/mcp), [Cloudflare Agents](https://developers.cloudflare.com/agents/api-reference/rag/)).
+Production RAG with MCP connectors works when you place a single MCP boundary in front of your knowledge systems, expose read-heavy retrieval as MCP Resources, and keep connector overhead inside your latency budget — giving every app and agent the same retrieval surface without re-implementing auth, discovery, and context plumbing each time. MCP provides standardized read access through Resources and action access through Tools ([server concepts](https://modelcontextprotocol.io/docs/learn/server-concepts), [Resources spec](https://modelcontextprotocol.io/specification/2025-06-18/server/resources)). OpenAI's MCP server guide documents a production path where a remote MCP server is attached to the Responses API as an `mcp` tool; Cloudflare's Agents stack shows the complementary runtime pattern: durable application state plus vector retrieval behind one boundary ([OpenAI MCP server guide](https://developers.openai.com/api/docs/mcp), [Cloudflare Agents](https://developers.cloudflare.com/agents/api-reference/rag/)).
 
 The part most teams miss is that MCP is not the retrieval algorithm. It is the control plane around retrieval. Your embeddings model, chunking policy, ACLs, metadata joins, and relevance evaluation still decide whether answers are good. What MCP changes is where that logic lives: instead of every chat app, workflow runner, and agent framework wiring its own auth, discovery, and retrieval plumbing, one MCP server or connector layer can present the same knowledge surface everywhere. That is why the real production win is operational consistency, not protocol novelty.
 

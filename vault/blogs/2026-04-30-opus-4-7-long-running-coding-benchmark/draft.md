@@ -1,5 +1,6 @@
 ---
 date: 2026-04-30
+last_updated: 2026-05-30
 author: koenig-academy
 agent_drafted_by: blog-author
 ticket: KOE-19
@@ -16,6 +17,12 @@ sources:
   - https://www.anthropic.com/news
   - https://www.swebench.com/
 hero_image: auto:flux
+hero_image_alt: "Claude Opus 4.7 coding benchmark — graph comparing task completion rate over 200 sequential tool calls on Opus 4.6 vs 4.7"
+positions:
+  - stance: tools-opus-reserved
+    summary: "Opus 4.7 should be reserved for high-complexity, multi-step coding tasks where the quality delta justifies the cost premium. Routine single-turn coding and headless CLI automation should default to Sonnet 4.6 or Codex CLI."
+  - stance: tools-codex-cli-default-headless
+    summary: "For headless, unattended coding automation (CI pipelines, overnight batch agents), Codex CLI with Sonnet 4.6 is the cost-efficient default; escalate to Opus 4.7 only when task complexity exceeds Sonnet's ceiling."
 references:
   - n: 1
     title: "Introducing Claude Opus 4.7 — Anthropic Announcement"
@@ -43,15 +50,21 @@ learning_objectives:
   - Identify which Opus 4.7 improvements specifically target multi-step coding sessions and where gaps remain
   - Estimate the real token cost of upgrading an existing long-running agent workflow from Opus 4.6 to 4.7
 faq:
+  - question: "What is Claude Opus 4.7?"
+    answer: "Claude Opus 4.7 is Anthropic's flagship model released April 16, 2026. It is designed for complex, multi-step tasks — especially long-running coding workflows — and adds file-system-based memory for cross-session persistence, adaptive reasoning depth, and 3.75MP visual resolution. Pricing is $5/M input tokens and $25/M output tokens, unchanged from Opus 4.6."
+  - question: "How does Claude Opus 4.7 perform on long-running coding tasks?"
+    answer: "Opus 4.7 resolves 3× more production coding tickets than 4.6 in Rakuten's internal evaluation and reaches 70% task completion on CursorBench (vs. 58% for 4.6). Its file-system memory and loop-resistance upgrades reduce mid-task abandonment. However, context drift past ~100 sequential steps remains an open problem, and a new tokenizer inflates input costs up to 35% on code-heavy prompts."
+  - question: "Should I use Opus 4.7 or Sonnet 4.6 for org-wide agents?"
+    answer: "Use Sonnet 4.6 (or Codex CLI for headless pipelines) as the default for org-wide agents — it handles the majority of routine tasks at 4–5× lower cost. Reserve Opus 4.7 for tasks that demonstrably exceed Sonnet's capability ceiling: complex architectural refactors, multi-repo dependency chains, or any task where a single mistake costs hours of human review. Always benchmark both models on your actual task distribution before committing fleet-wide."
   - question: "Which Opus 4.7 improvements most benefit multi-step coding sessions?"
     answer: "Opus 4.7 shows the largest gains on tasks that require holding many files in context simultaneously — multi-file refactors, cross-service debugging, and incremental test-driven development — resolving roughly 3× more production-level tasks than 4.6 in those scenarios."
   - question: "What is the real token cost of upgrading a long-running agent workflow from Opus 4.6 to 4.7?"
-    answer: "Opus 4.7's extended reasoning chains make 8-hour agentic sessions significantly more expensive per task than 4.6; benchmark your specific workflow before committing to a full migration, as cost uplift can outweigh quality gains on simpler repetitive tasks."
+    answer: "Opus 4.7's tokenizer change inflates input token counts 1.0–1.35× on code-heavy prompts. An 8-hour session using 400 K input tokens on 4.6 now consumes ~540 K on 4.7, raising input spend from $2.00 to $2.70 per session. Multiply by a fleet of overnight agents and audit cache-hit rates, which reset after the tokenizer upgrade."
 ---
 
 # Opus 4.7 resolves 3× more production coding tasks than 4.6 — here's the catch for 8-hour sessions
 
-**Claude Opus 4.7**, released by Anthropic on April 16, 2026, is the company's current flagship model.[4] It delivers a 70% task completion rate on CursorBench (vs. 58% for 4.6) and resolves 3× more production tickets in Rakuten's internal evaluation.[1] For multi-step workflows — the category that matters for teams running overnight engineering agents — Notion reports a +14% improvement.[1] Pricing is unchanged at $5 per million input tokens and $25 per million output tokens.[2]
+**Claude Opus 4.7 completes 3× more long-running coding tasks than Opus 4.6** — resolving real production tickets end-to-end, not just answering questions.[1] Released April 16, 2026, it reaches 70% on CursorBench (vs. 58% for 4.6) and adds file-system memory so multi-session agents persist context across restarts.[1] Pricing holds at $5/M input and $25/M output tokens.[2]
 
 The headline numbers are the strongest Anthropic has published for a coding-focused release. The part that didn't make the announcement: a new tokenizer that inflates input token counts up to 1.35× on code-heavy prompts, and a context drift problem that no published Opus 4.7 benchmark directly measures.
 

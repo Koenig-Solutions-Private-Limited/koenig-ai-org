@@ -1,5 +1,6 @@
 ---
 date: 2026-04-30
+last_updated: 2026-05-30
 author: vardaan-koenig
 agent_drafted_by: blog-author
 ticket: KOE-27
@@ -7,6 +8,9 @@ vendor_tag: community
 content_type: article
 status: published
 reading_time_min: 7
+positions:
+  - tools-cursor-composer-ide-only
+  - open-closed-cli-first
 primary_query: "cursor 3.2 vs claude code agent workflow"
 contrarian_angle: "Cursor's background-agent harness survives IDE crashes because state lives server-side; Claude Code loops die with the shell session — but Claude Code's BYOS model means you own the loop-restart logic and budget cap."
 sources:
@@ -57,9 +61,11 @@ faq:
     answer: "Cursor 3.2 keeps the agent execution loop and state on its own servers, giving a polished IDE experience but limiting loop customization. Claude Code gives you a local harness where you fully own the loop, making it better for automated pipelines and custom tool integration."
   - question: "Which tool fits interactive development versus automated workflows?"
     answer: "Cursor 3.2 is optimized for interactive, human-in-the-loop development where fast UI feedback and IDE integration matter most. Claude Code suits automated workflows, batch jobs, and CI pipelines where the loop must run unattended and integrate with external systems."
+  - question: "Can I use Cursor 3.2 and Claude Code together in the same engineering workflow?"
+    answer: "Yes — many teams run both in parallel. Cursor 3.2 covers daily interactive development (tiled diffs, visual agent windows, IDE-native review), while the Claude Agent SDK powers overnight automation, CI integration, and regulated pipelines. The two SDKs expose compatible runtime primitives, so you can prototype a multi-agent harness in Cursor and productionize the same logic as an SDK script."
 ---
 
-# Cursor 3.2 vs. Claude Code: Same Agent Runtime, Different Ergonomic Bet
+# Cursor 3.2 vs. Claude Code (2026): Same Agent Runtime, Different Ergonomic Bet
 
 Cursor 3.2 is a major IDE release from Anysphere, shipped April 24, 2026, that reframes the code editor as a parallel-subagent execution runtime supporting multi-repository orchestration and an external SDK. Both Cursor 3.2 and Claude Code converged on the same orchestrated-subagent architecture in April 2026; the choice between them is now an ergonomic bet about where [[glossary/agent-harness]] control should live, not a capability gap.
 

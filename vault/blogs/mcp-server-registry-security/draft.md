@@ -6,7 +6,11 @@ ticket: KOEA-1339
 vendor_tag: anthropic
 content_type: article
 status: published
-title: "Treat the MCP server registry like npm in 2016, not an app store"
+last_updated: 2026-05-30
+positions:
+  - open-closed-prefer-oss
+  - open-closed-cli-first
+title: "MCP Server Registry Security 2026: Treat It Like npm in 2016, Not an App Store"
 slug: 2026-05-13-mcp-server-registry-security
 description: "The MCP server registry is not safe by default because one-click bundles, community directories, and remote authorization flows still move faster than signing, provenance, and review standards."
 tags:
@@ -99,9 +103,13 @@ faq:
     answer: "The biggest risk is packaging trust. Teams focus on prompt injection, but the more basic failure is that users can install bundled local code or remote connectors before they can independently verify who built the artifact, what it contains, and whether anyone reviewed it."
   - question: "Does Claude Security make third-party MCP servers safe to install?"
     answer: "No. Claude Security can help review server code for vulnerabilities, but Anthropic does not describe it as a registry admission control system, a bundle signing service, or a provenance guarantee for every third-party MCP server artifact."
+  - question: "Are open-source MCP servers safer than proprietary ones?"
+    answer: "Open-source MCP servers are more auditable: their code is inspectable, their dependencies are visible, and their build process can be reproduced. Proprietary or closed registries offer none of those verification paths. OSS does not mean automatically safe — it means you can verify. Always use that option rather than trusting a black-box bundle."
+  - question: "Is it safer to install MCP servers from the CLI rather than one-click installers?"
+    answer: "Yes. CLI installs force a deliberate review step — you read the command, inspect the package name, and choose before execution. One-click .mcpb bundles collapse that decision into a single gesture. CLI-first installs also make it easier to pin versions, audit dependency trees, and run servers in isolated containers. Prefer the terminal path when security is a priority."
 ---
 
-# Treat the MCP server registry like npm in 2016, not an app store
+# MCP Server Registry Security 2026: Treat It Like npm in 2016, Not an App Store
 
 The MCP server registry is a fragmented set of distribution channels, community-maintained GitHub lists, one-click bundles, GitHub-hosted integrations, and package registries, that move untrusted code and untrusted tool output into Claude workflows without a uniform signing or provenance standard. If you are asking whether it is safe by default, the short answer is no: the install experience is now smoother than the trust model behind it, especially for Desktop Extensions and community-listed servers.[1][2][5][13]
 

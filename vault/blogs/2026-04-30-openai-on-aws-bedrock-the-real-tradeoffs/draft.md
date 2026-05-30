@@ -1,5 +1,6 @@
 ---
 date: 2026-04-30
+last_updated: 2026-05-30
 author: blog-author
 ticket: KOE-23
 vendor_tag: openai
@@ -42,15 +43,24 @@ learning_objectives:
   - Understand how Bedrock's IAM/SigV4 auth differs from OpenAI's native bearer-token model in practice
   - Know when migrating to Bedrock-hosted OpenAI models pays off and when it adds complexity without benefit
 faq:
+  - question: "Is OpenAI available on AWS Bedrock, and does it cost more than the direct API?"
+    answer: "Yes — OpenAI GPT models, Codex, and Managed Agents are listed in the Bedrock foundation model catalog as of April 2026. Per-token rates are comparable to the native API, but you add AWS infrastructure overhead: IAM role setup, boto3 SDK integration, and CloudWatch observability dashboards. Teams already on AWS absorb this cost easily; teams without AWS infrastructure face substantial migration overhead."
+  - question: "What are the real cost tradeoffs of OpenAI on AWS Bedrock vs the direct API?"
+    answer: "Bedrock costs run through AWS billing with IAM-principal-tagged cost allocation — useful for multi-team FinOps. You lose the OpenAI usage dashboard's real-time rate-limit visibility and per-org spend forecasting. For regulated industries that already pay AWS enterprise commit rates, Bedrock can reduce net AI spend. For everyone else, the native API is cheaper to operate end-to-end."
+  - question: "When should you choose Bedrock over the direct OpenAI API?"
+    answer: "Choose Bedrock when your workloads already run on IAM roles, data residency rules prohibit sending prompts to non-AWS endpoints (HIPAA, FedRAMP, financial services SOC 2), or you need Bedrock Guardrails applied uniformly across Claude, Titan, and OpenAI models. Stay on the native API when you have no existing AWS infrastructure, need the OpenAI usage dashboard, or want to avoid AWS lock-in."
   - question: "How does Bedrock's IAM and SigV4 auth differ from OpenAI's native bearer-token model?"
     answer: "Bedrock requires AWS SigV4 request signing via IAM roles instead of a simple bearer token — adding infrastructure complexity but gaining enterprise access controls, audit logging, and VPC network isolation that OpenAI's direct API does not provide."
-  - question: "When does migrating to Bedrock-hosted OpenAI models make sense?"
-    answer: "Bedrock hosting pays off when you already run AWS infrastructure for compliance, need VPC isolation to keep model traffic off the public internet, or want to consolidate AI spend under AWS enterprise commitments. It adds meaningful friction for teams without existing AWS investment."
+positions:
+  - stance: cost-inexpensive
+    body: "Bedrock-hosted OpenAI models carry hidden infrastructure overhead — IAM role management, SigV4 signing, CloudWatch dashboard setup. For teams without existing AWS investment, the native OpenAI API is meaningfully cheaper to operate and maintain."
+  - stance: open-closed-prefer-oss
+    body: "Bedrock deepens AWS lock-in; teams that prefer multi-cloud or open-source-first strategies should default to the native OpenAI API or evaluate open-weight alternatives before committing to Bedrock's proprietary auth and observability stack."
 ---
 
-# OpenAI on AWS Bedrock: IAM Auth Is the Real Engineering Work
+# OpenAI on AWS Bedrock: IAM Auth Is the Real Engineering Work (2026)
 
-OpenAI's models, Codex, and Managed Agents are now available on Amazon Bedrock, giving AWS-only enterprises GPT-class capability without routing prompts outside their cloud perimeter.[^1] This genuinely matters for regulated industries. But the coverage uniformly skips the catch: **Bedrock does not accept OpenAI API keys**. Your `openai` Python client, your bearer-token rotation scripts, your `Authorization: Bearer sk-...` headers — none of them work. You are now in IAM territory, and that is not a config tweak.
+**OpenAI on AWS Bedrock replaces API-key auth with IAM/SigV4 — your existing `openai` Python client will not work against a Bedrock endpoint.** The core tradeoff: Bedrock gives you AWS data residency, IAM audit logging, and Bedrock Guardrails; it costs you the OpenAI usage dashboard and adds real infrastructure complexity. For teams already running AWS workloads, this is a net win. For everyone else, it is overhead with no payoff.[^1]
 
 The announcement says "AWS customers can deploy OpenAI capabilities natively." The engineering reality is that you are swapping one auth model for a fundamentally different one — SigV4-signed requests, IAM role policies, and a new observability surface. Most teams find out the hard way when their first `openai.ChatCompletion.create()` call returns a 403 from a Bedrock endpoint.
 

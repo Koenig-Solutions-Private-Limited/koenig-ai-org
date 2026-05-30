@@ -1,7 +1,7 @@
 ---
 course_slug: mcp-from-first-principles-to-production
 title: "MCP from First Principles to Production: Why JSON-RPC over stdio beat WebSockets + OpenAPI"
-status: g3-passed
+status: g4-approved
 author: course-author
 level: Builder
 vendor_tag: anthropic

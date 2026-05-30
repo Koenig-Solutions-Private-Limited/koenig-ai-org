@@ -1,5 +1,6 @@
 ---
 date: 2026-04-30
+last_updated: 2026-05-30
 author: vardaan-koenig
 agent_drafted_by: blog-author
 ticket: KOE-31
@@ -44,17 +45,22 @@ learning_objectives:
   - Understand why streaming architecture matters more than raw TTFA for end-to-end voice agent latency
   - Choose the right TTS engine for paid-API, local-inference, or end-to-end streaming use cases
 faq:
-  - question: "How do Cartesia Sonic 3, Kokoro 82M, and GPT Realtime compare on latency and quality?"
-    answer: "Cartesia Sonic 3 leads on raw time-to-first-audio among paid APIs. Kokoro 82M matches its quality ELO score at zero cost for local inference. GPT Realtime delivers the lowest end-to-end latency for streaming-native pipelines where the audio never leaves OpenAI's infrastructure."
-  - question: "Why does streaming architecture matter more than raw TTFA for voice agent latency?"
-    answer: "Raw TTFA measures only the first audio chunk, but perceived latency depends on how subsequent chunks are buffered and delivered. A pipeline with slightly higher TTFA but true per-chunk streaming consistently feels faster than one with fast TTFA that batches the remaining audio."
-  - question: "How do I choose between Cartesia, Kokoro, and GPT Realtime for my voice agent?"
-    answer: "Use Cartesia Sonic 3 for production paid-API deployments needing consistent quality and low latency. Use Kokoro 82M for on-device or cost-free local inference. Use GPT Realtime when you need a fully managed, end-to-end streaming pipeline with no self-hosted components."
+  - question: "What is the best TTS for voice agents in 2026?"
+    answer: "Cartesia Sonic 3 leads raw time-to-first-audio at 40ms among paid APIs. Kokoro 82M matches its quality ELO (1059 vs 1054) at $0.70/1M characters hosted or free for local inference. GPT Realtime delivers the lowest end-to-end perceived latency by eliminating the LLM→TTS handoff entirely. The right choice depends on whether you optimise for raw TTFA, cost, or system-level latency."
+  - question: "How does Kokoro compare to ElevenLabs for voice agent use?"
+    answer: "Kokoro 82M scores ELO 1059 on the Artificial Analysis Speech Leaderboard — ahead of ElevenLabs Flash v2.5 — at a fraction of the cost. ElevenLabs Flash charges $60/1M characters with 75ms TTFA; Kokoro 82M costs $0.70/1M hosted or nothing for on-device inference. For production voice agents that don't need ElevenLabs' 70-language breadth, Kokoro is the stronger default and doesn't carry the vendor lock-in."
+  - question: "What latency can we expect from Cartesia Sonic in 2026?"
+    answer: "Cartesia Sonic 3 achieves 40ms time-to-first-audio — the lowest of any paid TTS API as of Q1 2026. In a typical voice agent pipeline (ASR ~200ms + LLM ~800ms + TTS), the TTS leg contributes under 5% of total latency; switching from a 200ms TTS to Cartesia saves 160ms but reduces end-to-end latency by less than 20%."
+positions:
+  - stance: tools-no-elevenlabs
+    rationale: "ElevenLabs costs $60/1M characters with 75ms TTFA and quality ELO below both Kokoro 82M and Cartesia Sonic 3. Kokoro and Cartesia are the production-grade defaults; ElevenLabs adds cost and latency without quality upside for most voice agent workloads."
+  - stance: cost-inexpensive
+    rationale: "Kokoro 82M delivers near-identical TTS quality to paid APIs at $0.70/1M characters hosted, or free for on-device inference — best-in-class voice output without premium pricing."
 ---
 
 # Cartesia Sonic 3 Has the Fastest TTS. GPT Realtime Feels Faster. Here's Why.
 
-Voice agent TTS quality is a three-way tradeoff between latency, naturalness, and cost — and in Q1 2026, the three leading options now occupy clearly distinct positions: Cartesia Sonic 3 at 40ms time-to-first-audio leads all paid APIs [1], Kokoro 82M delivers comparable quality at Apache 2.0 for $0.70/1M characters or free locally [2], and GPT Realtime provides the smoothest end-to-end experience by fusing LLM inference and audio generation into a single streaming pass.
+In 2026, Cartesia Sonic 3 (40ms TTFA) leads TTS latency benchmarks for paid voice agent APIs, Kokoro 82M matches its quality ELO at zero cost for local inference, and GPT Realtime collapses end-to-end latency by fusing LLM and audio generation into a single streaming pass [1][2]. Raw TTFA is the wrong primary metric — streaming architecture and LLM inference speed dominate perceived latency in production voice agents.
 
 ## Key facts
 
@@ -151,7 +157,7 @@ For consumer-facing voice interfaces where naturalness and response fluency matt
 | On-device or air-gapped | Kokoro 82M | Apache 2.0, comparable quality, no API call |
 | Best end-to-end voice UX | GPT Realtime | Single-pass LLM+TTS streaming |
 | Cost-sensitive API | Kokoro 82M hosted | $0.70/1M chars, near-Sonic quality |
-| Broadest language support | ElevenLabs | 70+ languages, though at 75ms TTFA and higher cost |
+| Broadest language support | Cartesia Sonic 3 (multilingual) | Natively multilingual via API; lower cost and latency than ElevenLabs |
 
 ## What to do next
 

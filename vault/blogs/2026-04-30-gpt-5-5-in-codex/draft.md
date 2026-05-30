@@ -13,7 +13,8 @@ whats_new:
   - GPT-5.5 model with 400K token context window in Codex (1M via API; API access announced as "coming very soon").
   - Major plugin ecosystem overhaul in Codex Desktop.
   - Native reasoning controls and multi-agent tracing.
-status: published
+status: awaiting-g0
+last_updated: 2026-05-30
 title: "GPT-5.5 in Codex — what changed and why it matters"
 slug: "2026-04-30-gpt-5-5-in-codex"
 description: "GPT-5.5, released April 23 2026, introduces native multi-step reasoning tokens, a 400K-token context window in Codex Desktop, and a major plugin ecosystem overhaul for software engineering."
@@ -54,17 +55,22 @@ references:
     url: https://benchlm.ai/benchmarks/cyberGym
     retrieved: 2026-05-01
 faq:
-  - question: "What is the new multi-step reasoning architecture in GPT-5.5?"
-    answer: "GPT-5.5 introduces a reasoning architecture that chains sub-step planning before execution, paired with a 400 K-token context window in Codex Desktop (1 M via API), enabling it to hold an entire mid-size codebase in context for a single task."
-  - question: "What does the Codex Desktop v0.125.0 plugin ecosystem add?"
-    answer: "Codex v0.125.0 ships a plugin system that lets third-party tools register actions GPT-5.5 can invoke during an agentic session — extending the model beyond code editing to tasks like running tests, querying APIs, and managing CI pipelines."
-  - question: "What use cases benefit most from agentic planning in Codex?"
-    answer: "Multi-file refactors, debugging sessions that span several services, and scaffolding new features from a spec all benefit most — tasks where a human would normally issue many sequential commands are compressed into a single supervised session."
+  - question: "What is GPT-5.5 in Codex?"
+    answer: "GPT-5.5 is OpenAI's multi-step reasoning model integrated into Codex Desktop (v0.125.0+). It introduces native reasoning tokens that simulate execution paths before writing code, a 400K-token context window in Codex (1M via API), and a plugin marketplace for extending agent capabilities. Released April 23, 2026, it scores 82.7% on Terminal-Bench 2.0 [1, 5]."
+  - question: "How does GPT-5.5 in Codex compare to Claude Sonnet 4.6?"
+    answer: "GPT-5.5 leads on agentic software engineering benchmarks — 82.7% Terminal-Bench 2.0 — with reasoning tokens optimized for multi-file refactoring and Codex's plugin ecosystem. Claude Sonnet 4.6 is stronger for multi-domain reasoning and instruction-following in non-Codex contexts; prefer Sonnet 4.6 when tasks span domains beyond software engineering [5]."
+  - question: "When should I use GPT-5.5 vs Codex 5.5 vs Claude?"
+    answer: "GPT-5.5 and 'Codex 5.5' refer to the same model — GPT-5.5 is the underlying model powering the Codex CLI agentic environment. Use it for multi-file software engineering tasks with plugin integrations (AWS Bedrock, CI pipelines). Choose Claude Opus 4.7 for complex cross-domain strategic reasoning, or Claude Sonnet 4.6 for balanced coding and instruction-following outside the Codex environment [1, 3]."
+positions:
+  - stance: tools-codex-cli-default-headless
+    summary: "GPT-5.5 makes Codex CLI the default headless agent for multi-file software engineering — its native reasoning tokens and plugin ecosystem are optimized for terminal-driven, non-interactive batch tasks where agentic planning across dozens of files is required."
+  - stance: tools-opus-reserved
+    summary: "Claude Opus 4.7 remains reserved for cross-domain strategic reasoning; GPT-5.5's 82.7% Terminal-Bench score does not displace Opus for tasks requiring broad world knowledge, nuanced judgment, or non-engineering reasoning depth."
 ---
 
 # GPT-5.5 in Codex — what changed and why it matters
 
-GPT-5.5, released April 23, 2026, is the first OpenAI model built for native, multi-step agentic planning optimized for the [[agent-harness]] and complex software engineering tasks [1]. It shifts reasoning from prompt-level Chain of Thought toward system-level reasoning tokens that simulate execution paths before any code is emitted [1, 2].
+GPT-5.5 in Codex delivers three key changes: native multi-step reasoning tokens that simulate execution before writing code, a 400K-token context window (1M via API), and a plugin ecosystem overhaul in Codex Desktop v0.125.0. Released April 23, 2026, it scores 82.7% on Terminal-Bench 2.0 — up from 75.1% for GPT-5.4 — making it OpenAI's strongest model for agentic software engineering [1, 5].
 
 ## Key facts
 

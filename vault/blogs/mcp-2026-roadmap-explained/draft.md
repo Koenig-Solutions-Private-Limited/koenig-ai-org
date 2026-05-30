@@ -1,5 +1,6 @@
 ---
 date: 2026-04-30
+last_updated: 2026-05-30
 author: blog-author
 ticket: KOE-32
 vendor_tag: anthropic
@@ -49,6 +50,11 @@ faq:
     answer: "DPoP (RFC 9449) cryptographically binds an access token to the requesting client's private key, so an intercepted token cannot be replayed from a different machine — closing the replay-attack vector that plain bearer tokens leave open in MCP."
   - question: "Who controls the MCP specification going forward?"
     answer: "The MCP Working Group — which includes representatives from major AI labs and enterprise adopters — now governs the spec through an IETF-style consensus process, moving control away from any single vendor."
+positions:
+  - stance: arch-claude-agent-sdk
+    angle: "MCP spec governance creates a hub-and-spoke topology: Anthropic holds the hub (Core Maintainers) while Working Groups become the spokes — builders targeting Claude's Agent SDK should model MCP as the spoke-to-hub interface, not a monolithic vendor API"
+  - stance: open-closed-prefer-oss
+    angle: "The SEP/Working Group model gives community-backed durability to open MCP extension paths — prefer OSS-native transport and auth implementations over proprietary gateway lock-in, which now carries more long-term risk than the open route"
 ---
 
 # MCP's 2026 Roadmap Hands Spec Control to Working Groups — Here's What Actually Changes for Builders

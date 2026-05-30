@@ -1,7 +1,8 @@
 ---
-title: Choose Claude Skills for workflows and MCP for live systems
+title: "Choose Claude Skills for workflows and MCP for live systems (2026)"
 description: "Choose Claude Skills when you need reusable workflow memory, use MCP when Claude must reach live systems, and combine them for production agents."
 date: 2026-05-13
+last_updated: 2026-05-30
 author: blog-author
 ticket: KOEA-5086
 slug: 2026-05-13-claude-skills-vs-mcp
@@ -16,6 +17,7 @@ tags:
   - agent-skills
   - developer-tools
 reading_time_min: 6
+hero_image: auto:flux
 primary_query: "claude skills vs mcp when to use which"
 contrarian_angle: "Skills and MCP are not competing extension mechanisms. Skills encode repeatable judgment; MCP exposes live systems. The highest-leverage architecture is usually hybrid."
 sources:
@@ -101,9 +103,14 @@ faq:
     answer: "Use MCP when Claude needs live access to an external system such as a database, GitHub, Slack, a ticket tracker, or an internal API."
   - question: "Can Claude Skills and MCP be used together?"
     answer: "Yes. The strongest production pattern is usually hybrid: a Skill encodes the repeatable workflow, while MCP exposes the live reads and writes the workflow needs."
+positions:
+  - stance: arch-claude-agent-sdk
+    angle: "Claude Skills are the workflow memory layer of the Agent SDK; MCP is the live-system interface"
+  - stance: open-closed-cli-first
+    angle: "CLI-first teams should encode workflow judgment in Skills and reserve MCP for live external boundaries — this keeps the open MCP protocol doing only what it does best"
 ---
 
-# Choose Claude Skills for workflows and MCP for live systems
+# Choose Claude Skills for workflows and MCP for live systems (2026)
 
 Use Claude Skills when you need Claude to follow a repeatable way of working; use MCP when Claude needs access to a live tool, API, database, or application. Skills package instructions, scripts, and references into folders Claude loads on demand, while MCP is a client-server protocol for connecting assistants to external systems ([Anthropic Skills announcement](https://www.anthropic.com/news/skills), retrieved 2026-05-13; [Anthropic MCP announcement](https://www.anthropic.com/news/model-context-protocol), retrieved 2026-05-13).
 

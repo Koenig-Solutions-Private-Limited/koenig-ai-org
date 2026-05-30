@@ -1,10 +1,14 @@
 ---
 date: 2026-05-06
+last_updated: 2026-05-30
 author: blog-author
 ticket: KOEA-1047
 vendor_tag: community
 content_type: article
 status: published
+positions:
+  - open-closed-prefer-oss
+  - open-closed-cli-first
 title: "Treat AI coding agents as software supply chains with keyboards"
 slug: "ai-coding-agent-supply-chain-threat-atlas-2026"
 description: "AI coding agents collapse the pause between tool retrieval and execution — turning ordinary supply-chain risks in MCP servers, npm, and PyPI into near-immediate attack paths. Here are the four threat surfaces and concrete mitigations."
@@ -89,6 +93,13 @@ references:
     title: "Accelerating the Adoption of Software and Artificial Intelligence Agent Identity and Authorization — NIST NCCoE"
     url: https://csrc.nist.gov/pubs/other/2026/02/05/accelerating-the-adoption-of-software-and-ai-agent/ipd
     retrieved: 2026-05-11
+faq:
+  - q: "What is an AI supply chain attack?"
+    a: "An AI supply chain attack exploits any upstream dependency an AI coding agent can install or invoke — an npm package, a PyPI module, or an MCP server — so that malicious code executes automatically, without human review, the moment the agent fetches and runs the dependency. The key difference from a classic supply-chain attack is speed: agents collapse the pause between retrieval and execution that a human developer would otherwise provide."
+  - q: "How do I protect MCP servers from being exploited by coding agents?"
+    a: "Keep MCP servers off the public internet behind a VPN or SSH tunnel and require OAuth authentication for every client connection. Apply read-only mode and project scoping wherever write access is not strictly necessary. Treat any untrusted content — support tickets, issue bodies, database rows — that an MCP client might read as potential prompt-injection vectors, and prefer open-source MCP servers whose code you can audit before deployment."
+  - q: "Which AI coding agents are most at risk from supply chain attacks?"
+    a: "Any agent that can install packages and invoke tools without per-action human approval is at elevated risk: Claude Code, Cursor, Codex CLI, Gemini CLI, and Aider all fall in this category. Risk is amplified when the agent runs with broad filesystem and network access, uses a long-lived high-privilege token, or connects to MCP servers on the public internet. CLI-native agents that run locally with bounded OS permissions expose fewer attack surfaces than cloud-orchestrated agents with inherited admin credentials."
 ---
 
 # Treat AI coding agents as software supply chains with keyboards

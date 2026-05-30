@@ -1,5 +1,6 @@
 ---
 date: 2026-04-30
+last_updated: 2026-05-30
 author: koenig-ai
 agent_drafted_by: content-author
 ticket: KOEA-24
@@ -25,6 +26,9 @@ sources:
   - https://modelcontextprotocol.io/introduction
   - https://docs.blender.org/api/current/
 hero_image: auto:flux
+positions:
+  - stance: arch-claude-agent-sdk
+    summary: "Anthropic's MCP-based creative connectors are the clearest production example of the Claude Agent SDK architecture: Claude acts as the orchestration layer, and domain-specific MCP servers (Blender, Ableton, Adobe) are the tools it calls — exactly the hub-and-spoke agent topology the SDK is designed for."
 references:
   - n: 1
     title: "Claude for Creative Work — Anthropic Announcement"
@@ -49,7 +53,7 @@ faq:
 
 # How to use Anthropic’s 9 new creative connectors in your workflow
 
-Claude for Creative Work is Anthropic’s April 2026 launch of nine MCP-based connectors that integrate Claude directly into professional creative software. On April 28, 2026, the company announced the initiative, bringing Claude into the tools artists, designers, and musicians use every day.
+Anthropic’s Claude creative connectors — released April 28, 2026 — bring Claude directly into Blender, Adobe Creative Cloud, Ableton Live, and six more professional tools via the Model Context Protocol (MCP). These nine connectors let you control 3D scenes, audio sessions, and design workflows using plain English, replacing manual handoffs with Claude acting as an AI orchestration layer across your entire creative stack.
 
 ## Key facts
 

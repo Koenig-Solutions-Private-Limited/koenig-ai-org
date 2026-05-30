@@ -18,6 +18,8 @@ sources:
   - https://docs.aws.amazon.com/bedrock/latest/userguide/models-api-compatibility.html
   - https://platform.claude.com/docs/en/about-claude/models/whats-new-claude-4-7
 hero_image: auto:flux
+positions: tools-opus-reserved
+last_updated: 2026-05-30
 references:
   - n: 1
     title: "Introducing GPT-5.5 - OpenAI"
@@ -61,7 +63,7 @@ faq:
     answer: "Route repo-wide refactors, multi-file issue resolution, and quality-first patch planning to Opus 4.7 because it leads SWE-Bench Pro and Anthropic optimized it for advanced software engineering. Route shell-heavy debugging, CI recovery loops, and computer-use style tasks to GPT-5.5 because it leads Terminal-Bench 2.0 and OSWorld-Verified."
 ---
 
-# Route refactors to Opus 4.7 and terminal work to GPT-5.5 on Bedrock
+# GPT-5.5 vs Claude Opus 4.7 for Agentic Coding in 2026: Route Refactors to Opus, Terminal Loops to GPT-5.5
 
 GPT-5.5 vs Claude Opus 4.7 is a frontier-model routing decision defined less by vendor preference than by whether your agent spends most of its time in a terminal or inside a repo-wide refactor. On April 23, 2026, OpenAI published the cleanest public split in this matchup: GPT-5.5 leads Terminal-Bench 2.0 at 82.7%, while Claude Opus 4.7 leads SWE-Bench Pro at 64.3%.[1]
 
