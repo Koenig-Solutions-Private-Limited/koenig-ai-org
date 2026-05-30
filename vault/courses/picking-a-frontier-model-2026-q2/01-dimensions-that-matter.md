@@ -4,7 +4,8 @@ chapter_num: 1
 chapter_slug: dimensions-that-matter
 title: "How to choose frontier model evaluation dimensions for production workloads"
 hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch01-hero.svg"
-status: awaiting-g0
+status: draft-for-review
+last_delta_reason: "2026-05-30 KOEA-6468: add open-weights/Qwen3 local deployment sidebar"
 author: "Koenig AI Instructor"
 agent_drafted_by: ca965eff-ea59-4030-91de-47845d3600c6
 vendor_tag: koenig-ai-academy
@@ -37,6 +38,8 @@ references:
   - "Prompt caching (Anthropic)"
   - "Prompt caching in the API (OpenAI)"
   - "Context caching overview (Google)"
+  - "r/LocalLLaMA: local-first MCP tutorial + multi-agent RTX 3090 stack — vault/research/community/2026-05-26.md item 1 — https://www.reddit.com/r/LocalLLaMA/comments/1tn1jjy/ retrieved 2026-05-26"
+  - "QwenLM. Qwen3 model family — https://github.com/QwenLM/Qwen3 retrieved 2026-05-26"
 slides: courses/picking-a-frontier-model-2026-q2/ch01-slides.pptx
 audio: courses/picking-a-frontier-model-2026-q2/ch01-audio.mp3
 voiceover_script: courses/picking-a-frontier-model-2026-q2/voiceover-01.md
@@ -182,6 +185,35 @@ As of May 2026, the Gemini 3.1 family has specialized into three distinct surfac
 
 If your use case maps cleanly to one of these archetypes, you already know your top dimensions. If it doesn't — if you're building something latency-critical *and* tool-heavy *and* long-context — you have a hard evaluation problem and should expect to make tradeoffs rather than finding a model that wins on all axes.
 
+<Callout type="info">
+**Lab note: a sixth dimension for local open-weights deployment**
+
+If privacy constraints, data-residency rules, or hard cost ceilings rule out cloud APIs, add **deployment model** (cloud vs. local) as a prerequisite filter before scoring the three-model field above. The Qwen3 family is currently the strongest open-weights option for tool-use workloads: Qwen 3.x implements OpenAI-compatible function calling, meaning existing tool-calling clients work against a local Ollama or llama.cpp endpoint with only an endpoint-URL change. Community builders are running plan→act→observe loops on RTX 3090 hardware using 4-bit GGUF models in the 7B–14B range — handling simple-schema tool calls at acceptable latency while keeping data fully on-premises. [12]
+
+Quantization tradeoffs for Qwen3-7B / Qwen3-14B on consumer hardware:
+
+| Format | VRAM (7B / 14B) | Tool-call quality | Practical fit |
+|---|---|---|---|
+| Q4_K_M | ~4 GB / ~8 GB | Good | RTX 3060–3070; privacy-first batch tasks |
+| Q8_0 | ~8 GB / ~15 GB | High | RTX 3090 / RTX 4090; near-cloud quality |
+| fp16 (full) | ~14 GB / ~28 GB | Highest | Dual-GPU rigs; Apple M2 Ultra |
+
+To benchmark local Qwen3 against the same tool-call schemas you test in Chapter 2, point the OpenAI client at your Ollama endpoint:
+
+```python
+from openai import OpenAI
+client = OpenAI(base_url="http://localhost:11434/v1", api_key="ollama")
+response = client.chat.completions.create(
+    model="qwen3:7b",   # or qwen3:14b
+    tools=[your_schema],
+    messages=[{"role": "user", "content": your_prompt}],
+    temperature=0,
+)
+```
+
+Run this 5× per prompt (matching the Chapter 2 methodology) to get a local determinism score you can compare directly against the cloud trio. Community signal shows meaningful variance across GGUF formats and schema complexity — measure before committing. [12]
+</Callout>
+
 ---
 
 ## Hands-on exercise
@@ -241,7 +273,7 @@ In [Chapter 2](/learn/picking-a-frontier-model-2026-q2/02-tool-use-determinism-b
 
 [4] Patil, S. et al. Berkeley Function-Calling Leaderboard (BFCL) V4 — https://gorilla.cs.berkeley.edu/leaderboard.html · retrieved 2026-04-30
 
-[5] OpenAI. Introducing GPT-5.5 — https://openai.com/index/introducing-gpt-5-5/ · refreshed 2026-05-18
+[5] OpenAI. GPT-5.5 model capabilities — https://platform.openai.com/docs/models/gpt-5-5 · refreshed 2026-05-18
 
 [6] Liu, N. et al. (2023). "Lost in the Middle: How Language Models Use Long Contexts" — https://arxiv.org/abs/2307.03172 · retrieved 2026-04-30
 
@@ -251,6 +283,8 @@ In [Chapter 2](/learn/picking-a-frontier-model-2026-q2/02-tool-use-determinism-b
 
 [9] Anthropic. Prompt caching — https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching · retrieved 2026-04-30
 
-[10] OpenAI. Prompt caching in the API — https://openai.com/index/api-prompt-caching/ · retrieved 2026-04-30
+[10] OpenAI. Prompt caching in the API — https://platform.openai.com/docs/guides/prompt-caching · retrieved 2026-04-30
 
 [11] Google. Context caching overview (Gemini API) — https://ai.google.dev/gemini-api/docs/caching · retrieved 2026-04-30
+
+[12] r/LocalLLaMA — "I made a local-first MCP tutorial repo" (node-llama-cpp, GGUF models, plan→act→observe loop) and "I built a self-hosted open-source MCP server" (multi-agent coding stack on RTX 3090) — https://www.reddit.com/r/LocalLLaMA/comments/1tn1jjy/ · retrieved 2026-05-26. Also: https://www.reddit.com/r/LocalLLaMA/comments/1te2jko/ · retrieved 2026-05-26. Community signal synthesized in vault/research/community/2026-05-26.md, item 1. Qwen3 model family: QwenLM — https://github.com/QwenLM/Qwen3 · retrieved 2026-05-26.

@@ -12,6 +12,8 @@ tags:
   - Production Agents
   - Realtime API
 sources:
+  - https://openai.github.io/openai-agents-python/
+  - https://platform.openai.com/docs/guides/agents
   - https://www.reddit.com/r/PromptEngineering/comments/1t95hyf/is_prompt_engineering_actually_dead_or_are_we/
   - https://np.reddit.com/r/ClaudeAI/comments/1rozbqb/are_agents_actually_useful_for_complex_tasks/
   - https://daringfireball.net/2026/05/ai_is_technology_not_a_product

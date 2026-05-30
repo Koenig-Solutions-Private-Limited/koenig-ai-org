@@ -29,7 +29,7 @@ hands_on_exercise: "Migrate a three-tool code-reviewer agent from Claude Code SD
 sources:
   - https://code.claude.com/docs/en/agent-sdk/overview
   - https://claude.com/blog/agent-capabilities-api
-  - https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk
+  - https://github.com/anthropics/claude-agent-sdk-typescript
   - https://code.claude.com/docs/en/agent-sdk/mcp
   - https://platform.claude.com/docs/en/managed-agents/overview
   - https://github.com/anthropics/claude-agent-sdk-typescript/blob/main/CHANGELOG.md
@@ -422,7 +422,7 @@ In [[course/production-agents-claude-agent-sdk-mcp-connector/02-managed-agents-w
 
 [1] Claude Agent SDK Overview — https://code.claude.com/docs/en/agent-sdk/overview · retrieved 2026-04-30
 [2] Agent Capabilities API announcement — https://claude.com/blog/agent-capabilities-api · retrieved 2026-04-30
-[3] @anthropic-ai/claude-agent-sdk on npm — https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk · retrieved 2026-04-30
+[3] @anthropic-ai/claude-agent-sdk TypeScript SDK repository — https://github.com/anthropics/claude-agent-sdk-typescript · retrieved 2026-04-30
 [4] Claude Agent SDK MCP documentation — https://code.claude.com/docs/en/agent-sdk/mcp · retrieved 2026-04-30
 [5] Claude Managed Agents Overview — https://platform.claude.com/docs/en/managed-agents/overview · retrieved 2026-04-30
 [6] Claude Agent SDK TypeScript CHANGELOG — https://github.com/anthropics/claude-agent-sdk-typescript/blob/main/CHANGELOG.md · retrieved 2026-05-14
