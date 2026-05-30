@@ -4,11 +4,13 @@ description: "Google A2A matters in 2026 because it standardizes durable task st
 slug: 2026-05-13-google-a2a-protocol
 date: 2026-05-13
 author: vardaan-koenig
+author_slug: vardaan-koenig
+author_credentials: "Founder & Head of AI Academy, Koenig Solutions"
 agent_drafted_by: blog-author
 ticket: KOEA-3050
 vendor_tag: google
 content_type: article
-status: awaiting-g0
+status: g4-approved
 reading_time_min: 14
 primary_query: "google a2a protocol explained"
 contrarian_angle: "A2A is not winning by replacing MCP; it is winning by standardizing the state, auth, and resume layer that cross-agent systems kept rebuilding badly."
