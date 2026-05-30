@@ -9,7 +9,9 @@ reading_time_min: 6
 primary_query: "context engineering vs prompt engineering 2026"
 contrarian_angle: "Prompt engineering isn't dead — it moved inside a bigger control system you now have to design first"
 first_60_words_answer: "Context engineering and prompt engineering are not competing techniques — context engineering is the architecture layer that contains prompt engineering. In 2026, the prompt itself is one instruction file inside a larger system of retrieval shape, memory boundaries, trust levels, and output contracts. Operators who understand this distinction build reliable agents; those who don't keep chasing phrasing instead of fixing the context stack."
-positions: none
+positions:
+  - "[stance:arch-claude-agent-sdk]"
+  - "[stance:cost-fix-the-leak]"
 original_data: false
 last_updated: 2026-05-30
 hero_image:
@@ -129,4 +131,4 @@ D) Replacing "list" with "enumerate" in the task description
 
 Context engineering is not a rebrand. It is the acknowledgment that modern agent systems need deliberate control surfaces: instruction files that survive session churn, retrieval layers that load signal not noise, output schemas that define what valid means, and trust boundaries that decide what the model should never see. Prompt engineering lives inside that stack — but it is not the stack.
 
-**Ready to build your first reliable context stack?** The Koenig AI Academy course [[course/prompt-engineering-to-context-engineering]] walks through each layer with runnable examples, including how to wire file search, enforce output contracts, and set up the eval harness you'll need for Part 2 of this series.
+**This is Part 1 of the Production Agent Engineering in 2026 series.** Part 2 covers building and running the eval harness that catches context failures before users do — covering regression suites, context-stack evals, and the tools that make them worth running.
