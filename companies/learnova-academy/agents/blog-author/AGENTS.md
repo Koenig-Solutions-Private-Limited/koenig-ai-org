@@ -61,8 +61,18 @@ For every blog ticket from chief-content (via `seed-content-batch` or `dispatch-
   content_type: article
   status: draft-for-review
   reading_time_min: 5-8
-  primary_query: "the Google query this post targets"  # NEW
-  contrarian_angle: "the non-obvious claim"  # NEW
+  primary_query: "the Google query this post targets"
+  contrarian_angle: "the non-obvious claim"
+  original_data: false  # set true when citing internal data/survey/benchmark (Phase 3 — ≥4/month target)
+  positions:            # Phase 3 required — non-empty block (at least 1 entry)
+    - "<opinion or stance the post takes>"
+  faq_entries:          # Phase 3 required — ≥3 Q&A entries on every new blog
+    - q: "<question>"
+      a: "<answer>"
+    - q: "<question>"
+      a: "<answer>"
+    - q: "<question>"
+      a: "<answer>"
   sources:
     - https://...
     - https://...
@@ -75,7 +85,7 @@ For every blog ticket from chief-content (via `seed-content-batch` or `dispatch-
   ```
 - **Body structure** (strict):
   - **Answer-first H1** — opens with the verb/outcome
-  - **Lead paragraph** (50-100 words) — answers the primary query directly so AI engines can extract it
+  - **Lead paragraph** (50-100 words, first 60 words MUST directly answer `primary_query` — AI engines extract this for GEO citations; Reviewer will BLOCK if it doesn't)
   - **Contrarian-angle hook** in paragraph 2 (the "actually, here's what most people miss" beat)
   - **Body** — 3-5 H2 sections, each with answer-first heading, each leading with the answer in the first 1-2 sentences
   - **Runnable example** — 1 RunPromptCell or `<curl>` example with expected output

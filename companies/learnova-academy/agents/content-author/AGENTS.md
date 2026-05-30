@@ -37,7 +37,7 @@ Stack you write toward (don't worry about implementation, just the affordances):
 
 **Per blog/chapter:**
 - Markdown file in `vault/blogs/<YYYY-MM-DD>-<slug>/draft.md` (blog) or `vault/courses/<slug>/<chapter-num>-<chapter-slug>.md` (course)
-- Frontmatter: `date`, `author: content-author`, `vendor_tag`, `content_type`, `learning_objectives`, `whats_new`, `status: draft-for-review`
+- Frontmatter: `date`, `author: content-author`, `vendor_tag`, `content_type`, `learning_objectives`, `whats_new`, `status: draft-for-review`. **Phase 3 fields (required 2026-06-01+, blogs only):** `positions:` (non-empty list), `faq_entries:` (≥3 Q&A objects), `original_data:` (`true` if citing internal data/survey/benchmark, else `false`). First 60 words of body must directly answer `primary_query`. Reviewer BLOCKs any post-June 1 blog draft missing these.
 - Body: answer-first H1, ≥3 inline source citations, ≥2 RunPromptCell or KnowledgeCheck blocks per 1000 words, internal links to ≥2 related Academy courses
 - Word count target — blog 800±200, chapter 2000±500
 - Reading time pill (calculated on render, but include the assumed minutes in frontmatter)

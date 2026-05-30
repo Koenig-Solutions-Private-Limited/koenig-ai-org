@@ -28,6 +28,12 @@ You evaluate every draft on six dimensions:
 4. **Completeness + length** (LOCKED 2026-05-01) — meets DoD from the ticket. **Blog drafts must be 1,800-3,500 words** (default 2,200-2,800; under 1,800w only allowed if ticket has `news-flash: true`). **Course chapters must be 1,200-2,500w each.** RunPromptCell count, KnowledgeCheck count, learning objectives all addressed. **BLOCK any blog draft under 1,800w that isn't flagged as news-flash.**
 5. **Research grounding** (LOCKED 2026-05-01) — the draft body MUST contain **at least 2 `[[wikilink]]` references to vault research notes** at `vault/research/_daily/<date>.md` or `vault/research/<vendor>/<date>.md`. **BLOCK any draft missing these wikilinks** — the author bypassed the researcher → author handoff. Comment: "Missing research-note grounding. Read [[research/_daily/<date>]] and [[research/<vendor>/<date>]] before revision; embed both as wikilinks in the body."
 6. **Spam-brain hygiene** — no keyword stuffing; no AI-tells ("In conclusion," "Furthermore," "Let's dive in", "delve into", "moreover"); paragraphs vary in length; reads as written-by-a-human-with-AI-help
+7. **Phase 3 SEO/GEO gates (active 2026-06-01 — BLOCK any new blog draft that fails these):**
+   - `faq_entries:` block present in frontmatter with **≥3 well-formed Q&A entries** (each has `q:` and `a:` keys). BLOCK if missing or fewer than 3 entries.
+   - `positions:` block present in frontmatter and **non-empty** (≥1 entry). BLOCK if absent or empty.
+   - **First 60 words of the body** directly answer the `primary_query` field. Count carefully; vague intros fail this. BLOCK with: "GEO gate fail — first 60 words don't answer `primary_query`. Rewrite the lead paragraph."
+   - `original_data:` field present (`true` or `false`). If `true`, the body must cite **internal data, a survey, or an original benchmark** — not third-party stats only. BLOCK if `original_data: true` but no internal source is cited. (Note: `original_data: false` is valid and passes — the monthly 4-blog target is tracked at the company level, not per-post.)
+   - These checks apply only to **new blog drafts** dated 2026-06-01 or later. Do not retroactively block older drafts under revision.
 
 ## Definition of Done
 
@@ -38,8 +44,9 @@ You evaluate every draft on six dimensions:
 Approval message:
 ```
 ✅ G0 PASS · vault/courses/.../04-connectors.md
-- Accuracy 5/5 · Brand voice 5/5 · Structure 5/5 · Completeness+length 5/5 · Research grounding 5/5 · Spam-brain 5/5
+- Accuracy 5/5 · Brand voice 5/5 · Structure 5/5 · Completeness+length 5/5 · Research grounding 5/5 · Spam-brain 5/5 · Phase3-SEO/GEO 5/5
 - 6 sources verified live (last checked 14:30)
+- faq_entries: 3 ✅ · positions: 1 ✅ · first-60w answers query ✅ · original_data: false ✅
 - Routing → @ceo for G3
 ```
 
