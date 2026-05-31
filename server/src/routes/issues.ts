@@ -84,6 +84,7 @@ import {
 import type { PluginWorkerManager } from "../services/plugin-worker-manager.js";
 
 const MAX_ISSUE_COMMENT_LIMIT = 500;
+const BLOCKED_ACTIVATION_GUARD_CODE = "blocked_activation_guard";
 const updateIssueRouteSchema = updateIssueSchema.extend({
   interrupt: z.boolean().optional(),
 });
@@ -2156,6 +2157,28 @@ export function issueRoutes(
         });
       }
     } catch (err) {
+      if (
+        err instanceof HttpError &&
+        (err.status === 409 || err.status === 422) &&
+        err.details &&
+        typeof err.details === "object" &&
+        (err.details as Record<string, unknown>).code === BLOCKED_ACTIVATION_GUARD_CODE
+      ) {
+        await logActivity(db, {
+          companyId: existing.companyId,
+          actorType: actor.actorType,
+          actorId: actor.actorId,
+          agentId: actor.agentId,
+          runId: actor.runId,
+          action: "issue.blocked_activation_blocked",
+          entityType: "issue",
+          entityId: existing.id,
+          details: {
+            source: "issue.update",
+            ...(err.details as Record<string, unknown>),
+          },
+        });
+      }
       if (err instanceof HttpError && err.status === 422) {
         logger.warn(
           {
@@ -2763,8 +2786,35 @@ export function issueRoutes(
 
     const checkoutRunId = requireAgentRunId(req, res);
     if (req.actor.type === "agent" && !checkoutRunId) return;
-    const updated = await svc.checkout(id, req.body.agentId, req.body.expectedStatuses, checkoutRunId);
     const actor = getActorInfo(req);
+    let updated;
+    try {
+      updated = await svc.checkout(id, req.body.agentId, req.body.expectedStatuses, checkoutRunId);
+    } catch (err) {
+      if (
+        err instanceof HttpError &&
+        (err.status === 409 || err.status === 422) &&
+        err.details &&
+        typeof err.details === "object" &&
+        (err.details as Record<string, unknown>).code === BLOCKED_ACTIVATION_GUARD_CODE
+      ) {
+        await logActivity(db, {
+          companyId: issue.companyId,
+          actorType: actor.actorType,
+          actorId: actor.actorId,
+          agentId: actor.agentId,
+          runId: actor.runId,
+          action: "issue.blocked_activation_blocked",
+          entityType: "issue",
+          entityId: issue.id,
+          details: {
+            source: "issue.checkout",
+            ...(err.details as Record<string, unknown>),
+          },
+        });
+      }
+      throw err;
+    }
 
     await logActivity(db, {
       companyId: issue.companyId,
