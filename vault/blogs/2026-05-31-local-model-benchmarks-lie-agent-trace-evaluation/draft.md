@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-6947
 vendor_tag: community
 content_type: article
-status: awaiting-g0
+status: g3-passed
 description: "Single-prompt LLM benchmarks systematically overstate agent reliability through contamination, harness dependence, and single-run scoring. Contamination inflates SWE-bench scores by ~27 pp; the same model swings 46 pp across harnesses. Trace-based evaluation reveals what leaderboards hide."
 reading_time_min: 10
 primary_query: "why llm benchmarks mislead agent evaluation trace evaluation 2026"
@@ -61,7 +61,7 @@ original_data: false
 last_updated: 2026-05-31
 hero_image:
 seo_title: "Why LLM Benchmarks Lie About Agent Performance (And What to Measure Instead)"
-seo_description: "SWE-bench leaders drop 27 percentage points on contamination-resistant tests. GPT-4o loses 60% reliability on identical tasks. Here's what trace-based evaluation reveals that benchmarks hide."
+seo_description: "SWE-bench leaders drop 27 pp on contamination-resistant tests. GPT-4o loses 60% reliability across harnesses. What trace evaluation reveals."
 ---
 
 # Why Local Model Benchmarks Lie: What Agent Trace Evaluation Reveals
