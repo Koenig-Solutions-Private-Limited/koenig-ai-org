@@ -4,7 +4,7 @@ title: "Picking a Frontier Model: Opus 4.7 vs GPT-5.5 vs Gemini 3.1 Pro — A Bu
 status: g0-blocked
 author: course-author
 level: Builder
-vendor_tag: community
+vendor_tag: multi-vendor
 ticket: KOEA-2415
 target_audience: "Software engineers and AI builders evaluating Anthropic, OpenAI, or Google for a production AI system. They have shipped at least one AI-powered feature and have used an LLM API in production. They are NOT AI researchers — they need to ship something reliable and affordable, not win a leaderboard."
 prerequisites:

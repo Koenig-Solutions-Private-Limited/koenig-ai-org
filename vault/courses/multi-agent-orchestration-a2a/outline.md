@@ -1,9 +1,10 @@
 ---
-slug: multi-agent-orchestration-a2a
+course_slug: multi-agent-orchestration-a2a
 title: "Multi-Agent Orchestration with A2A Protocol: Building the Internet of Agents"
 status: outline-draft-for-review
 author: course-author
 level: Advanced
+vendor_tag: multi-vendor
 tags: [A2A, Multi-Agent, Orchestration, Protocol, MCP, AGNTCY, Distributed Systems]
 target_audience: "Senior Engineers and Architects building agentic systems who need to move beyond single-agent monoliths to interoperable, multi-vendor agent networks."
 prerequisites:
