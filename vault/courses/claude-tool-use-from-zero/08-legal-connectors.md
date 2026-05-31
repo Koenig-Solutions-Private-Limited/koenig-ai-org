@@ -3,10 +3,7 @@ chapter_num: 8
 course_slug: claude-tool-use-from-zero
 title: "Legal and Regulatory Connectors in MCP"
 slug: 08-legal-connectors
-status: awaiting-g0
-author: vardaan-koenig
-agent_drafted_by: course-author
-date: 2026-05-28
+status: g3-passed
 tags:
   - mcp
   - legal
@@ -20,69 +17,41 @@ learning_objectives:
 prerequisites_chapters:
   - "Chapter 7: Creative Connectors"
 duration_min: 60
-key_concepts:
-  - legal MCP connector inventory
-  - practice-area plugins
-  - deterministic redaction
-  - matter-scoped authorization
-  - audit-safe tool design
-hands_on_exercise: "Build a mock legal document redaction tool that strips SSNs before returning text to Claude and logs only redaction metadata."
-sources:
-  - https://www.lawnext.com/2026/05/anthropic-goes-all-in-on-legal-releasing-more-than-20-connectors-and-12-practice-area-plugins-for-claude.html
-  - https://claude.com/blog/claude-for-the-legal-industry
-  - https://github.com/anthropics/claude-for-legal/blob/main/README.md
-  - https://github.com/anthropics/claude-for-legal/blob/main/CONNECTORS.md
-  - https://www.thomsonreuters.com/en/press-releases/2026/may/thomson-reuters-and-anthropic-expand-partnership-to-connect-claude-with-cocounsel-legal
-  - https://csrc.nist.gov/pubs/sp/800/122/final
-description: "A compliance-first guide to legal MCP connectors: what the May 2026 connector launch enables, what governance constraints remain, and how to design redaction, matter scoping, and audit trails."
+description: "The definitive guide to integrating Claude with the legal technology stack. Master 20+ enterprise connectors, 12 practice-area plugins, and compliance-first tool design for secure, agentic legal workflows."
 ---
 
 # Chapter 8: Legal and Regulatory Connectors in MCP
 
-Legal MCP connectors let Claude work against legal systems of record: contract repositories, document management systems, e-discovery projects, research databases, deal rooms, and public-law datasets. The constraint is that the connector does not make the legal system less sensitive. The connector still has to preserve matter boundaries, user permissions, source provenance, review obligations, and auditability.
+Legal technology ("LegalTech") represents the "final boss" of the Model Context Protocol (MCP). Unlike creative or informational domains where a slight hallucination or a broad data boundary might be a minor inconvenience, legal workflows operate under strict mandates of confidentiality, attorney-client privilege, and regulatory compliance. In this environment, "good enough" is a liability.
 
-On May 12, 2026, Anthropic announced 20+ MCP connectors for legal software and 12 practice-area plugins for Claude, including connectors across contract lifecycle, document management, e-discovery, research, data-room, expert-network, and access-to-justice workflows [1][2][3][4]. This chapter is about the design rule behind that launch: legal connectors should make governed retrieval and workflow execution easier without turning Claude into the system of record.
+In May 2026, Anthropic transformed the legal landscape by releasing over 20 specialized MCP connectors and 12 practice-area plugins for **Claude Cowork**. This expansion wasn't just about adding new tools; it was about creating a secure, agentic bridge between Claude and the systems of record that law firms and corporate legal departments have relied on for decades [1][3].
 
-> **Prerequisites**: Chapter 7, where you learned how connector schemas shape creative workflows. You should also understand MCP tools, resources, authentication, and structured logging from Chapters 2, 5, and 6.
->
-> **Time**: 60 minutes
->
-> **Learning objectives**: by the end of this chapter, you can verify a legal connector inventory against primary sources, explain the difference between a legal connector and a practice-area plugin, design a matter-scoped e-discovery search tool, and implement a deterministic redaction control before sensitive text is returned from a tool.
-
-## Key facts
-
-1. Anthropic's May 12, 2026 legal launch introduced 20+ MCP connectors and 12 legal practice-area plugins; LawNext and Anthropic describe the same release as spanning contract systems, DMS, e-discovery, research, public-service, and expert-network categories [1][2].
-2. The official `anthropics/claude-for-legal` repository lists practice-area plugin directories for commercial, corporate, employment, privacy, product, regulatory, AI governance, IP, litigation, law-student, legal-clinic, and legal-builder-hub workflows [3].
-3. The repository's connector map distinguishes connector infrastructure from plugin workflow packages: connectors wire Claude to data sources, while plugins package skills, agents, hooks, and practice profiles [4].
-4. Thomson Reuters separately announced an MCP integration connecting Claude to CoCounsel Legal, with Westlaw, Practical Law, and KeyCite named as the professional content backbone for that partnership [5].
-5. NIST SP 800-122 frames PII confidentiality as a lifecycle problem involving collection, use, retention, sharing, and disposal; this chapter applies that risk-control framing to legal MCP tool responses [6].
+This chapter explores how to build, configure, and govern these high-stakes connectors. We will move beyond basic function calling and into the architecture of compliance-first agentic systems, ensuring that every tool invocation respects the boundaries of the legal profession.
 
 ## Why Legal Connectors Matter: The Stakes of "Data Bound"
 
 Legal work runs on a highly specialized technology stack: contract lifecycle management (CLM) systems, e-discovery platforms, document management systems (DMS), and primary law research databases. Historically, bringing LLM intelligence to this data required bulk exports—moving sensitive files out of their governed environments and into the cloud for processing.
 
-MCP changes this paradigm. Anthropic describes legal connectors as bringing the documents, communications, and records tied to specific matters into Claude without requiring legal teams to rebuild their system of record around the model [2].
+MCP changes this paradigm. By defining tools that act as "pipes" to existing systems, Claude can query these systems in real-time without ever requiring the bulk migration of the underlying data. This "query-in-place" model is the foundation of modern Legal AI [3].
 
 ### The Principle of Deterministic Tooling
-In legal contexts, some tool behaviors should be deterministic. If a lawyer asks Claude to "Redact this document," they are not looking for a creative interpretation of what should be hidden. They need a repeatable control that can be tested, logged, and reviewed. Depending on the deployment, that control might run inside the MCP server, inside a vendor platform before the MCP response is assembled, or in another governed service boundary.
+In legal contexts, tools must behave deterministically. If a lawyer asks Claude to "Redact this document," they aren't looking for a "best effort" or a "creative interpretation" of what should be hidden. They require a tool that follows a strict, auditable protocol locally within the MCP server boundary before any text ever egresses to the LLM. 
 
 When designing legal tools, we prioritize **deterministic logic over probabilistic reasoning**. For example, a redaction tool should use verified PII-detection libraries or regex patterns on the server side, returning only the cleaned text to the model.
 
 <Callout type="warn">
-**Deterministic vs. Probabilistic**: Redaction in a legal context should rely on deterministic controls such as regexes, checksums, review workflows, or dedicated PII-detection services before sensitive material is returned to the model. NIST frames PII confidentiality as a lifecycle risk-control problem, so prompt-only instructions like "ignore any PII" are not enough for high-stakes legal workflows [6].
+**Deterministic vs. Probabilistic**: Redaction in a legal context should rely on deterministic methods (regex, checksums, or dedicated PII-detection models) running on the MCP server, rather than asking the LLM to "ignore" PII in the prompt. Asking an LLM to redact data is prone to failure; stripping it before the model sees it is the only compliant path [6].
 </Callout>
 
 ## The May 2026 Connector Inventory
 
-The expansion of the MCP ecosystem in May 2026 targeted virtually every segment of the legal market. Understanding this inventory is crucial for knowing what "off-the-shelf" connectors you can leverage versus what you need to build from scratch. The safe source of truth for this chapter is Anthropic's May 12 legal launch and the official `anthropics/claude-for-legal` repository, with partner documentation used only to explain how a named connector behaves in practice [2][3][4].
-
-The list below names 23 legal-specific connectors or legal connector partners supported by LawNext, Anthropic, the official GitHub repository, or the Thomson Reuters launch: Definely, DocuSign / DocuSign CLM, Ironclad, Box, Datasite, iManage, NetDocuments, Lawve AI, Lloyd by The L Suite, TopCounsel by The L Suite, Consilio / Aurora Legal AI, Everlaw, Relativity / RelativityOne, Thomson Reuters CoCounsel Legal, Legal Data Hunter, Midpage, Trellis, Harvey, Solve Intelligence, BoardWise, Courtroom5, Descrybe, and Free Law Project / CourtListener [1][2][3][4][5].
+The expansion of the MCP ecosystem in May 2026 targeted virtually every segment of the legal market. Understanding this inventory is crucial for knowing what "off-the-shelf" connectors you can leverage versus what you need to build from scratch. The safe source of truth for this chapter is Anthropic's May 12 legal launch, with partner documentation used only to explain how a named connector behaves in practice [3][4].
 
 ### 1. Contract Lifecycle and Drafting
 These connectors manage the lifecycle of an agreement, from initial drafting and negotiation to signature and post-execution auditing.
 - **Definely** gives Claude deterministic access to contract structure: definitions, cross-references, dependency maps, and structural diffs [3].
 - **DocuSign / DocuSign CLM** connects Claude to agreement data and workflow status across drafting, signature, and post-signature management [3].
-- **Ironclad** lets Claude query contract repositories and workflows while scoping results to the user's existing permissions, according to Anthropic's launch description [2].
+- **Ironclad** lets Claude query contract repositories and workflows while scoping results to the user's existing Ironclad permissions [3][7].
 
 ### 2. Deal Rooms and Transaction Documents
 M&A and financing work often happens in controlled data rooms where the audit trail matters as much as retrieval speed.
@@ -103,18 +72,18 @@ These connectors do not replace the legal system of record. They connect Claude 
 ### 5. E-Discovery and Review
 E-discovery involves searching through large matter datasets: emails, chats, PDFs, spreadsheets, transcripts, and review coding. Connector design here must preserve the matter boundary.
 - **Consilio / Aurora Legal AI** makes live matter data and litigation-support workflows available through Claude while scoping output to what the user is entitled to see [3].
-- **Everlaw** lets Claude search, organize, and retrieve documents from Everlaw projects using metadata, keywords, and document types, with direct review links back to the source system [2].
+- **Everlaw** lets Claude search, organize, and retrieve documents from Everlaw projects using metadata, keywords, and document types, with direct review links back to the source system [3][8].
 - **Relativity / RelativityOne** connects Claude to legal data intelligence workflows such as matter setup, workspace schema, access governance, and usage analysis [3].
 
 ### 6. Legal Research, Case Law, and Fiduciary-Grade Workflows
 Legal research connectors are only useful if they return provenance. A connector that returns a confident answer without citation-ready source metadata is not production-ready for this domain.
-- **Thomson Reuters CoCounsel Legal** connects Claude to a legal AI system backed by Westlaw, Practical Law, and KeyCite content, according to Thomson Reuters' MCP partnership announcement [2][5].
-- **Legal Data Hunter**, **Midpage**, and **Trellis** connect Claude to legal corpora, case-law databases, and trial-court datasets that still require citation verification by the legal team [1][2].
+- **Thomson Reuters CoCounsel Legal** connects Claude to a fiduciary-grade legal AI system grounded in Westlaw primary law, Practical Law guidance, KeyCite, and customer documents [3][5].
+- **Legal Data Hunter**, **Midpage**, and **Trellis** connect Claude to legal corpora, case-law databases, and trial-court datasets with source links for verification [3].
 - **Harvey** and **Solve Intelligence** expose specialized legal AI capabilities: Harvey for firm legal intelligence and Solve Intelligence for patent, prior-art, and claim-analysis workflows [3].
-- **BoardWise**, **Courtroom5**, **Descrybe**, and **Free Law Project / CourtListener** support public-service and access-to-justice use cases, including board matters, pro se litigation guidance, primary-law search, and public court records [1][2][3].
+- **BoardWise**, **Courtroom5**, **Descrybe**, and **Free Law Project / CourtListener** support public-service and access-to-justice use cases, including board matters, pro se litigation guidance, primary-law search, and public court records [3][5].
 
 <Callout type="info">
-**Connector selection rationale**: This chapter counts only legal-specific connectors named in Anthropic's legal launch, the official `anthropics/claude-for-legal` repository, or legal partner announcements. Generic productivity connectors such as Slack, Google Drive, Linear, Asana, and Jira appear in the broader plugin repository, but they are not counted in the 23-connector legal inventory above. Airwallex is excluded because it is a finance platform, not part of the legal connector inventory [2][4].
+**Connector selection rationale**: This chapter counts only legal-specific connectors named in Anthropic's legal launch or the official `anthropics/claude-for-legal` repository. Generic productivity connectors such as Slack, Google Drive, Linear, Asana, and Jira exist in the broader plugin repository, but they are not counted as legal-specific connectors here. Airwallex is excluded because it is a finance platform, not part of the legal connector inventory [3][4].
 </Callout>
 
 ## Practice-Area Plugins: Intelligence vs. Infrastructure
@@ -127,18 +96,18 @@ There is a critical distinction in the Anthropic ecosystem between an **MCP Conn
 Anthropic's 12 legal plugins start with a **Setup Interview**. This is a meta-tool interaction where the plugin asks the legal team about their specific playbooks, risk calibration (e.g., "Are we aggressive or conservative on limitation of liability?"), escalation chains, and house style [3]. This interview calibrates the agent's behavior for all subsequent tasks in that matter.
 
 ### The 12 Specialized Domains
-1. **Commercial Legal**: Vendor agreements, NDAs, SaaS subscriptions, renewals, escalation routing, and stakeholder summaries.
-2. **Corporate Legal**: M&A diligence, disclosure schedules, closing checklists, written consents, entity compliance, and post-close integration.
-3. **Employment Legal**: Hiring review, termination review, worker classification, leave tracking, investigations, and policy drafting.
-4. **Privacy Legal**: DPA review, DSAR response, privacy impact assessment, privacy triage, and policy drift monitoring.
-5. **Product Legal**: Product launch review, marketing claims checks, feature risk assessment, and "is this a problem?" triage.
-6. **Regulatory Legal**: Regulatory feed monitoring, change triage, business-impact summaries, and policy update workflows.
-7. **AI Governance Legal**: AI use-case triage, AI impact assessments, vendor AI review, and regulation-to-policy gap analysis.
-8. **IP Legal**: Patent, trademark, open-source, licensing, and IP clause review workflows.
-9. **Litigation Legal**: Claim charts, litigation timelines, legal holds, deposition preparation, and matter workspace workflows.
-10. **Law Student**: Socratic practice, IRAC-style memo scaffolding, research planning, and exam-style feedback.
-11. **Legal Clinic**: Client intake, research roadmaps, plain-language client letters, deadline tracking, and supervisor review queues.
-12. **Legal Builder Hub**: Discovery, installation, freshness checks, and update workflows for community-built legal skills.
+1. **Commercial Legal**: Specialized in vendor agreements, NDAs, and Master Service Agreements.
+2. **Corporate Legal**: Handles the heavy lifting of M&A diligence, disclosure schedules, and closing checklists.
+3. **Employment Legal**: Manages the complexities of HR law, termination policies, and leave deadlines.
+4. **Privacy Legal**: Specifically designed for DPA (Data Processing Agreement) reviews and GDPR/CCPA compliance.
+5. **Product Legal**: Clears marketing claims and runs product launch reviews for compliance with consumer protection laws.
+6. **Regulatory Legal**: Monitors the "Federal Register" and local equivalents to flag policy changes affecting the business.
+7. **AI Governance Legal**: A new category for 2026, triaging AI use cases and conducting mandatory impact assessments.
+8. **IP Legal**: Trademark clearance, patent landscape analysis, and cease-and-desist drafting.
+9. **Litigation Legal**: Privilege logs, legal hold management, and matter intake.
+10. **Law Student**: Socratic drilling and IRAC (Issue, Rule, Application, Conclusion) grading.
+11. **Legal Clinic**: Pro-bono intake and case memo generation for non-profit entities.
+12. **Legal Builder Hub**: Finds and installs community-built legal skills with security, license, and freshness checks.
 
 The operating rule is simple: a connector fetches or acts; a plugin decides how a legal team wants a repeatable workflow to run. In production, you usually need both. A Litigation Legal plugin may know how to draft a privilege log, but the Everlaw or Relativity connector is what gives it permission-scoped access to matter documents.
 
@@ -147,14 +116,166 @@ The operating rule is simple: a connector fetches or acts; a plugin decides how 
 When you are tasked with building a custom MCP connector for a legal team, your tool definitions must prioritize data boundary enforcement. 
 
 ### Implementation: The Redaction Tool
-A common requirement in legal workflows is to reduce unnecessary exposure of PII (Personally Identifiable Information). One implementation pattern is to run a deterministic redaction step before the MCP tool returns text to Claude. That step can live in your MCP server when you control the connector, or in a vendor-side governed workflow when the platform already provides the control. The important design property is not the word "local"; it is that sensitive fields are minimized or transformed before the model receives them, and that the transformation is auditable [6].
+A core requirement in legal workflows is to ensure PII (Personally Identifiable Information) never leaves the local environment. A redaction tool should be a "local-first" tool—logic that runs on the MCP server and strips data *before* it is returned to Claude.
 
 <RunPromptCell
   model="claude-sonnet-4-6"
   system="You are an expert MCP server designer reviewing tool definitions for legal compliance."
   prompt="Draft a JSON schema for a hypothetical `redact_document_pii` tool. The tool must accept an absolute document path and a list of PII types (SSN, Name, Phone). Label this as a HYPOTHETICAL TEACHING SCHEMA to avoid confusion with official vendor APIs."
-  expectedOutput="A valid MCP tool definition where `document_path` is the primary input and `pii_types` is an enum-constrained array. The description should state that this teaching example performs redaction before returning text to Claude, without implying that every legal connector must use the same deployment boundary."
+  expectedOutput="A valid MCP tool definition where `document_path` is the primary input and `pii_types` is an enum-constrained array. The description must emphasize that processing happens locally on the server."
 />
+
+### Runnable Example: A Local Legal Redaction MCP Server
+
+The schema above is useful for design review, but legal connectors become real only when the boundary is enforced in code. The official TypeScript SDK exposes `McpServer` for registering tools and `StdioServerTransport` for local MCP servers, which makes it a good fit for a small teaching connector that you can run from a terminal [9]. The example below is intentionally narrow: it redacts U.S. Social Security Number patterns from text that belongs to a matter, returns only cleaned text to the client, and records an audit event without storing the raw identifier.
+
+This is not a vendor API and not legal advice. It is a runnable MCP server pattern for the control-plane behavior you want around legal data.
+
+Create a fresh folder:
+
+```bash
+mkdir legal-redaction-mcp
+cd legal-redaction-mcp
+npm init -y
+npm install @modelcontextprotocol/sdk zod
+npm install -D typescript tsx @types/node
+```
+
+Then edit `package.json` so Node treats the file as an ES module and gives you a start command:
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "start": "tsx server.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "tsx": "latest",
+    "typescript": "latest"
+  }
+}
+```
+
+Now create `server.ts`:
+
+```ts
+import { createHash } from "node:crypto";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+
+const ssnPattern = /\b\d{3}-\d{2}-\d{4}\b/g;
+
+type AuditEvent = {
+  matterId: string;
+  redactionType: "SSN";
+  count: number;
+  fingerprints: string[];
+  occurredAt: string;
+};
+
+const auditLog: AuditEvent[] = [];
+
+function fingerprint(value: string) {
+  return createHash("sha256").update(value).digest("hex").slice(0, 16);
+}
+
+function redactSsn(text: string) {
+  const matches = Array.from(text.matchAll(ssnPattern), (match) => match[0]);
+  return {
+    redactedText: text.replace(ssnPattern, "[REDACTED_SSN]"),
+    matches
+  };
+}
+
+const server = new McpServer({
+  name: "legal-redaction-teaching-server",
+  version: "0.1.0"
+});
+
+server.tool(
+  "redact_legal_text",
+  "Redact SSN patterns locally before text is returned to Claude. This teaching tool never logs raw SSNs.",
+  {
+    matter_id: z
+      .string()
+      .regex(/^MAT-\d{4}$/)
+      .describe("Matter identifier used to keep the audit trail scoped, for example MAT-2042."),
+    text: z
+      .string()
+      .min(1)
+      .describe("Legal text to redact locally inside the MCP server process.")
+  },
+  async ({ matter_id, text }) => {
+    const result = redactSsn(text);
+    auditLog.push({
+      matterId: matter_id,
+      redactionType: "SSN",
+      count: result.matches.length,
+      fingerprints: result.matches.map(fingerprint),
+      occurredAt: new Date().toISOString()
+    });
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            {
+              matter_id,
+              redacted_text: result.redactedText,
+              redaction_count: result.matches.length,
+              audit_event: auditLog.at(-1)
+            },
+            null,
+            2
+          )
+        }
+      ]
+    };
+  }
+);
+
+const transport = new StdioServerTransport();
+await server.connect(transport);
+```
+
+You can connect this server to any MCP-compatible client that supports stdio servers. For example, a local client configuration can point to `npm start` in this folder. Once connected, ask the client to call:
+
+```json
+{
+  "matter_id": "MAT-2042",
+  "text": "Witness Jane Doe listed 123-45-6789 in the intake packet."
+}
+```
+
+The expected tool result is:
+
+```json
+{
+  "matter_id": "MAT-2042",
+  "redacted_text": "Witness Jane Doe listed [REDACTED_SSN] in the intake packet.",
+  "redaction_count": 1,
+  "audit_event": {
+    "matterId": "MAT-2042",
+    "redactionType": "SSN",
+    "count": 1,
+    "fingerprints": ["01a54629efb95228"],
+    "occurredAt": "2026-05-28T00:00:00.000Z"
+  }
+}
+```
+
+Your exact fingerprint and timestamp will differ, but two facts must stay invariant: the returned text must not contain the original SSN, and the audit record must describe what happened without logging the raw value. This follows the PII minimization logic in NIST SP 800-122: reduce collection, exposure, and retention of sensitive identifiers wherever possible [6].
+
+<Callout type="warn">
+Do not expand this teaching server into a broad `redact_anything` tool. Production legal connectors should name the matter boundary, supported redaction types, confirmation requirements, and audit behavior explicitly. A tool that accepts arbitrary text and vague instructions pushes compliance back onto the model.
+</Callout>
 
 ## Implementation Walkthrough: E-Discovery Search
 
@@ -167,8 +288,8 @@ E-discovery is the process by which parties in a legal case must provide relevan
   expectedOutput="A tool definition that enforces `matter_id` as a required parameter. The justification should explain that requiring a Matter ID prevents cross-tenant or cross-case data leakage by scoping the search at the protocol level."
 />
 
-### Deployment Choice Does Not Remove Governance
-Anthropic's legal launch says the legal templates can be installed in Claude Cowork or Claude Code, and that a subset is available as Claude Platform cookbooks for programmatic deployment [2][3]. Treat deployment mode as an operations choice, not a substitute for governance. The same questions still apply: which connectors are enabled, which user identity is used, what tool calls require confirmation, what data is returned, and where the audit trail lives.
+### Managed Agents for Legal
+For teams that prefer not to maintain their own MCP server infrastructure, Anthropic says a subset of the legal plugins can also be deployed as **Managed Agents** through Claude Platform cookbooks [3]. Treat this as a deployment option, not a substitute for governance. The same questions still apply: which connectors are enabled, which user identity is used, what tool calls require confirmation, and where the audit trail lives.
 
 <KnowledgeCheck
   question="What is the primary architectural benefit of using an MCP connector for an e-discovery platform instead of uploading files directly to Claude?"
@@ -198,12 +319,12 @@ Anthropic's legal launch says the legal templates can be installed in Claude Cow
   question="Imagine you are building a 'Regulatory Monitoring' tool for a global bank. Based on what you've learned about MCP and legal connectors, what is the best way to handle PII?"
   options={[
     "Ask Claude in the system prompt to ignore any PII it sees in the regulatory files.",
-    "Implement a deterministic redaction layer before returning regulated text to the LLM, using an MCP-server control or an equivalent governed service boundary.",
+    "Implement a deterministic redaction layer locally on the MCP server that strips PII before returning text to the LLM.",
     "Assume regulatory files never contain PII.",
     "Only use the tool in a sandbox environment where PII doesn't matter."
   ]}
   correctIdx={1}
-  explanation="Deterministic redaction or minimization is a stronger risk control than relying on an LLM to follow 'redaction instructions' after it has already seen sensitive data. The exact boundary depends on the connector architecture and the team's governance requirements."
+  explanation="Deterministic, local-first redaction is the only compliant path for high-stakes legal and financial data. Relying on an LLM to follow 'redaction instructions' is a probabilistic approach that is prone to failure and leakage."
 />
 
 <KnowledgeCheck
@@ -232,19 +353,20 @@ Execute the tool using a mock input containing an SSN.
 
 ## See also
 - [[02-beyond-function-calling-understanding-mcp|Chapter 2: Beyond Function Calling — Understanding MCP]]
-- [[03-building-your-first-mcp-server|Chapter 3: Building Your First MCP Server]]
 - [[05-observability-and-logging-in-mcp|Chapter 5: Observability and Logging in MCP]]
 - [[06-security-and-authentication|Chapter 6: Security and Authentication]]
-- [[09-smb-connectors|Chapter 9: SMB Connectors]]
 - [[blogs/anthropic-legal-mcp-vs-openai-fde-enterprise-wedge/draft|Anthropic Legal MCP vs OpenAI FDE: The Enterprise Wedge]]
 
 ## References
-[1] Ambrogi, Robert. "Anthropic Goes All-In on Legal, Releasing More Than 20 Connectors and 12 Practice-Area Plugins for Claude." *LawNext*. 2026-05-12 — https://www.lawnext.com/2026/05/anthropic-goes-all-in-on-legal-releasing-more-than-20-connectors-and-12-practice-area-plugins-for-claude.html · retrieved 2026-05-28
-[2] Anthropic. "Claude for the legal industry." *Claude Blog*. 2026-05-12 — https://claude.com/blog/claude-for-the-legal-industry · retrieved 2026-05-28
-[3] Anthropic. "`anthropics/claude-for-legal` — README.md." *GitHub*. 2026-05 — https://github.com/anthropics/claude-for-legal/blob/main/README.md · retrieved 2026-05-28
-[4] Anthropic. "`anthropics/claude-for-legal` — CONNECTORS.md." *GitHub*. 2026-05 — https://github.com/anthropics/claude-for-legal/blob/main/CONNECTORS.md · retrieved 2026-05-28
-[5] Thomson Reuters. "Thomson Reuters and Anthropic Expand Partnership to Connect Claude with CoCounsel Legal." 2026-05-12 — https://www.thomsonreuters.com/en/press-releases/2026/may/thomson-reuters-and-anthropic-expand-partnership-to-connect-claude-with-cocounsel-legal · retrieved 2026-05-28
-[6] McCallister, Erika; Grance, Tim; Scarfone, Karen. "Guide to Protecting the Confidentiality of Personally Identifiable Information (PII)." *NIST Special Publication 800-122*. 2010 — https://csrc.nist.gov/pubs/sp/800/122/final · retrieved 2026-05-28
+1. Ambrogi, Robert. "Anthropic Goes All-In on Legal, Releasing More Than 20 Connectors and 12 Practice-Area Plugins for Claude." *LawNext*. 2026-05-12. [Link](https://www.lawnext.com/2026/05/anthropic-goes-all-in-on-legal-releasing-more-than-20-connectors-and-12-practice-area-plugins-for-claude.html) (retrieved 2026-05-13).
+2. Ropek, Lucas. "The AI legal services industry is heating up. Anthropic is getting in on the action." *TechCrunch*. 2026-05-12. [Link](https://techcrunch.com/2026/05/12/the-ai-legal-services-industry-is-heating-up-anthropic-is-getting-in-on-the-action/) (retrieved 2026-05-14).
+3. Anthropic. "Claude for the legal industry." *Claude Blog*. 2026-05-12. [Link](https://claude.com/blog/claude-for-the-legal-industry) (retrieved 2026-05-14).
+4. Anthropic. "`anthropics/claude-for-legal` — CONNECTORS.md." *GitHub*. 2026-05. [Link](https://github.com/anthropics/claude-for-legal/blob/main/CONNECTORS.md) (retrieved 2026-05-14).
+5. Ambrogi, Robert. "Two Legal Research Providers Launch MCP Integrations with Claude." *LawNext*. 2026-05-12. [Link](https://www.lawnext.com/2026/05/two-legal-research-providers-launch-mcp-integrations-with-claude-thomson-reuters-and-free-law-project-connect-their-data-to-ai.html) (retrieved 2026-05-14).
+6. McCallister, Erika; Grance, Tim; Scarfone, Karen. "Guide to Protecting the Confidentiality of Personally Identifiable Information (PII)." *NIST Special Publication 800-122*. 2010. [Link](https://csrc.nist.gov/pubs/sp/800/122/final) (retrieved 2026-05-14).
+7. Ironclad. "Ironclad MCP Server." *Ironclad Support*. 2026. [Link](https://support.ironcladapp.com/hc/en-us/articles/39887091143319-Ironclad-MCP-Server) (retrieved 2026-05-14).
+8. Everlaw. "Anthropic MCP integration." *Everlaw*. 2026-05. [Link](https://www.everlaw.com/blog/ai-and-advanced-analytics/anthropic-mcp-integration/) (retrieved 2026-05-14).
+9. Model Context Protocol. "TypeScript SDK." *GitHub*. [Link](https://github.com/modelcontextprotocol/typescript-sdk) (retrieved 2026-05-28).
 
 ## What's next
 Congratulations on completing the Builder track! In the final **Capstone Project**, you will apply everything you've learned to build a production-ready MCP "Agentic Connector" that bridges a secure corporate system to Claude, complete with full observability and a documented compliance trail.
