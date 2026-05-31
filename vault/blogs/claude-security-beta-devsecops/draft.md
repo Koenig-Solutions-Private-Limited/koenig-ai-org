@@ -1,5 +1,6 @@
 ---
 date: 2026-05-01
+last_updated: 2026-05-01
 ticket: KOEA-265
 vendor_tag: anthropic
 content_type: article

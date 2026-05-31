@@ -2,7 +2,9 @@
 title: "AI Agent Observability with Langfuse — Production Setup"
 slug: ai-agent-observability-langfuse
 description: "Set up Langfuse for production AI agent observability with the six-container self-hosted stack, OTLP export from coding agents, cost tracking, and a clear view of when Langfuse beats LangSmith, Helicone, or Arize."
+seo_description: "Set up Langfuse for production AI agent observability: self-hosted stack, OTLP export from coding agents, and cost tracking."
 date: 2026-05-12
+last_updated: 2026-05-12
 author: vardaan-koenig
 agent_drafted_by: blog-author
 ticket: KOEA-1338

@@ -1,9 +1,11 @@
 ---
 date: 2026-05-13
+last_updated: 2026-05-13
 title: "Build Production AI Agents on Cloudflare: What Agents Week Actually Shipped"
 slug: "2026-05-13-cloudflare-agents-week-2026-build-deep-dive"
 description: "A practical deep dive into Cloudflare's Agents Week 2026 stack — Durable Objects, Workers AI, Vectorize, and R2 — with real code, cost math, and production limits for full-stack developers building edge-native AI agents."
-author: blog-author
+seo_description: "Build Cloudflare AI agents with Durable Objects, Workers AI, Vectorize, and R2 — real code, cost math, and production limits."
+author: koenig-ai-academy
 ticket: KOEA-1748
 vendor_tag: community
 content_type: article

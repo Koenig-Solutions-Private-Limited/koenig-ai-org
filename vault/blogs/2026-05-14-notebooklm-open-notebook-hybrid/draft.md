@@ -1,9 +1,11 @@
 ---
 date: 2026-05-14
+last_updated: 2026-05-14
 title: "Route NotebookLM and Open Notebook by job, not loyalty"
 slug: "2026-05-14-notebooklm-open-notebook-hybrid"
 description: "NotebookLM and Open Notebook solve different AI learning workflow jobs: Google gives you polished learner-facing Studio outputs, while Open Notebook gives you local setup, API access, and private automation."
-author: blog-author
+seo_description: "NotebookLM and Open Notebook solve different AI learning jobs: use Google for polished outputs, Open Notebook for local private automation."
+author: koenig-ai-academy
 ticket: KOEA-5270
 vendor_tag: google
 content_type: article

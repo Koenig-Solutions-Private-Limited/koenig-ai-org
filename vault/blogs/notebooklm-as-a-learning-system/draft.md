@@ -1,6 +1,7 @@
 ---
 date: 2026-04-30
-author: blog-author
+last_updated: 2026-04-30
+author: koenig-ai-academy
 ticket: KOE-30
 vendor_tag: google
 content_type: article

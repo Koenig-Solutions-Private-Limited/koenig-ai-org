@@ -1,12 +1,14 @@
 ---
 date: 2026-05-14
-author: blog-author
+last_updated: 2026-05-14
+author: koenig-ai-academy
 ticket: KOEA-2155
 vendor_tag: community
 content_type: article
 status: published
 title: Choose the Cartesia Sonic 3 cloning path before you build the voice agent
 description: Choose between Cartesia Sonic 3 instant voice cloning and Pro Voice Cloning before you build a production voice agent.
+seo_description: "Choose between Cartesia Sonic 3 instant voice cloning and Pro Voice Cloning before you build a production voice agent."
 slug: 2026-05-14-cartesia-sonic-3-voice-cloning
 tags:
   - cartesia-sonic-3
