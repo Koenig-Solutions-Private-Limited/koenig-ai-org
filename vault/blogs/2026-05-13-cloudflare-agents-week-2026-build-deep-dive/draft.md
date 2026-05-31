@@ -1,8 +1,27 @@
 ---
 date: 2026-05-13
-title: "Build Production AI Agents on Cloudflare: What Agents Week Actually Shipped"
+title: "How to Build Production AI Agents on Cloudflare with Durable Objects, Workers AI, and Vectorize (2026)"
 slug: "2026-05-13-cloudflare-agents-week-2026-build-deep-dive"
 description: "A practical deep dive into Cloudflare's Agents Week 2026 stack — Durable Objects, Workers AI, Vectorize, and R2 — with real code, cost math, and production limits for full-stack developers building edge-native AI agents."
+howto:
+  name: "How to build a production AI agent on Cloudflare"
+  description: "Build an edge-native, stateful AI agent on Cloudflare using the Agents SDK over Durable Objects, with Workers AI for inference, Vectorize for RAG, and R2 for artifact storage. Scaffold from the agents-starter template, configure wrangler.toml bindings, enable WebSocket hibernation for cost control, then ship — 1,000 concurrent users runs roughly $4-6/month based on published Cloudflare pricing."
+  totalTime: "PT45M"
+  steps:
+    - name: "Step 1: Scaffold from the agents-starter template"
+      text: "Run npx create-cloudflare@latest --template cloudflare/agents-starter to generate a TypeScript Worker that extends AIChatAgent, with weather, timezone, image vision, and approval-gated tools wired out of the box."
+    - name: "Step 2: Configure Durable Objects + SQLite bindings in wrangler.toml"
+      text: "Add a [[durable_objects.bindings]] entry naming your agent class plus a new_sqlite_classes migration tag. Each instance gets its own persistent SQLite database, WebSocket connections, and alarm scheduler."
+    - name: "Step 3: Enable WebSocket hibernation to control duration cost"
+      text: "Without hibernation, idle agents burn $12.50/M GB-seconds of duration cost. Hibernation drops idle cost to near zero — required for any production deployment with persistent connections."
+    - name: "Step 4: Wire Workers AI for inference via the env.AI binding"
+      text: "In onChatMessage, call streamText with model: this.env.AI. Llama 3.1-8B and other Workers AI models bill per neuron with no cold-start latency from the edge."
+    - name: "Step 5: Add Vectorize for RAG retrieval"
+      text: "Bind a Vectorize index in wrangler.toml, generate embeddings via Workers AI's @cf/baai/bge-base-en-v1.5, and expose retrieval as a tool the agent calls during streamText."
+    - name: "Step 6: Route per-user state via idFromName"
+      text: "Call env.CHAT_AGENT.get(env.CHAT_AGENT.idFromName('user-123')) to bind each user to their own Durable Object instance. State persists across sessions without a separate database."
+    - name: "Step 7: Deploy with wrangler deploy and verify limits"
+      text: "Confirm the 30-second CPU-per-request limit, 10 GB per-object storage cap, and single-threaded execution model fit your workload before going live. Add AI Gateway in front for caching and rate limits."
 author: blog-author
 ticket: KOEA-1748
 vendor_tag: community
@@ -47,13 +66,13 @@ learning_objectives:
   - Know the compute and cost limits before shipping an agent to production
 ---
 
-# Build Production AI Agents on Cloudflare: What Agents Week Actually Shipped
+# How to Build Production AI Agents on Cloudflare with Durable Objects, Workers AI, and Vectorize (2026)
 
-Cloudflare's Agents Week (May 2026) shipped a complete edge-native AI stack in a single week: stateful TypeScript agents, vector search, R2-backed artifact storage, and Sandboxes GA. If you read the [[cloudflare-agents-week-2026-explained|week-one overview]], this post goes deeper on the APIs, sharp edges, and pricing.
+To build a production AI agent on Cloudflare: scaffold from the `cloudflare/agents-starter` template, extend `AIChatAgent` so each user gets a Durable Object with persistent SQLite, wire `env.AI` to Workers AI for inference and Vectorize for RAG retrieval, then deploy with `wrangler deploy`. Enable WebSocket hibernation to drop idle duration cost to near zero — without it the agent burns $12.50/M GB-seconds. At realistic volumes, 1,000 concurrent users runs roughly **$4–6/month** based on published Cloudflare pricing.[^1]
 
-The non-obvious angle: based on the published pricing below, this stack is one of the lowest-cost options for stateful AI agents at realistic user volumes. A 1,000-user concurrent agent running on Durable Objects + Workers AI + Vectorize costs roughly **$4–6/month** — before you've stood up a database, a cache layer, or paid for egress.[^1]
+Cloudflare's Agents Week (May 2026) shipped this complete edge-native AI stack in a single week: stateful TypeScript agents, vector search, R2-backed artifact storage, and Sandboxes GA. If you read the [[cloudflare-agents-week-2026-explained|week-one overview]], this post goes deeper on the APIs, sharp edges, and pricing.
 
-## The Agents SDK Is Just a Durable Objects Wrapper — and That's the Point
+## How to Wire the Agents SDK Over Durable Objects
 
 The [Agents SDK](https://developers.cloudflare.com/agents/) (retrieved 2026-05-12) gives you a TypeScript class that compiles down to a Durable Object. Each instance is a stateful micro-server with its own SQLite database, WebSocket connections, and alarm scheduler:
 
