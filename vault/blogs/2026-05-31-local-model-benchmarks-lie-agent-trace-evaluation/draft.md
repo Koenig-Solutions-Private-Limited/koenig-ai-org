@@ -200,7 +200,7 @@ All three support the OpenTelemetry trace format, which means instrumentation co
 
 ---
 
-## The Bottom Line
+## Treat Benchmark Scores as Priors, Not Decisions
 
 The benchmark numbers on the leaderboard are real. They're measuring the wrong thing for agent deployment.
 
