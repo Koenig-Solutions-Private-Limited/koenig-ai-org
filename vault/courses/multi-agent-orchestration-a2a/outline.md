@@ -20,6 +20,7 @@ learning_outcomes:
 total_duration_min: 545
 chapter_count: 10
 capstone_project_min: 120
+description: "Architect multi-agent systems using A2A: agent discovery, MCP tool sharing, async state management, and DPoP-secured communication between agents."
 ---
 
 # Multi-Agent Orchestration with A2A Protocol
@@ -28,9 +29,9 @@ capstone_project_min: 120
 
 Most agent tutorials teach you how to build a single "Swiss Army Knife" agent. They give it 50 tools, a long system prompt, and hope for the best. This approach is the "Monolithic Agent" anti-pattern—it's brittle, expensive, and impossible to scale.
 
-The future isn't one giant agent; it's a network of specialized agents that collaborate. But for agents to collaborate, they need a common language. That language is the **A2A (Agent-to-Agent) Protocol**.
+The future isn't one giant agent; it's a network of specialized agents that collaborate. But for agents to collaborate, they need a common language. That language is the **[A2A (Agent-to-Agent) Protocol](https://github.com/google-a2a/A2A)**.
 
-This course is for the builders who realize that vendor-locked agent silos are a dead end. We move beyond the "hello world" of agentic chains and dive into the architecture of the **Internet of Agents**. We'll cover everything from the core protocol wire-format to global discovery with **AGNTCY**, tool-sharing with **MCP**, and the production realities of distributed tracing and secure message passing.
+This course is for the builders who realize that vendor-locked agent silos are a dead end. We move beyond the "hello world" of agentic chains and dive into the architecture of the **Internet of Agents**. We'll cover everything from the core protocol wire-format to global discovery with **[AGNTCY](https://agntcy.org)**, tool-sharing with **[MCP](https://modelcontextprotocol.io)**, and the production realities of distributed tracing and secure message passing.
 
 By the end, you won't just be chaining LLM calls—you'll be orchestrating a sovereign network of autonomous agents.
 
@@ -56,7 +57,7 @@ By the end, you won't just be chaining LLM calls—you'll be orchestrating a sov
 - **Learning objectives**:
   1. Map the A2A wire protocol: Headers, Context, Payload, and Metadata
   2. Implement the "Handshake and Negotiation" phase of an agent interaction from scratch
-  3. Explain the role of JSON-RPC 2.0 in A2A and why it beats REST for intent-based flows
+  3. Explain the role of [JSON-RPC 2.0](https://www.jsonrpc.org/specification) in A2A and why it beats REST for intent-based flows
   4. Design a custom "Capability Schema" for a domain-specific agent
 - **Key concepts**: Message Envelopes, Intent Negotiation, Capability Schemas, Session Context, Request/Response vs. Fire-and-Forget
 - **Hands-on exercise**: Write a raw JSON-RPC message sequence that initiates a "Task Negotiation" between two agents. Manually verify the state transitions in a mocked agent blackboard.
@@ -68,7 +69,7 @@ By the end, you won't just be chaining LLM calls—you'll be orchestrating a sov
 - **Duration**: 50 min
 - **Prerequisites**: Chapter 2
 - **Learning objectives**:
-  1. Explain the AGNTCY (Internet of Agents) vision and the role of global agent registries
+  1. Explain the [AGNTCY (Internet of Agents)](https://agntcy.org) vision and the role of global agent registries
   2. Implement a "Capability Discovery" query against a mock AGNTCY registry
   3. Design a globally unique Agent Identity (AID) and explain the trust implications
   4. Describe the "Registry-less Discovery" fallback pattern using p2p gossip
@@ -96,7 +97,7 @@ By the end, you won't just be chaining LLM calls—you'll be orchestrating a sov
 - **Duration**: 55 min
 - **Prerequisites**: Chapter 2, Basic MCP knowledge
 - **Learning objectives**:
-  1. Integrate an MCP (Model Context Protocol) server into an A2A agent's capability set
+  1. Integrate an [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server into an A2A agent's capability set
   2. Implement "Tool Proxies": Agent A uses Agent B's MCP tools via the A2A protocol
   3. Design a "Resource Injection" flow where an Orchestrator provides context to a Specialist via MCP Resources
   4. Map the MCP-to-A2A translation layer for standardized tool execution
@@ -138,7 +139,7 @@ By the end, you won't just be chaining LLM calls—you'll be orchestrating a sov
 - **Duration**: 55 min
 - **Prerequisites**: Chapter 2, Familiarity with OAuth/JWT
 - **Learning objectives**:
-  1. Implement "DPoP-bound" (Demonstration of Proof-of-Possession) tokens for A2A message signing
+  1. Implement "[DPoP-bound](https://www.rfc-editor.org/rfc/rfc9449)" (Demonstration of Proof-of-Possession) tokens for A2A message signing
   2. Design a "Delegated Trust" model where Agent A can prove it has permission from the User to call Agent B
   3. Describe "Agent Sandboxing" and why mTLS is the baseline for A2A security
   4. Explain "Prompt Injection via A2A" and how to sanitize inter-agent messages
@@ -152,7 +153,7 @@ By the end, you won't just be chaining LLM calls—you'll be orchestrating a sov
 - **Duration**: 40 min
 - **Prerequisites**: Chapter 6
 - **Learning objectives**:
-  1. Implement OpenTelemetry-style distributed tracing across multiple agents
+  1. Implement [OpenTelemetry](https://opentelemetry.io/docs/concepts/signals/traces/)-style distributed tracing across multiple agents
   2. Design a "Structured Agent Log" that captures both the reasoning (CoT) and the protocol message
   3. Use "Trace IDs" to visualize a complex multi-agent workflow in a tool like Jaeger or LangSmith
   4. Explain the "Reasoning-to-Protocol" mapping for debugging negotiation failures
@@ -201,3 +202,16 @@ A production-ready multi-agent system consisting of:
 ## Why this beats alternatives
 
 Other courses teach you how to use a specific library (like LangGraph) which locks you into their ecosystem. This course teaches you the **underlying protocol**. Once you master A2A, you can build agents in Python that collaborate with agents in TypeScript, running on different clouds, owned by different organizations. You aren't just learning a tool; you're learning how to build the infrastructure of the future agentic economy. That is the difference between an "AI Developer" and a "Protocol Architect."
+
+---
+
+## Sources
+
+1. [A2A Protocol — GitHub (google-a2a/A2A)](https://github.com/google-a2a/A2A) — open-source A2A specification and reference implementation
+2. [A2A Protocol Specification](https://google-a2a.github.io/A2A/) — wire format, message envelope, capability schema reference
+3. [JSON-RPC 2.0 Specification](https://www.jsonrpc.org/specification) — transport layer A2A uses for intent-based messaging
+4. [AGNTCY — Internet of Agents](https://agntcy.org) — global agent registry and discovery initiative
+5. [Model Context Protocol (MCP)](https://modelcontextprotocol.io) — Anthropic's open standard for tool and resource sharing across agents
+6. [RFC 9449 — OAuth 2.0 DPoP (Demonstrating Proof of Possession)](https://www.rfc-editor.org/rfc/rfc9449) — auth spec for DPoP-bound tokens used in Ch8 security patterns
+7. [OpenTelemetry — Distributed Traces](https://opentelemetry.io/docs/concepts/signals/traces/) — tracing standard used in Ch9 observability hands-on
+8. [mTLS — RFC 8705 (OAuth 2.0 Mutual-TLS)](https://www.rfc-editor.org/rfc/rfc8705) — baseline transport security for A2A communication referenced in Ch8

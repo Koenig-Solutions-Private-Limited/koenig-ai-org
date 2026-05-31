@@ -32,13 +32,15 @@ sources:
   - https://www.anthropic.com/engineering/claude-code-auto-mode
   - https://www.anthropic.com/engineering/april-23-postmortem
   - https://www.anthropic.com/news/claude-for-creative-work
+  - https://www.anthropic.com/pricing
+description: "Build production agents with Claude Opus 4.7 — Managed Sessions, Claude Code auto mode, creative MCP connectors, and multi-modal pipelines across 7 chapters."
 ---
 
 # How to build production-grade agents with Claude Opus 4.7
 
 ## Why this course
 
-Claude Opus 4.7 launched on April 16, 2026, and most tutorials treat it as "a faster chat API." That misses the point. Opus 4.7 is the first Claude model designed from the ground up as an **agentic substrate** — the brain in a managed multi-agent system. Anthropic shipped the managed-agent architecture (decoupled orchestrator + executors), auto mode with a two-layer classifier, task budgets, and an `xhigh` effort tier alongside the model itself. No other free resource covers this stack at launch.
+Claude Opus 4.7 launched on April 16, 2026 ([Anthropic](https://www.anthropic.com/news/claude-opus-4-7)), and most tutorials treat it as "a faster chat API." That misses the point. Opus 4.7 is the first Claude model designed from the ground up as an **agentic substrate** — the brain in a managed multi-agent system. Anthropic shipped the managed-agent architecture (decoupled orchestrator + executors), auto mode with a two-layer classifier, task budgets, and an `xhigh` effort tier alongside the model itself. No other free resource covers this stack at launch.
 
 This course takes you from zero to shipping a production multi-modal agent that orchestrates tools, processes high-resolution images, recovers from failures, and knows when to stop spending your money. Every code example is drawn from primary Anthropic documentation and engineering posts — not blog summaries.
 
@@ -57,7 +59,7 @@ Learn how Opus 4.7 redefines agentic substrates with new cost and effort tiers. 
   - Predict token-cost impact using the updated tokenizer (1.0–1.35× factor) and configure `effort` and `task_budget` parameters to control spend
   - Migrate an existing `claude-opus-4-6` API call to `claude-opus-4-7` and verify that output quality and cost match expectations
   - Explain why Opus 4.7's stricter instruction following can break prompts written for earlier models
-- **Key concepts**: `claude-opus-4-7` model ID, updated tokenizer, `xhigh` effort level, `task_budget` (public beta), 2,576px vision limit, migration guide, instruction-following sensitivity, $5/$25 pricing
+- **Key concepts**: `claude-opus-4-7` model ID, updated tokenizer, `xhigh` effort level, `task_budget` (public beta), 2,576px vision limit, migration guide, instruction-following sensitivity, [$5/$25 pricing](https://www.anthropic.com/pricing)
 - **Hands-on exercise**: Migrate a three-turn tool-use script from Opus 4.6 to Opus 4.7, compare token usage and output quality across `high`/`xhigh`/`max` effort levels, and set a task budget that caps spend at 150% of the Opus 4.6 baseline
 
 ---
@@ -73,7 +75,7 @@ Master the Managed Agents architecture, including the durable session log and ha
   - Create an agent, environment, and session via the REST API and stream SSE events to completion
   - Recover from a simulated harness failure using `wake(sessionId)` and `getSession(id)`
   - Apply the decision rule: when to use Managed Agents vs the Agent SDK vs raw Messages API for five real scenario types
-- **Key concepts**: `managed-agents-2026-04-01` beta header, decoupled brain/hands, `execute(name, input) → string`, session as append-only log, `session.status_idle`, SSE streaming, runtime pricing ($0.08/hr), 60% p50 TTFT improvement
+- **Key concepts**: `managed-agents-2026-04-01` beta header, decoupled brain/hands, `execute(name, input) → string`, session as append-only log, `session.status_idle`, SSE streaming, runtime pricing ($0.08/hr), [60% p50 TTFT improvement](https://www.anthropic.com/engineering/managed-agents)
 - **Hands-on exercise**: Build a Managed Agents session that runs a multi-step data analysis task (fetch a CSV from a URL, clean it, generate a summary), kill the harness mid-run, and demonstrate automatic recovery from the session log
 
 ---
@@ -89,7 +91,7 @@ Configure Claude Code's auto-mode with custom environment trust boundaries to sa
   - Configure custom environment trust boundaries and block rules for a specific project
   - Interpret classifier decisions: 0.4% FPR, 17% FNR on real overeager actions, and what that means for your deployment
   - Implement a deny-and-continue recovery strategy when the classifier blocks an action
-- **Key concepts**: `--auto-mode` flag, Tier 1/2/3 allow rules, two-stage classifier, reasoning-blind design, subagent handoff checks, deny-and-continue, 3-consecutive/20-total escalation thresholds, `claude auto-mode defaults`
+- **Key concepts**: `--auto-mode` flag, Tier 1/2/3 allow rules, [two-stage classifier](https://www.anthropic.com/engineering/claude-code-auto-mode), reasoning-blind design, subagent handoff checks, deny-and-continue, 3-consecutive/20-total escalation thresholds, `claude auto-mode defaults`
 - **Hands-on exercise**: Enable auto mode on a Claude Code project, customize the environment slot to trust your GitHub org and S3 bucket, add a block rule that prevents pushing to `main`, then test with a prompt that would trigger scope escalation — verify the classifier blocks it and the agent recovers
 
 ---
@@ -191,3 +193,4 @@ Every Opus 4.7 tutorial will tell you it's better at coding. This course is the 
 [3] Anthropic Engineering — Claude Code auto mode: a safer way to skip permissions — https://www.anthropic.com/engineering/claude-code-auto-mode · retrieved 2026-04-30
 [4] Anthropic Engineering — April 23 quality postmortem — https://www.anthropic.com/engineering/april-23-postmortem · retrieved 2026-04-30
 [5] Anthropic — Claude for Creative Work — https://www.anthropic.com/news/claude-for-creative-work · retrieved 2026-04-30
+[6] Anthropic — Pricing — https://www.anthropic.com/pricing · retrieved 2026-05-30

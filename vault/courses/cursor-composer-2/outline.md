@@ -15,6 +15,7 @@ learning_outcomes:
   - "Build production-ready codebases with AI assistance"
 total_duration_min: 480  # 8 hours
 chapter_count: 8
+description: "Cursor Composer 2 shifts AI coding to multi-file IDE orchestration. Master parallel task execution, complex refactoring, and production-ready codebases."
 ---
 
 # Course outline: Cursor Composer 2 — IDE-First AI Engineering

@@ -58,6 +58,8 @@ faq:
     answer: "Choose the Claude Agent SDK when you need Anthropic-managed server tools: sandboxed Python code execution (no container to operate), hosted web search, or the hosted MCP Connector. It is the right choice for Claude-first architectures where operational simplicity and vendor-managed SLAs matter more than provider portability."
   - question: "Which is better for production agentic workloads?"
     answer: "It depends on who should own the execution loop. Vercel AI SDK 6 is better when you need provider portability, explicit loop control for compliance logging, or cost transparency across custom tools. Claude Agent SDK is better when you want Anthropic to manage code execution and web search infrastructure, trading portability for dramatically lower operational overhead."
+seo_description: "Vercel AI SDK 6 keeps execution in your infrastructure for any LLM; Claude Agent SDK delegates the loop to Anthropic. Choose by who must own the execution loop."
+description: "Vercel AI SDK 6 keeps execution in your infrastructure for any LLM; Claude Agent SDK delegates the loop to Anthropic. Choose by who must own the execution loop."
 ---
 
 # Vercel AI SDK 6 or Claude Agent SDK: The Decision Is Who Runs the Loop

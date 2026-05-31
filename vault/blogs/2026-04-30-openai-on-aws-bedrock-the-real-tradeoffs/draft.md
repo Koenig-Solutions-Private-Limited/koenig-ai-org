@@ -56,6 +56,8 @@ positions:
     body: "Bedrock-hosted OpenAI models carry hidden infrastructure overhead — IAM role management, SigV4 signing, CloudWatch dashboard setup. For teams without existing AWS investment, the native OpenAI API is meaningfully cheaper to operate and maintain."
   - stance: open-closed-prefer-oss
     body: "Bedrock deepens AWS lock-in; teams that prefer multi-cloud or open-source-first strategies should default to the native OpenAI API or evaluate open-weight alternatives before committing to Bedrock's proprietary auth and observability stack."
+seo_description: "OpenAI on AWS Bedrock requires IAM/SigV4 — not API keys — breaking existing openai clients. Here are the tradeoffs on residency, cost tagging, and control."
+description: "OpenAI on AWS Bedrock requires IAM/SigV4 — not API keys — breaking existing openai clients. Here are the tradeoffs on residency, cost tagging, and control."
 ---
 
 # OpenAI on AWS Bedrock: IAM Auth Is the Real Engineering Work (2026)

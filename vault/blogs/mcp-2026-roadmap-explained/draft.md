@@ -55,6 +55,8 @@ positions:
     angle: "MCP spec governance creates a hub-and-spoke topology: Anthropic holds the hub (Core Maintainers) while Working Groups become the spokes — builders targeting Claude's Agent SDK should model MCP as the spoke-to-hub interface, not a monolithic vendor API"
   - stance: open-closed-prefer-oss
     angle: "The SEP/Working Group model gives community-backed durability to open MCP extension paths — prefer OSS-native transport and auth implementations over proprietary gateway lock-in, which now carries more long-term risk than the open route"
+seo_description: "MCP 2026 roadmap hands spec control to community working groups. Transport scalability, agent task semantics, and enterprise readiness are the four priorities."
+description: "MCP 2026 roadmap hands spec control to community working groups. Transport scalability, agent task semantics, and enterprise readiness are the four priorities."
 ---
 
 # MCP's 2026 Roadmap Hands Spec Control to Working Groups — Here's What Actually Changes for Builders

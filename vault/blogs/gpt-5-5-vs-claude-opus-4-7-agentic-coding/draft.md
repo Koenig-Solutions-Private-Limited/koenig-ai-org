@@ -61,6 +61,8 @@ faq:
     answer: "No. Bedrock makes dual-vendor deployment easier by putting both model families under one AWS control plane, but AWS still exposes separate API families: OpenAI-compatible Chat Completions and Responses for GPT-5.5, and Anthropic Messages for Claude. Governance converges; routing logic does not."
   - question: "When should an engineering team route work to Opus 4.7 instead of GPT-5.5?"
     answer: "Route repo-wide refactors, multi-file issue resolution, and quality-first patch planning to Opus 4.7 because it leads SWE-Bench Pro and Anthropic optimized it for advanced software engineering. Route shell-heavy debugging, CI recovery loops, and computer-use style tasks to GPT-5.5 because it leads Terminal-Bench 2.0 and OSWorld-Verified."
+seo_description: "Route repo-wide refactors to Claude Opus 4.7 and terminal loops to GPT-5.5. Task type, not vendor preference, drives the right agentic coding model choice."
+description: "Route repo-wide refactors to Claude Opus 4.7 and terminal loops to GPT-5.5. Task type, not vendor preference, drives the right agentic coding model choice."
 ---
 
 # GPT-5.5 vs Claude Opus 4.7 for Agentic Coding in 2026: Route Refactors to Opus, Terminal Loops to GPT-5.5

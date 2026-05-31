@@ -19,8 +19,8 @@ learning_outcomes:
   - "Wire three MCP servers (stdio + HTTP + SSE) into a single agent with proper auth and error handling"
   - "Upload, reference, and manage files with the Files API across multi-turn agent sessions"
   - "Deploy a production agent with structured logging, cost circuit breakers, and observability hooks"
-total_duration_min: 240
-chapter_count: 5
+total_duration_min: 275
+chapter_count: 6
 capstone_project_min: 60
 related_blogs:
   - anthropic-agent-sdk-april-rebrand
@@ -29,6 +29,7 @@ sources:
   - https://code.claude.com/docs/en/agent-sdk/overview
   - https://platform.claude.com/docs/en/managed-agents/overview
   - https://platform.claude.com/docs/en/build-with-claude/files
+description: "Deploy Claude Agent SDK agents in production: migrate from Claude Code SDK, wire MCP servers, use the Files API, and add logging and cost circuit breakers."
 ---
 
 # How to Deploy Claude Agent SDK in Production (Docker, Kubernetes, Multi-tenant)
@@ -145,6 +146,20 @@ There's also a contrarian thread running through each chapter: the defaults aren
   - Explain why `bypassPermissions` is dangerous and what to use instead
 - **Key concepts**: `PreToolUse`/`PostToolUse` hooks, Python-vs-TypeScript hook compatibility, `HookMatcher`, JSONL session state, `settingSources`, Langfuse integration, budget enforcement, permission modes
 - **Hands-on exercise**: Harden the agents from Chapters 2 and 3 with the production hook stack, add a cost cap, and verify that a simulated runaway session is terminated before it hits budget
+
+---
+
+### Chapter 6: Cross-CLI context persistence and session handoff patterns
+
+- **Duration**: 35 min
+- **Prerequisites**: Chapters 1 and 5
+- **Learning objectives**:
+  - Explain why context rebuilding is the dominant cost in multi-CLI workflows, not API latency
+  - Implement a local file-based control plane pattern that persists session state across Codex, Claude Code, Cursor, and Gemini CLI switches
+  - Apply plan mode, rollback coupling, and approval-mode switching as workflow harness primitives
+  - Choose when to use a single-CLI deep workflow vs a multi-CLI handoff harness
+- **Key concepts**: session-handoff, context-persistence, local control plane, `.session/` directory, plan mode, rollback coupling, approval-mode, OACP, CoreTex, npx continues, agentchattr
+- **Hands-on exercise**: Build a `.session/` control plane, run a Claude Agent SDK session that writes state on completion, then resume from state in a fresh session — verify zero context rebuild.
 
 ---
 

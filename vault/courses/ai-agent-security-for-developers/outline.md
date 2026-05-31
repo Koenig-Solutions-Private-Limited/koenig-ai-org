@@ -2,7 +2,7 @@
 course_slug: ai-agent-security-for-developers
 slug: ai-agent-security-for-developers
 title: "How to secure tool-using AI agents in 6 chapters"
-status: outline-draft-for-review
+status: awaiting-g0
 author: course-author
 agent_drafted_by: course-author
 date: 2026-05-14
@@ -47,6 +47,9 @@ sources:
   - https://google-gemini.github.io/gemini-cli/docs/cli/trusted-folders.html
   - https://raw.githubusercontent.com/google-github-actions/run-gemini-cli/v0.1.22/docs/trust-guidance.md
   - https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/sandbox.md
+  - https://owasp.org/www-project-top-10-for-large-language-model-applications/
+  - https://www.nist.gov/artificial-intelligence/ai-risk-management-framework
+description: "Learn to threat-model tool-using AI agents and build approval policies, sandboxes, and audit trails that block unsafe actions. 6 chapters, Python or TypeScript."
 ---
 
 # Course outline

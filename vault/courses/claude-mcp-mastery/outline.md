@@ -30,6 +30,7 @@ related_courses:
   - "claude-tool-use-from-zero"
   - "mcp-from-first-principles-to-production"
   - "production-agents-claude-agent-sdk-mcp-connector"
+description: "Use Claude with production MCP connectors for Blender, Adobe, and Ableton. Design safe task boundaries, approval loops, and auditability for creative workflows."
 ---
 
 # Use Claude with creative MCP connectors in production

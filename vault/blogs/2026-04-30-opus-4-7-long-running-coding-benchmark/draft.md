@@ -60,6 +60,8 @@ faq:
     answer: "Opus 4.7 shows the largest gains on tasks that require holding many files in context simultaneously — multi-file refactors, cross-service debugging, and incremental test-driven development — resolving roughly 3× more production-level tasks than 4.6 in those scenarios."
   - question: "What is the real token cost of upgrading a long-running agent workflow from Opus 4.6 to 4.7?"
     answer: "Opus 4.7's tokenizer change inflates input token counts 1.0–1.35× on code-heavy prompts. An 8-hour session using 400 K input tokens on 4.6 now consumes ~540 K on 4.7, raising input spend from $2.00 to $2.70 per session. Multiply by a fleet of overnight agents and audit cache-hit rates, which reset after the tokenizer upgrade."
+seo_description: "Opus 4.7 finishes 3× more long-running coding tasks than Opus 4.6, but its tokenizer raises session costs 35%. Use this data to decide when to upgrade."
+description: "Opus 4.7 finishes 3× more long-running coding tasks than Opus 4.6, but its tokenizer raises session costs 35%. Use this data to decide when to upgrade."
 ---
 
 # Opus 4.7 resolves 3× more production coding tasks than 4.6 — here's the catch for 8-hour sessions

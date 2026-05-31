@@ -16,6 +16,7 @@ learning_outcomes:
   - "Implement structured logging and audit trails for tool operations"
 total_duration_min: 540
 chapter_count: 9
+description: "Master Claude tool use from basics to production: function calling, MCP server design, secure connector architecture, and audit logging in one course."
 ---
 
 # Course outline: Claude Tool Use from Zero

@@ -25,6 +25,8 @@ faq:
     answer: "Claude Security provides zero-integration vulnerability scanning that finds bugs, explains them, and generates targeted patches in a single session — reducing what previously took days of engineer/security back-and-forth to one sitting."
   - question: "How does Claude Security compare to existing SAST and DAST tools?"
     answer: "Claude Security complements rather than replaces tools like Semgrep or Checkmarx. It excels at scan-to-patch in one session but currently lacks the rule customization and policy-as-code features governance-focused platforms provide."
+seo_description: "Claude Security scans for vulnerabilities and generates patches with zero setup. Its moat is the enterprise partner network, not the scanner technology itself."
+description: "Claude Security scans for vulnerabilities and generates patches with zero setup. Its moat is the enterprise partner network, not the scanner technology itself."
 ---
 
 # Why Claude Security's partner moat matters more than its scanner

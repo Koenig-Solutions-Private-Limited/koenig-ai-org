@@ -26,6 +26,7 @@ learning_outcomes:
 total_duration_min: 345
 chapter_count: 8
 capstone_project_min: 60
+description: "Build Gemini enterprise agents: A2A orchestration, Agent Gateway, multimodal design, and Vertex AI observability across 8 hands-on production chapters."
 ---
 
 # Build Production AI Agents with Gemini Enterprise Agent Platform

@@ -56,6 +56,8 @@ positions:
     rationale: "ElevenLabs costs $60/1M characters with 75ms TTFA and quality ELO below both Kokoro 82M and Cartesia Sonic 3. Kokoro and Cartesia are the production-grade defaults; ElevenLabs adds cost and latency without quality upside for most voice agent workloads."
   - stance: cost-inexpensive
     rationale: "Kokoro 82M delivers near-identical TTS quality to paid APIs at $0.70/1M characters hosted, or free for on-device inference — best-in-class voice output without premium pricing."
+seo_description: "Cartesia Sonic 3 leads 2026 voice agent TTS benchmarks at 40ms TTFA, but streaming architecture interleaving LLM and synthesis cuts end-to-end latency more."
+description: "Cartesia Sonic 3 leads 2026 voice agent TTS benchmarks at 40ms TTFA, but streaming architecture interleaving LLM and synthesis cuts end-to-end latency more."
 ---
 
 # Cartesia Sonic 3 Has the Fastest TTS. GPT Realtime Feels Faster. Here's Why.

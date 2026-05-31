@@ -26,6 +26,7 @@ related_blogs:
 sources:
   - https://spec.modelcontextprotocol.io/
   - https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/
+description: "MCP chose JSON-RPC over stdio instead of WebSockets to keep transport simple and debuggable. This course explains why, then builds a production MCP server."
 ---
 
 # MCP from First Principles to Production

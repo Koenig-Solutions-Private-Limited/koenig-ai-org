@@ -46,6 +46,8 @@ faq:
     answer: "NotebookLM grounds every response strictly in your uploaded sources and declines to answer beyond them, which eliminates hallucination for study purposes. This source-grounding — not raw generation capability — is its core differentiator for education."
   - question: "How do I build a complete NotebookLM learning module from a single article?"
     answer: "Upload the article or PDF, then generate an audio overview, a flashcard set, and a study guide in sequence. The full module takes under 5 minutes and covers the same source from three distinct learning angles: passive listening, active recall, and structured review."
+seo_description: "NotebookLM's Classroom integration grounds notebooks in course materials. Its real advantage is source-grounded synthesis that stays within cited sources only."
+description: "NotebookLM's Classroom integration grounds notebooks in course materials. Its real advantage is source-grounded synthesis that stays within cited sources only."
 ---
 
 # NotebookLM Just Got Classroom Integration. Its Killer Feature Is What It Won't Do.

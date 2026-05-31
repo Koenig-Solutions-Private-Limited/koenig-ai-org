@@ -5,7 +5,7 @@ author: blog-author
 ticket: KOEA-1342
 vendor_tag: community
 content_type: article
-status: g3-passed
+status: g0-review
 seo_description: "Compare GitHub Copilot cloud agent, Cursor Background Agent, and Claude Code: the decision is where the execution loop lives, not benchmark scores."
 reading_time_min: 7
 hero_image: auto:flux
@@ -41,11 +41,16 @@ faq:
     answer: "Copilot Workspace (now called the Copilot cloud agent) is GitHub's agentic coding feature that can research a codebase, generate an implementation plan, and work on a branch directly inside GitHub — before you open a pull request. It runs inside GitHub's own infrastructure, so governance, billing, and audit trails stay in the same place as your code.[1]"
   - question: "How does Cursor Background Agent compare to Claude Code?"
     answer: "Cursor Background Agent is a vendor-managed cloud runner: it keeps executing implementation and PR review after you close the editor, and you interact with it through Cursor's IDE, web, or mobile surfaces. Claude Code is a terminal-native tool that runs in your shell, CI job, or custom harness — you own the loop, hooks, logs, and MCP integrations instead of delegating them to a hosted environment.[6][11][12]"
+  - question: "What is the difference between Cursor Composer 2 and Claude Code?"
+    answer: "Cursor Composer 2 runs background agents in a vendor-managed cloud environment — they keep executing after you close the editor, and Cursor handles the infrastructure, review, and PR automation. Claude Code is a terminal-native tool: it runs in your shell, CI pipelines, or a custom harness, giving you direct control over hooks, subagents, local tools, and MCP integrations. Cursor Composer 2 is the stronger choice for unattended delegation; Claude Code is the stronger choice when your team needs to own the execution loop and extend the agent with its own tooling.[7][8][11][12]"
   - question: "Which agentic coding tool should I use in 2026?"
     answer: "Pick Copilot when your team wants GitHub to govern planning, branches, billing, and audit trails. Pick Cursor when you want background agents and automatic PR review to keep running after you close the IDE. Pick Claude Code when you need terminal-native programmable control over hooks, local tools, subagents, and MCP — and you are willing to own more of the harness yourself.[1][6][11][12]"
+description: "Copilot Cloud Agent, Cursor Background Agents, and Claude Code put the loop in GitHub, vendor cloud, and terminal. Choose by where execution must live."
 ---
 
 # Choose Copilot for GitHub-native planning, Cursor for background throughput, and Claude Code for programmable control in 2026
+
+*Including a direct Cursor Composer vs Claude Code comparison*
 
 If you are comparing GitHub Copilot Workspace-style workflows, Cursor Background Agents, and Claude Code in 2026, the short answer is simple: pick Copilot when your team wants research, planning, code review, and billing to stay inside GitHub; pick Cursor when you want cloud agents and PR review running in the background; pick Claude Code when you need the loop to live in your terminal, hooks, and scripts instead of a vendor UI.[1][3][6][11][12]
 
@@ -74,6 +79,20 @@ Claude Code is the most opinionated option in the opposite direction: it is an a
 This ownership model matters more than the raw UI. When the loop lives in your terminal, you decide how sessions start, where logs go, which tools are allowed, and how failures are retried. Anthropic frames Claude Code as customizable through hooks, `CLAUDE.md`, and MCP, and the repository reinforces the terminal-native, plugin-friendly posture.[11][12] For regulated environments or teams building their own [[glossary/agent-harness]], that control can beat a prettier background-task panel.
 
 The pricing also signals the intended buyer. Anthropic includes Claude Code in the $20/month Pro plan and higher tiers, while positioning Opus 4.7 as its flagship for advanced software engineering and long-horizon autonomy.[13][14] In other words: Claude Code is not trying to be the cheapest managed PR bot. It is trying to be the programmable agent surface you can bend around your own workflow.[13][14]
+
+## Cursor Composer 2 vs Claude Code: Head-to-Head
+
+When teams narrow the field to two, the question usually comes down to this: should the agent run in Cursor's cloud on your behalf, or should it run in your own terminal under your own control? Cursor Composer 2 and Claude Code represent the clearest version of that tradeoff.
+
+**Execution model.** Cursor Composer 2 runs background agents in a vendor-managed cloud environment — they keep executing after you close the IDE, and Cursor handles the infrastructure, review queue, and PR automation.[7][9] Claude Code runs in your terminal, CI pipeline, or a custom harness; you own the loop, hooks, and MCP integrations rather than delegating them to a hosted service.[11][12]
+
+**Benchmark context.** Cursor's Composer 2 technical report shows 61.3 on CursorBench, 73.7 on SWE-bench Multilingual, and 61.7 on Terminal-Bench.[7][8] These are vendor-run evals — useful directionally, not gospel. Claude Code is not benchmarked on the same suite, so direct numeric comparison is not meaningful; the difference that matters in practice is architectural, not numeric.
+
+**Control vs. convenience.** Composer 2 is the stronger pick when you want unattended background task delegation: you open a ticket, close the IDE, and come back to a PR ready for review. Claude Code is the stronger pick when you need programmable hooks, subagents, local tooling, and MCP connectivity — at the cost of owning more of the harness yourself.[11][12]
+
+**Pricing.** Cursor Pro starts at $20/month and includes Composer 2 access. Claude Code is included in Anthropic Pro at $20/month.[10][13] At the same nominal price, the spend buys you different things: Cursor buys background automation, Claude Code buys terminal-native control.
+
+For a full cost-governance picture, see the billing comparison below.
 
 ## Compare billing and governance before you compare demos
 
@@ -119,3 +138,36 @@ Stop asking which tool is "best" in the abstract. Ask where the loop should live
 [12] anthropics/claude-code repository — https://github.com/anthropics/claude-code · retrieved 2026-05-12
 [13] Anthropic pricing — https://www.anthropic.com/pricing · retrieved 2026-05-12
 [14] Introducing Claude Opus 4.7 — https://www.anthropic.com/news/claude-opus-4-7 · retrieved 2026-05-12
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the difference between Cursor Composer 2 and Claude Code?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cursor Composer 2 runs background agents in a vendor-managed cloud environment — they keep executing after you close the editor, and Cursor handles the infrastructure, review, and PR automation. Claude Code is a terminal-native tool: it runs in your shell, CI pipelines, or a custom harness, giving you direct control over hooks, subagents, local tools, and MCP integrations. Cursor Composer 2 is the stronger choice for unattended delegation; Claude Code is the stronger choice when your team needs to own the execution loop and extend the agent with its own tooling."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which agentic coding tool should I use in 2026?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pick Copilot when your team wants GitHub to govern planning, branches, billing, and audit trails. Pick Cursor when you want background agents and automatic PR review to keep running after you close the IDE. Pick Claude Code when you need terminal-native programmable control over hooks, local tools, subagents, and MCP — and you are willing to own more of the harness yourself."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does Cursor Background Agent compare to Claude Code?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cursor Background Agent is a vendor-managed cloud runner: it keeps executing implementation and PR review after you close the editor, and you interact with it through Cursor's IDE, web, or mobile surfaces. Claude Code is a terminal-native tool that runs in your shell, CI job, or custom harness — you own the loop, hooks, logs, and MCP integrations instead of delegating them to a hosted environment."
+      }
+    }
+  ]
+}
+</script>

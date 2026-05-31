@@ -63,6 +63,8 @@ faq:
     answer: "Cursor 3.2 is optimized for interactive, human-in-the-loop development where fast UI feedback and IDE integration matter most. Claude Code suits automated workflows, batch jobs, and CI pipelines where the loop must run unattended and integrate with external systems."
   - question: "Can I use Cursor 3.2 and Claude Code together in the same engineering workflow?"
     answer: "Yes — many teams run both in parallel. Cursor 3.2 covers daily interactive development (tiled diffs, visual agent windows, IDE-native review), while the Claude Agent SDK powers overnight automation, CI integration, and regulated pipelines. The two SDKs expose compatible runtime primitives, so you can prototype a multi-agent harness in Cursor and productionize the same logic as an SDK script."
+seo_description: "Cursor 3.2 and Claude Code share the same agent runtime but make opposite ergonomic bets — IDE vs terminal. Pick by where you want to own your workflow."
+description: "Cursor 3.2 and Claude Code share the same agent runtime but make opposite ergonomic bets — IDE vs terminal. Pick by where you want to own your workflow."
 ---
 
 # Cursor 3.2 vs. Claude Code (2026): Same Agent Runtime, Different Ergonomic Bet

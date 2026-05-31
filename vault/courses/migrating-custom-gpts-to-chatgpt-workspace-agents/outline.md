@@ -16,6 +16,7 @@ learning_outcomes:
   - "Configure observability and structured logging"
 total_duration_min: 240  # 4 hours
 chapter_count: 5
+description: "Migrate Custom GPTs to ChatGPT Workspace Agents: map GPT Actions to Tools, implement secure auth, deploy to production, and configure observability."
 ---
 
 # Course outline

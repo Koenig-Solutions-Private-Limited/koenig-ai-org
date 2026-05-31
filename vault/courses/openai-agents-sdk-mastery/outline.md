@@ -14,6 +14,9 @@ tags:
 sources:
   - https://openai.github.io/openai-agents-python/
   - https://platform.openai.com/docs/guides/agents
+  - https://platform.openai.com/docs/api-reference/responses
+  - https://platform.openai.com/docs/guides/realtime
+  - https://opentelemetry.io/docs/concepts/signals/traces/
   - https://www.reddit.com/r/PromptEngineering/comments/1t95hyf/is_prompt_engineering_actually_dead_or_are_we/
   - https://np.reddit.com/r/ClaudeAI/comments/1rozbqb/are_agents_actually_useful_for_complex_tasks/
   - https://daringfireball.net/2026/05/ai_is_technology_not_a_product
@@ -29,6 +32,7 @@ learning_outcomes:
   - "Build an Enterprise AI Triage Bot with human-in-the-loop and specialized handoffs"
 total_duration_min: 600  # 10 hours
 chapter_count: 10
+description: "Master the OpenAI Agents SDK to build production systems with multi-agent orchestration, Realtime API voice, Langfuse observability, and human-in-the-loop."
 ---
 
 # Course outline
@@ -41,7 +45,7 @@ chapter_count: 10
 2. Configure the development environment using Codex CLI and SDK credentials.
 3. Build a "Hello World" agent using the `Agent` class and the base SDK loop.
 4. Record the minimum harness metadata needed to debug an agent run: model ID, tool calls, elapsed time, approval state, and final outcome.
-**Key concepts:** SDK Architecture, Responses API vs Chat Completions, Environment Setup, The Agent Loop, Run metadata.
+**Key concepts:** SDK Architecture, [Responses API](https://platform.openai.com/docs/api-reference/responses) vs Chat Completions, Environment Setup, The Agent Loop, Run metadata.
 **Hands-on exercise:** Initialize a basic agent that responds to system queries using the new SDK syntax, then save a one-run execution record with model ID, tool-call count, elapsed time, and whether a human approval was needed.
 
 ## Chapter 2: Tool Orchestration & Pydantic Safety
@@ -92,7 +96,7 @@ chapter_count: 10
 1. Integrate the Realtime API for low-latency voice-to-voice interaction.
 2. Optimize audio streaming and VAD (Voice Activity Detection) settings.
 3. Implement function calling within a realtime audio stream.
-**Key concepts:** Realtime API, WebSocket streaming, Latency optimization, Audio tool-calling.
+**Key concepts:** [Realtime API](https://platform.openai.com/docs/guides/realtime), WebSocket streaming, Latency optimization, Audio tool-calling.
 **Hands-on exercise:** Build a voice-activated assistant that executes tools via audio commands.
 
 ## Chapter 7: Observability & Langfuse Tracing
@@ -102,7 +106,7 @@ chapter_count: 10
 1. Export agent execution traces to Langfuse for analysis.
 2. Instrument agent loops with OpenTelemetry for production monitoring.
 3. Debug complex multi-agent failures using visualization tools.
-**Key concepts:** Distributed tracing, Langfuse integration, OpenTelemetry, Debugging agent loops.
+**Key concepts:** Distributed tracing, Langfuse integration, [OpenTelemetry](https://opentelemetry.io/docs/concepts/signals/traces/), Debugging agent loops.
 **Hands-on exercise:** Connect an existing agent system to Langfuse and analyze a failed tool call trace.
 
 ## Chapter 8: Enterprise Guards & Production Safety

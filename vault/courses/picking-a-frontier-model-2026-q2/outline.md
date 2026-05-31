@@ -1,7 +1,7 @@
 ---
 course_slug: picking-a-frontier-model-2026-q2
 title: "Picking a Frontier Model: Opus 4.7 vs GPT-5.5 vs Gemini 3.1 Pro — A Builder's Benchmark Guide"
-status: awaiting-g0
+status: g0-blocked
 author: course-author
 level: Builder
 vendor_tag: community
@@ -27,9 +27,14 @@ related_blogs:
   - sub-hour-zero-days-aisi-mythos-autonomous-cyber-developers
 sources:
   - https://www.anthropic.com/news
+  - https://www.anthropic.com/pricing
   - https://help.openai.com/en/articles/9624314-model-release-notes
+  - https://openai.com/pricing
   - https://ai.google.dev/gemini-api/docs/changelog
+  - https://ai.google.dev/pricing
+  - https://gorilla.cs.berkeley.edu/leaderboard.html
   - /data/claude-tool-use-determinism/2026-Q2/
+description: "Run structured benchmarks to pick between Opus 4.7, GPT-5.5, and Gemini 3.1 Pro. Measure determinism, context degradation, cost-per-task, and governance needs."
 ---
 
 # Picking a Frontier Model: Opus 4.7 vs GPT-5.5 vs Gemini 3.1 Pro
@@ -111,7 +116,7 @@ The standard comparison post asks: *which model is the smartest?* We ask: *which
   3. Compare total cost of ownership across Opus 4.7, GPT-5.5, and Gemini 3.1 Pro for three workload archetypes (coding agent, document Q&A, high-volume classification)
   4. Build a break-even analysis: at what reliability delta does the cheaper model become more expensive in practice?
   5. Identify the pricing surprises that catch builders off-guard (context caching resets, tool-call token counting, output amplification)
-- **Key concepts**: cost-per-task model, prompt caching economics, retry cost amplification, total cost of ownership, break-even reliability analysis, context caching
+- **Key concepts**: cost-per-task model, [prompt caching economics](https://www.anthropic.com/pricing), retry cost amplification, total cost of ownership, break-even reliability analysis, [context caching](https://ai.google.dev/pricing)
 - **Contrarian angle**: Gemini 3.1 Pro is not the cheapest model for tool-use workloads once you factor in retry rates from determinism failures. The "expensive" model can be cheaper end-to-end. We show the math.
 - **Hands-on exercise**: Learner fills in the cost estimator spreadsheet (provided) for their own use case using real token counts from their Chapter 2 benchmark run. Produces a cost-per-task figure for each of the three models.
 - **v3-citation-authority requirements**: Wikipedia-style lead, key-facts list, ≥5 citations, ≥3 internal wikilinks, References footer

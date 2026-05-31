@@ -59,6 +59,8 @@ faq:
     answer: "RFC 9728 defines a standard discovery mechanism for OAuth 2.0 authorization servers, letting agents identify and authenticate with each other using published metadata rather than hardcoded credentials or manual key exchange."
   - question: "Is Cloudflare Agents Week a feature release or a platform reorientation?"
     answer: "It is a platform reorientation. Cloudflare is not adding AI features to its CDN — it is rebuilding core infrastructure primitives (routing, storage, auth, compute) around the assumption that agents, not browsers, are the primary clients of the web."
+seo_description: "Cloudflare Agents Week 2026 shipped agent-ready infrastructure across Workers, Durable Objects, and Workflows. Here's every announcement explained for builders."
+description: "Cloudflare Agents Week 2026 shipped agent-ready infrastructure across Workers, Durable Objects, and Workflows. Here's every announcement explained for builders."
 ---
 
 # Cloudflare Agents Week 2026: every announcement explained

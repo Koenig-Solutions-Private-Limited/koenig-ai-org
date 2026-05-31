@@ -49,6 +49,7 @@ learning_objectives:
   - Apply context topology decisions (retrieval shape, memory boundaries, output contracts) to a real agent setup
 series: Production Agent Engineering in 2026
 series_part: 1
+description: "Context engineering is the architecture that contains prompt engineering. Prompts live inside a larger retrieval and context stack — design that stack first."
 ---
 
 # Design the Context Stack First, Then Write the Prompt
