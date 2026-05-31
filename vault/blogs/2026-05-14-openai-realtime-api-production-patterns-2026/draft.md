@@ -1,5 +1,5 @@
 ---
-title: "Ship OpenAI Realtime voice agents when interruptions and tools matter"
+title: "OpenAI Realtime API: production patterns for voice agents"
 slug: openai-realtime-api-production-patterns-2026
 description: "A production guide to OpenAI Realtime API voice agents: when to choose Realtime over Whisper plus TTS, how to handle interruptions, sessions, cost, and rate limits."
 hero_image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80"
@@ -13,11 +13,15 @@ status: awaiting-g0
 reading_time_min: 7
 primary_query: "openai realtime api voice agents production patterns 2026"
 contrarian_angle: "Realtime API is not mainly a faster TTS endpoint; its real advantage is collapsing turn detection, interruption repair, telephony audio, tool calls, and session state into one speech-native loop."
+positions: none  # pure how-to; STANCES.md not yet populated — no current company stance directly engaged
+first_60_words_answer: "The production patterns for OpenAI Realtime API voice agents converge on three requirements: callers can interrupt naturally, the agent calls tools during the spoken turn, and the product achieves sub-second turn latency. A Whisper plus LLM plus TTS pipeline is still cheaper and easier to swap by vendor."
+last_updated: 2026-05-30
 sources:
   - https://platform.openai.com/docs/guides/rate-limits
   - https://platform.openai.com/docs/guides/realtime-models-prompting
   - https://platform.openai.com/docs/changelog
   - https://github.com/openai/openai-agents-python/releases/tag/v0.17.4
+  - https://openai.com/api/pricing
   - https://www.latent.space/p/realtime-api
   - https://cartesia.ai/vs/cartesia-vs-openai-tts
   - https://www.eesel.ai/blog/realtime-api-vs-whisper-vs-tts-api
@@ -34,26 +38,45 @@ learning_objectives:
   - "Design the first production pass around audio transport, VAD, interruption truncation, session rollover, and rate-limit observability."
   - "Estimate why longer Realtime calls become disproportionately expensive as conversation history grows."
 faq:
-  - question: "Is OpenAI Realtime API better than Whisper plus TTS for voice agents?"
-    answer: "Yes for live agents that need sub-second turns, interruptions, tool calls, and telephony. Whisper plus TTS remains better for batch, asynchronous, or cost-first audio workflows."
-  - question: "What is the biggest production risk with Realtime voice agents?"
-    answer: "The common failure is not model quality; it is unhandled interruption repair, session rollover, and rising context cost during longer calls."
-  - question: "Should teams benchmark Cartesia against OpenAI Realtime?"
-    answer: "Yes, but compare different metrics. Cartesia is a TTS latency benchmark; OpenAI Realtime should be judged on full-turn latency, tools, session state, and interruption handling."
+  - question: "What are the production patterns for OpenAI Realtime API?"
+    answer: "The core production patterns for OpenAI Realtime API are: (1) interruption handling — client cancels playback and calls conversation.item.truncate so server state matches what the user heard; (2) session rollover — periodically summarizing conversation history before reconnecting to control context cost growth; and (3) rate-limit observability — logging remaining/reset headers to prevent live-call disruptions. These three patterns determine whether a voice agent survives real callers versus demo conditions. See [OpenAI Realtime client event reference](https://platform.openai.com/docs/api-reference/realtime-client-events/input_audio_buffer/clear?lang=node.js)."
+  - question: "How do I handle session management with OpenAI Realtime API in production?"
+    answer: "Production session management for OpenAI Realtime API requires three controls: periodic session rollover (summarize and reconnect before the ~15-minute cap), context cost pruning (remove irrelevant conversation items as call history grows), and tool-state idempotency (store critical tool results outside the model session so rollover does not lose call context). Isolate production projects from development traffic to avoid shared rate-limit depletion. See [OpenAI rate limits guide](https://platform.openai.com/docs/guides/rate-limits)."
+  - question: "What is the difference between WebRTC and WebSocket for OpenAI Realtime API?"
+    answer: "WebRTC and WebSocket are both supported transport layers for OpenAI Realtime API. WebRTC is optimized for browser-to-server live audio with built-in jitter buffering and adaptive bitrate, making it the preferred path for browser clients. WebSocket gives your server direct control over the connection, which is better when your backend mediates between a phone (SIP/G.711), the OpenAI API, and business logic. For telephony, use a dedicated SIP path rather than treating phone audio as a browser microphone with worse quality. See [OpenAI Realtime prompting guide](https://platform.openai.com/docs/guides/realtime-models-prompting)."
+faq_schema:
+  "@context": "https://schema.org"
+  "@type": "FAQPage"
+  mainEntity:
+    - "@type": "Question"
+      name: "What are the production patterns for OpenAI Realtime API?"
+      acceptedAnswer:
+        "@type": "Answer"
+        text: "The core production patterns for OpenAI Realtime API are: (1) interruption handling — client cancels playback and calls conversation.item.truncate so server state matches what the user heard; (2) session rollover — periodically summarizing conversation history before reconnecting to control context cost growth; and (3) rate-limit observability — logging remaining/reset headers to prevent live-call disruptions. These three patterns determine whether a voice agent survives real callers versus demo conditions."
+    - "@type": "Question"
+      name: "How do I handle session management with OpenAI Realtime API in production?"
+      acceptedAnswer:
+        "@type": "Answer"
+        text: "Production session management for OpenAI Realtime API requires three controls: periodic session rollover (summarize and reconnect before the ~15-minute cap), context cost pruning (remove irrelevant conversation items as call history grows), and tool-state idempotency (store critical tool results outside the model session so rollover does not lose call context). Isolate production projects from development traffic to avoid shared rate-limit depletion."
+    - "@type": "Question"
+      name: "What is the difference between WebRTC and WebSocket for OpenAI Realtime API?"
+      acceptedAnswer:
+        "@type": "Answer"
+        text: "WebRTC and WebSocket are both supported transport layers for OpenAI Realtime API. WebRTC is optimized for browser-to-server live audio with built-in jitter buffering and adaptive bitrate, making it the preferred path for browser clients. WebSocket gives your server direct control over the connection, which is better when your backend mediates between a phone (SIP/G.711), the OpenAI API, and business logic. For telephony, use a dedicated SIP path rather than treating phone audio as a browser microphone with worse quality."
 schema:
   "@context": "https://schema.org"
   "@type": "Article"
-  headline: "Ship OpenAI Realtime voice agents when interruptions and tools matter"
+  headline: "OpenAI Realtime API: production patterns for voice agents"
   author:
     "@type": "Organization"
     name: "Koenig AI Academy"
 ---
 
-# Ship OpenAI Realtime voice agents when interruptions and tools matter
+# OpenAI Realtime API: production patterns for voice agents
 
-OpenAI Realtime API is the production choice for voice agents when callers need to interrupt naturally, the agent must call tools during the spoken turn, and the product needs a sub-second conversational feel. A Whisper plus LLM plus TTS pipeline is still cheaper and easier to swap by vendor, but it usually pushes teams toward 2-3 second turns and forces them to own endpointing, playback sync, and conversation repair.<CitationFootnote source="https://www.eesel.ai/blog/realtime-api-vs-whisper-vs-tts-api">Eesel comparison of Realtime versus Whisper/TTS pipelines</CitationFootnote>
+The production patterns for OpenAI Realtime API voice agents converge on three requirements: callers can interrupt naturally, the agent calls tools during the spoken turn, and the product achieves sub-second turn latency. A Whisper plus LLM plus TTS pipeline is still cheaper and easier to swap by vendor, but third-party analysis suggests it typically produces 2–3 second turns and forces teams to own endpointing, playback sync, and conversation repair.<CitationFootnote source="https://www.eesel.ai/blog/realtime-api-vs-whisper-vs-tts-api">Eesel comparison of Realtime versus Whisper/TTS pipelines (third-party estimate)</CitationFootnote>
 
-The missed point is that Realtime is not a faster text-to-speech endpoint. Cartesia Sonic can be the faster pure TTS choice, with the research synthesis citing 40-90ms time to first audio against higher OpenAI TTS numbers.<CitationFootnote source="https://cartesia.ai/vs/cartesia-vs-openai-tts">Cartesia Sonic versus OpenAI TTS benchmark</CitationFootnote> Realtime wins a different contest: it makes speech input, model reasoning, tool calls, speech output, turn detection, and interruption repair part of one stateful loop.
+The missed point is that Realtime is not a faster text-to-speech endpoint. Cartesia Sonic can be the faster pure TTS choice; Cartesia's own published benchmark reports 40–90ms time to first audio versus higher OpenAI TTS numbers.<CitationFootnote source="https://cartesia.ai/vs/cartesia-vs-openai-tts">Cartesia Sonic versus OpenAI TTS benchmark (Cartesia first-party)</CitationFootnote> Realtime wins a different contest: it makes speech input, model reasoning, tool calls, speech output, turn detection, and interruption repair part of one stateful loop.
 
 ## Choose Realtime for conversation, not for every audio workflow
 
@@ -65,7 +88,7 @@ OpenAI's platform changelog is also part of the story: the Realtime surface is n
 
 ## Measure the full turn, not only TTS latency
 
-The benchmark that matters is user speech end to useful assistant response, not only TTS time to first audio. The research synthesis cites roughly 500ms Realtime TTFB in US conditions and an 800ms target for conversational quality, while traditional STT to LLM to TTS systems are commonly described around 2-3 seconds end to end.<CitationFootnote source="https://www.latent.space/p/realtime-api">Latent Space Realtime API production notes</CitationFootnote>
+The benchmark that matters is user speech end to useful assistant response, not only TTS time to first audio. Third-party research from Latent Space estimates roughly 500ms Realtime TTFB in US conditions and an 800ms target for conversational quality; traditional STT plus LLM plus TTS systems are reported at approximately 2–3 seconds end-to-end in the same third-party analysis — treat these as directional estimates, not guaranteed benchmarks.<CitationFootnote source="https://www.latent.space/p/realtime-api">Latent Space Realtime API production notes (third-party estimate)</CitationFootnote>
 
 That does not make TTS benchmarks irrelevant. It means they answer a narrower question. Cartesia can be the better component when the job is pure speech playback, custom voice output, or ultra-low-latency narration. Realtime should be judged on the full loop: endpointing, reasoning, tool latency, audio generation, playback, interruption response, and state repair.
 
@@ -98,11 +121,11 @@ expected_output: |
 
 ## Budget for session growth instead of per-minute media
 
-Realtime costs are easy to underestimate because a live call is not just one audio input and one audio output. The research synthesis cites Realtime input audio at $32 per 1M input audio tokens, cached input at a steep discount, and output audio at $64 per 1M; it also summarizes estimates of about $0.11 for a 1-minute session, $0.92 for 5 minutes, and $5.28 for 15 minutes as history accumulates.<CitationFootnote source="https://www.latent.space/p/realtime-api">Latent Space Realtime API cost breakdown</CitationFootnote>
+Realtime costs are easy to underestimate because a live call is not just one audio input and one audio output. Per OpenAI's published pricing, Realtime audio tokens are billed separately for input and output audio at rates that vary by model tier, with cached input tokens discounted significantly.<CitationFootnote source="https://openai.com/api/pricing">OpenAI API pricing page (primary source)</CitationFootnote> Third-party analysis from Latent Space estimates input audio at roughly $32 per 1M tokens and output at $64 per 1M, with session cost estimates of approximately $0.11 for a 1-minute session, $0.92 for 5 minutes, and $5.28 for 15 minutes as conversation history accumulates — treat these as rough order-of-magnitude figures, not guaranteed costs; verify current rates on the OpenAI pricing page.<CitationFootnote source="https://www.latent.space/p/realtime-api">Latent Space Realtime API cost estimates (third-party)</CitationFootnote>
 
 That curve is the reason the first production version needs summarization and rollover logic. Long calls should periodically compress prior turns, store tool state outside the model session, prune irrelevant items, and route non-live follow-up work through a cheaper asynchronous path. The OpenAI rate-limit guide is part of cost control too: live sessions compete for request and token limits at org and project scope, so teams should log remaining/reset headers and isolate production projects from development traffic.<CitationFootnote source="https://platform.openai.com/docs/guides/rate-limits">OpenAI rate limits guide</CitationFootnote>
 
-The instruction and session limits are also operational design constraints. The research synthesis cites a 15-minute session cap and a community-reported 16,384-token instruction/tool-schema pressure point for production voice agents.<CitationFootnote source="https://community.openai.com/t/realtime-api-instruction-limit-16-384-tokens-is-too-low-for-production-voice-agents-with-tool-calling/1378932">OpenAI Community discussion of Realtime instruction limits</CitationFootnote> Whether that exact ceiling changes, the product lesson is stable: do not load every policy, tool, and workflow into every call. Keep fast tools always available, load specialized tools on demand, and summarize before reconnecting.
+The instruction and session limits are also operational design constraints. Community reports cite a 15-minute session cap and a 16,384-token instruction/tool-schema pressure point for production voice agents — both are community-reported constraints rather than formally documented hard limits.<CitationFootnote source="https://community.openai.com/t/realtime-api-instruction-limit-16-384-tokens-is-too-low-for-production-voice-agents-with-tool-calling/1378932">OpenAI Community discussion of Realtime instruction limits</CitationFootnote> Whether that exact ceiling changes, the product lesson is stable: do not load every policy, tool, and workflow into every call. Keep fast tools always available, load specialized tools on demand, and summarize before reconnecting.
 
 ## Keep a pipeline fallback even when Realtime is the main path
 
@@ -122,3 +145,36 @@ explanation: "A voice agent is judged on the whole turn and on interruption repa
 </KnowledgeCheck>
 
 The practical takeaway: ship OpenAI Realtime when speech is the interface, not merely the file format. Keep Whisper plus TTS for cheaper asynchronous work, benchmark Cartesia for pure speech output, and make interruption repair, session rollover, rate limits, and cost logging part of version one. For hands-on agent orchestration patterns, continue with [[course/openai-agents-sdk-mastery]]; for model and voice-provider selection practice, pair it with [[course/picking-a-frontier-model-2026-q2]].
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What are the production patterns for OpenAI Realtime API?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The core production patterns for OpenAI Realtime API are: (1) interruption handling — client cancels playback and calls conversation.item.truncate so server state matches what the user heard; (2) session rollover — periodically summarizing conversation history before reconnecting to control context cost growth; and (3) rate-limit observability — logging remaining/reset headers to prevent live-call disruptions. These three patterns determine whether a voice agent survives real callers versus demo conditions."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I handle session management with OpenAI Realtime API in production?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Production session management for OpenAI Realtime API requires three controls: periodic session rollover (summarize and reconnect before the ~15-minute cap), context cost pruning (remove irrelevant conversation items as call history grows), and tool-state idempotency (store critical tool results outside the model session so rollover does not lose call context). Isolate production projects from development traffic to avoid shared rate-limit depletion."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between WebRTC and WebSocket for OpenAI Realtime API?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "WebRTC and WebSocket are both supported transport layers for OpenAI Realtime API. WebRTC is optimized for browser-to-server live audio with built-in jitter buffering and adaptive bitrate, making it the preferred path for browser clients. WebSocket gives your server direct control over the connection, which is better when your backend mediates between a phone (SIP/G.711), the OpenAI API, and business logic. For telephony, use a dedicated SIP path rather than treating phone audio as a browser microphone with worse quality."
+      }
+    }
+  ]
+}
+</script>
