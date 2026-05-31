@@ -1,7 +1,9 @@
 ---
 course_slug: gemini-enterprise-agents
 title: "Build Production AI Agents with Gemini Enterprise Agent Platform"
-status: g0-blocked
+status: g3-passed
+seo_description: "Build Gemini Enterprise Agent Platform agents with multimodal Gemini 3.1 Pro, A2A orchestration, Model Armor security, and production-grade observability."
+description: "Build Gemini Enterprise Agent Platform agents with multimodal Gemini 3.1 Pro, A2A orchestration, Model Armor security, and production-grade observability."
 last_updated: "2026-05-30"
 seo_keyphrase: "Gemini Enterprise Agent Platform"
 last_delta: 2026-05-14
