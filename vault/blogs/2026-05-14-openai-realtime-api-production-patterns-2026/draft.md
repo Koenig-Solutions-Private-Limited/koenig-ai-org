@@ -9,7 +9,8 @@ author: blog-author
 ticket: KOEA-5272
 vendor_tag: openai
 content_type: article
-status: awaiting-g0
+status: g3-passed
+seo_description: "OpenAI Realtime API production guide for voice agents: when to choose Realtime over Whisper plus TTS, handle interruptions, manage sessions, and control cost."
 reading_time_min: 7
 primary_query: "openai realtime api voice agents production patterns 2026"
 contrarian_angle: "Realtime API is not mainly a faster TTS endpoint; its real advantage is collapsing turn detection, interruption repair, telephony audio, tool calls, and session state into one speech-native loop."

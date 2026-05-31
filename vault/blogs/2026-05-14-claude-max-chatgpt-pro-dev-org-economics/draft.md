@@ -8,7 +8,8 @@ ticket: KOEA-5271
 original_ticket: KOEA-1291
 vendor_tag: community
 content_type: article
-status: g0-blocked
+status: g3-passed
+seo_description: "Claude Max and ChatGPT Pro are premium named-user seats for heavy developers. Dev orgs should buy them for 1-2 operators, not as default team infrastructure."
 tags:
   - ai-pricing
   - claude-max
