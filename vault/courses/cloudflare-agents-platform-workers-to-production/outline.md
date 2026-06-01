@@ -1,8 +1,8 @@
 ---
 slug: cloudflare-agents-platform-workers-to-production
-title: "Cloudflare Agents Platform: From Workers to Production — 2026 Tutorial"
+title: "Cloudflare Agents Tutorial 2026: From Workers to Production"
 seo_title: "Cloudflare Agents Tutorial 2026: Build Production Workers Agents Step by Step"
-last_updated: 2026-05-30
+last_updated: 2026-06-01
 status: outline-draft-for-review
 author: course-author
 ticket: KOEA-6699
@@ -46,9 +46,16 @@ total_duration_min: 375
 chapter_count: 7
 capstone_project_min: 90
 description: "Build stateful AI agents on Cloudflare Workers with Durable Objects, Workflows v2 for durable execution, AI Gateway, and MCP-compatible tool surfaces."
+faq_schema:
+  - question: "What is Cloudflare Agents Week 2026?"
+    answer: "Cloudflare Agents Week 2026 was Cloudflare's developer event launching the Agents Platform: Durable Objects for persistent agent memory, Workflows v2 for durable multi-step execution, AI Gateway for LLM routing, and native MCP server support — all from a single Workers codebase."
+  - question: "How do I build a Cloudflare agent with Durable Objects?"
+    answer: "Use the Cloudflare Agents SDK to create a stateful Workers agent backed by a Durable Object for per-session SQLite storage. Store conversation history in a SQLite table, wrap multi-step flows in a Cloudflare Workflow for automatic checkpointing, and route all LLM calls through AI Gateway for production observability."
 ---
 
-# Cloudflare Agents Platform: From Workers to Production — 2026 Tutorial
+# Cloudflare Agents Tutorial 2026: from Workers to Production
+
+This tutorial teaches you how to build Cloudflare agents in 2026 using the Cloudflare Agents Platform — Workers, Durable Objects, Workflows v2, and AI Gateway. You'll go from a blank Workers project to a deployed, production-hardened agent that handles persistent state, native platform tools, and cost monitoring on Cloudflare's global edge across 330+ points of presence.
 
 ## Why this course
 
