@@ -128,6 +128,8 @@ This post gives you the architecture comparison, a decision matrix, and code for
 
 This is part of the **"Tools we actually use"** series. See also [[blogs/2026-06-01-kokoro-tts-production-deployment-guide|Kokoro TTS Production Deployment]] (part 2).
 
+*Research basis: [[research/_synthesis/browser-use-vs-playwright-ai-agents]] · [[research/_daily/2026-05-13]]*
+
 ---
 
 ## The Architecture Difference
