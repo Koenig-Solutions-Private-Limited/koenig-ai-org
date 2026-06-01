@@ -1,7 +1,26 @@
 ---
-title: "Ship OpenAI Realtime voice agents when interruptions and tools matter"
+title: "How to Ship OpenAI Realtime Voice Agents to Production When Interruptions and Tools Matter (2026)"
 slug: openai-realtime-api-production-patterns-2026
 description: "A production guide to OpenAI Realtime API voice agents: when to choose Realtime over Whisper plus TTS, how to handle interruptions, sessions, cost, and rate limits."
+howto:
+  name: "How to ship an OpenAI Realtime voice agent to production"
+  description: "Build a production-grade OpenAI Realtime voice agent by first deciding Realtime versus a Whisper+TTS pipeline, then designing audio transport, interruption truncation, tool calls, session rollover, and rate-limit observability. The Realtime API is a speech-native loop — it collapses turn detection, interruption repair, telephony audio, and tool dispatch into one stateful WebSocket. Instrument the full turn (user-speech-end to playback-start), build interruption handling before polishing prompts, and plan for session rollover before context cost balloons."
+  totalTime: "PT45M"
+  steps:
+    - name: "Step 1: Choose Realtime over Whisper+TTS for live, interrupt-heavy turns"
+      text: "Pick Realtime when callers must interrupt naturally, the agent must call tools mid-turn, and the product needs sub-second feel. A Whisper+LLM+TTS pipeline is cheaper but typically pushes turns to 2-3 seconds and forces you to own endpointing and playback sync."
+    - name: "Step 2: Pick the right audio transport for browser vs telephony"
+      text: "Use 24kHz PCM16 base64 chunks for standard Realtime audio and G.711 for telephony. Browser clients should use a WebRTC media path to your server; your backend owns the OpenAI WebSocket connection and policy decisions. SIP/phone audio gets its own path."
+    - name: "Step 3: Instrument the full conversational turn, not just TTS latency"
+      text: "Log user-speech-end, VAD decision, first model response event, first audio delta, playback start, interruption event, tool call start/finish, truncate event, rate-limit headers, and session close. Without these timestamps every complaint becomes 'the model is slow.'"
+    - name: "Step 4: Build interruption truncation before polishing prompts"
+      text: "Wire `conversation.item.truncate` so server-side state matches what the user actually heard. Combine audio-player cancellation, conversation truncation, and tool-side idempotency in the same path — otherwise the next turn assumes the user heard information they were cut off from."
+    - name: "Step 5: Plan session rollover before context cost balloons"
+      text: "Realtime cost rises disproportionately as conversation history grows. Implement periodic session summarization and rollover so 6-minute calls don't pay 6-minute context tax on every turn. Cap instructions to the 16,384-token limit and externalize state."
+    - name: "Step 6: Add a cheaper async pipeline fallback for batch work"
+      text: "Keep a Whisper+TTS path available for voicemail summaries, narrated reports, batch transcription, and push-to-talk surfaces. Realtime is the wrong default when the user expects a pause is acceptable."
+    - name: "Step 7: Observe rate limits and session quotas in production"
+      text: "Surface rate-limit headers and session counters to your dashboards. Tie alarms to interruption-repair failures, truncate-event spikes, and tool-call timeouts — those are the real production signals, not raw model latency."
 hero_image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80"
 tags: [openai, realtime-api, voice-agents, production-ai]
 date: 2026-05-14
@@ -50,13 +69,13 @@ schema:
     name: "Koenig AI Academy"
 ---
 
-# Ship OpenAI Realtime voice agents when interruptions and tools matter
+# How to Ship OpenAI Realtime Voice Agents to Production When Interruptions and Tools Matter (2026)
 
-OpenAI Realtime API is the production choice for voice agents when callers need to interrupt naturally, the agent must call tools during the spoken turn, and the product needs a sub-second conversational feel. A Whisper plus LLM plus TTS pipeline is still cheaper and easier to swap by vendor, but it usually pushes teams toward 2-3 second turns and forces them to own endpointing, playback sync, and conversation repair.<CitationFootnote source="https://www.eesel.ai/blog/realtime-api-vs-whisper-vs-tts-api">Eesel comparison of Realtime versus Whisper/TTS pipelines</CitationFootnote>
+To ship an OpenAI Realtime voice agent: pick Realtime over a Whisper+TTS pipeline only for live, interrupt-heavy, tool-using calls; choose 24kHz PCM16 (browser) or G.711 (telephony) transport; build interruption truncation before polishing prompts; instrument the full turn end-to-end; and plan session rollover before context cost balloons. Realtime is not a faster TTS — it is a speech-native stateful loop. OpenAI Realtime API is the production choice for voice agents when callers need to interrupt naturally, the agent must call tools during the spoken turn, and the product needs a sub-second conversational feel. A Whisper plus LLM plus TTS pipeline is still cheaper and easier to swap by vendor, but it usually pushes teams toward 2-3 second turns and forces them to own endpointing, playback sync, and conversation repair.<CitationFootnote source="https://www.eesel.ai/blog/realtime-api-vs-whisper-vs-tts-api">Eesel comparison of Realtime versus Whisper/TTS pipelines</CitationFootnote>
 
 The missed point is that Realtime is not a faster text-to-speech endpoint. Cartesia Sonic can be the faster pure TTS choice, with the research synthesis citing 40-90ms time to first audio against higher OpenAI TTS numbers.<CitationFootnote source="https://cartesia.ai/vs/cartesia-vs-openai-tts">Cartesia Sonic versus OpenAI TTS benchmark</CitationFootnote> Realtime wins a different contest: it makes speech input, model reasoning, tool calls, speech output, turn detection, and interruption repair part of one stateful loop.
 
-## Choose Realtime for conversation, not for every audio workflow
+## How to Choose Realtime Over Whisper+TTS for Conversational Workloads
 
 Realtime is worth the premium when the product promise is "talk to the agent." OpenAI's current Realtime model page describes `gpt-realtime-2` as a speech-to-speech model for complex voice-agent workflows with configurable reasoning effort, tool use, and Realtime endpoints; the developer portal also foregrounds new Realtime voice, translation, and transcription models.<CitationFootnote source="https://developers.openai.com/api/docs/models/gpt-realtime-2">OpenAI `gpt-realtime-2` model reference</CitationFootnote><CitationFootnote source="https://developers.openai.com/">OpenAI developer portal Realtime model overview</CitationFootnote> That is the right mental model: this is a runtime for live speech applications, not a media conversion API.
 

@@ -6,10 +6,29 @@ vendor_tag: community
 content_type: article
 status: draft-for-review
 reading_time_min: 7
-title: "Architect Cloudflare Agents around Durable Objects, not Lambda clones"
+title: "How to Architect Cloudflare Agents on Workers Around Durable Objects (2026 Production Guide)"
 description: "A production architecture guide for Cloudflare Agents on Workers, Durable Objects, AI Gateway, R2, Vectorize, and Workflows: where the stack wins, where it breaks, and what to build first."
 slug: 2026-05-28-cloudflare-agents-workers-production-architecture
 tags: [cloudflare, agents, workers, durable-objects, ai-gateway, production-architecture]
+howto:
+  name: "How to architect a Cloudflare Agents deployment around Durable Objects"
+  description: "Architect Cloudflare Agents as a Durable Object control plane, not a Lambda clone. The Durable Object Agent owns identity, session state, tool-routing decisions, WebSocket continuity, and scheduling — everything else is delegated to platform primitives: R2 for blobs, Vectorize for embeddings, AI Gateway for model traffic, Workflows or Project Think for long-running steps. Design for hibernation from day one or idle WebSockets will blow up cost. The stack wins on stateful, event-driven, mostly-idle workloads; it loses on sustained CPU or large local dependencies."
+  totalTime: "PT60M"
+  steps:
+    - name: "Step 1: Decide if Cloudflare Agents fits the workload shape"
+      text: "Cloudflare Agents is a fit for stateful, event-driven AI workloads — per-user state, WebSockets, scheduled tasks, tool calls, edge-close model traffic. It is wrong for sustained CPU, large local dependencies, or always-on conventional processes. If you need minutes of CPU per request, choose a container runtime instead."
+    - name: "Step 2: Model each Agent as a Durable Object with its own SQL DB"
+      text: "Define a TypeScript Agent class running on a Durable Object. Each Agent gets its own SQL database, WebSocket support, and scheduling. Respect the platform limits: 1 GB state per Agent, 30 seconds compute per HTTP/WebSocket message refresh."
+    - name: "Step 3: Put coordination in the Agent, heavy work outside it"
+      text: "Store conversation pointers, task status, retry count, approval state, and compact summaries inside the Durable Object. Push documents, generated files, logs, and exports to R2. Push semantic retrieval to Vectorize. Hand multi-step long-running work to Workflows or Project Think."
+    - name: "Step 4: Route all model traffic through AI Gateway"
+      text: "Configure AI Gateway in front of every LLM call. Get request logging, analytics, response caching, rate limiting, retries, and fallback routing for free. Add application-level task and tenant metadata at the Worker layer."
+    - name: "Step 5: Design WebSockets for hibernation from day one"
+      text: "100 always-on WebSocket Durable Objects cost roughly $416/month; the same workload with hibernation can land near $10/month. Use the hibernation API, persist conversation state to SQL, and let the platform park idle Agents. Without this, your bill scales with duration, not requests."
+    - name: "Step 6: Pick the right execution surface for each tool"
+      text: "Use Project Think's execution ladder — workspace, isolate, npm, browser, sandbox — for sub-agents and sandboxed code execution. Do not stuff browser automation, npm installs, or long-running research into the Agent itself."
+    - name: "Step 7: Spot the production cases where Workers loses"
+      text: "If a single task needs minutes of CPU, large GPU access, conventional process supervision, or massive local node_modules, Cloudflare Agents is the wrong runtime. Move that workload to a container or VM and keep the Agent as the stateful coordinator that calls it."
 primary_query: "Cloudflare Agents Workers production architecture"
 contrarian_angle: "Cloudflare Agents is strongest when you stop treating Workers as cheap Lambda and use Durable Objects as the stateful control plane; it loses when you force CPU-heavy jobs into the Agent itself."
 research_source: vault/research/_synthesis/cloudflare-agents-week-2026-build-deep-dive.md
@@ -70,13 +89,13 @@ faq:
     answer: "Put model traffic behind AI Gateway for request logging, analytics, caching, rate limiting, retries, and fallback; add application-level task and tenant metadata from the Worker or Agent."
 ---
 
-# Architect Cloudflare Agents around Durable Objects, not Lambda clones
+# How to Architect Cloudflare Agents on Workers Around Durable Objects (2026 Production Guide)
 
-Cloudflare Agents is a production fit when you need stateful, event-driven AI workloads on Workers: durable per-user state, WebSockets, scheduled tasks, tool calls, and model traffic close to the edge. The clean architecture is a Durable Object Agent as the coordinator, AI Gateway for model observability, R2 for large artifacts, Vectorize for retrieval memory, and Workflows or Project Think for long-running steps. Cloudflare's Agents docs describe each Agent as a TypeScript class running on a Durable Object with its own SQL database, WebSockets, and scheduling [1].
+To architect a production Cloudflare Agents deployment: define each Agent as a Durable Object that owns identity, session state, tool routing, WebSocket continuity, and scheduling — then delegate everything else. Put blobs in R2, retrieval in Vectorize, model calls behind AI Gateway, and long-running steps in Workflows or Project Think. Design WebSockets for hibernation from day one or idle Agents will dominate cost. The platform wins on millions of mostly-idle stateful coordinators and loses on sustained CPU. Cloudflare Agents is a production fit when you need stateful, event-driven AI workloads on Workers: durable per-user state, WebSockets, scheduled tasks, tool calls, and model traffic close to the edge. The clean architecture is a Durable Object Agent as the coordinator, AI Gateway for model observability, R2 for large artifacts, Vectorize for retrieval memory, and Workflows or Project Think for long-running steps. Cloudflare's Agents docs describe each Agent as a TypeScript class running on a Durable Object with its own SQL database, WebSockets, and scheduling [1].
 
 The mistake is treating this as cheaper AWS Lambda for AI. A Lambda mental model asks, "How much code can I fit in one invocation?" The Workers + Agents model asks, "Which named stateful object should wake up, coordinate a step, persist just enough, and go back to sleep?" That is a better fit for millions of mostly-idle agents than for one agent doing minutes of CPU-bound work. The architecture win is state placement, not raw compute bravado.
 
-## Put coordination in the Agent and heavy work outside it
+## How to Put Coordination in the Agent and Heavy Work Outside It
 
 The Durable Object Agent should own identity, session state, tool-routing decisions, WebSocket continuity, and scheduling. It should not own every blob, embedding, browser action, build job, or long-running research workflow. Cloudflare's current Agents limits list tens of millions of concurrent running Agents per account, 1 GB of state per unique Agent, and 30 seconds of compute time per Agent refreshed by HTTP requests or incoming WebSocket messages [2]. That shape is telling: the platform wants many small stateful coordinators, not a few overloaded workers.
 

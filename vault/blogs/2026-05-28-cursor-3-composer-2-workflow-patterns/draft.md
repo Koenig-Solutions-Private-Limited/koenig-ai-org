@@ -65,10 +65,29 @@ references:
     title: "Cursor community Composer 2 testing discussion"
     url: https://www.reddit.com/r/cursor/comments/1ryb2jt/has_anyone_actually_tested_composer_2_vs_claude/
     retrieved: 2026-05-14
-title: "Route Cursor Composer 2 to the IDE lane, not every engineering task"
+title: "How to Route Cursor Composer 2, Claude Code, and Codex CLI Across Engineering Lanes (2026)"
 description: "Composer 2 is the cheap IDE iteration lane. Reserve Claude Code and Codex CLI for headless review, batch refactors, and CI work where task class — not benchmark rank — should pick the tool."
 slug: "2026-05-28-cursor-3-composer-2-workflow-patterns"
 tags: ['cursor', 'composer-2', 'claude-code', 'codex-cli', 'engineering-workflows', 'ai-coding-tools']
+howto:
+  name: "How to route engineering tasks across Cursor Composer 2, Claude Code, and Codex CLI"
+  description: "Route engineering work to three lanes by task class, not benchmark rank. Cursor Composer 2 is the high-volume IDE iteration lane at $0.50/M input — cheap enough for steered product work. Claude Code is the interactive terminal and automation lane for long-running multi-file work. Codex CLI is the headless review/batch refactor lane for CI. Write a tight 200-line handoff packet when escalating between lanes so context survives the jump from IDE to terminal."
+  totalTime: "PT20M"
+  steps:
+    - name: "Step 1: Classify the task before opening any tool"
+      text: "Ask: is a human watching the diff, or is this headless? Does it touch <5 files or >5 files? Does it need durable session state? The answers determine the lane — not which model topped CursorBench this week."
+    - name: "Step 2: Assign IDE iteration and steered product work to Composer 2"
+      text: "Use Composer 2 (Cursor 3.x) when a developer is watching the diff and changing direction every few minutes. The $0.50/M input price makes aggressive exploration cheap; combine with Agents Window, `/best-of-n`, and `/worktree` for parallel attempts."
+    - name: "Step 3: Escalate to Claude Code for multi-file deep work"
+      text: "Switch to Claude Code when the change touches more than ~5 files, needs long-running context, or requires durable session state. Its terminal-first model suits deep work blocks. Composer 2 thrives in tight inner loops; Claude Code thrives across sustained reasoning."
+    - name: "Step 4: Send batch refactors and CI runs to Codex CLI"
+      text: "Use Codex CLI for headless lane work — CI automation, large-scale codebase refactors, batch code review, scheduled checks. Codex CLI is purpose-built for the no-human-watching loop where Composer 2 and Claude Code are both wrong."
+    - name: "Step 5: Write a 200-line handoff packet when escalating between lanes"
+      text: "Capture: task statement, files touched plus key line ranges, constraints (must-not-break tests, perf budgets, security rules), the contrarian angle you've taken, and what to verify before considering done. A 200-line packet beats a 5000-line transcript."
+    - name: "Step 6: Set per-lane budget guardrails"
+      text: "Composer 2 is cheap — let developers iterate freely. Cap Claude Code per-session burn and Codex CLI per-run cost in your CI config. Tracking spend by lane prevents one runaway session from blowing the engineering AI budget."
+    - name: "Step 7: Review routing decisions weekly"
+      text: "Audit which tasks landed in which lane. If Composer 2 sessions hit the escalate-to-Claude threshold repeatedly on the same file, the file needs structural attention, not more model attempts. Routing is a forcing function for noticing real engineering debt."
 faq:
   - question: "Why not just use Composer 2 for everything?"
     answer: "Composer 2 is optimized for IDE pair programming — fast iteration with the file tree in context. It is not a headless batch tool. For CI automation, large-scale codebase refactors, or batch code review, Codex CLI is purpose-built for the headless lane. Picking by task class beats picking by benchmark."
@@ -78,13 +97,13 @@ faq:
     answer: "Capture: (1) the task statement, (2) the files touched + key line ranges, (3) constraints (must-not-break tests, perf budgets, security rules), (4) the contrarian angle you've taken, (5) what to verify before considering done. A 200-line handoff packet beats a 5000-line conversation transcript."
 ---
 
-# Route Cursor Composer 2 to the IDE lane, not every engineering task
+# How to Route Cursor Composer 2, Claude Code, and Codex CLI Across Engineering Lanes (2026)
 
-Engineering teams should use Cursor Composer 2 as the high-volume IDE iteration lane, Claude Code as the interactive terminal and automation lane, and Codex as the review or delegated patch lane. Cursor 3.x made multi-agent IDE work more visible with the Agents Window, `/best-of-n`, and `/worktree` controls ([Cursor 3.0 changelog](https://cursor.com/changelog/3-0), retrieved 2026-05-28). Composer 2 then changed the economics: Cursor prices it at $0.50/M input and $2.50/M output tokens ([Cursor Composer 2](https://cursor.com/blog/composer-2), retrieved 2026-05-28).
+To route engineering tasks across AI coding tools: assign Cursor Composer 2 to the high-volume IDE iteration lane (cheap, steered, multi-file diff watching), Claude Code to the interactive terminal and deep work lane (multi-file context, durable session state), and Codex CLI to the headless review/batch lane (CI, large refactors, scheduled checks). Write a 200-line handoff packet whenever you escalate between lanes so context survives the jump. Pick by task class, not benchmark rank. Engineering teams should use Cursor Composer 2 as the high-volume IDE iteration lane, Claude Code as the interactive terminal and automation lane, and Codex as the review or delegated patch lane. Cursor 3.x made multi-agent IDE work more visible with the Agents Window, `/best-of-n`, and `/worktree` controls ([Cursor 3.0 changelog](https://cursor.com/changelog/3-0), retrieved 2026-05-28). Composer 2 then changed the economics: Cursor prices it at $0.50/M input and $2.50/M output tokens ([Cursor Composer 2](https://cursor.com/blog/composer-2), retrieved 2026-05-28).
 
 The mistake is treating Composer 2 as the new universal coding brain. The sharper move is to treat it as a routing primitive. Cheap, fast IDE turns let developers explore more aggressively, but the final answer still depends on task shape: visual steering, terminal control, transcript review, CI verification, and budget risk all point to different tools.
 
-## Assign Composer 2 to steered product work
+## How to Assign Composer 2 to Steered Product Work
 
 Composer 2 belongs where a human is watching the diff and changing their mind every few minutes. Cursor says Composer 2 was trained for agentic software engineering with continued pretraining on Kimi K2.5 and reinforcement learning in realistic Cursor sessions, and reports 61.3 on CursorBench, 73.7 on SWE-bench Multilingual, and 61.7 on Terminal-Bench ([technical report](https://cursor.com/blog/composer-2-technical-report), retrieved 2026-05-28).
 
