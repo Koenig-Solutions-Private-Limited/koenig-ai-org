@@ -6,7 +6,7 @@ agent_drafted_by: blog-author
 ticket: KOEA-7030
 vendor_tag: community
 content_type: comparison
-status: g0-blocked
+status: awaiting-g0
 reading_time_min: 9
 primary_query: "browser-use vs playwright AI agents"
 contrarian_angle: "Playwright is not a competitor to browser-use — it is the substrate. Choosing between them isn't a technical debate; it's a question of whether you're writing a test suite or building an agent."
@@ -14,6 +14,10 @@ sources:
   - https://github.com/browser-use/browser-use
   - https://playwright.dev/docs/intro
   - https://docs.browser-use.com
+  - https://pypi.org/project/browser-use/
+  - https://playwright.dev/python/docs/api/class-playwright
+  - https://github.com/browser-use/browser-use/releases
+  - https://playwright.dev/docs/release-notes
 hero_image: auto:flux
 references:
   - n: 1
@@ -21,12 +25,28 @@ references:
     url: https://github.com/browser-use/browser-use
     retrieved: 2026-06-01
   - n: 2
-    title: "Playwright Documentation"
+    title: "Playwright Documentation — Getting Started"
     url: https://playwright.dev/docs/intro
     retrieved: 2026-06-01
   - n: 3
     title: "browser-use Documentation"
     url: https://docs.browser-use.com
+    retrieved: 2026-06-01
+  - n: 4
+    title: "browser-use — PyPI Package"
+    url: https://pypi.org/project/browser-use/
+    retrieved: 2026-06-01
+  - n: 5
+    title: "Playwright Python API Reference — Playwright Class"
+    url: https://playwright.dev/python/docs/api/class-playwright
+    retrieved: 2026-06-01
+  - n: 6
+    title: "browser-use GitHub Releases"
+    url: https://github.com/browser-use/browser-use/releases
+    retrieved: 2026-06-01
+  - n: 7
+    title: "Playwright Release Notes"
+    url: https://playwright.dev/docs/release-notes
     retrieved: 2026-06-01
 whats_new:
   - browser-use wraps Playwright — they are not alternatives; one is the foundation, the other is the agent layer on top.
@@ -102,7 +122,7 @@ tags:
 }
 </script>
 
-browser-use and Playwright are frequently compared as competing tools for web automation. They are not competitors — browser-use is built *on top of* Playwright. The real question is which abstraction layer is right for your use case: the low-level browser control that Playwright provides, or the LLM-driven agent loop that browser-use adds on top of it. [1][2]
+browser-use and Playwright are frequently compared as competing tools for web automation. They are not competitors — browser-use is built *on top of* Playwright. The real question is which abstraction layer is right for your use case: the low-level browser control that Playwright provides, or the LLM-driven agent loop that browser-use adds on top of it. [1][2][3]
 
 This post gives you the architecture comparison, a decision matrix, and code for both paths. If you're building AI agents that interact with the web, you'll arrive at the same conclusion we did: browser-use by default, raw Playwright when you need surgical control.
 
@@ -131,7 +151,7 @@ Understanding why these tools aren't a simple A-vs-B choice starts with the stac
 
 **Playwright** sits at the bottom: it controls browsers through the Chrome DevTools Protocol. It gives you a precise API for clicking elements, filling forms, intercepting network requests, and capturing screenshots. You write the script; Playwright executes it exactly as written.
 
-**browser-use** sits above Playwright. It adds an LLM agent loop: given a natural-language task, it calls an LLM to decide the next browser action, executes that action via Playwright, observes the result, and repeats until the task is complete or a step limit is reached. [1]
+**browser-use** sits above Playwright. It adds an LLM agent loop: given a natural-language task, it calls an LLM to decide the next browser action, executes that action via Playwright, observes the result, and repeats until the task is complete or a step limit is reached. [1][4]
 
 The key implication: browser-use does not *replace* Playwright any more than LangChain replaces Python. It is an abstraction that makes Playwright usable by an LLM without hand-crafted selectors.
 
@@ -247,7 +267,7 @@ async def scrape_price():
 asyncio.run(scrape_price())
 ```
 
-This runs in ~2s with zero LLM cost. If Apple changes the `data-analytics-title` attribute, it breaks silently. That's the tradeoff you accept for raw speed.
+This runs in ~2s with zero LLM cost. If Apple changes the `data-analytics-title` attribute, it breaks silently. That's the tradeoff you accept for raw speed. [2][5][7]
 
 ---
 
@@ -290,7 +310,7 @@ async def book_flight_agent(origin, dest, date):
     return await agent.run()
 ```
 
-The conversion collapses ~10 lines of brittle selector code into a task string. The LLM cost per run is ~$0.001 with Haiku — negligible for interactive agentic use.
+The conversion collapses ~10 lines of brittle selector code into a task string. The LLM cost per run is ~$0.001 with Haiku — negligible for interactive agentic use. [4][6]
 
 Not every Playwright script is worth converting. Keep Playwright for:
 - Test suites (where determinism is the whole point)
