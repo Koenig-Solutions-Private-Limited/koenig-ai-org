@@ -358,15 +358,15 @@ Execute the tool using a mock input containing an SSN.
 - [[blogs/anthropic-legal-mcp-vs-openai-fde-enterprise-wedge/draft|Anthropic Legal MCP vs OpenAI FDE: The Enterprise Wedge]]
 
 ## References
-1. Ambrogi, Robert. "Anthropic Goes All-In on Legal, Releasing More Than 20 Connectors and 12 Practice-Area Plugins for Claude." *LawNext*. 2026-05-12. [Link](https://www.lawnext.com/2026/05/anthropic-goes-all-in-on-legal-releasing-more-than-20-connectors-and-12-practice-area-plugins-for-claude.html) (retrieved 2026-05-13).
-2. Ropek, Lucas. "The AI legal services industry is heating up. Anthropic is getting in on the action." *TechCrunch*. 2026-05-12. [Link](https://techcrunch.com/2026/05/12/the-ai-legal-services-industry-is-heating-up-anthropic-is-getting-in-on-the-action/) (retrieved 2026-05-14).
-3. Anthropic. "Claude for the legal industry." *Claude Blog*. 2026-05-12. [Link](https://claude.com/blog/claude-for-the-legal-industry) (retrieved 2026-05-14).
-4. Anthropic. "`anthropics/claude-for-legal` — CONNECTORS.md." *GitHub*. 2026-05. [Link](https://github.com/anthropics/claude-for-legal/blob/main/CONNECTORS.md) (retrieved 2026-05-14).
-5. Ambrogi, Robert. "Two Legal Research Providers Launch MCP Integrations with Claude." *LawNext*. 2026-05-12. [Link](https://www.lawnext.com/2026/05/two-legal-research-providers-launch-mcp-integrations-with-claude-thomson-reuters-and-free-law-project-connect-their-data-to-ai.html) (retrieved 2026-05-14).
-6. McCallister, Erika; Grance, Tim; Scarfone, Karen. "Guide to Protecting the Confidentiality of Personally Identifiable Information (PII)." *NIST Special Publication 800-122*. 2010. [Link](https://csrc.nist.gov/pubs/sp/800/122/final) (retrieved 2026-05-14).
-7. Ironclad. "Ironclad MCP Server." *Ironclad Support*. 2026. [Link](https://support.ironcladapp.com/hc/en-us/articles/39887091143319-Ironclad-MCP-Server) (retrieved 2026-05-14).
-8. Everlaw. "Anthropic MCP integration." *Everlaw*. 2026-05. [Link](https://www.everlaw.com/blog/ai-and-advanced-analytics/anthropic-mcp-integration/) (retrieved 2026-05-14).
-9. Model Context Protocol. "TypeScript SDK." *GitHub*. [Link](https://github.com/modelcontextprotocol/typescript-sdk) (retrieved 2026-05-28).
+1. Ambrogi, Robert. "Anthropic Goes All-In on Legal, Releasing More Than 20 Connectors and 12 Practice-Area Plugins for Claude." *LawNext*. 2026-05-12. [Anthropic Goes All-In on Legal — LawNext](https://www.lawnext.com/2026/05/anthropic-goes-all-in-on-legal-releasing-more-than-20-connectors-and-12-practice-area-plugins-for-claude.html) (retrieved 2026-05-13).
+2. Ropek, Lucas. "The AI legal services industry is heating up. Anthropic is getting in on the action." *TechCrunch*. 2026-05-12. [The AI Legal Services Industry Is Heating Up — TechCrunch](https://techcrunch.com/2026/05/12/the-ai-legal-services-industry-is-heating-up-anthropic-is-getting-in-on-the-action/) (retrieved 2026-05-14).
+3. Anthropic. "Claude for the legal industry." *Claude Blog*. 2026-05-12. [Claude for the legal industry — Claude Blog](https://claude.com/blog/claude-for-the-legal-industry) (retrieved 2026-05-14).
+4. Anthropic. "`anthropics/claude-for-legal` — CONNECTORS.md." *GitHub*. 2026-05. [anthropics/claude-for-legal CONNECTORS.md — GitHub](https://github.com/anthropics/claude-for-legal/blob/main/CONNECTORS.md) (retrieved 2026-05-14).
+5. Ambrogi, Robert. "Two Legal Research Providers Launch MCP Integrations with Claude." *LawNext*. 2026-05-12. [Two Legal Research Providers Launch MCP Integrations with Claude — LawNext](https://www.lawnext.com/2026/05/two-legal-research-providers-launch-mcp-integrations-with-claude-thomson-reuters-and-free-law-project-connect-their-data-to-ai.html) (retrieved 2026-05-14).
+6. McCallister, Erika; Grance, Tim; Scarfone, Karen. "Guide to Protecting the Confidentiality of Personally Identifiable Information (PII)." *NIST Special Publication 800-122*. 2010. [Guide to Protecting the Confidentiality of PII — NIST SP 800-122](https://csrc.nist.gov/pubs/sp/800/122/final) (retrieved 2026-05-14).
+7. Ironclad. "Ironclad MCP Server." *Ironclad Support*. 2026. [Ironclad MCP Server — Ironclad Support](https://support.ironcladapp.com/hc/en-us/articles/39887091143319-Ironclad-MCP-Server) (retrieved 2026-05-14).
+8. Everlaw. "Anthropic MCP integration." *Everlaw*. 2026-05. [Anthropic MCP integration — Everlaw](https://www.everlaw.com/blog/ai-and-advanced-analytics/anthropic-mcp-integration/) (retrieved 2026-05-14).
+9. Model Context Protocol. "TypeScript SDK." *GitHub*. [TypeScript SDK — GitHub](https://github.com/modelcontextprotocol/typescript-sdk) (retrieved 2026-05-28).
 
 ## What's next
 Congratulations on completing the Builder track! In the final **Capstone Project**, you will apply everything you've learned to build a production-ready MCP "Agentic Connector" that bridges a secure corporate system to Claude, complete with full observability and a documented compliance trail.
