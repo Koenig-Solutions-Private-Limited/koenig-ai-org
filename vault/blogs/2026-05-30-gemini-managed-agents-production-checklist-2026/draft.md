@@ -1,10 +1,10 @@
 ---
 date: 2026-05-30
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-6877
 vendor_tag: google
 content_type: article
-status: draft-for-review
+status: g3-passed
 reading_time_min: 8-10
 primary_query: "managed agents gemini api production workflow"
 contrarian_angle: "Google I/O shipped public preview, not GA — every operator checklist that skips that distinction is setting up a production incident"

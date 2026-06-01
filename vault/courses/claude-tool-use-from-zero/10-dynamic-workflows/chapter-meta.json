@@ -1,0 +1,14 @@
+{
+  "_doc": "Chapter asset manifest. Generated to bridge legacy flat media files into chapter sidecar contract (KOEA-7073).",
+  "chapter_id": "10-dynamic-workflows",
+  "course_slug": "claude-tool-use-from-zero",
+  "title": "Claude Code Dynamic Workflows: Fan-Out, Checkpoint, and Verify (2026)",
+  "generated_at": "2026-06-01T11:19:15.610Z",
+  "generated_by": "slide-audio-producer (manual sidecar generation)",
+  "source_file": "vault/courses/claude-tool-use-from-zero/10-dynamic-workflows.md",
+  "assets": {},
+  "asset_metadata": {},
+  "verification": {
+    "publish_state": "ready"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "_doc": "Chapter asset manifest. Generated to bridge legacy flat media files into chapter sidecar contract (KOEA-7073).",
+  "chapter_id": "01-introduction-to-claude-tool-use",
+  "course_slug": "claude-tool-use-from-zero",
+  "title": "Introduction to Claude's Tool Use",
+  "generated_at": "2026-06-01T11:19:15.610Z",
+  "generated_by": "slide-audio-producer (manual sidecar generation)",
+  "source_file": "vault/courses/claude-tool-use-from-zero/01-introduction-to-claude-tool-use.md",
+  "assets": {
+    "audio_url": "/courses/claude-tool-use-from-zero/ch01-audio.mp3",
+    "slides_url": "/courses/claude-tool-use-from-zero/ch01-slides.pptx"
+  },
+  "asset_metadata": {
+    "audio": {
+      "size_bytes": 7785368,
+      "format": "mp3",
+      "produced_via": "legacy flat course artifact"
+    },
+    "slides_pptx": {
+      "size_bytes": 36905,
+      "format": "pptx",
+      "produced_via": "legacy flat course artifact"
+    }
+  },
+  "verification": {
+    "publish_state": "ready"
+  }
+}

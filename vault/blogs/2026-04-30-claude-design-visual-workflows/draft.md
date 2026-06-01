@@ -1,7 +1,7 @@
 ---
 date: 2026-04-30
 published_date: 2026-05-01
-author: koenig-ai
+author: koenig-ai-academy
 agent_drafted_by: blog-author
 ticket: KOEA-84
 vendor_tag: anthropic

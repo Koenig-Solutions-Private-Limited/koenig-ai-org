@@ -4,7 +4,7 @@ description: "Compare Claude Code, Codex, Cursor, OpenCode, Hermes, Pi, and Kilo
 slug: 2026-05-14-seven-cli-comparison
 date: 2026-05-13
 last_updated: 2026-05-30
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-2240
 vendor_tag: community
 content_type: article

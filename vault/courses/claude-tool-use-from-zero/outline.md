@@ -15,7 +15,7 @@ learning_outcomes:
   - "Debug complex tool interaction and authorization issues"
   - "Implement structured logging and audit trails for tool operations"
 total_duration_min: 540
-chapter_count: 9
+chapter_count: 10
 description: "Master Claude tool use from basics to production: function calling, MCP server design, secure connector architecture, and audit logging in one course."
 ---
 
@@ -74,6 +74,12 @@ description: "Master Claude tool use from basics to production: function calling
 - Duration: 60 min
 - Key concepts: Claude Cowork toggle, QuickBooks + PayPal reconciliation pattern, HubSpot lead-to-deal automation, Awaiting Approval state, Canva/DocuSign/Google Workspace/Microsoft 365 connectors.
 - Hands-on exercise: Build a "Payroll Assistant" that reconciles PayPal settlements against a QuickBooks ledger and drafts reminder emails for missing payments.
+
+## Chapter 10: Claude Code Dynamic Workflows — Fan-Out, Checkpoint, and Verify (2026)
+- Learning objectives: Explain dynamic workflows vs static chains; design homogeneous and heterogeneous fan-out patterns; implement checkpoint-based resume; verify sub-agent results before assembly; identify when dynamic workflows hurt more than they help.
+- Duration: 65 min
+- Key concepts: [[orchestrator]], [[sub-agent]], [[fan-out]], [[checkpoint]], [[verification]], token budget, weekly plan limits.
+- Hands-on exercise: Build a checkpointed Python code reviewer that fans out one `claude -p` sub-agent per file, checkpoints results, verifies schema, and produces a token-cost summary.
 
 ## Capstone Project
 - Build a production-ready MCP "Agentic Connector" that bridges a secure corporate system (e.g., medical, legal, or SMB finance) to Claude. It must include:

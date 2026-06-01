@@ -1,10 +1,10 @@
 ---
 date: 2026-05-31
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-6947
 vendor_tag: community
 content_type: article
-status: awaiting-g0
+status: g3-passed
 description: "Single-prompt LLM benchmarks systematically overstate agent reliability through contamination, harness dependence, and single-run scoring. Contamination inflates SWE-bench scores by ~27 pp; the same model swings 46 pp across harnesses. Trace-based evaluation reveals what leaderboards hide."
 reading_time_min: 10
 primary_query: "why llm benchmarks mislead agent evaluation trace evaluation 2026"

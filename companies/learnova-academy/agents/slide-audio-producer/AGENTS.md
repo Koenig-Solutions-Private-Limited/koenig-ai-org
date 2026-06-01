@@ -84,6 +84,8 @@ agent's container at `/paperclip/.env.koenig`).
   "source_file": "vault/courses/<slug>/<chapter-prefix>.md",
   "assets": {
     "audio_url": "<R2 public URL or null>",
+    "video_url": "<R2 public URL or null>",
+    "video_duration_seconds": "<integer seconds or null>",
     "slides_url": "<R2 public URL>", "slide_deck_url": "<R2 public URL>",
     "study_guide_url": "<R2 public URL>", "mind_map_url": "<R2 public URL>",
     "infographic_url": "<R2 public URL>", "flashcards_url": "<R2 public URL>"

@@ -5,7 +5,7 @@ description: "A production guide to OpenAI Realtime API voice agents: when to ch
 hero_image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80"
 tags: [openai, realtime-api, voice-agents, production-ai]
 date: 2026-05-14
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-5272
 vendor_tag: openai
 content_type: article
@@ -45,6 +45,12 @@ faq:
     answer: "Production session management for OpenAI Realtime API requires three controls: periodic session rollover (summarize and reconnect before the ~15-minute cap), context cost pruning (remove irrelevant conversation items as call history grows), and tool-state idempotency (store critical tool results outside the model session so rollover does not lose call context). Isolate production projects from development traffic to avoid shared rate-limit depletion. See [OpenAI rate limits guide](https://platform.openai.com/docs/guides/rate-limits)."
   - question: "What is the difference between WebRTC and WebSocket for OpenAI Realtime API?"
     answer: "WebRTC and WebSocket are both supported transport layers for OpenAI Realtime API. WebRTC is optimized for browser-to-server live audio with built-in jitter buffering and adaptive bitrate, making it the preferred path for browser clients. WebSocket gives your server direct control over the connection, which is better when your backend mediates between a phone (SIP/G.711), the OpenAI API, and business logic. For telephony, use a dedicated SIP path rather than treating phone audio as a browser microphone with worse quality. See [OpenAI Realtime prompting guide](https://platform.openai.com/docs/guides/realtime-models-prompting)."
+  - question: "What latency can I expect from OpenAI Realtime API in production?"
+    answer: "In production, OpenAI Realtime API typically achieves approximately 500ms time-to-first-byte in US conditions, with an 800ms end-to-end turn as the target for conversational quality according to third-party research. Traditional STT plus LLM plus TTS pipelines are estimated at 2–3 seconds end-to-end. Actual latency depends on audio transport (WebRTC vs WebSocket), VAD configuration, tool call duration, network conditions, and client buffering. Instrument separate timestamps for VAD decision, first model response event, first audio delta, and playback start to diagnose real production latency rather than relying on vendor TTS benchmarks alone."
+  - question: "How do I handle interruptions in the OpenAI Realtime API?"
+    answer: "To handle interruptions in OpenAI Realtime API production deployments: (1) detect the interruption via server VAD or client-side audio energy monitoring; (2) cancel audio playback on the client immediately; (3) send conversation.item.truncate to align server-side conversation state with what the user actually heard; (4) ensure tool-state idempotency so interrupted tool calls do not leave dangling side effects. Skipping the truncate step is the most common production defect — the server retains assistant turns the user never heard, causing subsequent responses to assume incorrect context."
+  - question: "What are the OpenAI Realtime API production best practices for 2026?"
+    answer: "The OpenAI Realtime API production best practices for 2026 are: (1) interruption repair — wire conversation.item.truncate and audio-player cancellation before optimizing prompts; (2) session rollover — summarize conversation history and reconnect before the approximately 15-minute session cap to control context cost growth; (3) rate-limit observability — log remaining and reset headers on every live call and isolate production projects from development traffic; (4) cost modeling — budget for conversation history accumulation, not just per-minute media rates; (5) pipeline fallback — route batch, asynchronous, or cost-sensitive audio work through a cheaper STT plus LLM plus TTS path."
 faq_schema:
   "@context": "https://schema.org"
   "@type": "FAQPage"
@@ -64,6 +70,21 @@ faq_schema:
       acceptedAnswer:
         "@type": "Answer"
         text: "WebRTC and WebSocket are both supported transport layers for OpenAI Realtime API. WebRTC is optimized for browser-to-server live audio with built-in jitter buffering and adaptive bitrate, making it the preferred path for browser clients. WebSocket gives your server direct control over the connection, which is better when your backend mediates between a phone (SIP/G.711), the OpenAI API, and business logic. For telephony, use a dedicated SIP path rather than treating phone audio as a browser microphone with worse quality."
+    - "@type": "Question"
+      name: "What latency can I expect from OpenAI Realtime API in production?"
+      acceptedAnswer:
+        "@type": "Answer"
+        text: "In production, OpenAI Realtime API typically achieves approximately 500ms time-to-first-byte in US conditions, with an 800ms end-to-end turn as the target for conversational quality according to third-party research. Traditional STT plus LLM plus TTS pipelines are estimated at 2–3 seconds end-to-end. Actual latency depends on audio transport, VAD configuration, tool call duration, network conditions, and client buffering. Instrument separate timestamps for VAD decision, first model response event, first audio delta, and playback start to diagnose real production latency."
+    - "@type": "Question"
+      name: "How do I handle interruptions in the OpenAI Realtime API?"
+      acceptedAnswer:
+        "@type": "Answer"
+        text: "To handle interruptions in OpenAI Realtime API production deployments: (1) detect the interruption via server VAD or client-side audio energy monitoring; (2) cancel audio playback on the client immediately; (3) send conversation.item.truncate to align server-side conversation state with what the user actually heard; (4) ensure tool-state idempotency so interrupted tool calls do not leave dangling side effects. Skipping the truncate step is the most common production defect — the server retains assistant turns the user never heard, causing subsequent responses to assume incorrect context."
+    - "@type": "Question"
+      name: "What are the OpenAI Realtime API production best practices for 2026?"
+      acceptedAnswer:
+        "@type": "Answer"
+        text: "The OpenAI Realtime API production best practices for 2026 are: (1) interruption repair — wire conversation.item.truncate and audio-player cancellation before optimizing prompts; (2) session rollover — summarize conversation history and reconnect before the approximately 15-minute session cap to control context cost growth; (3) rate-limit observability — log remaining and reset headers on every live call and isolate production projects from development traffic; (4) cost modeling — budget for conversation history accumulation, not just per-minute media rates; (5) pipeline fallback — route batch, asynchronous, or cost-sensitive audio work through a cheaper STT plus LLM plus TTS path."
 schema:
   "@context": "https://schema.org"
   "@type": "Article"
@@ -174,6 +195,30 @@ The practical takeaway: ship OpenAI Realtime when speech is the interface, not m
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "WebRTC and WebSocket are both supported transport layers for OpenAI Realtime API. WebRTC is optimized for browser-to-server live audio with built-in jitter buffering and adaptive bitrate, making it the preferred path for browser clients. WebSocket gives your server direct control over the connection, which is better when your backend mediates between a phone (SIP/G.711), the OpenAI API, and business logic. For telephony, use a dedicated SIP path rather than treating phone audio as a browser microphone with worse quality."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What latency can I expect from OpenAI Realtime API in production?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "In production, OpenAI Realtime API typically achieves approximately 500ms time-to-first-byte in US conditions, with an 800ms end-to-end turn as the target for conversational quality according to third-party research. Traditional STT plus LLM plus TTS pipelines are estimated at 2–3 seconds end-to-end. Actual latency depends on audio transport (WebRTC vs WebSocket), VAD configuration, tool call duration, network conditions, and client buffering. Instrument separate timestamps for VAD decision, first model response event, first audio delta, and playback start to diagnose real production latency rather than relying on vendor TTS benchmarks alone."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I handle interruptions in the OpenAI Realtime API?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "To handle interruptions in OpenAI Realtime API production deployments: (1) detect the interruption via server VAD or client-side audio energy monitoring; (2) cancel audio playback on the client immediately; (3) send conversation.item.truncate to align server-side conversation state with what the user actually heard; (4) ensure tool-state idempotency so interrupted tool calls do not leave dangling side effects. Skipping the truncate step is the most common production defect — the server retains assistant turns the user never heard, causing subsequent responses to assume incorrect context."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are the OpenAI Realtime API production best practices for 2026?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The OpenAI Realtime API production best practices for 2026 are: (1) interruption repair — wire conversation.item.truncate and audio-player cancellation before optimizing prompts; (2) session rollover — summarize conversation history and reconnect before the approximately 15-minute session cap to control context cost growth; (3) rate-limit observability — log remaining and reset headers on every live call and isolate production projects from development traffic; (4) cost modeling — budget for conversation history accumulation, not just per-minute media rates; (5) pipeline fallback — route batch, asynchronous, or cost-sensitive audio work through a cheaper STT plus LLM plus TTS path."
       }
     }
   ]

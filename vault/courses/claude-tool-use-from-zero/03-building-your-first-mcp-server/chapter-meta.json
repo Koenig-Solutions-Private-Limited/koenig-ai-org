@@ -1,0 +1,28 @@
+{
+  "_doc": "Chapter asset manifest. Generated to bridge legacy flat media files into chapter sidecar contract (KOEA-7073).",
+  "chapter_id": "03-building-your-first-mcp-server",
+  "course_slug": "claude-tool-use-from-zero",
+  "title": "Building Your First MCP Server",
+  "generated_at": "2026-06-01T11:19:15.610Z",
+  "generated_by": "slide-audio-producer (manual sidecar generation)",
+  "source_file": "vault/courses/claude-tool-use-from-zero/03-building-your-first-mcp-server.md",
+  "assets": {
+    "audio_url": "/courses/claude-tool-use-from-zero/ch03-audio.mp3",
+    "slides_url": "/courses/claude-tool-use-from-zero/ch03-slides.pptx"
+  },
+  "asset_metadata": {
+    "audio": {
+      "size_bytes": 2351852,
+      "format": "mp3",
+      "produced_via": "legacy flat course artifact"
+    },
+    "slides_pptx": {
+      "size_bytes": 36628,
+      "format": "pptx",
+      "produced_via": "legacy flat course artifact"
+    }
+  },
+  "verification": {
+    "publish_state": "ready"
+  }
+}

@@ -1,7 +1,7 @@
 ---
 date: 2026-04-30
 last_updated: 2026-05-30
-author: blog-author
+author: koenig-ai-academy
 ticket: KOE-23
 vendor_tag: openai
 content_type: article

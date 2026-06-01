@@ -1,0 +1,28 @@
+{
+  "_doc": "Chapter asset manifest. Generated to bridge legacy flat media files into chapter sidecar contract (KOEA-7073).",
+  "chapter_id": "07-creative-connectors",
+  "course_slug": "claude-tool-use-from-zero",
+  "title": "How to use Claude’s creative connectors for Blender and Adobe for creativity",
+  "generated_at": "2026-06-01T11:19:15.610Z",
+  "generated_by": "slide-audio-producer (manual sidecar generation)",
+  "source_file": "vault/courses/claude-tool-use-from-zero/07-creative-connectors.md",
+  "assets": {
+    "audio_url": "/courses/claude-tool-use-from-zero/ch07-audio.mp3",
+    "slides_url": "/courses/claude-tool-use-from-zero/ch07-slides.pptx"
+  },
+  "asset_metadata": {
+    "audio": {
+      "size_bytes": 10561035,
+      "format": "mp3",
+      "produced_via": "legacy flat course artifact"
+    },
+    "slides_pptx": {
+      "size_bytes": 37779,
+      "format": "pptx",
+      "produced_via": "legacy flat course artifact"
+    }
+  },
+  "verification": {
+    "publish_state": "ready"
+  }
+}
