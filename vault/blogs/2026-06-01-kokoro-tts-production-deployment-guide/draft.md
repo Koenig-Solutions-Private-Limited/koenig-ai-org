@@ -149,6 +149,8 @@ Kokoro-82M is MIT-licensed, scores ahead of ElevenLabs on quality benchmarks, an
 
 This is part of the **"Tools we actually use"** series. We covered [[blogs/2026-04-30-voice-agents-2026-tts-latency-benchmark|TTS latency benchmarks]] previously; this post is the operational follow-through.
 
+*Research basis: [[research/community/kokoro-tts-deployment-2026-06-01]] · [[research/_synthesis/cartesia-sonic-3-voice-cloning]]*
+
 ---
 
 ## Why Kokoro Is the Default Choice
