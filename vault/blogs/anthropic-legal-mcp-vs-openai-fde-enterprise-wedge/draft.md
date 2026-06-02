@@ -17,6 +17,7 @@ tags:
   - legal-ai
   - agentic
 primary_query: "anthropic mcp legal connectors vs openai forward deployed engineers enterprise ai 2026"
+seo_description: "Anthropic's legal MCP connectors vs OpenAI's forward-deployed engineers: opposite enterprise AI models — reusable protocol versus embedded engineering."
 contrarian_angle: "The MCP vs FDE debate is less about model quality than about who owns the integration layer: a reusable protocol ecosystem or a services team embedded inside each enterprise."
 faq:
   - q: "What are Anthropic's legal MCP connectors?"
@@ -45,13 +46,13 @@ learning_objectives:
 
 # Choose Connectors or Engineers: The Enterprise AI Split Behind Anthropic MCP and OpenAI FDE
 
-Anthropic's legal MCP release and OpenAI's Deployment Company answer the same enterprise AI question in opposite ways: Anthropic is trying to make integrations reusable through Model Context Protocol connectors, while OpenAI is putting Forward Deployed Engineers into customer organizations. The practical difference is ownership. With MCP, the integration layer can live in a protocol ecosystem. With FDEs, the integration layer is built and maintained as a client-specific deployment project.
+Anthropic's legal MCP release and OpenAI's Deployment Company answer the same enterprise AI question in opposite ways: Anthropic is trying to make integrations reusable through [Model Context Protocol](/blog/mcp-2026-roadmap-explained) connectors, while OpenAI is putting Forward Deployed Engineers into customer organizations. The practical difference is ownership. With MCP, the integration layer can live in a protocol ecosystem. With FDEs, the integration layer is built and maintained as a client-specific deployment project.
 
 The contrarian read is that this is not mainly a model race. It is a distribution race over who controls the path between a model and the systems of record: law firm document stores, contract systems, e-discovery platforms, financial data terminals, healthcare coding databases, and internal workflows that never become clean APIs.
 
 ## Anthropic is productizing the integration layer through legal connectors
 
-Anthropic's legal push is a connector strategy, not a generic legal chatbot launch. LawNext reported on May 12, 2026 that Anthropic released more than 20 MCP connectors for Claude's legal workflow surface, plus 12 practice-area plugins and four managed agents for commercial, corporate, litigation, and product work ([LawNext, retrieved 2026-05-13](https://www.lawnext.com/2026/05/anthropic-goes-all-in-on-legal-releasing-more-than-20-connectors-and-12-practice-area-plugins-for-claude.html)).
+Anthropic's legal push is a connector strategy, not a generic legal chatbot launch. LawNext reported on May 12, 2026 that Anthropic released more than 20 [MCP connectors](/blog/2026-05-12-rag-with-mcp-connectors) for Claude's legal workflow surface, plus 12 practice-area plugins and four managed agents for commercial, corporate, litigation, and product work ([LawNext, retrieved 2026-05-13](https://www.lawnext.com/2026/05/anthropic-goes-all-in-on-legal-releasing-more-than-20-connectors-and-12-practice-area-plugins-for-claude.html)).
 
 The connector list matters because it maps onto systems lawyers already use:
 
@@ -160,7 +161,7 @@ input: {
 }
 ```
 
-Anthropic's current model overview lists `claude-opus-4-7` as a Claude API ID and recommends Opus 4.7 for complex tasks ([Anthropic model docs, retrieved 2026-05-14](https://docs.anthropic.com/en/docs/about-claude/models/all-models)). The important production move is not the model name; it is persisting the request ID, user identity, matter scope, tool name, tool input, tool result IDs, and final answer in your own audit store. MCP gives you a standard integration contract. Your product still has to implement retention, access review, and rollback or escalation workflows.
+Anthropic's current model overview lists `claude-opus-4-7` as a Claude API ID and recommends [Opus 4.7](/blog/2026-04-30-opus-4-7-long-running-coding-benchmark) for complex tasks ([Anthropic model docs, retrieved 2026-05-14](https://docs.anthropic.com/en/docs/about-claude/models/all-models)). The important production move is not the model name; it is persisting the request ID, user identity, matter scope, tool name, tool input, tool result IDs, and final answer in your own audit store. MCP gives you a standard integration contract. Your product still has to implement retention, access review, and rollback or escalation workflows.
 
 ## Use the decision framework to avoid buying the wrong wedge
 

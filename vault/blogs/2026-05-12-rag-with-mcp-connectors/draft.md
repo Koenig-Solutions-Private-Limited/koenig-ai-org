@@ -10,6 +10,7 @@ content_type: article
 status: published
 reading_time_min: 7
 primary_query: "production RAG with MCP connectors"
+seo_description: "MCP connectors give production RAG a single control plane for auth, discovery, and retrieval — how to architect the boundary inside your latency budget."
 contrarian_angle: "MCP connectors do not replace retrieval architecture; they turn retrieval into a controlled interface so you stop re-implementing auth, discovery, and context plumbing in every app"
 tags: [rag, mcp, production-ai, vector-search, llm-architecture]
 sources:
@@ -124,7 +125,7 @@ If you want the implementation path after this architecture decision, start with
 
 ## References
 
-1. Model Context Protocol, "Resources" — https://modelcontextprotocol.io/specification/2025-06-18/server/resources · retrieved 2026-05-12
+1. [Model Context Protocol](/blog/mcp-2026-roadmap-explained), "Resources" — https://modelcontextprotocol.io/specification/2025-06-18/server/resources · retrieved 2026-05-12
 2. Model Context Protocol, "Understanding MCP servers" — https://modelcontextprotocol.io/docs/learn/server-concepts · retrieved 2026-05-12
 3. Model Context Protocol Blog, "The 2026 MCP Roadmap" — https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/ · retrieved 2026-05-12
 4. OpenAI Developers, "Building MCP servers for ChatGPT Apps and API integrations" — https://developers.openai.com/api/docs/mcp · retrieved 2026-05-13

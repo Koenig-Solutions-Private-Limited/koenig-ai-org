@@ -9,6 +9,7 @@ ticket: KOEA-1338
 vendor_tag: community
 content_type: article
 status: g0-passed
+seo_description: "Langfuse self-hosted setup for AI agent observability: six-container stack, OTLP export from Claude Code and Codex, cost tracking, and LangSmith comparison."
 reading_time_min: 8
 hero_image: auto:flux
 tags: [langfuse, observability, self-host, otel, agents, llmops]
@@ -99,7 +100,7 @@ faq:
 
 Langfuse is an open-source LLM observability platform that, in v3.173.0 on May 8, 2026, supports self-hosted tracing, cost tracking, and OTLP ingestion for agent systems.[1][6][7] For a production setup, the cleanest pattern is a six-container stack—web, worker, Postgres, ClickHouse, Redis, and MinIO—plus trace export from the coding agents you already run.[1]
 
-The common pitch for Langfuse is "open source alternative to LangSmith." That undersells it. The real reason to deploy Langfuse is that production agent teams rarely stay inside one runtime: Claude Code emits one shape of telemetry, Codex has another configuration surface, and OpenCode is extensible through plugins. Langfuse matters when you need one backend that can accept those streams, map them onto prompt and tool semantics, and keep cost, session, and trace views in the same place.[2][5][7][8]
+The common pitch for Langfuse is "open source alternative to LangSmith." That undersells it. The real reason to deploy Langfuse is that production agent teams rarely stay inside one runtime: [Claude Code](/blog/cursor-3-2-vs-claude-code-workflow) emits one shape of telemetry, Codex has another configuration surface, and OpenCode is extensible through plugins. Langfuse matters when you need one backend that can accept those streams, map them onto prompt and tool semantics, and keep cost, session, and trace views in the same place.[2][5][7][8]
 
 ## Key facts
 
@@ -310,7 +311,7 @@ For the hands-on production patterns after this architecture decision—hook-bas
 [7] OpenTelemetry (OTEL) for LLM Observability — https://langfuse.com/integrations/native/opentelemetry · retrieved 2026-05-12
 [8] OpenTelemetry (OTel) for LLM Observability — https://langfuse.com/blog/2024-10-opentelemetry-for-llm-observability · retrieved 2026-05-12
 [9] Monitoring Claude Code with OpenTelemetry — https://code.claude.com/docs/en/monitoring-usage · retrieved 2026-05-12
-[10] Observability with OpenTelemetry in Claude Agent SDK — https://code.claude.com/docs/en/agent-sdk/observability · retrieved 2026-05-12
+[10] Observability with OpenTelemetry in [Claude Agent SDK](/blog/2026-04-30-vercel-ai-sdk-6-vs-claude-agent-sdk) — https://code.claude.com/docs/en/agent-sdk/observability · retrieved 2026-05-12
 [11] Codex Advanced Configuration — https://developers.openai.com/codex/config-advanced · retrieved 2026-05-12
 [12] Codex Sample Configuration — https://developers.openai.com/codex/config-sample · retrieved 2026-05-12
 [13] OpenCode Plugins — https://opencode.ai/docs/plugins/ · retrieved 2026-05-12

@@ -31,6 +31,7 @@ content_type: article
 status: g3-passed
 reading_time_min: 7
 primary_query: "openai realtime api voice agents production patterns 2026"
+seo_description: "Production guide to OpenAI Realtime API voice agents: when to choose Realtime over Whisper+TTS, handling interruptions, sessions, cost, and rate limits."
 contrarian_angle: "Realtime API is not mainly a faster TTS endpoint; its real advantage is collapsing turn detection, interruption repair, telephony audio, tool calls, and session state into one speech-native loop."
 sources:
   - https://developers.openai.com/api/docs/models/gpt-realtime-2
@@ -73,7 +74,7 @@ schema:
 
 To ship an OpenAI Realtime voice agent: pick Realtime over a Whisper+TTS pipeline only for live, interrupt-heavy, tool-using calls; choose 24kHz PCM16 (browser) or G.711 (telephony) transport; build interruption truncation before polishing prompts; instrument the full turn end-to-end; and plan session rollover before context cost balloons. Realtime is not a faster TTS — it is a speech-native stateful loop. OpenAI Realtime API is the production choice for voice agents when callers need to interrupt naturally, the agent must call tools during the spoken turn, and the product needs a sub-second conversational feel. A Whisper plus LLM plus TTS pipeline is still cheaper and easier to swap by vendor, but it usually pushes teams toward 2-3 second turns and forces them to own endpointing, playback sync, and conversation repair.<CitationFootnote source="https://www.eesel.ai/blog/realtime-api-vs-whisper-vs-tts-api">Eesel comparison of Realtime versus Whisper/TTS pipelines</CitationFootnote>
 
-The missed point is that Realtime is not a faster text-to-speech endpoint. Cartesia Sonic can be the faster pure TTS choice, with the research synthesis citing 40-90ms time to first audio against higher OpenAI TTS numbers.<CitationFootnote source="https://cartesia.ai/vs/cartesia-vs-openai-tts">Cartesia Sonic versus OpenAI TTS benchmark</CitationFootnote> Realtime wins a different contest: it makes speech input, model reasoning, tool calls, speech output, turn detection, and interruption repair part of one stateful loop.
+The missed point is that Realtime is not a faster text-to-speech endpoint. [Cartesia Sonic](/blog/2026-05-14-cartesia-sonic-3-voice-cloning) can be the faster pure TTS choice, with the research synthesis citing 40-90ms time to first audio against higher OpenAI TTS numbers.<CitationFootnote source="https://cartesia.ai/vs/cartesia-vs-openai-tts">Cartesia Sonic versus OpenAI TTS benchmark</CitationFootnote> Realtime wins a different contest: it makes speech input, model reasoning, tool calls, speech output, turn detection, and interruption repair part of one stateful loop.
 
 ## How to Choose Realtime Over Whisper+TTS for Conversational Workloads
 
@@ -81,7 +82,7 @@ Realtime is worth the premium when the product promise is "talk to the agent." O
 
 Use Realtime for inbound support, tutoring, live translation, scheduling, IVR, sales intake, and any workflow where the user will talk over the assistant. The pipeline version of the same system has three serial boxes: STT, reasoning, and TTS. That is useful when the work is batch transcription, a narrated report, voicemail summarization, or a push-to-talk tool where a pause is acceptable. It is the wrong default when the user expects a human-like turn.
 
-The Realtime surface is no longer just a launch demo; it has a model family, production transports, and SDK-level support that changed the production calculus in 2026. OpenAI's official Python SDK describes the Realtime API as a low-latency multimodal WebSocket interface for text, audio, and function calling, while the May 26 Agents Python SDK v0.17.4 release added support for Realtime custom voice objects and fixed adjacent tool/MCP reliability issues.<CitationFootnote source="https://github.com/openai/openai-python/blob/main/api.md">OpenAI Python SDK Realtime API surface</CitationFootnote><CitationFootnote source="https://github.com/openai/openai-agents-python/releases/tag/v0.17.4">OpenAI Agents Python v0.17.4 release notes</CitationFootnote> That matters because most useful voice agents are tool-using agents, not isolated speakers.
+The Realtime surface is no longer just a launch demo; it has a model family, production transports, and SDK-level support that changed the production calculus in 2026. OpenAI's official Python SDK describes the Realtime API as a low-latency multimodal WebSocket interface for text, audio, and function calling, while the May 26 Agents Python SDK v0.17.4 release added support for Realtime custom voice objects and fixed adjacent tool/[MCP](/blog/mcp-2026-roadmap-explained) reliability issues.<CitationFootnote source="https://github.com/openai/openai-python/blob/main/api.md">OpenAI Python SDK Realtime API surface</CitationFootnote><CitationFootnote source="https://github.com/openai/openai-agents-python/releases/tag/v0.17.4">OpenAI Agents Python v0.17.4 release notes</CitationFootnote> That matters because most useful voice agents are tool-using agents, not isolated speakers.
 
 ## Measure the full turn, not only TTS latency
 
@@ -145,7 +146,7 @@ The instruction and session limits are also operational design constraints. The 
 
 The clean production architecture is not Realtime everywhere. It is Realtime for live conversation, a cheaper STT/text/TTS pipeline for asynchronous work, and a specialist TTS provider when the job is just speech rendering. That keeps the premium path focused on its actual advantage: speech-native agency.
 
-The decision tree is short. Choose Realtime when the user can interrupt, the agent calls tools, telephony or live browser audio matters, and the perceived turn needs to land under about a second. Choose a pipeline when the job is batch, retryable, cost-sensitive, or vendor-specific for STT/TTS. Test Cartesia when pure time-to-first-audio matters more than reasoning or tools.<CitationFootnote source="https://cartesia.ai/vs/cartesia-vs-openai-tts">Cartesia benchmark for pure TTS latency</CitationFootnote>
+The decision tree is short. Choose Realtime when the user can interrupt, the agent calls tools, telephony or live browser audio matters, and the perceived turn needs to land under about a second. Choose a pipeline when the job is batch, retryable, cost-sensitive, or vendor-specific for STT/TTS. Test Cartesia when pure time-to-first-audio matters more than reasoning or tools.<CitationFootnote source="https://cartesia.ai/vs/cartesia-vs-openai-tts">Cartesia benchmark for pure [TTS latency benchmark](/blog/2026-04-30-voice-agents-2026-tts-latency-benchmark)</CitationFootnote>
 
 <KnowledgeCheck>
 question: "Why is Cartesia Sonic's TTS latency not enough to prove a Cartesia pipeline will feel faster than OpenAI Realtime for a tool-using call agent?"

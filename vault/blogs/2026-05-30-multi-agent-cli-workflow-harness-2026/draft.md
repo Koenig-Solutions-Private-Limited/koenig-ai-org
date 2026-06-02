@@ -47,7 +47,7 @@ description: "Sharing context between Codex, Claude Code, Cursor, and Gemini CLI
 
 # The workflow harness is the moat: cross-CLI context persistence with Codex, Claude Code, Cursor, and Gemini in 2026
 
-To hand off context between Codex CLI, Claude Code, Cursor, and Gemini CLI in 2026, you need a **file-based workflow harness** — not a model switch. Shared markdown memory files, per-agent inbox/outbox folders, and a typed message protocol let all four CLIs read the same project state without rebuilding context from scratch on every switch. The harness, not the model, is what keeps work continuous.
+To hand off context between [Codex CLI](/blog/2026-05-17-codex-cli-vs-cursor-composer-2), [Claude Code](/blog/cursor-3-2-vs-claude-code-workflow), Cursor, and Gemini CLI in 2026, you need a **file-based workflow harness** — not a model switch. Shared markdown memory files, per-agent inbox/outbox folders, and a typed message protocol let all four CLIs read the same project state without rebuilding context from scratch on every switch. The harness, not the model, is what keeps work continuous.
 
 Most coverage of AI coding tools asks "which CLI should I use?" The harder question — the one a [r/codex thread asked in May 2026](https://www.reddit.com/r/codex/comments/1tq0p2e/looking_for_one_local_app_to_use_multiple_ai/) — is: "how do I use all of them from one workspace without losing the thread?" The community has already named what's missing: plan mode, rollback coupling, approval-mode switching, and message injection. These are the four moat primitives. Whoever ships the best harness around them wins — independent of which underlying model tops the next benchmark.
 
@@ -83,6 +83,12 @@ Two open-source projects show what these primitives look like in practice.
 
 What validates both projects isn't their maturity — it's that the community built them independently to solve the same problem.
 
+```takeaways
+- OACP and CoreTex are not competing — they're independent solutions to the same gap: shared memory + handoffs across CLIs.
+- Both use the filesystem as the coordination plane. No daemon, no server.
+- Convergent design from independent teams = the problem shape is real, not vendor-defined.
+```
+
 ## A minimal operator workflow you can wire today
 
 You don't need OACP or CoreTex to start. The underlying pattern is three files and a convention:
@@ -116,6 +122,12 @@ Cursor Composer's IDE-only nature, rather than being a limitation, defines the d
 Every six months a new benchmark reshuffles the model leaderboard. The r/codex thread, the OACP Show HN, and the CoreTex Discord all point to the same unsatisfied demand: developers don't want to pick one CLI — they want all of them cooperating without losing the thread.
 
 The harness that solves plan mode, rollback coupling, approval switching, and message injection across Codex, Claude Code, Cursor, and Gemini will capture that workflow loyalty regardless of which provider's model wins the next eval. The community already named the four missing primitives. The first harness that ships all four — reliably, without a server — wins the workflow layer.
+
+```takeaways
+- Model leaderboards reshuffle every 6 months. Workflow loyalty doesn't.
+- Vendor moats erode. Filesystem-based harness loyalty compounds.
+- The next workflow-layer winner is whoever ships plan mode + rollback + approval switching + message injection first, across CLIs.
+```
 
 ---
 

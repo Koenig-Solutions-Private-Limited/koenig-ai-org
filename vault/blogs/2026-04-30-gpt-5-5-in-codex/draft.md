@@ -65,7 +65,7 @@ faq:
 
 # GPT-5.5 in Codex — what changed and why it matters
 
-GPT-5.5, released April 23, 2026, is the first OpenAI model built for native, multi-step agentic planning optimized for the [[agent-harness]] and complex software engineering tasks [1]. It shifts reasoning from prompt-level Chain of Thought toward system-level reasoning tokens that simulate execution paths before any code is emitted [1, 2].
+[GPT-5.5](/blog/gpt-5-5-vs-claude-opus-4-7-agentic-coding), released April 23, 2026, is the first OpenAI model built for native, multi-step agentic planning optimized for the [[agent-harness]] and complex software engineering tasks [1]. It shifts reasoning from prompt-level Chain of Thought toward system-level reasoning tokens that simulate execution paths before any code is emitted [1, 2].
 
 ## Key facts
 
@@ -78,7 +78,7 @@ GPT-5.5, released April 23, 2026, is the first OpenAI model built for native, mu
 
 ## Multi-Step Agentic Planning: Why it isn't just a gimmick
 
-When OpenAI announced the new reasoning capabilities for GPT-5.5 on April 23, 2026, the immediate reaction from the developer community was to compare it to existing reasoning models like Claude Opus 4.7 [2]. However, the true differentiator in GPT-5.5 is that reasoning is now a first-class citizen in the token stream. Instead of the model simply "talking to itself" in a hidden scratchpad, it uses specialized reasoning tokens to simulate execution paths before committing changes to disk [1].
+When OpenAI announced the new reasoning capabilities for GPT-5.5 on April 23, 2026, the immediate reaction from the developer community was to compare it to existing reasoning models like Claude [Opus 4.7](/blog/2026-04-30-opus-4-7-long-running-coding-benchmark) [2]. However, the true differentiator in GPT-5.5 is that reasoning is now a first-class citizen in the token stream. Instead of the model simply "talking to itself" in a hidden scratchpad, it uses specialized reasoning tokens to simulate execution paths before committing changes to disk [1].
 
 This "thinking" phase is not just about producing better text; it's about predicting the outcome of tool calls. By simulating the state of the terminal or the file system before actually committing a change, GPT-5.5 can catch errors that would have traditionally required multiple execution-fix-execution loops. This is particularly visible in its 82.7% score on Terminal-Bench 2.0, a benchmark designed to break models that cannot plan across multiple steps [1, 5]. For developers, this means the difference between a model that tries to fix an error and a model that understands *why* the error occurred in the context of the entire system.
 
@@ -138,7 +138,7 @@ This manual toggle is crucial because higher reasoning depth comes with a latenc
 
 For enterprises, the launch of the latest OpenAI frontier models and Codex on Amazon Bedrock on April 28, 2026, marks the end of the "privacy vs. performance" trade-off [4]. By hosting the models and the Codex harness within their own AWS VPCs, organizations can finally leverage frontier intelligence while maintaining strict data residency and security controls. AWS describes the offering as "the latest OpenAI models" and "Codex" without naming a specific model version, but the timing and benchmarks strongly indicate GPT-5.5 is included [4]. This is a critical development for industries like finance and healthcare that have been hesitant to send sensitive codebases to public APIs.
 
-The integration with **Amazon Bedrock Managed Agents** is particularly powerful. Codex's permission profiles — which round-trip across TUI sessions, user turns, and MCP sandbox state [3] — carry over into the Bedrock environment, preventing the "trust reset" issue where an agent loses context or permissions halfway through a complex deployment. In practice, this means an agent can be granted temporary permissions to deploy to a staging environment, and those permissions will remain active as the agent iterates through the deployment pipeline, runs integration tests, and finally requests human approval for the production push.
+The integration with **Amazon Bedrock Managed Agents** is particularly powerful. Codex's permission profiles — which round-trip across TUI sessions, user turns, and [MCP](/blog/mcp-2026-roadmap-explained) sandbox state [3] — carry over into the Bedrock environment, preventing the "trust reset" issue where an agent loses context or permissions halfway through a complex deployment. In practice, this means an agent can be granted temporary permissions to deploy to a staging environment, and those permissions will remain active as the agent iterates through the deployment pipeline, runs integration tests, and finally requests human approval for the production push.
 
 ## What this means for engineering teams
 

@@ -55,11 +55,11 @@ faq:
 
 # Cartesia Sonic 3 Has the Fastest TTS. GPT Realtime Feels Faster. Here's Why.
 
-Voice agent TTS quality is a three-way tradeoff between latency, naturalness, and cost — and in Q1 2026, the three leading options now occupy clearly distinct positions: Cartesia Sonic 3 at 40ms time-to-first-audio leads all paid APIs [1], Kokoro 82M delivers comparable quality at Apache 2.0 for $0.70/1M characters or free locally [2], and GPT Realtime provides the smoothest end-to-end experience by fusing LLM inference and audio generation into a single streaming pass.
+Voice agent TTS quality is a three-way tradeoff between latency, naturalness, and cost — and in Q1 2026, the three leading options now occupy clearly distinct positions: [Cartesia Sonic](/blog/2026-05-14-cartesia-sonic-3-voice-cloning) at 40ms time-to-first-audio leads all paid APIs [1], Kokoro 82M delivers comparable quality at Apache 2.0 for $0.70/1M characters or free locally [2], and GPT Realtime provides the smoothest end-to-end experience by fusing LLM inference and audio generation into a single streaming pass.
 
 ## Key facts
 
-1. Cartesia Sonic 3 achieves 40ms TTFA — the lowest of any paid TTS API as of Q1 2026 — using a State Space Model architecture that scales linearly rather than quadratically [1].
+1. [Cartesia Sonic 3](/blog/2026-05-14-cartesia-sonic-3-voice-cloning) achieves 40ms TTFA — the lowest of any paid TTS API as of Q1 2026 — using a State Space Model architecture that scales linearly rather than quadratically [1].
 2. Kokoro 82M (Apache 2.0, released January 27, 2025) scores ELO 1059 on the Artificial Analysis Speech Leaderboard, fractionally ahead of Cartesia Sonic 3's 1054 [1].
 3. Cost gap: Cartesia Sonic 3 costs $46.70/1M characters versus $0.70/1M characters for Kokoro 82M hosted — a 67× premium for ~35ms faster TTFA [1][2].
 4. OpenAI's standard TTS-1 API has a measured P90 TTFA of approximately 200ms — 5× slower than Cartesia, though ranked #4 on quality (ELO 1106) [1].

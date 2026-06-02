@@ -17,6 +17,7 @@ tags:
   - developer-tools
 reading_time_min: 6
 primary_query: "claude skills vs mcp when to use which"
+seo_description: "Choose Claude Skills when you need reusable workflow memory, use MCP when Claude must reach live systems, and combine them for production agents."
 contrarian_angle: "Skills and MCP are not competing extension mechanisms. Skills encode repeatable judgment; MCP exposes live systems. The highest-leverage architecture is usually hybrid."
 sources:
   - https://www.anthropic.com/news/skills
@@ -131,7 +132,7 @@ prompt: |
   - End with PASS, CHANGES, or BLOCK.
   EOF
 expected_output: |
-  .claude/skills/pr-review/SKILL.md exists and Claude Code can discover the skill when PR review is requested.
+  .claude/skills/pr-review/SKILL.md exists and [Claude Code](/blog/cursor-3-2-vs-claude-code-workflow) can discover the skill when PR review is requested.
 </RunPromptCell>
 
 ## Use MCP to expose live systems and authenticated actions
@@ -140,7 +141,13 @@ MCP is the right default when Claude needs current external state. Anthropic int
 
 That means MCP is for querying GitHub issues, reading CRM records, calling internal services, writing tickets, or exposing organization tools across more than one assistant surface. The quickstart shows the practical cost: even a basic MCP server has an executable, runtime, transport, tool schema, and client configuration ([Build an MCP server](https://modelcontextprotocol.io/quickstart), retrieved 2026-05-13). That overhead is wasted for static instructions, but justified when the agent crosses a live application boundary.
 
-The recent release cadence reinforces the point. The official Python SDK shipped v1.27.1 on May 8, 2026, and the MCP registry shipped v1.7.9 on May 12, 2026 ([modelcontextprotocol/python-sdk v1.27.1](https://github.com/modelcontextprotocol/python-sdk/releases/tag/v1.27.1), retrieved 2026-05-26; [modelcontextprotocol/registry v1.7.9](https://github.com/modelcontextprotocol/registry/releases/tag/v1.7.9), retrieved 2026-05-26). Treat MCP like infrastructure with versions and operations, not like a prompt snippet.
+The recent release cadence reinforces the point. The official Python SDK shipped v1.27.1 on May 8, 2026, and the [MCP registry](/blog/mcp-server-registry-security) shipped v1.7.9 on May 12, 2026 ([modelcontextprotocol/python-sdk v1.27.1](https://github.com/modelcontextprotocol/python-sdk/releases/tag/v1.27.1), retrieved 2026-05-26; [modelcontextprotocol/registry v1.7.9](https://github.com/modelcontextprotocol/registry/releases/tag/v1.7.9), retrieved 2026-05-26). Treat MCP like infrastructure with versions and operations, not like a prompt snippet.
+
+```takeaways
+- MCP is for LIVE state — GitHub, CRM, internal services, authenticated actions.
+- Even a minimal MCP server has runtime + transport + schema + client config. That cost is wasted on static instructions.
+- Versioned SDK + registry cadence = treat MCP like infra, not a prompt snippet.
+```
 
 ## Combine them when workflow repeats but data changes
 
@@ -161,6 +168,12 @@ Anthropic's March 24, 2026 Claude Code advanced-patterns session puts MCP beside
 Do not use MCP as a glorified knowledge base. If the information can live in markdown, scripts, templates, or reference files, a Skill is usually cheaper and easier to audit. Do not use Skills as pseudo-connectors either. Skills can contain scripts and resources, but they do not replace authenticated live integrations ([Agent Skills overview](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview), retrieved 2026-05-13).
 
 The clean boundary is simple: Skills are memory for how to work; MCP is access to what is changing. Teams that shove process into MCP overbuild infrastructure. Teams that shove live integration into Skills create brittle connectors. Keep memory and access separate, then compose them when the workflow needs both.
+
+```takeaways
+- Skills = memory of HOW to work. MCP = access to WHAT is changing.
+- Don't use MCP as a knowledge base. Don't use Skills as fake connectors.
+- The decision is about state, not about which Anthropic primitive is "newer."
+```
 
 ## KnowledgeCheck
 

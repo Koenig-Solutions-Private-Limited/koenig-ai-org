@@ -37,6 +37,7 @@ tags:
   - edge-computing
   - rag
 primary_query: "build ai agents cloudflare durable objects workers ai vectorize 2026"
+seo_description: "Practical deep dive into Cloudflare Agents Week 2026: Durable Objects, Workers AI, Vectorize, and R2 with real code, cost math, and production limits."
 contrarian_angle: "The cost math on Cloudflare's edge-agent stack hasn't been widely run — and once you do the numbers, it's hard to justify a managed cloud stack for most agentic workloads"
 faq:
   - q: "What is the Cloudflare Agents SDK?"
