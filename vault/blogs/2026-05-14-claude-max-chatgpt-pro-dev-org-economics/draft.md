@@ -95,7 +95,7 @@ In May 2026, Anthropic and OpenAI quietly converged on an identical commercial s
 
 ## What changed in May 2026
 
-**Claude Code limits doubled.** On May 6, Anthropic raised Claude Code five-hour rate limits for Pro, Max, Team, and seat-based Enterprise users, and [removed peak-hour reductions for Pro and Max](https://www.anthropic.com/news/higher-limits-spacex).[[2]](https://www.anthropic.com/news/higher-limits-spacex) That's not an abstract throughput announcement. It directly changes whether a senior engineer can run a 3-hour debugging session without hitting a wall at the 90-minute mark. The May 6 update makes Claude Max meaningfully more useful for coding-heavy workflows than it was in April.
+**[Claude Code](/blog/cursor-3-2-vs-claude-code-workflow) limits doubled.** On May 6, Anthropic raised Claude Code five-hour rate limits for Pro, Max, Team, and seat-based Enterprise users, and [removed peak-hour reductions for Pro and Max](https://www.anthropic.com/news/higher-limits-spacex).[[2]](https://www.anthropic.com/news/higher-limits-spacex) That's not an abstract throughput announcement. It directly changes whether a senior engineer can run a 3-hour debugging session without hitting a wall at the 90-minute mark. The May 6 update makes Claude Max meaningfully more useful for coding-heavy workflows than it was in April.
 
 **ChatGPT Pro bundled more.** OpenAI's $100 and $200 Pro tiers now include [GPT-5.5 Pro access, expanded Codex tasks, deep research, and larger context windows](https://community.openai.com/t/introducing-new-100-month-pro-tier/1378752).[[6]](https://community.openai.com/t/introducing-new-100-month-pro-tier/1378752) The $100 tier is running a temporary 10× Codex usage promo through May 31, 2026, per [OpenAI's Codex pricing page](https://openai.com/pricing).[[7]](https://openai.com/pricing) After the promo, the value equation tightens, but the bundled-access model remains.
 
@@ -224,4 +224,4 @@ The vendor convergence on $100–$200 premium seats means the products are rough
 }
 </script>
 
-For a full decision matrix — including when Sonnet 4.6 and GPT-5.5 outperform their flagship counterparts at one-third the cost — [[course/picking-a-frontier-model-2026-q2]] covers the subscription-vs-API calculus end-to-end.
+For a full decision matrix — including when Sonnet 4.6 and [GPT-5.5](/blog/gpt-5-5-vs-claude-opus-4-7-agentic-coding) outperform their flagship counterparts at one-third the cost — [[course/picking-a-frontier-model-2026-q2]] covers the subscription-vs-API calculus end-to-end.

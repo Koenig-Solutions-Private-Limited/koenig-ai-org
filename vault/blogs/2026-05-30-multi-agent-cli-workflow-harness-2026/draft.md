@@ -47,7 +47,7 @@ description: "Sharing context between Codex, Claude Code, Cursor, and Gemini CLI
 
 # The workflow harness is the moat: cross-CLI context persistence with Codex, Claude Code, Cursor, and Gemini in 2026
 
-To hand off context between Codex CLI, Claude Code, Cursor, and Gemini CLI in 2026, you need a **file-based workflow harness** — not a model switch. Shared markdown memory files, per-agent inbox/outbox folders, and a typed message protocol let all four CLIs read the same project state without rebuilding context from scratch on every switch. The harness, not the model, is what keeps work continuous.
+To hand off context between [Codex CLI](/blog/2026-05-17-codex-cli-vs-cursor-composer-2), [Claude Code](/blog/cursor-3-2-vs-claude-code-workflow), Cursor, and Gemini CLI in 2026, you need a **file-based workflow harness** — not a model switch. Shared markdown memory files, per-agent inbox/outbox folders, and a typed message protocol let all four CLIs read the same project state without rebuilding context from scratch on every switch. The harness, not the model, is what keeps work continuous.
 
 Most coverage of AI coding tools asks "which CLI should I use?" The harder question — the one a [r/codex thread asked in May 2026](https://www.reddit.com/r/codex/comments/1tq0p2e/looking_for_one_local_app_to_use_multiple_ai/) — is: "how do I use all of them from one workspace without losing the thread?" The community has already named what's missing: plan mode, rollback coupling, approval-mode switching, and message injection. These are the four moat primitives. Whoever ships the best harness around them wins — independent of which underlying model tops the next benchmark.
 

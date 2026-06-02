@@ -130,7 +130,7 @@ This sounds like a clear win for Cursor — until you consider the other side of
 
 - **You set the budget cap**, not the vendor. A runaway subagent costs what your circuit breaker allows, not what Cursor's billing tier permits.
 - **You own the restart logic.** A five-line shell wrapper that re-invokes the Agent SDK on failure is more auditable than a vendor's session-resume API.
-- **You own the audit trail.** Every `PreToolUse` and `PostToolUse` hook event flows through your Langfuse instance, your SIEM, your compliance pipeline.
+- **You own the audit trail.** Every `PreToolUse` and `PostToolUse` hook event flows through your [Langfuse](/blog/2026-05-12-ai-agent-observability-langfuse) instance, your SIEM, your compliance pipeline.
 
 For interactive daily development, Cursor's managed safety net wins. For regulated production pipelines, Claude Code's programmable control plane wins. The production harness patterns — including loop-restart wrappers and cost circuit breakers — are covered in [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability]].
 
@@ -140,7 +140,7 @@ Trust becomes concrete at the harness layer. On April 30, 2026, a community inci
 
 The billing bug lived in Claude Code's server-side harness, not the Agent SDK itself. Production agents built with the SDK on your own infrastructure would not have hit this billing path. The April 30 Claude.ai outage [7] is provider-level risk — a single Anthropic API dependency caps reliability at Anthropic's uptime. That is equally true of Cursor's hosted harness; both tools are single-vendor by default.
 
-The practical takeaway: for production orchestration, operate at the SDK layer (not the interactive CLI or IDE), and wire a secondary model fallback at the harness level. For multi-provider routing patterns, see [[blog/2026-04-30-anthropic-creative-connectors]] on how MCP connectors abstract provider boundaries.
+The practical takeaway: for production orchestration, operate at the SDK layer (not the interactive CLI or IDE), and wire a secondary model fallback at the harness level. For multi-provider routing patterns, see [[blog/2026-04-30-anthropic-creative-connectors]] on how [MCP connectors](/blog/2026-05-12-rag-with-mcp-connectors) abstract provider boundaries.
 
 <KnowledgeCheck
   question="Cursor 3.2's background agents survive an IDE crash and Claude Code's loops do not. Why might a team still prefer Claude Code's model for production pipelines?"
@@ -156,9 +156,9 @@ The practical takeaway: for production orchestration, operate at the SDK layer (
 
 ## What to do next
 
-If your team spends most of the day in the editor and values visual diff review for complex refactors, Cursor 3.2's `/multitask` and Multi-root Workspaces are the natural fit. If you are building production agent pipelines, overnight automation, or CI/CD-integrated agentic loops, the Claude Agent SDK gives you full loop control without the IDE dependency. In practice, many teams use both: Cursor for daily interactive development and the SDK for production automation — the two SDKs now expose compatible runtime primitives that let you prototype in the IDE and productionize in code.
+If your team spends most of the day in the editor and values visual diff review for complex refactors, Cursor 3.2's `/multitask` and Multi-root Workspaces are the natural fit. If you are building production agent pipelines, overnight automation, or CI/CD-integrated agentic loops, the [Claude Agent SDK](/blog/2026-04-30-vercel-ai-sdk-6-vs-claude-agent-sdk) gives you full loop control without the IDE dependency. In practice, many teams use both: Cursor for daily interactive development and the SDK for production automation — the two SDKs now expose compatible runtime primitives that let you prototype in the IDE and productionize in code.
 
-For a practical path through Agent SDK orchestration, MCP server wiring, and harness resilience patterns in production, our course [[course/production-agents-claude-agent-sdk-mcp-connector]] walks through multi-agent systems from setup to deployment. Start with [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed]] for the Agent SDK rename and migration context before building your first parallel subagent harness.
+For a practical path through Agent SDK orchestration, [MCP](/blog/mcp-2026-roadmap-explained) server wiring, and harness resilience patterns in production, our course [[course/production-agents-claude-agent-sdk-mcp-connector]] walks through multi-agent systems from setup to deployment. Start with [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed]] for the Agent SDK rename and migration context before building your first parallel subagent harness.
 
 ---
 

@@ -55,7 +55,7 @@ Claude for Creative Work is Anthropic’s April 2026 launch of nine MCP-based co
 ## Key facts
 
 1. Nine connectors launched April 28, 2026, spanning 3D modeling, audio production, graphic design, and live AV performance.
-2. All connectors are built on the **Model Context Protocol (MCP)**, enabling Claude to read documentation and interact with software APIs natively.
+2. All connectors are built on the **[Model Context Protocol](/blog/mcp-2026-roadmap-explained) (MCP)**, enabling Claude to read documentation and interact with software APIs natively.
 3. Adobe integration covers 50+ tools including Photoshop, Premiere, and Express.
 4. University partnerships announced with RISD, Ringling College of Art and Design, and Goldsmiths, University of London.
 5. Anthropic positions the connectors as creativity amplifiers—automating repetitive toil so human taste and imagination remain central.

@@ -103,7 +103,7 @@ The gap tells the story:
 | Model | SWE-bench Verified | SWE-bench Pro | Gap |
 |---|---|---|---|
 | Claude Opus 4.6 | 80.8% | 53.4% | −27 pp |
-| Claude Opus 4.7 | 87.6% | 64.3% | −23 pp |
+| Claude [Opus 4.7](/blog/2026-04-30-opus-4-7-long-running-coding-benchmark) | 87.6% | 64.3% | −23 pp |
 | GPT-5.2 | ~80% | 55.6% | ~−24 pp |
 | MiniMax M2.5 | 80.2% | 56.2% | −24 pp |
 
@@ -149,7 +149,7 @@ A developer built a coding agent ([SmallCode, GitHub](https://github.com/Doorman
 **Guardrails: 8B model goes from 53% to 99%.**  
 An 8B model tested on agentic tasks scores 53% with standard scaffolding. The same model, with a guardrails harness that validates tool arguments before execution, rewinds on failures, and injects retry reasoning, scores 99% on the same tasks ([HN discussion, 2026](https://news.ycombinator.com/item?id=48192383)). A 46-percentage-point gain, entirely from the harness. The model weights didn't change.
 
-**Qwen3-8B beats Qwen3.5-35B-A3B on real agent tasks.**  
+**[Qwen3](/blog/gemma-4-vs-llama-4-vs-qwen-3-5)-8B beats Qwen3.5-35B-A3B on real agent tasks.**  
 A local LLM benchmark comparing 6 models on real-world scenarios found ([dev.to, 2026](https://dev.to/kim_namhyun_e7535f3dc4c69/local-llm-agent-benchmark-comparing-6-models-in-real-world-scenarios-3ffb)):
 - Qwen3-8B (Q8): 92% task completion  
 - Qwen3.5-35B-A3B (MoE): 79% task completion

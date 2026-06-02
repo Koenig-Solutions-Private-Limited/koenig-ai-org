@@ -34,6 +34,7 @@ learning_objectives:
   - Build the minimal Durable-Object-backed agent shape with Workers AI, R2, and Vectorize bindings.
   - Explain why R2 is for source blobs, Vectorize is for retrieval, and the Agent Durable Object is for interaction state.
   - Identify the limits and pricing gotchas that matter before shipping a production Cloudflare agent.
+seo_description: "Build a persistent Cloudflare RAG agent using Durable Objects, Workers AI, R2, and Vectorize as platform bindings — no external database required."
 hero_image: auto:flux
 og_image_alt: "A Cloudflare Worker agent graph showing Durable Objects, Workers AI, R2, and Vectorize connected by typed bindings."
 schema:
@@ -358,7 +359,7 @@ If you want to build the rest of this pattern into deployable agent workflows, t
 ## Sources
 
 1. Cloudflare Agents docs — https://developers.cloudflare.com/agents/ · retrieved 2026-05-14
-2. Cloudflare Agents Week in review — https://blog.cloudflare.com/agents-week-in-review/ · retrieved 2026-05-14
+2. [Cloudflare Agents Week](/blog/cloudflare-agents-week-2026-explained) in review — https://blog.cloudflare.com/agents-week-in-review/ · retrieved 2026-05-14
 3. Vectorize and Workers AI embeddings guide — https://developers.cloudflare.com/vectorize/get-started/embeddings/ · retrieved 2026-05-14
 4. Cloudflare Durable Objects pricing — https://developers.cloudflare.com/durable-objects/platform/pricing/ · retrieved 2026-05-14
 5. Cloudflare Agents limits — https://developers.cloudflare.com/agents/platform/limits/ · retrieved 2026-05-14
