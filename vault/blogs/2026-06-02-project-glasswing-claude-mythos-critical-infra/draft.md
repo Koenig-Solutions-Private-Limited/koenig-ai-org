@@ -46,11 +46,11 @@ This is a qualitatively different tool from the publicly available **[[claude-se
 
 The June 2 expansion adds approximately 150 new partner organizations across five newly covered sectors — power, water, healthcare, communications, and hardware — bringing the total to roughly 200 organizations across 15+ countries. But power, hospitals, and water deserve specific attention because they represent the hardest-to-patch, highest-consequence codebases in the portfolio.
 
-**Power infrastructure** operators are running code that controls grid management, load balancing, and SCADA systems. Much of it is C-based, decades old, and deeply entangled with proprietary hardware. A single exploitable vulnerability in a grid management system could cascade into regional blackouts. Claude Mythos Preview's ability to reason about memory safety issues and control-flow vulnerabilities in legacy C/C++ codebases is directly applicable here.
+**Power infrastructure** operators are running code that controls grid management, load balancing, and SCADA systems. Much of it is C-based, decades old, and deeply entangled with proprietary hardware — a risk landscape [NIST SP 800-82 Rev. 3](https://csrc.nist.gov/pubs/sp/800/82/r3/final) (Guide to Operational Technology Security, September 2023, retrieved 2026-06-03) documents in detail across SCADA, DCS, and PLC environments. The adversary techniques targeting these systems are catalogued in [MITRE ATT&CK for ICS](https://attack.mitre.org/matrices/ics/) (retrieved 2026-06-03), which maps 12 tactic categories specific to industrial control environments. A single exploitable vulnerability in a grid management system could cascade into regional blackouts. Claude Mythos Preview's ability to reason about memory safety issues and control-flow vulnerabilities in legacy C/C++ codebases is directly applicable here.
 
 **Hospital networks** face a different threat model: ransomware actors actively target healthcare systems because downtime is life-threatening and organizations are more likely to pay. The attack surface includes everything from scheduling and EHR systems to medical device firmware. Glasswing's pre-release vulnerability checking capability matters most in this context — catching issues before a new software version ships to production is far cheaper than containing a post-exploitation incident.
 
-**Water treatment systems** are perhaps the most underappreciated risk in critical infrastructure security. The 2021 Oldsmar, Florida attack — where an attacker briefly increased sodium hydroxide levels in a water treatment plant via remote access — demonstrated how catastrophic a successful intrusion could be. These systems often run industrial control software with minimal patching cycles. Mythos Preview's penetration testing support capabilities give operators a way to continuously probe their attack surface without requiring specialized ICS security expertise.
+**Water treatment systems** are perhaps the most underappreciated risk in critical infrastructure security. The 2021 Oldsmar, Florida attack — where an attacker briefly increased sodium hydroxide levels in a water treatment plant via remote access — demonstrated how catastrophic a successful intrusion could be ([CISA/FBI/EPA Joint Advisory AA21-042A](https://www.cisa.gov/uscert/ncas/alerts/aa21-042a), February 2021, retrieved 2026-06-03). These systems often run industrial control software with minimal patching cycles. Mythos Preview's penetration testing support capabilities give operators a way to continuously probe their attack surface without requiring specialized ICS security expertise.
 
 Anthropic estimates that a major attack on most of its Glasswing partner systems could affect more than 100 million people, with significant national and global security implications. That scale is what justifies the restricted access model.
 
@@ -60,7 +60,7 @@ The strongest case for Project Glasswing is simply economic: attackers have asym
 
 AI-assisted vulnerability scanning changes that equation. If Claude Mythos Preview can scan a million-line codebase in hours rather than weeks, and surface critical issues with enough context for a developer to act on them immediately, defenders are no longer playing a losing game of whack-a-mole. The 10,000+ vulnerabilities already found by initial Glasswing partners represent bugs that, left undiscovered, would have remained exploitable.
 
-The hybrid model the security community is converging on — pairing LLMs with established tooling like Semgrep and CodeQL — amplifies this advantage further. As one practitioner [noted in the HN discussion](https://news.ycombinator.com/item?id=47092277), "giving LLM security agents access to good tools makes them significantly better especially when it comes to false positives." The model doesn't replace the toolchain; it orchestrates it.
+The hybrid model the security community is converging on — pairing LLMs with established tooling like [Semgrep](https://semgrep.dev/) (retrieved 2026-06-03) and [CodeQL](https://github.com/github/codeql) (retrieved 2026-06-03) — amplifies this advantage further. As one practitioner [noted in the HN discussion](https://news.ycombinator.com/item?id=47092277), "giving LLM security agents access to good tools makes them significantly better especially when it comes to false positives." The model doesn't replace the toolchain; it orchestrates it.
 
 ## The Attack-Surface Counterargument
 
@@ -98,4 +98,11 @@ Defenders have a genuine advantage here. The question is whether they'll build t
 
 ---
 
-*Sources: [Anthropic — Expanding Project Glasswing](https://www.anthropic.com/news/expanding-project-glasswing) (June 2, 2026); [Hacker News discussion](https://news.ycombinator.com/item?id=47092277)*
+*Sources:*
+- *[Anthropic — Expanding Project Glasswing](https://www.anthropic.com/news/expanding-project-glasswing) (June 2, 2026, retrieved 2026-06-03)*
+- *[CISA/FBI/EPA Joint Advisory AA21-042A — Compromise of U.S. Water Treatment Facility](https://www.cisa.gov/uscert/ncas/alerts/aa21-042a) (February 2021, retrieved 2026-06-03)*
+- *[NIST SP 800-82 Rev. 3 — Guide to Operational Technology (OT) Security](https://csrc.nist.gov/pubs/sp/800/82/r3/final) (September 2023, retrieved 2026-06-03)*
+- *[MITRE ATT&CK for ICS — Adversary Tactics and Techniques Matrix](https://attack.mitre.org/matrices/ics/) (retrieved 2026-06-03)*
+- *[Semgrep — AI-Assisted SAST and Code Security](https://semgrep.dev/) (retrieved 2026-06-03)*
+- *[GitHub — CodeQL Security Analysis Libraries and Queries](https://github.com/github/codeql) (retrieved 2026-06-03)*
+- *[Hacker News discussion](https://news.ycombinator.com/item?id=47092277) (retrieved 2026-06-03)*
