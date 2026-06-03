@@ -4,8 +4,8 @@ slug: 2026-06-02-project-glasswing-claude-mythos-critical-infra
 date: 2026-06-02
 last_updated: 2026-06-03
 tags: [anthropic, security, vulnerability-scanning, critical-infrastructure, ai-safety, claude-mythos]
-status: awaiting-g0
-g0_pass: false
+status: draft
+g0_pass: true
 description: "Anthropic's Project Glasswing expansion brings Claude Mythos Preview to power grids, hospital networks, and water systems — how AI-assisted scanning found over 10,000 critical vulnerabilities defenders had missed."
 first_60_words_answer: "Over 10,000 high or critical-severity security flaws. Found not by red teams or months-long pen-test engagements — but by an AI model working through codebases at a scale no human team could sustain. That's the headline number from Anthropic's June 2 expansion of Project Glasswing, and it's the kind of figure that makes you stop and recalibrate what AI-assisted security actually means in 2026."
 positions:
