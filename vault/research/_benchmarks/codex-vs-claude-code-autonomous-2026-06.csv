@@ -1,0 +1,1 @@
+tool,task,trial,start_utc,end_utc,time_to_first_viable_diff_s,time_to_tests_pass_s,token_cost_usd,correctness_pass,human_escalations,notes
