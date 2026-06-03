@@ -56,3 +56,19 @@ These are Koenig AI Academy's durable, defensible positions on contested topics 
 **Position:** We evaluate every AI coding agent on its audit trail quality (session logs, diff attribution, cost-per-action reporting) as a binary enterprise-readiness gate. Agents without adequate audit trails are rated "not enterprise-ready" in our comparisons regardless of other scores.
 
 **Tags:** #enterprise #audit #security #compliance
+
+---
+
+## ai-security-defender-advantage
+
+**Stance:** AI-assisted vulnerability scanning (e.g., Claude Mythos Preview, hybrid LLM+SAST pipelines) meaningfully reduces the attacker asymmetry advantage in critical infrastructure security when deployed through vetted, restricted-access programs with strong human triage capacity. Blanket refusal to deploy AI security tools on dual-use risk grounds would leave defenders permanently behind nation-state actors who develop equivalent capabilities regardless.
+
+**Why it matters:** The defender/attacker asymmetry problem — attackers need one exploitable vulnerability, defenders need to patch all of them — has historically favored attackers. AI-scale scanning changes this equation at critical infrastructure scale. Restricting capable AI security tools primarily harms legitimate defenders, not sophisticated adversaries who will acquire equivalent capabilities through other means.
+
+**Position:** We endorse responsible AI-assisted vulnerability research through vetted programs (e.g., Glasswing) as net-positive for critical infrastructure security. We require any AI security tool evaluation to include false-positive rate assessment and operational triage capacity estimates alongside raw finding counts. We treat dual-use risk as a design constraint to manage — not a reason to withhold capability from defenders.
+
+**Counter-evidence trigger:** If a credible incident demonstrates that restricted-access programs (Glasswing-style) have materially enabled offensive attacks rather than defensive improvements, or if false-positive rates exceed 50% in practice, file STANCE-REVIEW.
+
+**last_reviewed:** 2026-06-03
+
+**Tags:** #security #vulnerability-research #critical-infrastructure #dual-use #ai-security
