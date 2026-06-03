@@ -2,9 +2,21 @@
 chapter_num: 2
 course_slug: claude-tool-use-from-zero
 title: "Beyond Function Calling: Understanding MCP"
-status: awaiting-g0
+status: draft-for-review
 author: course-author
 ticket: KOEA-6160
+last_updated: 2026-06-02
+chapter_primary_query: "What is MCP and how does it differ from native function calling in Claude?"
+first_60_words_answer: "MCP (Model Context Protocol) is a standard protocol that moves reusable AI capabilities into connector servers. Unlike native function calling—where each app hand-codes its own tool descriptions—MCP lets Claude discover tools, resources, and prompts from external servers over a standard transport. The result: one finance connector can serve Claude Code, Claude Desktop, and any other MCP host without re-implementation."
+positions:
+  - mcp-as-interoperability-moat
+faq:
+  - question: "What is the difference between an MCP tool, a resource, and a prompt?"
+    answer: "MCP tools are callable actions — server-side functions the host invokes with arguments, such as listing overdue invoices or submitting a draft for approval (https://modelcontextprotocol.io/specification/draft/server/tools). Resources are read-only context items identified by stable URIs, such as a finance policy or account summary document. Prompts are reusable instruction templates the server supplies for repeatable workflows. The rule: tools do something, resources provide stable context, and prompts encode domain-expert language patterns."
+  - question: "Why does MCP scale better than native function calling for shared capabilities?"
+    answer: "Native function calling embeds tool definitions inside each application, so every team that needs a finance connector must rewrite discovery, credentials, logging, and safety separately (https://modelcontextprotocol.io/docs/learn/architecture). MCP moves those capabilities behind a protocol boundary. One server can serve Claude Code, Claude Desktop, and any other compliant host. When the server adds a new capability, hosts discover it at connection time without code changes. This removes the duplication tax across teams."
+  - question: "How should secrets be handled in Claude Code MCP configurations?"
+    answer: "Secrets must not be written into .mcp.json files, prompt text, or source control. Claude Code supports environment variable expansion in MCP configuration — the --env flag passes variables to local stdio server processes, and remote server headers can reference environment variables rather than literal values (https://code.claude.com/docs/en/mcp). For project-scope team configurations, each developer or CI environment should supply secrets through their own environment, not through committed configuration values."
 learning_objectives:
   - "Explain what MCP adds beyond native client-side tool calls"
   - "Distinguish MCP tools, resources, and prompts using real connector examples"
@@ -400,9 +412,9 @@ Success criteria:
 
 Chapter 3 turns this architecture into code. You will build a local MCP server with one narrow file-browsing tool, connect it through stdio, and practice returning controlled errors instead of leaking raw filesystem or stack-trace details.
 
-[^architecture]: Model Context Protocol, "Architecture overview," https://modelcontextprotocol.io/docs/learn/architecture
-[^tools]: Model Context Protocol specification, "Tools," https://modelcontextprotocol.io/specification/draft/server/tools
-[^resources]: Model Context Protocol specification, "Resources," https://modelcontextprotocol.io/specification/draft/server/resources
-[^prompts]: Model Context Protocol specification, "Prompts," https://modelcontextprotocol.io/specification/draft/server/prompts
-[^typescript-sdk]: Model Context Protocol TypeScript SDK, https://github.com/modelcontextprotocol/typescript-sdk
-[^claude-code]: Anthropic Claude Code docs, "Connect Claude Code to tools via MCP," https://code.claude.com/docs/en/mcp
+[^architecture]: Model Context Protocol, "Architecture overview," https://modelcontextprotocol.io/docs/learn/architecture · retrieved 2026-06-02
+[^tools]: Model Context Protocol specification, "Tools," https://modelcontextprotocol.io/specification/draft/server/tools · retrieved 2026-06-02
+[^resources]: Model Context Protocol specification, "Resources," https://modelcontextprotocol.io/specification/draft/server/resources · retrieved 2026-06-02
+[^prompts]: Model Context Protocol specification, "Prompts," https://modelcontextprotocol.io/specification/draft/server/prompts · retrieved 2026-06-02
+[^typescript-sdk]: Model Context Protocol TypeScript SDK, https://github.com/modelcontextprotocol/typescript-sdk · retrieved 2026-06-02
+[^claude-code]: Anthropic Claude Code docs, "Connect Claude Code to tools via MCP," https://code.claude.com/docs/en/mcp · retrieved 2026-06-02
