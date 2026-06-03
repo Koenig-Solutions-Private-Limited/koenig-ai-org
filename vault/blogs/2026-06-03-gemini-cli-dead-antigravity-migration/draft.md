@@ -27,7 +27,7 @@ positions:
     engagement: defends
 faq:
   - question: "Is Gemini CLI being discontinued?"
-    answer: "Yes. Google is shutting down Gemini CLI for free, AI Pro, and AI Ultra users on June 18, 2026. Enterprise customers on Standard or Enterprise licenses are not affected and retain Gemini CLI access with continued model updates. The replacement for everyone else is Antigravity CLI, available now at antigravity.google/download."
+    answer: "Yes. Google is shutting down Gemini CLI for free, AI Pro, and AI Ultra users on June 18, 2026. Enterprise customers on Standard or Enterprise licenses are not affected and retain Gemini CLI access with continued model updates. The replacement for everyone else is Antigravity CLI, available now at antigravity.google/download. Source: developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/, retrieved 2026-06-03."
   - question: "What is the MCP breaking change when migrating to Antigravity CLI?"
     answer: "Antigravity CLI requires MCP server configs to use the key `serverUrl` instead of `url` or `httpUrl`. This is a silent failure: the CLI will not throw an error if the old key is present — it simply won't connect to your MCP server. Check every entry in your MCP server config file before or immediately after migration. Source: antigravity.google/docs/gcli-migration, retrieved 2026-06-03."
   - question: "How do I install Antigravity CLI on macOS or Linux?"
@@ -103,7 +103,7 @@ For teams deploying AI coding agents in SOC 2 or GDPR-scoped environments: a clo
 
 Antigravity CLI shares the same server-side agent harness as the Antigravity 2.0 desktop application, announced at Google I/O 2026.[^io2026] Settings, sessions, and model upgrades propagate automatically across both surfaces. A workflow started in the terminal can be handed off to the desktop app — this is the integration argument Google is making for the forced consolidation.
 
-**Default model: Gemini 3.5 Flash High**
+**Default model: Gemini 3.5 Flash High**[^io2026]
 
 Early community testers consistently report higher token consumption per task compared to Gemini CLI's auto-selected model. Free-tier users are already hitting quota walls (more on this below).
 
