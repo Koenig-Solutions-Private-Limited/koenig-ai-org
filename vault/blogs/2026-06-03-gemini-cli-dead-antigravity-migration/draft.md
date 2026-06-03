@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-7278
 vendor_tag: google
 content_type: article
-status: draft-for-review
+status: g0-blocked
 reading_time_min: 8-10
 slug: 2026-06-03-gemini-cli-dead-antigravity-migration
 description: "A step-by-step migration guide for developers moving from Gemini CLI to Antigravity CLI before Google's June 18, 2026 hard shutdown — every breaking change flagged, including the silent MCP config footgun."
@@ -63,7 +63,7 @@ Gemini CLI stops serving free, AI Pro, and AI Ultra users on **June 18, 2026**. 
 
 ![Terminal window showing Gemini CLI deprecation warning alongside the Antigravity CLI agy command prompt running a background subagent task](/img/blogs/gemini-cli-dead-antigravity-migration/hero.png)
 
-What no one is saying clearly enough: Google just retired a **100,000-star Apache 2.0 open-source project** — one that generated 6,000 merged pull requests and millions of installs in under a year — and replaced it with a closed binary. The `agy` CLI repo on GitHub has a README and an animated gif. That's it.[^hn] The migration itself is real and straightforward, but you should go in with eyes open about what you're trading away — the shift from an inspectable open-source tool to a closed harness is part of a broader pattern we've written about in [[blogs/prompt-engineering-is-becoming-harness-engineering]].
+What no one is saying clearly enough: Google just retired a **100,000-star Apache 2.0 open-source project** — one that generated 6,000 merged pull requests and millions of installs in under a year[^devblog] — and replaced it with a closed binary. The `agy` CLI repo on GitHub has a README and an animated gif. That's it.[^hn] The migration itself is real and straightforward, but you should go in with eyes open about what you're trading away — the shift from an inspectable open-source tool to a closed harness is part of a broader pattern we've written about in [[blogs/prompt-engineering-is-becoming-harness-engineering]].
 
 ---
 
@@ -103,7 +103,7 @@ For teams deploying AI coding agents in SOC 2 or GDPR-scoped environments: a clo
 
 Antigravity CLI shares the same server-side agent harness as the Antigravity 2.0 desktop application, announced at Google I/O 2026.[^io2026] Settings, sessions, and model upgrades propagate automatically across both surfaces. A workflow started in the terminal can be handed off to the desktop app — this is the integration argument Google is making for the forced consolidation.
 
-**Default model: Gemini 3.5 Flash High**[^io2026]
+**Default model: Gemini 3.5**[^io2026]
 
 Early community testers consistently report higher token consumption per task compared to Gemini CLI's auto-selected model. Free-tier users are already hitting quota walls (more on this below).
 
@@ -254,9 +254,9 @@ agy /status  # or equivalent — verify MCP servers are connecting
 
 The reaction is split, and the loudest voices are not Google-friendly.
 
-**GitHub — 209 👎**
+**GitHub — 221 👎**
 
-The official Google announcement on the `google-gemini/gemini-cli` discussion board received 209 downvote reactions.[^github-disc] The main grievances:
+The official Google announcement on the `google-gemini/gemini-cli` discussion board received 221 downvote reactions (retrieved 2026-06-03).[^github-disc] The main grievances:
 
 - **Free-tier quota:** Multiple users report exhausting their free quota after 3–5 requests, with a 7-day wait for reinstatement. Google has not published official Antigravity CLI free-tier quota numbers as of this writing.
 - **Token costs:** Gemini 3.5 Flash High uses more tokens per task than Gemini CLI's auto-selected model. Free-tier users are disproportionately affected.
