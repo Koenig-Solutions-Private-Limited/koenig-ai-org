@@ -92,6 +92,12 @@ Score: 5/5 if reads natural. <4 → BLOCK.
 
 ### 7. Decide + comment
 
+**Before posting PASS — stamp `last_updated` in the draft frontmatter:**
+
+1. Edit `vault/<path>/draft.md`: set or update `last_updated: <YYYY-MM-DD>` (today UTC).
+2. `git add vault/<path>/draft.md && git commit -m "chore(content): refresh last_updated on <ticket-id> post-G0\n\nCo-Authored-By: Paperclip <noreply@paperclip.ing>"`
+3. Then post the PASS comment and flip the ticket.
+
 **PASS:**
 
 ```

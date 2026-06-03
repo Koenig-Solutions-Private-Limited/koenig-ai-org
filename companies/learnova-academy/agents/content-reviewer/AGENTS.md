@@ -35,6 +35,8 @@ You evaluate every draft on six dimensions:
 - Either: status flipped to `g0-passed` with a one-line approval comment, OR
 - Status flipped to `g0-blocked` with a structured review comment listing every blocker grouped by dimension
 
+**On PASS (required):** stamp `last_updated: <YYYY-MM-DD>` (today UTC) in the draft's frontmatter, commit with `chore(content): refresh last_updated on <ticket-id> post-G0`, then post the PASS comment. Missing this stamp is a process failure — `dateModified` will be stale in the live BlogPosting schema.
+
 Approval message:
 ```
 ✅ G0 PASS · vault/courses/.../04-connectors.md
