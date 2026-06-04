@@ -43,7 +43,8 @@ NODE_ENV=development npm install --silent 2>/dev/null
 # Use exit code: npm test exits 0 when all tests pass, non-zero on failure
 BASELINE_PASS=false
 if NODE_ENV=development npm test >/dev/null 2>/dev/null; then
-  BASELINE_PASS=true
+  echo "ERROR: baseline tests already pass; trial invalid — re-check git state for $TASK_NAME" >&2
+  exit 1
 fi
 
 CORRECTNESS="false"
