@@ -134,7 +134,9 @@ Do not re-authenticate on the same machine until you have audited what else is i
 
 **Step 4 — Audit your npm history.**
 ```bash
+npm ls codexui-android
 npm ls --global | grep codex
+grep -r codexui-android package-lock.json pnpm-lock.yaml yarn.lock 2>/dev/null
 cat ~/.npm/_logs/*.log | grep codexui
 ```
 
