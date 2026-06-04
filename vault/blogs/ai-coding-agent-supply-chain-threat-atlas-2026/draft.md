@@ -11,6 +11,7 @@ description: "AI coding agents collapse the pause between tool retrieval and exe
 hero_image: auto:flux
 reading_time_min: 13
 primary_query: "AI coding agent supply chain attacks MCP npm PyPI"
+seo_description: "AI coding agents collapse the human pause between tool retrieval and execution — four supply-chain threat surfaces and mitigations for MCP, npm, and PyPI."
 contrarian_angle: "The new risk is not that agents can write code. It is that they remove the human pause between fetching a tool and executing it."
 sources:
   - https://www.trendmicro.com/vinfo/tr/security/news/cybercrime-and-digital-threats/mcp-security-network-exposed-servers-are-backdoors-to-your-private-data
@@ -93,7 +94,7 @@ references:
 
 # Treat AI coding agents as software supply chains with keyboards
 
-AI coding agents did not invent supply-chain risk. They made it faster, quieter, and easier to operationalize. In 2026, the important shift is that an agent can read an issue, install a package, register an MCP server, run a tool, and touch real infrastructure before a human has inspected the dependency or the generated command. That is why the threat model for Claude Code, Cursor, Codex CLI, Gemini CLI, and similar tools now looks less like "autocomplete risk" and more like "continuous integration running on your laptop."[^1][^2][^12]
+AI coding agents did not invent supply-chain risk. They made it faster, quieter, and easier to operationalize. In 2026, the important shift is that an agent can read an issue, install a package, register an [MCP](/blog/mcp-2026-roadmap-explained) server, run a tool, and touch real infrastructure before a human has inspected the dependency or the generated command. That is why the threat model for [Claude Code](/blog/cursor-3-2-vs-claude-code-workflow), Cursor, [Codex CLI](/blog/2026-05-17-codex-cli-vs-cursor-composer-2), Gemini CLI, and similar tools now looks less like "autocomplete risk" and more like "continuous integration running on your laptop."[^1][^2][^12]
 
 Most teams still frame the problem as bad prompts or overpowered models. The more useful frame is narrower: **agents collapse the time between retrieval and execution**. A compromised package, an exposed MCP server, or a poisoned tool response no longer waits for a distracted developer to type `npm install` or skim a README. The agent does the operational work immediately. That changes the economics of the same old supply-chain attacks.[^6][^7][^8]
 

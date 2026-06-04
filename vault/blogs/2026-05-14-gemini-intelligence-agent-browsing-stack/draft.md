@@ -18,6 +18,7 @@ tags:
 status: published
 reading_time_min: 6
 primary_query: "gemini intelligence browser agent vs openai operator browser-use 2026"
+seo_description: "Gemini Intelligence vs browser-use, OpenAI Operator, and Anthropic Computer Use: pre-I/O scorecard with pricing math and what replaced Project Mariner."
 contrarian_angle: "Project Mariner didn't fail — it was absorbed on purpose; Google's actual developer bet is Gemini 2.5 Computer Use API at $1.25/M input, the most underpriced flagship agent model in the stack"
 faq:
   - q: "What replaced Project Mariner?"
@@ -49,7 +50,7 @@ learning_objectives:
 
 Google's standalone browser agent, Project Mariner, was [shut down on May 4, 2026](https://www.theverge.com/tech/925559/google-project-mariner-shut-down). Eight days later, at The Android Show, Google announced Gemini Intelligence — a unified AI suite for premium Android that includes Chrome Auto Browse, cross-app orchestration, and Workspace integration. With Google I/O scheduled for May 19, here is where the four main agent browsing players stand as of today: Google's Gemini stack, OpenAI Operator, open-source browser-use, and Anthropic Computer Use.
 
-The non-obvious read: Project Mariner wasn't killed — it was absorbed. The technology moved into three production surfaces (Gemini Agent, AI Mode, Chrome Auto Browse) precisely because a $249.99/month standalone lab experiment was never going to scale. Meanwhile, the quietly launched [Gemini 2.5 Computer Use Preview API](https://ai.google.dev/gemini-api/docs/pricing) at **$1.25/M input tokens** is the most underpriced flagship agent model in the stack — cheaper than GPT-5.5 ($5.00/M) and Claude Opus 4.6 ($5.00/M).
+The non-obvious read: Project Mariner wasn't killed — it was absorbed. The technology moved into three production surfaces (Gemini Agent, AI Mode, Chrome Auto Browse) precisely because a $249.99/month standalone lab experiment was never going to scale. Meanwhile, the quietly launched [Gemini 2.5 Computer Use Preview API](https://ai.google.dev/gemini-api/docs/pricing) at **$1.25/M input tokens** is the most underpriced flagship agent model in the stack — cheaper than [GPT-5.5](/blog/gpt-5-5-vs-claude-opus-4-7-agentic-coding) ($5.00/M) and Claude Opus 4.6 ($5.00/M).
 
 ## Project Mariner Is Dead — Here's Where It Went
 
@@ -85,7 +86,7 @@ The consumer positioning is deliberate: Android VP Sameer Samat told CNBC that [
 
 **OpenAI Operator** leads on raw agentic benchmark performance and is the most production-mature option for standalone web tasks, but its $5.00/M API pricing is 4× the Gemini 2.5 Computer Use Preview rate for comparable agent workloads. Gemini Intelligence occupies Chrome/Android while active — it is not a background process.
 
-For a direct model benchmark breakdown across GPT-5.5 and Claude Opus 4.7, see [[gpt-5-5-vs-claude-opus-4-7-agentic-coding/draft]].
+For a direct model benchmark breakdown across GPT-5.5 and Claude [Opus 4.7](/blog/2026-04-30-opus-4-7-long-running-coding-benchmark), see [[gpt-5-5-vs-claude-opus-4-7-agentic-coding/draft]].
 
 **Anthropic Computer Use** operates at the OS level (full desktop via Docker sandboxes), which makes it more capable than browser-only agents for complex desktop automation — but it is a developer building block, not a finished product, and its 72.5% OSWorld-Verified score trails Operator's BenchLM.
 

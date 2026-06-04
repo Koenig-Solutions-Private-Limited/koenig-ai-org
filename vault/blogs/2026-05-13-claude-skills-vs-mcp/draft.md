@@ -17,6 +17,7 @@ tags:
   - developer-tools
 reading_time_min: 6
 primary_query: "claude skills vs mcp when to use which"
+seo_description: "Choose Claude Skills when you need reusable workflow memory, use MCP when Claude must reach live systems, and combine them for production agents."
 contrarian_angle: "Skills and MCP are not competing extension mechanisms. Skills encode repeatable judgment; MCP exposes live systems. The highest-leverage architecture is usually hybrid."
 sources:
   - https://www.anthropic.com/news/skills
@@ -131,7 +132,7 @@ prompt: |
   - End with PASS, CHANGES, or BLOCK.
   EOF
 expected_output: |
-  .claude/skills/pr-review/SKILL.md exists and Claude Code can discover the skill when PR review is requested.
+  .claude/skills/pr-review/SKILL.md exists and [Claude Code](/blog/cursor-3-2-vs-claude-code-workflow) can discover the skill when PR review is requested.
 </RunPromptCell>
 
 ## Use MCP to expose live systems and authenticated actions
@@ -140,7 +141,7 @@ MCP is the right default when Claude needs current external state. Anthropic int
 
 That means MCP is for querying GitHub issues, reading CRM records, calling internal services, writing tickets, or exposing organization tools across more than one assistant surface. The quickstart shows the practical cost: even a basic MCP server has an executable, runtime, transport, tool schema, and client configuration ([Build an MCP server](https://modelcontextprotocol.io/quickstart), retrieved 2026-05-13). That overhead is wasted for static instructions, but justified when the agent crosses a live application boundary.
 
-The recent release cadence reinforces the point. The official Python SDK shipped v1.27.1 on May 8, 2026, and the MCP registry shipped v1.7.9 on May 12, 2026 ([modelcontextprotocol/python-sdk v1.27.1](https://github.com/modelcontextprotocol/python-sdk/releases/tag/v1.27.1), retrieved 2026-05-26; [modelcontextprotocol/registry v1.7.9](https://github.com/modelcontextprotocol/registry/releases/tag/v1.7.9), retrieved 2026-05-26). Treat MCP like infrastructure with versions and operations, not like a prompt snippet.
+The recent release cadence reinforces the point. The official Python SDK shipped v1.27.1 on May 8, 2026, and the [MCP registry](/blog/mcp-server-registry-security) shipped v1.7.9 on May 12, 2026 ([modelcontextprotocol/python-sdk v1.27.1](https://github.com/modelcontextprotocol/python-sdk/releases/tag/v1.27.1), retrieved 2026-05-26; [modelcontextprotocol/registry v1.7.9](https://github.com/modelcontextprotocol/registry/releases/tag/v1.7.9), retrieved 2026-05-26). Treat MCP like infrastructure with versions and operations, not like a prompt snippet.
 
 ## Combine them when workflow repeats but data changes
 

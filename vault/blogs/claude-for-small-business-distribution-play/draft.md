@@ -8,6 +8,7 @@ ticket: KOEA-5273
 vendor_tag: anthropic
 content_type: article
 status: g3-passed
+seo_description: "Anthropic's Claude for Small Business launch is best read as an SMB distribution test: packaged workflows, PayPal co-developed training, and local workshops."
 g3_review:
   approved_by: CEO (5a1e1c39-1ba7-46af-a4df-c6bbef8549e9)
   approved_at: 2026-05-28
@@ -50,6 +51,8 @@ faq:
     answer: "The public sources verify a PayPal and Anthropic co-developed free AI fluency course. They do not prove a merchant-dashboard recommendation or distribution agreement, so this draft treats PayPal-channel leverage as analysis, not a sourced fact."
   - question: "Why does the Claude SMB Tour matter?"
     answer: "The tour matters because Anthropic paired online education with in-person training for 100 local business leaders per stop and a one-month Claude Max subscription, turning the launch into hands-on activation."
+positions: none  # strategic-analysis piece; STANCES.md not yet populated — no current Koenig stance directly engaged
+first_60_words_answer: "Anthropic's Claude for Small Business is a May 2026 package of Claude Cowork workflows for small-business tasks like payroll, invoicing, and campaign execution. The strategic read is that Anthropic paired workflows with PayPal co-developed AI training, a 10-city workshop tour, and nonprofit access programs — creating an SMB adoption path for businesses that do not buy AI through enterprise IT."
 tags: [anthropic, smb, distribution, claude, strategy, gtm, paypal, quickbooks, cowork]
 ---
 

@@ -30,13 +30,13 @@ faq:
 
 # Why Claude Security's partner moat matters more than its scanner
 
-Anthropic's Claude Security, released into public beta on April 30, 2026, gives enterprise security teams a zero-integration vulnerability scanner that finds bugs, explains them, and generates targeted patches — all within a single session. The product is available now to Claude Enterprise customers at claude.ai/security, powered by Claude Opus 4.7 [[1](https://claude.com/blog/claude-security-public-beta)] [[4](https://www.anthropic.com/news/claude-opus-4-7)].
+Anthropic's Claude Security, released into public beta on April 30, 2026, gives enterprise security teams a zero-integration vulnerability scanner that finds bugs, explains them, and generates targeted patches — all within a single session. The product is available now to Claude Enterprise customers at claude.ai/security, powered by Claude [Opus 4.7](/blog/2026-04-30-opus-4-7-long-running-coding-benchmark) [[1](https://claude.com/blog/claude-security-public-beta)] [[4](https://www.anthropic.com/news/claude-opus-4-7)].
 
 Most coverage frames this as "Anthropic has a security scanner now." That misses the structural play. The scanner is table stakes — Snyk, Semgrep, and CodeQL already do this. The actual bet is the Opus 4.7 embed into six enterprise security platforms and five global systems integrators. That's a platform moat, not a feature launch.
 
 ## What Claude Security actually does
 
-Point it at a repository, directory, or branch. Claude Security scans, identifies vulnerabilities, provides severity confidence ratings, explains how each finding can be reproduced, and generates a targeted patch. The patch is actionable directly through Claude Code on the Web — no tool-switching, no ticket handoff [[1](https://claude.com/blog/claude-security-public-beta)] [[3](https://claude.com/resources/tutorials/getting-started-with-claude-security)].
+Point it at a repository, directory, or branch. Claude Security scans, identifies vulnerabilities, provides severity confidence ratings, explains how each finding can be reproduced, and generates a targeted patch. The patch is actionable directly through [Claude Code](/blog/cursor-3-2-vs-claude-code-workflow) on the Web — no tool-switching, no ticket handoff [[1](https://claude.com/blog/claude-security-public-beta)] [[3](https://claude.com/resources/tutorials/getting-started-with-claude-security)].
 
 Anthropic says the product already reduces "days of back and forth between the security team and the engineers to a single sitting" [[1](https://claude.com/blog/claude-security-public-beta)].
 

@@ -4,14 +4,10 @@ author: blog-author
 ticket: KOEA-7153
 vendor_tag: community
 content_type: article
-title: "Aider in 2026: The Git-Native AI Coding CLI That Writes 72% of Its Own Code"
-description: "A deep-dive review of Aider — the open-source, git-native AI coding CLI. Covers strengths, failure modes, architect mode, a 10-step setup guide, and a head-to-head comparison with Cline in 2026."
-slug: "2026-06-02-ai-tool-deep-dive-aider"
-tags: [aider, ai-coding-cli, git-native, open-source, architect-mode, code-review]
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 10
 primary_query: "aider AI coding CLI review 2026"
-first_60_words_answer: "Aider is a free, open-source terminal AI coding assistant with 41K+ GitHub stars and 4.1 million installations. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026."
+first_60_words_answer: "Aider is a free, open-source terminal AI coding assistant with 39K+ GitHub stars and 4.1 million installations. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026."
 contrarian_angle: "Aider's refusal to add MCP and IDE integration is intentional discipline, not a roadmap gap — its git-atomic commit philosophy is the audit-trail pattern that Claude Code and Cline users are now copying for enterprise governance."
 positions:
   - id: cli-first-workflows-for-production-teams
@@ -141,7 +137,7 @@ schema_jsonld:
 
 # Aider in 2026: The Git-Native AI Coding CLI That Writes 72% of Its Own Code
 
-Aider is a free, open-source terminal AI coding assistant with 41K+ GitHub stars and 4.1 million installations. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026.
+Aider is a free, open-source terminal AI coding assistant with 39K+ GitHub stars and 4.1 million installations. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026.
 
 The counterintuitive fact about Aider is that its spartan feature set is a product decision, not a roadmap gap. While competitors sprint toward IDE panels, MCP server orchestration, and browser automation dashboards, Aider has doubled down on one idea: every AI edit should be a git commit, every session should run on a branch, and every change should be auditable through tools developers already know. That philosophy — now over two years old — is quietly influencing how teams configure Claude Code and Cline's audit trails. Aider figured out the governance pattern first.
 
@@ -181,7 +177,7 @@ Drop `AI!` or `AI?` comments directly in your source file and Aider's watch mode
 
 ## Where Aider Breaks
 
-**No MCP support.** As of mid-2026, Aider does not integrate with the [[blogs/mcp-2026-roadmap-explained|Model Context Protocol]]. If your workflow involves querying database schemas, creating GitHub Issues, or calling Jira via MCP servers, Aider cannot help. Cline and Claude Code have native MCP integration; Aider explicitly does not. This is the single largest gap for teams building MCP-connected agent pipelines.
+**No MCP support.** As of mid-2026, Aider does not integrate with the [Model Context Protocol](https://academy.kspl.tech/blog/mcp-2026-roadmap-explained). If your workflow involves querying database schemas, creating GitHub Issues, or calling Jira via MCP servers, Aider cannot help. Cline and Claude Code have native MCP integration; Aider explicitly does not. This is the single largest gap for teams building MCP-connected agent pipelines.
 
 **Single-session only.** Aider runs one session per terminal. OpenCode (95K stars) and Cline CLI 2.0 both support parallel agents on the same project — useful for large migrations where different subsystems can be refactored concurrently. Aider's serial model requires you to work in sequence or open multiple terminals manually.
 
@@ -319,9 +315,9 @@ Aider and Cline are the two strongest open-source, bring-your-own-model CLI tool
 | Token efficiency | 4.2× better than Claude Code | Variable by model/task |
 | Local model support | Yes (Ollama, LM Studio) | Yes |
 | Open source | Apache 2.0 | Apache 2.0 |
-| GitHub Stars | 41K+ | 58K+ |
+| GitHub Stars | 39K+ | 58K+ |
 
-**Choose Aider** when your workflow is terminal-native, you want a clean git audit trail without IDE overhead, and you do not need MCP servers. Aider's git-atomic philosophy aligns precisely with the production CLI-first patterns covered in our [[blogs/seven-cli-comparison|seven-CLI comparison]] — teams that treat AI edits as code review artifacts rather than interactive conversations.
+**Choose Aider** when your workflow is terminal-native, you want a clean git audit trail without IDE overhead, and you do not need MCP servers. Aider's git-atomic philosophy aligns precisely with the [production CLI-first patterns covered in our seven-CLI comparison](https://academy.kspl.tech/blog/seven-cli-comparison) — teams that treat AI edits as code review artifacts rather than interactive conversations.
 
 **Choose Cline** when you live in VS Code, need browser automation for end-to-end testing, or have an MCP server ecosystem running. [Cline's MCP integration](https://academy.kspl.tech/blog/2026-05-13-claude-skills-vs-mcp) gives it access to tools Aider simply cannot reach: GitHub Issues, Jira boards, database schema queries, internal APIs.
 
@@ -333,7 +329,7 @@ A hybrid is viable and common: use Aider for long-running refactor branches wher
 
 ## When NOT to Use Aider
 
-**Your team needs MCP tool access.** Aider has no MCP integration, full stop. If agents need to read Jira, query Postgres schemas, or call internal APIs, [[blogs/ai-coding-agents-production-2026-buyers-guide|Claude Code or Cline]] are the right tools. Aider's value proposition does not extend to orchestrated tool use.
+**Your team needs MCP tool access.** Aider has no MCP integration, full stop. If agents need to read Jira, query Postgres schemas, or call internal APIs, [Claude Code or Cline are the right tools](https://academy.kspl.tech/blog/ai-coding-agents-production-2026-buyers-guide). Aider's value proposition does not extend to orchestrated tool use.
 
 **You need parallel agent runs.** Aider processes one session at a time. For teams running multiple concurrent AI tasks on the same codebase — common in large feature branches or multi-service migrations — OpenCode's multi-session architecture or Cline CLI 2.0's parallel terminals are better fits.
 

@@ -91,6 +91,49 @@ function readStringFromRecord(record: unknown, key: string) {
   return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
 }
 
+const BLOCKED_ACTIVATION_GUARD_CODE = "blocked_activation_guard";
+const BLOCKED_ACTIVATION_METADATA_KEYS = ["unblock_owner", "unblock_action", "status_drift_child_issue"] as const;
+type BlockedActivationGuardKey = (typeof BLOCKED_ACTIVATION_METADATA_KEYS)[number];
+
+function readBlockedActivationMetadata(record: unknown): Partial<Record<BlockedActivationGuardKey, string>> {
+  const metadata: Partial<Record<BlockedActivationGuardKey, string>> = {};
+  for (const key of BLOCKED_ACTIVATION_METADATA_KEYS) {
+    const value = readStringFromRecord(record, key);
+    if (value) metadata[key] = value;
+  }
+  return metadata;
+}
+
+function isMetadataGuardedBlockedStatus(status: string, metadata: unknown): boolean {
+  if (status !== "blocked") return false;
+  const guardMetadata = readBlockedActivationMetadata(metadata);
+  const hasUnblockPair = !!guardMetadata.unblock_owner && !!guardMetadata.unblock_action;
+  return hasUnblockPair || !!guardMetadata.status_drift_child_issue;
+}
+
+function didBlockedActivationMetadataChange(currentMetadata: unknown, nextMetadata: unknown): boolean {
+  const current = readBlockedActivationMetadata(currentMetadata);
+  const next = readBlockedActivationMetadata(nextMetadata);
+  return BLOCKED_ACTIVATION_METADATA_KEYS.some((key) => (current[key] ?? null) !== (next[key] ?? null));
+}
+
+function blockedActivationGuardDetails(input: {
+  issueId: string;
+  source: "issue.update" | "issue.checkout";
+  previousStatus: string;
+  requestedStatus: string;
+  metadata: unknown;
+}) {
+  return {
+    code: BLOCKED_ACTIVATION_GUARD_CODE,
+    issueId: input.issueId,
+    source: input.source,
+    previousStatus: input.previousStatus,
+    requestedStatus: input.requestedStatus,
+    guardMetadata: readBlockedActivationMetadata(input.metadata),
+  };
+}
+
 export interface IssueFilters {
   status?: string;
   assigneeAgentId?: string;
@@ -2869,6 +2912,26 @@ export function issueService(db: Db) {
       if (patch.status === "in_progress" && !nextAssigneeAgentId && !nextAssigneeUserId) {
         throw unprocessable("in_progress issues require an assignee");
       }
+      if (
+        patch.status === "in_progress" &&
+        isMetadataGuardedBlockedStatus(existing.status, existing.metadata)
+      ) {
+        const metadataChanged =
+          issueData.metadata !== undefined &&
+          didBlockedActivationMetadataChange(existing.metadata, issueData.metadata);
+        if (!metadataChanged) {
+          throw conflict(
+            "Blocked issue requires explicit unblock before activation",
+            blockedActivationGuardDetails({
+              issueId: existing.id,
+              source: "issue.update",
+              previousStatus: existing.status,
+              requestedStatus: "in_progress",
+              metadata: existing.metadata,
+            }),
+          );
+        }
+      }
       if (patch.status === "in_progress") {
         const unresolvedBlockerIssueIds = blockedByIssueIds !== undefined
           ? await listUnresolvedBlockerIssueIds(dbOrTx, existing.companyId, blockedByIssueIds)
@@ -3064,6 +3127,24 @@ export function issueService(db: Db) {
       const unresolvedBlockerIssueIds = dependencyReadiness.get(id)?.unresolvedBlockerIssueIds ?? [];
       if (unresolvedBlockerIssueIds.length > 0) {
         throw unprocessable("Issue is blocked by unresolved blockers", { unresolvedBlockerIssueIds });
+      }
+      const currentIssue = await db
+        .select({ status: issues.status, metadata: issues.metadata })
+        .from(issues)
+        .where(eq(issues.id, id))
+        .then((rows) => rows[0] ?? null);
+      if (!currentIssue) throw notFound("Issue not found");
+      if (isMetadataGuardedBlockedStatus(currentIssue.status, currentIssue.metadata)) {
+        throw conflict(
+          "Blocked issue requires explicit unblock before activation",
+          blockedActivationGuardDetails({
+            issueId: id,
+            source: "issue.checkout",
+            previousStatus: currentIssue.status,
+            requestedStatus: "in_progress",
+            metadata: currentIssue.metadata,
+          }),
+        );
       }
 
       const sameRunAssigneeCondition = checkoutRunId
