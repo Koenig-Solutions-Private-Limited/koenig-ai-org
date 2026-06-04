@@ -1,0 +1,7 @@
+There is a memory leak in stream-handler.js. Read the comment at the top of the file — it explains the bug.
+
+When a client connects, a 'data' listener is added to the shared dataSource EventEmitter. But when the client disconnects (request 'close' event), the listener is never removed. Over time, disconnected clients accumulate as ghost listeners.
+
+Fix the leak by removing the listener when the request closes.
+
+After your fix, run `npm test` to confirm both tests pass.

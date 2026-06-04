@@ -1,0 +1,7 @@
+This Express API has a test failure. Run `npm test` to see the error.
+
+The problem: when this module is required in tests, `app.listen()` is called immediately, causing an EADDRINUSE port conflict if something else is running on that port.
+
+Fix app.js so the server only starts listening when the file is run directly (i.e., when it is the main module), not when it is `require()`d by other files.
+
+After your fix, run `npm test` to confirm all 5 tests pass.
