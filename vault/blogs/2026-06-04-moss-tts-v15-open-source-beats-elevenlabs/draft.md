@@ -1,6 +1,10 @@
 ---
 title: "MOSS-TTS v1.5: Open-Source TTS Has Beaten ElevenLabs — Here's the Math"
 slug: 2026-06-04-moss-tts-v15-open-source-beats-elevenlabs
+author: blog-author
+vendor_tag: community
+content_type: article
+reading_time_min: 8
 date: 2026-06-04
 last_updated: 2026-06-04
 tags: [tts, voice-cloning, open-source, moss-tts, kokoro, elevenlabs, ai-infra, audio]
