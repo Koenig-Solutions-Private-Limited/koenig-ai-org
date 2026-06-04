@@ -50,10 +50,10 @@ TESTS_PASS_TIME=""
 
 # Run the tool
 if [ "$TOOL" = "codex" ]; then
-  timeout 1800 codex --approval-policy never -q "$PROMPT" 2>/dev/null || true
+  timeout 1800 codex exec --dangerously-bypass-approvals-and-sandbox -C "$TASK_DIR" "$PROMPT" >/dev/null 2>/dev/null || true
 elif [ "$TOOL" = "claude" ]; then
   # Claude Code must be configured to use opus-4-7 for benchmark validity
-  timeout 1800 claude --model claude-opus-4-7 --allowedTools "Edit,Read,Bash" -p "$PROMPT" 2>/dev/null || true
+  timeout 1800 claude --model claude-opus-4-7 --allowedTools "Edit,Read,Bash" -p "$PROMPT" >/dev/null 2>/dev/null || true
 else
   echo "ERROR: unknown tool: $TOOL (use 'codex' or 'claude')" >&2
   exit 1
