@@ -40,8 +40,9 @@ cd "$TASK_DIR"
 NODE_ENV=development npm install --silent 2>/dev/null
 
 # Verify baseline has failing tests (sanity check)
+# Use exit code: npm test exits 0 when all tests pass, non-zero on failure
 BASELINE_PASS=false
-if NODE_ENV=development npm test --silent 2>/dev/null | grep -q "Tests:.*0 failed"; then
+if NODE_ENV=development npm test >/dev/null 2>/dev/null; then
   BASELINE_PASS=true
 fi
 
@@ -64,7 +65,8 @@ END_UTC=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 ELAPSED=$(( END_EPOCH - START_EPOCH ))
 
 # Check correctness (all tests pass after tool run)
-if NODE_ENV=development npm test --silent 2>/dev/null | grep -q "Tests:.*0 failed"; then
+# Use exit code: npm test exits 0 when all tests pass, non-zero on failure
+if NODE_ENV=development npm test >/dev/null 2>/dev/null; then
   CORRECTNESS="true"
   TESTS_PASS_TIME=$ELAPSED
 fi
