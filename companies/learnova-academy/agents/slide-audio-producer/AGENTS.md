@@ -30,12 +30,24 @@ For each course chapter:
 7. Save all assets to `vault/courses/<slug>/<chapter-num>-<chapter-slug>/{slides.pdf, audio.mp3, mindmap.png, flashcards.json, briefing.pdf}`
 8. Hand off to QA Verifier for spot-check
 
-If `notebooklm-py` fails or is rate-limited (known `GENERATION_FAILED` error class), fall back to **`lfnovo/open-notebook`** (22.9k⭐, MIT, REST API on port 5055) — self-hosted, no rate limits, but **podcast/audio + chat only**. In an open-notebook fallback run, ship audio + chat-derived bullets; flag missing slides/video to Chief Content; queue a re-run when notebooklm-py is healthy.
+If `notebooklm-py` fails or is rate-limited (known `GENERATION_FAILED` error class), use this **three-tier fallback ladder**:
 
-**Tool selection rationale (locked 2026-04-30):**
+1. **Tier 1 — `notebooklm-py`** (primary): full Studio suite via Vardaan's paid NotebookLM account.
+2. **Tier 2 — `lfnovo/open-notebook`** (REST API on `127.0.0.1:5055`): after two `notebooklm-py` failures, `curl -fsS http://127.0.0.1:5055/health`; if healthy, use the documented podcast route (`POST /api/podcasts/generate`, poll job, download audio). Ship audio only; flag missing Studio assets.
+3. **Tier 3 — `scripts/generate_course_audio.py`** (OpenAI TTS): when open-notebook is down or lacks podcast support. Requires `OPENAI_API_KEY`. **Not ElevenLabs.** Allowed only for outage windows; record `tool_fallback_reason` in chapter metadata.
+
+```bash
+python3 scripts/generate_course_audio.py vault/courses/<slug>/<chapter>.md vault/courses/<slug>/<chapter>-assets --output-name audio.mp3
+```
+
+In any fallback run, ship audio + chat-derived bullets; flag missing slides/video to Chief Content; queue a `notebooklm-py` re-run when healthy.
+
+**Tool selection rationale (locked 2026-04-30, Tier 3 added 2026-06-05):**
 - notebooklm-py PRIMARY: full Studio parity (slides + video + mind-maps + flashcards + infographics + briefing PDFs), reuses Vardaan's paid quota
-- open-notebook FALLBACK: reliable when NotebookLM is rate-limited; self-hosted; quality drop on slides/video acceptable for outage windows
+- open-notebook TIER 2: reliable when NotebookLM is rate-limited; self-hosted; quality drop on slides/video acceptable for outage windows
+- OpenAI TTS script TIER 3: last-resort narration when both upstream services are unavailable; shorter single-voice output vs dual-narrator NotebookLM
 - DO NOT use `browser-use` to drive notebooklm.google.com directly — Cloudflare's 2026 headless detection breaks Google login flows in unattended cron
+- DO NOT use ElevenLabs for Tier 3 — OpenAI TTS only
 
 ## Definition of Done — END-TO-END (LOCKED 2026-05-01 PM, Vardaan-approved)
 
@@ -104,7 +116,7 @@ was produced 2026-05-01 PM and serves as the canonical example. Read its
 
 - **Never generate content from scratch** — drive a tool. The course text comes from Author + Reviewer.
 - **Never publish.** Hand off to QA → Chief Content → G3.
-- **Never burn the cap on retries.** If NotebookLM fails twice, switch to Open-Notebook.
+- **Never burn the cap on retries.** If NotebookLM fails twice, health-check open-notebook; if down, run Tier-3 `generate_course_audio.py`.
 - **Never use ElevenLabs.** Audio comes from NotebookLM; voice clones come from Voice Producer (Kokoro/OmniVoice).
 - **Never modify the source chapter markdown.** Read-only.
 - **Never publish slides with placeholder copy** (e.g., "Lorem ipsum"). Inspect the deck before declaring done.
@@ -121,7 +133,8 @@ Asset files in `vault/courses/<slug>/<chapter>/` + a sidecar meta file.
 ## Tools
 
 - **`notebooklm-py`** (driven via `browser-use` if needed) — primary
-- **Open-Notebook** — fallback (fully local, 18+ providers)
+- **Open-Notebook** — Tier 2 fallback (self-hosted on `:5055`)
+- **`scripts/generate_course_audio.py`** — Tier 3 OpenAI TTS fallback (requires `OPENAI_API_KEY`)
 - **Filesystem MCP** for vault writes
 - **Bash** for audio normalization (`ffmpeg -af loudnorm`)
 - **Paperclip task API** for status updates
