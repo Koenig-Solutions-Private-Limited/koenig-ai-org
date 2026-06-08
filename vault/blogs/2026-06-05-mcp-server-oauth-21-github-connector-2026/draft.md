@@ -157,4 +157,4 @@ The pattern is consistent: servers that came to market fast skip DCR because no 
 
 The full implementation pattern — including the Cloudflare Workers `OAuthProvider` wiring, KV token storage, scope mapping from GitHub permissions to MCP tool access, and the `/.well-known` document template — is covered step by step in [[courses/claude-mcp-mastery]]. The course uses the GitHub connector as the running production example throughout Module 4.
 
-See also: [[blogs/mcp-stranger-to-production-2026]] for the end-to-end deployment picture, [[blogs/2026-05-13-mcp-server-registry-security]] for the supply-chain risks introduced by the 91.5% that skip OAuth entirely, and [[blogs/mcp-2026-roadmap-explained]] for what the 2026-07-28 spec RC changes for server builders.
+See also: [[blogs/2026-06-02-mcp-1-0-production-patterns-2026]] for the end-to-end deployment picture, [[blogs/2026-05-13-mcp-server-registry-security]] for the supply-chain risks introduced by the 91.5% that skip OAuth entirely, and [[blogs/mcp-2026-roadmap-explained]] for what the 2026-07-28 spec RC changes for server builders.

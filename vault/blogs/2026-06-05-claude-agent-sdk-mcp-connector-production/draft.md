@@ -270,7 +270,7 @@ D) Agent SDK with `claude -p` and a local stdio server
 
 Anthropic's acquisition of Stainless in May 2026[^8] signals the next step: generated MCP servers from OpenAPI specs, with per-client adaptation for Claude Code, Cursor, and OpenAI Agents. The distribution layer is converging on spec-in, MCP-server-out — teams that wire the connector today are on the right side of that shift. See also [[blog/2026-05-31-claude-prompt-caching-roi-2026]] for how prompt caching stacks with the Agent SDK to cut costs further.
 
-Want to build a production agent end-to-end? The [[course/claude-agent-sdk-production]] course covers session management, multi-server MCP topology, and the security model in depth — including the OAuth 2.1 wiring that 91.5% of teams skip.
+Want to build a production agent end-to-end? The [[course/production-agents-claude-agent-sdk-mcp-connector]] course covers session management, multi-server MCP topology, and the security model in depth — including the OAuth 2.1 wiring that 91.5% of teams skip.
 
 ---
 

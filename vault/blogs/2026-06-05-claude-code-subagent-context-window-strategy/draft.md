@@ -162,7 +162,7 @@ The test: if you'd naturally start a new terminal session for the task, spawn a 
 
 ---
 
-For hands-on practice with Claude Code's agentic patterns — CLAUDE.md configuration, effort-tier matching, multi-agent orchestration, and context recovery — see [[course/claude-code-production-workflows]].
+For hands-on practice with Claude Code's agentic patterns — CLAUDE.md configuration, effort-tier matching, multi-agent orchestration, and context recovery — see [[course/claude-opus-4-8-production-guide]].
 
 ---
 
