@@ -4,7 +4,8 @@ author: blog-author
 ticket: KOEA-7151
 vendor_tag: anthropic
 content_type: article
-status: g0-passed
+status: g4-approved
+seo_description: "Claude Code 2026 review: MCP, git worktrees, multi-agent SDK — and the failure modes (Opus cost, context limits) to plan for. Includes a 10-step setup."
 reading_time_min: 10
 primary_query: "claude code review 2026 is it worth it"
 contrarian_angle: "Claude Code's value isn't the model — it's the harness: subagents, worktrees, and MCP plugins turn a CLI tool into a programmable multi-agent pipeline that Cursor's IDE architecture cannot replicate"
@@ -17,7 +18,7 @@ positions:
     engagement: refines
   - id: mcp-as-interoperability-moat
     engagement: defends
-last_updated: 2026-06-02
+last_updated: 2026-06-10
 hero_image:
   url: /img/blogs/ai-tool-deep-dive-claude-code/hero.png
   alt: "Claude Code terminal session showing subagent task decomposition with MCP tool calls, git worktree isolation, and multi-agent coordination"
@@ -25,7 +26,7 @@ faq:
   - question: "Is Claude Code free to use in 2026?"
     answer: "Claude Code requires an Anthropic Pro plan ($20/month) for basic access, or a Max plan ($100–200/month) for higher rate limits. Beyond plan limits, usage bills at API rates — roughly $15/MTok input and $75/MTok output for Opus 4.7, or $3/$15 for Sonnet 4.6. A complex multi-file refactor typically costs $3–15 in API tokens. The CLI itself is open-source and MIT-licensed at github.com/anthropics/claude-code."
   - question: "How does Claude Code compare to Cursor Composer 2 in 2026?"
-    answer: "Claude Code wins for terminal-native, headless, and pipeline-composable work: CI integration, multi-agent orchestration, MCP servers, and custom harness builds. Cursor Composer 2 wins for IDE-first interactive development where visible diffs, inline autocomplete, and fast iteration feedback matter most. Claude Code with Opus 4.7 scores ~70% on CursorBench vs Cursor's 61.3%, but Cursor's model is ~86% cheaper per token. Most senior teams use both."
+    answer: "Claude Code wins for terminal-native, headless, and pipeline-composable work: CI integration, multi-agent orchestration, MCP servers, and custom harness builds. Cursor Composer 2 wins for IDE-first interactive development where visible diffs, inline autocomplete, and fast iteration feedback matter most. Cursor Composer 2 claims 61.3% on CursorBench; Claude Code's Opus 4.7 improved SWE-bench by +13 percentage points over its predecessor, though no direct CursorBench comparison from a single source exists. Cursor's model is ~86% cheaper per token. Most senior teams use both."
   - question: "What is Claude Code's context window size?"
     answer: "Claude Code uses the underlying model's context window: 200,000 tokens for Opus 4.7 and Sonnet 4.6. This handles most codebases, but large monorepos can exhaust it. Strategies include the --add-dir flag for scoped directory access, CLAUDE.md files to summarize project conventions, and subagent decomposition to split large tasks into smaller context slices."
   - question: "Does Claude Code work with GitHub Actions or CI pipelines?"
@@ -48,7 +49,6 @@ sources:
   - https://modelcontextprotocol.io/introduction
 schema:
   - BlogPosting
-  - HowTo
   - FAQPage
 whats_new:
   - "Claude Code's harness — subagents, worktrees, and MCP — is what separates it from IDE agents in 2026; the model is almost secondary"
@@ -68,13 +68,15 @@ We've run Claude Code as the backbone of the Koenig AI Academy agent pipeline fo
 
 ![Claude Code subagent coordination diagram showing parallel worktrees and MCP tool calls in a multi-agent pipeline](/img/blogs/ai-tool-deep-dive-claude-code/subagent-diagram.png)
 
+<img src="/img/products/claude-code/01.png" alt="Claude Code terminal session showing the agent autonomously reading a codebase, editing files, and running commands in a dark terminal window" loading="lazy" width="1552" height="992" />
+
 ---
 
 ## What Claude Code Actually Does Well
 
 ### 1. Subagent decomposition for tasks that overflow a single context window
 
-Claude Code can spawn parallel worker agents, each in its own git worktree, and coordinate their output. A cross-repo refactor touching 40 files — which would overflow even a 200k window with full context — splits into four parallel subagents, each handling 10 files, then merges. The `claude agents` command and worktree flag exist precisely for this, and the v2.1.153 changelog explicitly improved workflow-status handling for multi-agent sessions. [Claude Code releases](https://github.com/anthropics/claude-code/releases)
+Claude Code supports parallel agent coordination through two mechanisms: running multiple `claude --worktree` processes simultaneously (each on its own branch), or launching subagents programmatically via the Agent SDK's `query()` function. A cross-repo refactor touching 40 files — which would overflow even a 200k window with full context — splits into four parallel invocations, each handling 10 files in its own isolated branch, then merges. The v2.1.153 changelog improved workflow-status handling for these coordinated multi-session patterns. [Claude Code releases](https://github.com/anthropics/claude-code/releases)
 
 In our pipeline, a parent agent dispatches three simultaneous child agents: one drafts content, one fact-checks citations, one writes schema markup. Wall-clock time for a 1,200-word blog drops from 20 minutes (serial) to 8 minutes (parallel).
 
@@ -134,7 +136,7 @@ estimatedCost: { currency: "USD", minValue: 20, maxValue: 200 }
 6. **Enable worktree mode** — pass `--worktree` for any automated or high-stakes task. Claude Code works on a new branch and never writes to main.
 7. **Set a per-task budget cap** — in SDK mode, set `maxTokensPerTask` to prevent cost runaway on open-ended tasks.
 8. **Write a specific task spec** — `claude "refactor src/auth/middleware.ts to use the new JWT schema from PR #142, no other files"`. Specificity reduces tool-call rounds. See our [context engineering guide](/blog/context-engineering-vs-prompt-engineering-2026).
-9. **Review the session transcript** — `claude session last` prints the full log. Use this for audit before merge.
+9. **Capture the session transcript** — pipe output at invocation time: `claude ... 2>&1 | tee session.log`. Review `session.log` for audit before merge. In SDK mode, the `messages` return value gives structured access to the full exchange.
 10. **Enforce a review gate** — never merge a Claude Code worktree directly. Require a human diff review or a secondary reviewer-agent pass first.
 
 ---
@@ -185,7 +187,7 @@ Failure mode we hit: when research synthesis lacked dated citations, the agent d
 
 This is the decision most teams face. These tools serve different workflow shapes, and the best teams use both.
 
-**Benchmarks:** Claude Code with Opus 4.7 scores approximately 70% on CursorBench — higher than Cursor Composer 2's reported 61.3%. [Cursor technical report](https://cursor.com/resources/Composer2.pdf) Cursor Composer 2 claims 73.7% on SWE-bench Multilingual. Neither score predicts your real-world task success rate — benchmark harnesses don't match your repo or CI. Both tools are in the same quality tier; the choice is a workflow fit question. See our [buyer's guide](/blog/ai-coding-agents-production-2026-buyers-guide) for a full tool-selection matrix.
+**Benchmarks:** Cursor Composer 2 claims 61.3% on CursorBench and 73.7% on SWE-bench Multilingual per its own technical report. [Cursor technical report](https://cursor.com/resources/Composer2.pdf) Anthropic's Opus 4.7 improved Claude Code's SWE-bench performance by +13 percentage points over its predecessor — a substantial lift, but measured on a different benchmark harness. [Anthropic Opus 4.7](https://www.anthropic.com/news/claude-opus-4-7) No independent CursorBench score for Claude Code exists from the same source, so a like-for-like comparison on that metric isn't possible. Neither score predicts your real-world task success rate — benchmark harnesses don't match your repo or CI. The choice is a workflow fit question. See our [buyer's guide](/blog/ai-coding-agents-production-2026-buyers-guide) for a full tool-selection matrix.
 
 **Cost:** Cursor Composer 2's underlying model is ~86% cheaper per token than Claude Opus 4.7. [VentureBeat](https://venturebeat.com/technology/cursors-new-coding-model-composer-2-is-here-it-beats-claude-opus-4-6-but) At $20/month flat on Cursor Pro, it's dramatically cheaper for interactive high-frequency use. Claude Code on Sonnet 4.6 narrows the gap ($3/MTok vs Cursor's ~$0.50/MTok), and token efficiency advantages close the gap further on complex tasks.
 
@@ -241,4 +243,4 @@ D) It reduces token cost by compressing the session
 
 ---
 
-Want to go deeper on building multi-agent pipelines with Claude Code? Our **[[course/cursor-composer-2]]** course covers Claude Code and Cursor Composer 2 in side-by-side exercises — including a full module on harness architecture that mixes tools by workflow stage. The [context engineering vs prompt engineering](/blog/context-engineering-vs-prompt-engineering-2026) framework explains why the spec and harness choices above matter more than model selection for real-world task success.
+Want to go deeper on building multi-agent pipelines with Claude Code? We're building a dedicated **[[course/cursor-composer-2]]** course that covers Claude Code and Cursor Composer 2 in side-by-side exercises — including a full module on harness architecture that mixes tools by workflow stage. In the meantime, the [context engineering vs prompt engineering](/blog/context-engineering-vs-prompt-engineering-2026) framework explains why the spec and harness choices above matter more than model selection for real-world task success.
