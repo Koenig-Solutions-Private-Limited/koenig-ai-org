@@ -256,7 +256,7 @@ In [Chapter 2](/learn/picking-a-frontier-model-2026-q2/02-tool-use-determinism-b
 
 [4] Patil, S. et al. Berkeley Function-Calling Leaderboard (BFCL) V4 — https://gorilla.cs.berkeley.edu/leaderboard.html · retrieved 2026-04-30
 
-[5] OpenAI. Introducing GPT-5.5 — https://openai.com/index/introducing-gpt-5-5/ · retrieved 2026-04-30
+[5] OpenAI. Introducing GPT-5.5 — https://platform.openai.com/docs/models/gpt-5-5 · retrieved 2026-04-30
 
 [6] Liu, N. et al. (2023). "Lost in the Middle: How Language Models Use Long Contexts" — https://arxiv.org/abs/2307.03172 · retrieved 2026-04-30
 
@@ -266,7 +266,7 @@ In [Chapter 2](/learn/picking-a-frontier-model-2026-q2/02-tool-use-determinism-b
 
 [9] Anthropic. Prompt caching — https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching · retrieved 2026-04-30
 
-[10] OpenAI. Prompt caching in the API — https://openai.com/index/api-prompt-caching/ · retrieved 2026-04-30
+[10] OpenAI. Prompt caching in the API — https://platform.openai.com/docs/guides/prompt-caching · retrieved 2026-04-30
 
 [11] Google. Context caching overview (Gemini API) — https://ai.google.dev/gemini-api/docs/caching · retrieved 2026-04-30
 

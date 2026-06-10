@@ -29,7 +29,7 @@ hands_on_exercise: "Run the benchmark script on 2 of your own prompts and record
 references:
   - "[^1]: Koenig AI Academy internal benchmark data, Q2 2026. /data/claude-tool-use-determinism/2026-Q2/."
   - "[^2]: Anthropic. 'Prompt caching.' Claude API documentation. https://www.anthropic.com/news — model and caching release notes."
-  - "[^3]: OpenAI. 'Structured Outputs.' Model release notes. https://help.openai.com/en/articles/9624314-model-release-notes — GPT-5.5 strict JSON schema enforcement capabilities."
+  - "[^3]: OpenAI. 'Structured Outputs.' Model release notes. https://platform.openai.com/docs/models — GPT-5.5 strict JSON schema enforcement capabilities."
   - "[^4]: Anthropic. 'Model temperature and sampling.' Claude model documentation. https://www.anthropic.com/news — temperature=0 behavior across API requests."
   - "[^5]: Shen, Y. et al. (2023). 'HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in HuggingFace.' https://arxiv.org/abs/2303.17580."
   - "[^6]: Google. 'Gemini 3.1 Pro Preview.' https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview — model capabilities, context limits, structured outputs, function calling, and custom-tools endpoint."
@@ -318,7 +318,7 @@ You now have empirical determinism scores for your prompts — and an understand
 
 [^2]: Anthropic. "Prompt caching." Claude API documentation. https://www.anthropic.com/news — model and caching release notes. Cache hit behavior and tokenization path consistency noted in internal A/B across 500 cached vs. uncached runs.
 
-[^3]: OpenAI. "Structured Outputs." Model release notes. https://help.openai.com/en/articles/9624314-model-release-notes — GPT-5.5 strict JSON schema enforcement capabilities.
+[^3]: OpenAI. "Structured Outputs." Model release notes. https://platform.openai.com/docs/models — GPT-5.5 strict JSON schema enforcement capabilities.
 
 [^4]: Anthropic. "Model temperature and sampling." Claude model documentation. https://www.anthropic.com/news — temperature=0 behavior across API requests; note on non-determinism sources beyond sampling.
 

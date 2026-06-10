@@ -31,7 +31,7 @@ references:
   - "[^1]: Liu, N. F. et al. (2023). 'Lost in the Middle: How Language Models Use Long Contexts.' Transactions of the Association for Computational Linguistics, 12. https://arxiv.org/abs/2307.03172"
   - "[^2]: Anthropic. Claude Opus 4.7 model card and release notes. https://www.anthropic.com/news"
   - "[^3]: Google DeepMind. Gemini 3.1 Pro release and changelog. https://ai.google.dev/gemini-api/docs/changelog"
-  - "[^4]: OpenAI. GPT-5.5 release notes. https://help.openai.com/en/articles/9624314-model-release-notes"
+  - "[^4]: OpenAI. GPT-5.5 release notes. https://platform.openai.com/docs/models"
   - "[^5]: Hsieh, C.-Y. et al. (2024). 'RULER: What's the Real Context Size of Your Long-Context Language Models?' https://arxiv.org/abs/2404.06654"
   - "[^6]: Bai, Y. et al. (2024). 'LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks.' https://arxiv.org/abs/2412.15204"
 slides: courses/picking-a-frontier-model-2026-q2/ch03-slides.pptx
@@ -242,7 +242,7 @@ The final question is: **what does reliable output actually cost?** In [Chapter 
 
 [^3]: Google DeepMind. "Gemini 3.1 Pro release and changelog." https://ai.google.dev/gemini-api/docs/changelog — 1M token context capability notes and multimodal context handling.
 
-[^4]: OpenAI. "GPT-5.5 release notes." https://help.openai.com/en/articles/9624314-model-release-notes — 128K context window specifications and retrieval accuracy claims.
+[^4]: OpenAI. "GPT-5.5 release notes." https://platform.openai.com/docs/models — 128K context window specifications and retrieval accuracy claims.
 
 [^5]: Hsieh, C.-Y. et al. (2024). "RULER: What's the Real Context Size of Your Long-Context Language Models?" https://arxiv.org/abs/2404.06654 — empirical methodology for measuring effective context window; multi-needle evaluation design.
 

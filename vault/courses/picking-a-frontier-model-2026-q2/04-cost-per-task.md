@@ -29,7 +29,7 @@ key_concepts:
 hands_on_exercise: "Fill in the cost estimator spreadsheet for your use case using real token counts from Chapter 2"
 references:
   - "[^1]: Anthropic. 'Claude pricing.' https://www.anthropic.com/pricing — Opus 4.7 input/output/cache pricing as of Q2 2026. Also: 'Prompt caching.' https://www.anthropic.com/news."
-  - "[^2]: OpenAI. 'OpenAI API pricing.' https://openai.com/pricing — GPT-5.5 input/output/cached input pricing as of Q2 2026. Model release notes: https://help.openai.com/en/articles/9624314-model-release-notes."
+  - "[^2]: OpenAI. 'OpenAI API pricing.' https://platform.openai.com/docs/pricing — GPT-5.5 input/output/cached input pricing as of Q2 2026. Model release notes: https://platform.openai.com/docs/models."
   - "[^3]: Google. 'Gemini API pricing.' https://ai.google.dev/pricing — Gemini 3.1 Pro input/output/context caching pricing as of Q2 2026. Changelog: https://ai.google.dev/gemini-api/docs/changelog."
   - "[^4]: Koenig AI Academy internal cost model data, Q2 2026. Derived from 10×3×5 benchmark dataset (/data/claude-tool-use-determinism/2026-Q2/) with retry simulation applied at workload scale."
   - "[^5]: Patil, S. et al. Berkeley Function-Calling Leaderboard (BFCL) V4. https://gorilla.cs.berkeley.edu/leaderboard.html — analysis of tool-call reliability impact on pipeline cost."
@@ -393,7 +393,7 @@ For further reading on how these models perform on specific workloads, see [Opus
 
 [^1]: Anthropic. "Claude pricing." https://www.anthropic.com/pricing — Opus 4.7 input/output/cache pricing as of Q2 2026. Also: "Prompt caching." https://www.anthropic.com/news.
 
-[^2]: OpenAI. "OpenAI API pricing." https://openai.com/pricing — GPT-5.5 input/output/cached input pricing as of Q2 2026. Model release notes: https://help.openai.com/en/articles/9624314-model-release-notes.
+[^2]: OpenAI. "OpenAI API pricing." https://platform.openai.com/docs/pricing — GPT-5.5 input/output/cached input pricing as of Q2 2026. Model release notes: https://platform.openai.com/docs/models.
 
 [^3]: Google. "Gemini API pricing." https://ai.google.dev/pricing — Gemini 3.1 Pro input/output/context caching pricing as of Q2 2026. Changelog: https://ai.google.dev/gemini-api/docs/changelog.
 
