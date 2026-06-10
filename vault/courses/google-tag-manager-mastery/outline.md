@@ -1,7 +1,8 @@
 ---
 course_slug: google-tag-manager-mastery
 title: "Google Tag Manager for Performance Marketers: Conversion Tracking, Pixels & Event Measurement"
-status: outline-g0-passed
+status: g3-passed
+publish_state: g4-approved
 course_track: career
 toc_locked: true
 video_overview: true

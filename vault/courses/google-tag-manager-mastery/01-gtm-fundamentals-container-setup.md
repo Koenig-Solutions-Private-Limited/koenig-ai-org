@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: google-tag-manager-mastery
 title: "GTM Fundamentals: Container Setup and the Tag–Trigger–Variable Model"
-status: awaiting-g0
+status: g0-blocked
 duration_min: 18
 vendor_tag: Google Tag Manager
 learning_objectives:

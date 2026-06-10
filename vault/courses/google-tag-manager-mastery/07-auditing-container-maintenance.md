@@ -99,11 +99,11 @@ quiz:
     section_anchor: campaign-cycle-maintenance-workflow
 ---
 
-Tag bloat is structural, not accidental. Every GTM container drifts toward redundancy as campaigns rotate, agencies turn over, and marketers add pixels without removing old ones. This chapter gives you the audit methodology, measurement workflow, and governance calendar to keep your container lean and defensible.
+Tag bloat is structural: every GTM container drifts toward redundancy as campaigns rotate and teams add pixels without removing old ones. This chapter gives you the audit methodology, DevTools benchmarking workflow, and governance calendar to keep your container lean and defensible.
 
 ## Diagnosing Tag Bloat: The Full Audit Methodology
 
-GTM containers have a hard size cap of [300 KB](https://web.dev/tag-best-practices/). The GTM UI warns at 70% of that limit (≈210 KB). A container can hit this threshold with only 20–30 active tags because GTM does not cascade-delete: when you remove a tag, its associated triggers and variables remain in the payload. Per the [Declutter Your GTM guide](https://www.napkyn.com/blog/declutter-your-gtm-a-practical-guide-to-cleaning-up-tags-triggers-and-variables), orphan accumulation is usually the root cause of containers near the warning threshold.
+GTM containers have a hard size cap of [300 KB](https://web.dev/tag-best-practices/). The GTM UI warns at 70% of that limit (≈210 KB). A container can hit this threshold with only 20–30 active tags because GTM does not cascade-delete: when you remove a tag, its associated triggers and variables remain in the payload — the primary source of containers near the warning threshold.
 
 Export the container JSON from GTM Admin → Export Container. Then identify bloat across four categories:
 
@@ -126,13 +126,11 @@ The decision rule:
 
 ## Benchmarking Page Load Impact with Browser DevTools
 
-Quantifying the before/after weight reduction turns an audit from housekeeping into a performance result you can present to stakeholders.
+Quantifying weight reduction turns an audit into a stakeholder-ready result.
 
 1. Open Chrome DevTools (F12) → **Network** tab. Check **Disable cache** and set throttling to **Fast 3G**.
-2. Hard-reload the page (`Ctrl+Shift+R`). Filter by `domain:googletagmanager.com` and note the **Size** column value for `gtm.js` — this is bytes transferred over the network, per the [Chrome DevTools documentation](https://developer.chrome.com/docs/devtools/network/).
-3. Record the bottom-bar **Finish** time and total transfer size.
-4. Switch to the **Performance** tab and note the yellow **Scripting** section duration — this reflects JavaScript execution cost from all loaded tags.
-5. Publish your cleaned container, then repeat steps 1–4.
+2. Hard-reload (`Ctrl+Shift+R`). Filter by `domain:googletagmanager.com` and record the **Size** column for `gtm.js` — bytes transferred over the network, per the [Chrome DevTools documentation](https://developer.chrome.com/docs/devtools/network/). Also note the **Performance** tab's yellow **Scripting** duration for JavaScript execution cost.
+3. Publish your cleaned container and repeat steps 1–2.
 
 The cache-disable step is non-negotiable. A warm-cache reload shows near-zero script load times and will make a real improvement invisible. A realistic benchmark: a 47-tag container cleaned to 31 tags reduces `gtm.js` from 85 KB to 58 KB and cuts scripting time from 1,840 ms to 1,210 ms.
 
@@ -140,11 +138,11 @@ The cache-disable step is non-negotiable. A warm-cache reload shows near-zero sc
 
 ## Building a Tracking Plan (Solution Design Reference)
 
-The tracking plan — also called a Solution Design Reference (SDR) — maps every business KPI to the tag, trigger, and dataLayer event responsible for measuring it. It's the hit-by-a-bus document: anyone onboarding should be able to reconstruct every implementation decision from it without opening GTM.
+The tracking plan (also called a Solution Design Reference, or SDR) maps every business KPI to the tag, trigger, and dataLayer event responsible for measuring it. It's the hit-by-a-bus document: anyone onboarding can reconstruct every implementation decision without opening GTM.
 
 The Events tab must contain, at minimum: **Event Name**, **KPI Mapped**, **GTM Tag**, **GTM Trigger**, **dataLayer Push Required** (yes/no plus expected schema), and **Consent Category** (`analytics_storage`, `ad_storage`). A companion Tools tab tracks active platforms with property/account IDs, owners, and last verification dates.
 
-The SDR must be updated as part of every GTM publish — not as optional documentation afterward. As [MeasureSchool's GTM audit guide](https://measureschool.com/google-tag-manager-audit/) documents, an SDR created at project start and then abandoned will cause new team members to create duplicate tags for events the SDR still shows as "not yet implemented."
+The SDR must be updated at every GTM publish — not afterward as optional documentation. Per [MeasureSchool's GTM audit guide](https://measureschool.com/google-tag-manager-audit/), an SDR abandoned after project start causes new team members to create duplicate tags for events the document still shows as "not yet implemented."
 
 ## The Quarterly Review: Four Checkpoints
 
@@ -152,11 +150,11 @@ Run deep audits on a quarterly cadence, stepping through four checkpoints in ord
 
 **1. Tag Relevance** — Cross-reference every active tag against the current vendor stack and campaign calendar. Flag tags for campaigns that ended more than 30 days ago and tags for platforms not in current SaaS contracts.
 
-**2. Trigger Accuracy** — Walk through key user journeys in GTM Preview Mode. Confirm that purchase and conversion tags fire *only* on the confirmation page. Confirm form submission triggers use the Form Submission trigger type, not button click triggers — button clicks fire even when client-side validation fails, inflating conversion counts.
+**2. Trigger Accuracy** — Walk key user journeys in GTM Preview Mode. Confirm purchase and conversion tags fire *only* on the confirmation page. Confirm form submission triggers use the Form Submission type, not click triggers — clicks fire even when client-side validation fails, inflating conversion counts.
 
-**3. Variable Integrity** — In Preview Mode, inspect dataLayer values for key events. Verify `transaction_id` is unique per order, `value` is numeric, and currency matches the expected ISO code. Confirm that consent-gated variables are inaccessible before consent is granted.
+**3. Variable Integrity** — In Preview Mode, inspect dataLayer values for key events. Verify `transaction_id` is unique per order, `value` is numeric, and currency matches the expected ISO code. Confirm consent-gated variables are inaccessible before consent is granted.
 
-**4. Consent Compliance** — Verify every ad and marketing tag has `ad_storage` and `ad_personalization` consent settings configured. Test with a simulated consent-denied session: the Network panel should show no requests to ad conversion or pixel endpoints. Implementation of Consent Mode v2 is covered in [[06-consent-mode-v2-privacy-tracking]].
+**4. Consent Compliance** — Verify every marketing tag has `ad_storage` and `ad_personalization` consent settings configured. Simulate a consent-denied EEA session and confirm the Network panel shows no requests to conversion or pixel endpoints. Consent Mode v2 implementation lives in [[06-consent-mode-v2-privacy-tracking]]; this checkpoint verifies it.
 
 <Callout type="warning">
 Consent Mode v2 became mandatory for EEA and UK traffic on July 21, 2025. GTM does not enforce tag firing order by default — on a fast connection, a Google Ads conversion tag can execute before a consent initialization tag. The only reliable fix is tag sequencing: configure the consent init tag as a setup tag on every marketing tag. Verify this at every quarterly review; it is a GDPR compliance checkpoint, not optional housekeeping.
@@ -174,9 +172,9 @@ The quarterly calendar sets the baseline; campaign gates add precision. Align th
 
 ## Documentation and Handoff Standards
 
-The GTM Versions screen records the full publish history — who published each version and when — making it the primary audit trail for multi-user containers. Version names must carry enough information to identify the right snapshot under rollback pressure: include the change summary, date, and counts of tags/triggers/variables modified.
+The GTM Versions screen records who published each version and when — the primary audit trail for multi-user containers. Version names must identify the right snapshot under rollback pressure: include the change summary, date, and counts of modified tags/triggers/variables.
 
-For teams maintaining containers collaboratively, [Simo Ahava's GTM Tools Sheets add-on](https://www.simoahava.com/tools/gtm-tools-by-simo-ahava/) auto-generates four-tab documentation (version metadata, tags, triggers, variables) from any published container version, with changed fields highlighted. Run this on every quarterly review and store the output alongside the SDR in shared team storage.
+[Simo Ahava's GTM Tools Sheets add-on](https://www.simoahava.com/tools/gtm-tools-by-simo-ahava/) auto-generates four-tab documentation (version metadata, tags, triggers, variables) from any published container version with changed fields highlighted. Run it on every quarterly review and store the output with the SDR.
 
 ---
 
@@ -184,12 +182,12 @@ For teams maintaining containers collaboratively, [Simo Ahava's GTM Tools Sheets
 
 Using a live or staging GTM container you have access to:
 
-1. Open Chrome DevTools → Network, disable cache, throttle to Fast 3G, and hard-reload the page. Record the **Size** value for `gtm.js` and the page **Finish** time.
-2. Identify at least two tags that qualify for pausing or deletion (legacy platform, expired campaign, or duplicate). Pause them and publish with a descriptive version name.
+1. Open Chrome DevTools → Network, disable cache, throttle to Fast 3G, hard-reload. Record the **Size** value for `gtm.js`.
+2. Identify at least two tags for pausing or deletion (legacy platform, expired campaign, or duplicate). Pause them and publish with a descriptive version name.
 3. Repeat the DevTools measurement. Record the before/after `gtm.js` size delta.
-4. Open Triggers and Variables, sort by "used by 0 tags," and remove any orphans.
-5. Add one complete Events row to a new SDR spreadsheet for one of the tags you audited, including all required columns.
+4. Open Triggers and Variables, sort by "used by 0 tags," and remove orphans.
+5. Add one Events row to a tracking plan spreadsheet for a tag you audited, with all required columns.
 
-**Success criteria:** `gtm.js` size decreases in the after measurement, no orphaned triggers or variables remain, and the SDR Events row contains Event Name, KPI Mapped, GTM Tag, GTM Trigger, dataLayer Push Required, and Consent Category.
+**Success criteria:** `gtm.js` size decreases in the after measurement, orphaned triggers and variables cleared, and the SDR Events row contains Event Name, KPI Mapped, GTM Tag, GTM Trigger, dataLayer Push Required, and Consent Category.
 
 This is the final chapter of Google Tag Manager Mastery. You now have the complete lifecycle: build (ch1–ch4), debug and govern (ch5), protect consent ([[06-consent-mode-v2-privacy-tracking]]), and sustain performance in production.
