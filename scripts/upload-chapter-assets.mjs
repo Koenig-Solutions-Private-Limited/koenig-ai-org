@@ -94,12 +94,15 @@ function mapSlideCaptions(pageCount, h2Headings) {
   });
 }
 
+function failSlideExtraction(message) {
+  console.error(`slide PNG extraction failed: ${message}`);
+  console.error("install poppler-utils (pdfinfo + pdftoppm) before uploading chapters with slide-deck.pdf");
+  process.exit(1);
+}
+
 async function extractAndUploadSlides(pdfPath, courseSlug, chapterId, prefix, publicBase) {
   if (!hasCli("pdfinfo") || !hasCli("pdftoppm")) {
-    console.error(
-      "slide PNG extraction skipped: pdftoppm/pdfinfo missing — install poppler-utils before migration",
-    );
-    return { slides: [], slideImagesMeta: null };
+    failSlideExtraction("pdftoppm/pdfinfo missing");
   }
 
   let pageCount = 0;
@@ -108,10 +111,9 @@ async function extractAndUploadSlides(pdfPath, courseSlug, chapterId, prefix, pu
     const m = info.match(/^Pages:\s+(\d+)/m);
     pageCount = m ? Number(m[1]) : 0;
   } catch (err) {
-    console.error("pdfinfo failed:", err.message);
-    return { slides: [], slideImagesMeta: null };
+    failSlideExtraction(`pdfinfo failed: ${err.message}`);
   }
-  if (!pageCount) return { slides: [], slideImagesMeta: null };
+  if (!pageCount) failSlideExtraction("pdfinfo reported zero pages");
 
   const workDir = join(dirname(pdfPath), "slides");
   mkdirSync(workDir, { recursive: true });
@@ -119,8 +121,7 @@ async function extractAndUploadSlides(pdfPath, courseSlug, chapterId, prefix, pu
   try {
     execSync(`pdftoppm -png -r 150 "${pdfPath}" "${ppmPrefix}"`, { stdio: "pipe" });
   } catch (err) {
-    console.error("pdftoppm failed:", err.message);
-    return { slides: [], slideImagesMeta: null };
+    failSlideExtraction(`pdftoppm failed: ${err.message}`);
   }
 
   const generated = readdirSync(workDir)
@@ -161,6 +162,10 @@ async function extractAndUploadSlides(pdfPath, courseSlug, chapterId, prefix, pu
     });
     totalBytes += body.length;
     console.log(`uploaded ${fileName} (${(body.length / 1024).toFixed(0)} KB) -> ${slides.at(-1).image_url}`);
+  }
+
+  if (!slides.length) {
+    failSlideExtraction("pdftoppm produced no PNG files");
   }
 
   return {
@@ -234,7 +239,8 @@ if (Object.keys(assets).length === 0) {
 
 let slideManifest = { slides: [], slideImagesMeta: null };
 const slideDeckPath = join(args.dir, "slide-deck.pdf");
-if (existsSync(slideDeckPath) && statSync(slideDeckPath).size > 0) {
+const hasSlideDeck = existsSync(slideDeckPath) && statSync(slideDeckPath).size > 0;
+if (hasSlideDeck) {
   slideManifest = await extractAndUploadSlides(
     slideDeckPath,
     args.course,
@@ -242,6 +248,9 @@ if (existsSync(slideDeckPath) && statSync(slideDeckPath).size > 0) {
     prefix,
     publicBase,
   );
+  if (!slideManifest.slides.length) {
+    failSlideExtraction("slide-deck.pdf present but no slides were extracted");
+  }
 }
 
 const sidecarDir = join(ROOT, "vault", "courses", args.course, args.chapter);
@@ -269,7 +278,11 @@ const sidecar = {
     ...meta,
     ...(slideManifest.slideImagesMeta ? { slide_images: slideManifest.slideImagesMeta } : {}),
   },
-  ...(slideManifest.slides.length ? { slides: slideManifest.slides } : existing.slides ? { slides: existing.slides } : {}),
+  ...(slideManifest.slides.length
+    ? { slides: slideManifest.slides }
+    : existing.slides
+      ? { slides: existing.slides }
+      : {}),
   verification: { publish_state: "ready", r2_urls_status_200: "verified at upload" },
 };
 writeFileSync(sidecarPath, JSON.stringify(sidecar, null, 2) + "\n");
