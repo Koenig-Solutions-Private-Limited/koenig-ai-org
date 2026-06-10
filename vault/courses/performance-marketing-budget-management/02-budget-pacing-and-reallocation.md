@@ -51,7 +51,7 @@ Before starting, confirm you can:
 The foundational calculation in budget pacing is your **daily spend target**:
 
 ```
-Daily spend target = Monthly budget ÷ Business days remaining (or calendar days, depending on your model)
+Daily spend target = Budget remaining ÷ Days remaining in period (calendar days or business days, depending on your model)
 ```
 
 Most B2C performance campaigns run seven days a week, so use calendar days. For B2B campaigns with strong weekday skew, use business days.

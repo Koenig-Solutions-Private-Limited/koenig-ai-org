@@ -213,7 +213,7 @@ Minimum 2 weeks. 4 weeks is better — long enough to smooth out day-of-week var
 **Step 3: Measure the lift ratio.**
 
 ```
-Incrementality Lift = (Conversion rate in control) − (Conversion rate in test) / (Conversion rate in control)
+Incrementality Lift = ((Conversion rate in control) − (Conversion rate in test)) / (Conversion rate in control)
 ```
 
 If the control group maintains a 2.4% conversion rate and the test group drops to 1.8% when ads are removed:
@@ -230,7 +230,7 @@ If your branded search campaign reports 3,000 conversions/month at ₹1.2Cr and 
 
 - Incremental conversions: 3,000 × 25% = 750
 - Incremental revenue (at ₹3,000 avg order): 750 × ₹3,000 = ₹22.5L
-- True incremental ROAS: ₹22.5L ÷ ₹1.2Cr = 1.88x
+- True incremental ROAS: ₹22.5L ÷ ₹1.2Cr = 0.19x
 
 This is far from the 6x the platform reports. It may or may not justify the spend depending on your profitability thresholds — but now you have an honest number to present.
 
