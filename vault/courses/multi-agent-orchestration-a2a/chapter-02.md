@@ -4,11 +4,12 @@ chapter_num: 2
 chapter_title: "A2A Protocol Architecture — The Message Flow (2026)"
 author: course-author
 ticket: KOEA-6950
-date: 2026-05-31
-status: draft-for-review
+date: 2026-06-04
+status: awaiting-g0
 level: Advanced
 duration_min: 45
 reading_time_min: 12
+description: "Deep-dive into the A2A wire protocol: JSON-RPC 2.0 message envelopes, four-step AgentCard handshake, Capability Schema design, session context with contextId, and blocking vs. fire-and-forget interaction patterns."
 prerequisites_chapters:
   - 1
 learning_objectives:
@@ -17,39 +18,52 @@ learning_objectives:
   - Explain why JSON-RPC 2.0 outperforms REST for intent-based agent flows and name the three failure modes REST introduces
   - Design a custom Capability Schema for a domain-specific agent using the A2A skills and parts model
 positions:
-  - id: stance:open-standards-over-vendor-lock-in
+  - id: mcp-as-interoperability-moat
     engagement: defends
-  - id: stance:rest-not-enough-for-agents
-    engagement: challenges
+  - id: audit-trail-as-enterprise-gate
+    engagement: neutral
 chapter_primary_query: "A2A protocol message flow wire format JSON-RPC 2.0"
-first_60_words_answer: "A2A messages are JSON-RPC 2.0 envelopes sent over HTTPS. Every message carries a role (ROLE_USER or ROLE_AGENT), a contextId that persists across the full agent session, a parts array holding the actual payload (text, file, data, or image), and optional metadata. The agent-to-agent handshake begins with an AgentCard probe at /.well-known/agent.json, followed by a sendMessage or sendStreamingMessage call."
+first_60_words_answer: "A2A messages are JSON-RPC 2.0 envelopes sent over HTTPS. Every message carries a role (ROLE_USER or ROLE_AGENT), a contextId that persists across the full agent session, a parts array holding the actual payload (text, file, data, or image), and optional metadata. The agent-to-agent handshake begins with an AgentCard probe at /.well-known/agent-card.json, followed by a sendMessage or sendStreamingMessage call."
 faq:
   - question: "What wire format does the A2A protocol use?"
-    answer: "A2A uses JSON-RPC 2.0 over HTTPS as its transport. Each RPC call is a JSON object with jsonrpc: '2.0', a method name (e.g. sendMessage, getTask, cancelTask), a params object, and an id. Server-Sent Events (SSE) extend the same HTTP connection for streaming responses. An optional gRPC transport is defined in the spec for high-throughput scenarios."
+    answer: "A2A uses JSON-RPC 2.0 over HTTPS as its transport. Each RPC call is a JSON object with jsonrpc: '2.0', a method name (e.g. sendMessage, getTask, cancelTask), a params object, and an id. Server-Sent Events (SSE) extend the same HTTP connection for streaming responses. An optional gRPC transport is defined in the spec for high-throughput scenarios. ([A2A Specification v1.0.0](https://a2a-protocol.org/latest/specification/))"
   - question: "What is the A2A Handshake and Negotiation phase?"
-    answer: "Before delegating a task, a client agent fetches the server agent's AgentCard at /.well-known/agent.json to read its declared capabilities, skills, and auth requirements; validates protocol version compatibility using the A2A-Version header; checks extension support via A2A-Extensions; and authenticates using the declared scheme. Only after this four-step sequence does the client send a sendMessage payload."
+    answer: "Before delegating a task, a client agent fetches the server agent's AgentCard at /.well-known/agent-card.json to read its declared capabilities, skills, and auth requirements; validates protocol version compatibility using the A2A-Version header; checks extension support via A2A-Extensions; and authenticates using the declared scheme. Only after this four-step sequence does the client send a sendMessage payload. ([A2A Agent Discovery](https://a2a-protocol.org/latest/topics/agent-discovery/))"
   - question: "What is a contextId in A2A and why does it matter?"
-    answer: "A contextId is a UUID that identifies a logical conversation or workflow session across multiple agent turns and agent boundaries. All messages belonging to the same task chain share the same contextId, letting any agent in the chain resume a failed workflow from the last checkpoint without re-running prior agents."
+    answer: "A contextId is a UUID that identifies a logical conversation or workflow session across multiple agent turns and agent boundaries. All messages belonging to the same task chain share the same contextId, letting any agent in the chain resume a failed workflow from the last checkpoint without re-running prior agents. ([A2A Spec §Task Lifecycle](https://a2a-protocol.org/latest/specification/))"
   - question: "Why does A2A use JSON-RPC instead of REST?"
-    answer: "REST assumes the client knows which resource to manipulate at design time. Agents operate at runtime with intent — 'produce this outcome.' JSON-RPC lets the caller express a method name that maps to an outcome rather than a resource path, eliminating the Intent Gap: REST routes must be designed in advance; JSON-RPC methods accept arbitrarily rich intent descriptions in their params."
+    answer: "REST assumes the client knows which resource to manipulate at design time. Agents operate at runtime with intent — 'produce this outcome.' JSON-RPC lets the caller express a method name that maps to an outcome rather than a resource path, eliminating the Intent Gap: REST routes must be designed in advance; JSON-RPC methods accept arbitrarily rich intent descriptions in their params. ([JSON-RPC 2.0 Specification](https://www.jsonrpc.org/specification))"
   - question: "What is a Capability Schema (Skill) in A2A?"
-    answer: "A Skill is a JSON object inside the AgentCard that declares one task type the agent can fulfill. Each skill includes an id, name, description, optional inputModes and outputModes (text, image, audio), and tags for discovery. A narrow specialist agent publishes one precise skill; a generalist publishes several. The schema is what a discovery registry indexes to match capability queries."
+    answer: "A Skill is a JSON object inside the AgentCard that declares one task type the agent can fulfill. Each skill includes an id, name, description, optional inputModes and outputModes (text, image, audio), and tags for discovery. A narrow specialist agent publishes one precise skill; a generalist publishes several. The schema is what a discovery registry indexes to match capability queries. ([A2A Agent Discovery](https://a2a-protocol.org/latest/topics/agent-discovery/))"
 inline_assets:
   - type: diagram
     path: ./img/ch02-message-envelope.png
     alt: "A2A message envelope anatomy: outer JSON-RPC 2.0 wrapper with jsonrpc, method, and id fields; params object containing a Message with role (ROLE_USER or ROLE_AGENT), messageId (UUID), contextId (UUID shared across session), and parts array; Parts array showing four part types: TextPart with a text string, FilePart with file.bytes or file.uri, DataPart with a data JSON object, and ImagePart with image data. HTTP headers A2A-Version and A2A-Extensions shown alongside."
   - type: diagram
     path: ./img/ch02-handshake-sequence.png
-    alt: "A2A Handshake sequence diagram: Client Agent sends GET request to /.well-known/agent.json (AgentCard fetch), receives AgentCard JSON response; Client validates A2A-Version header compatibility and checks A2A-Extensions; Client authenticates per AgentCard security scheme (OAuth2 shown); Client sends sendMessage JSON-RPC POST, Server responds with SendMessageResponse containing Task in SUBMITTED state; Server internal processing transitions Task to WORKING then COMPLETED; Client calls getTask to poll status."
-last_updated: 2026-05-31
+    alt: "A2A Handshake sequence diagram: Client Agent sends GET request to /.well-known/agent-card.json (AgentCard fetch), receives AgentCard JSON response; Client validates A2A-Version header compatibility and checks A2A-Extensions; Client authenticates per AgentCard security scheme (OAuth2 shown); Client sends sendMessage JSON-RPC POST, Server responds with SendMessageResponse containing Task in TASK_STATE_SUBMITTED state; Server internal processing transitions Task to TASK_STATE_WORKING then TASK_STATE_COMPLETED; Client calls getTask to poll status."
+last_updated: 2026-06-10
+tags:
+  - a2a-protocol
+  - json-rpc-2.0
+  - agent-architecture
+  - multi-agent-orchestration
+  - wire-protocol
 sources:
-  - https://a2a-protocol.org/latest/specification/
-  - https://a2a-protocol.org/latest/topics/agent-discovery/
-  - https://github.com/a2aproject/A2A
-  - https://www.jsonrpc.org/specification
-  - https://a2a-protocol.org/latest/topics/streaming/
-  - https://a2a-protocol.org/latest/topics/push-notifications/
-  - https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
+  - url: https://a2a-protocol.org/latest/specification/
+    retrieved: 2026-06-04
+  - url: https://a2a-protocol.org/latest/topics/agent-discovery/
+    retrieved: 2026-06-04
+  - url: https://github.com/a2aproject/A2A
+    retrieved: 2026-06-04
+  - url: https://www.jsonrpc.org/specification
+    retrieved: 2026-06-04
+  - url: https://a2a-protocol.org/latest/topics/streaming-and-async/
+    retrieved: 2026-06-04
+  - url: https://a2a-protocol.org/latest/topics/push-notifications/
+    retrieved: 2026-06-04
+  - url: https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
+    retrieved: 2026-06-04
 ---
 
 # A2A Protocol Architecture — The Message Flow (2026)
@@ -58,7 +72,7 @@ sources:
 
 ---
 
-A2A messages are JSON-RPC 2.0 envelopes sent over HTTPS. Every message carries a `role` (`ROLE_USER` or `ROLE_AGENT`), a `contextId` that persists across the full agent session, a `parts` array holding the actual payload (text, file, data, or image), and optional metadata. The agent-to-agent handshake begins with an AgentCard probe at `/.well-known/agent.json`, followed by a `sendMessage` or `sendStreamingMessage` call.
+A2A messages are JSON-RPC 2.0 envelopes sent over HTTPS. Every message carries a `role` (`ROLE_USER` or `ROLE_AGENT`), a `contextId` that persists across the full agent session, a `parts` array holding the actual payload (text, file, data, or image), and optional metadata. The agent-to-agent handshake begins with an AgentCard probe at `/.well-known/agent-card.json`, followed by a `sendMessage` or `sendStreamingMessage` call.
 
 Chapter 1 made the case for *why* the A2A protocol exists. This chapter is where theory hits wire. You'll trace every field in an A2A message, implement the four-step handshake sequence from a blank screen, and design a Capability Schema that makes your agent discoverable by intent rather than by URL.
 
@@ -129,18 +143,24 @@ Or an error object:
 }
 ```
 
-And that's the entire protocol. No headers encoding semantics, no path routing, no verb interpretation. The `method` string is the entire routing mechanism; the `params` object is the entire payload specification. This simplicity is its power: the A2A spec defines exactly six methods, and those six methods cover every pattern agents need — synchronous, streaming, push-notification, polling, cancellation.
+And that's the entire protocol. No headers encoding semantics, no path routing, no verb interpretation. The `method` string is the entire routing mechanism; the `params` object is the entire payload specification. This simplicity is its power: the A2A v1.0 spec defines a compact core method set that covers every pattern agents need — synchronous, streaming, push-notification, polling, cancellation, and task listing.
 
 | A2A Method | Purpose | Response Mode |
 |---|---|---|
 | `sendMessage` | Initiate a task or send a follow-up turn | Synchronous (Task or Message) |
 | `sendStreamingMessage` | Same as `sendMessage` but with SSE streaming | Server-Sent Events |
 | `getTask` | Retrieve current task state by ID | Synchronous |
+| `listTasks` | List tasks for a given context or agent | Synchronous |
 | `cancelTask` | Request graceful cancellation | Synchronous |
-| `setTaskPushNotificationConfig` | Register a webhook for task state updates | Synchronous |
+| `subscribeToTask` | Subscribe to task state events via SSE | Server-Sent Events |
+| `createTaskPushNotificationConfig` | Register a webhook for task state updates | Synchronous |
 | `getTaskPushNotificationConfig` | Retrieve the registered webhook config | Synchronous |
 
-Every agent-to-agent interaction in a multi-agent system is a composition of these six methods. The wire stays simple even when the system grows complex.
+This chapter walks through the most commonly used methods. The full v1.0 method set also includes `listTaskPushNotificationConfigs`, `deleteTaskPushNotificationConfig`, and `getExtendedAgentCard`. The wire stays simple even when the system grows complex.
+
+<Callout type="info">
+  **A2A and MCP: Complementary Layers.** A2A does not replace the Model Context Protocol. A2A is the *external* protocol for agent-to-agent delegation across vendor and process boundaries; MCP is the *internal* tool-and-context layer connecting an agent to its local databases, APIs, and resources. A production multi-agent system needs both: MCP server coverage for tool access and context injection, A2A endpoints for cross-vendor agent delegation. Think of MCP as the USB bus inside each agent node and A2A as the TCP/IP network that connects the nodes. Using A2A without MCP for internal tool management is like building a network without any peripherals.
+</Callout>
 
 ---
 
@@ -182,7 +202,7 @@ These two headers are the entire wire-level negotiation surface. Everything else
 }
 ```
 
-The `configuration` object is optional but powerful. `acceptedOutputModes` tells the server what Part types the client can consume (text, image, audio, file, data). `blocking` controls whether the call should wait for the task to complete (`true`) or return a `SUBMITTED` Task immediately (`false`) — this is the `Request/Response vs. Fire-and-Forget` control knob.
+The `configuration` object is optional but powerful. `acceptedOutputModes` tells the server what Part types the client can consume (text, image, audio, file, data). `blocking` controls whether the call should wait for the task to complete (`true`) or return a `TASK_STATE_SUBMITTED` Task immediately (`false`) — this is the `Request/Response vs. Fire-and-Forget` control knob.
 
 ### Layer 3: The Message Object
 
@@ -200,11 +220,11 @@ The `configuration` object is optional but powerful. `acceptedOutputModes` tells
 }
 ```
 
-**`role`** — either `ROLE_USER` (the message originates from outside the agent, i.e. from the orchestrator or the human user) or `ROLE_AGENT` (the message originates from the agent itself, i.e. a turn in the agent's reasoning or output). This distinction matters for conversation history reconstruction and for security auditing.
+**`role`** — either `ROLE_USER` (the message originates from outside the agent, i.e. from the orchestrator or the human user) or `ROLE_AGENT` (the message originates from the agent itself, i.e. a turn in the agent's reasoning or output). This distinction matters for conversation history reconstruction, security auditing, and enterprise audit trails: every action taken in a multi-agent chain is attributable to a specific `(contextId, messageId, role)` tuple and queryable from a distributed trace store.
 
 **`messageId`** — a UUID unique to this specific message. Used for idempotency: if the same `messageId` arrives twice (due to a retry), the server SHOULD return the same result without re-processing.
 
-**`contextId`** — the session identifier. This is the most architecturally important field in the entire protocol. It identifies the logical workflow or conversation across all agents and all turns. If Agent A delegates to Agent B, and Agent B re-delegates to Agent C, all three agents receive the same `contextId`. If Agent C crashes and Agent A needs to resume the workflow, it can do so by sending a new `sendMessage` with the same `contextId` — Agent B picks up from its last checkpoint rather than starting over. We cover `contextId` continuity patterns in depth in Chapter 7.
+**`contextId`** — the session identifier. This is the most architecturally important field in the entire protocol. It identifies the logical workflow or conversation across all agents and all turns. If Agent A delegates to Agent B, and Agent B re-delegates to Agent C, all three agents receive the same `contextId`. If Agent C crashes and Agent A needs to resume the workflow, it can do so by sending a new `sendMessage` with the same `contextId` — Agent B picks up from its last checkpoint rather than starting over. We cover `contextId` continuity patterns in depth in [[multi-agent-orchestration-a2a/chapter-07|Chapter 7]].
 
 **`taskId`** — null for the first message in a new task; populated with the Task UUID on subsequent turns within the same task lifecycle.
 
@@ -224,7 +244,7 @@ The `parts` array is where the actual payload lives. Each Part is exactly one of
     "kind": "file",
     "file": {
       "name": "q3-earnings-call.txt",
-      "mimeType": "text/plain",
+      "mediaType": "text/plain",
       "bytes": "<base64-encoded-content>"
     }
   }
@@ -251,7 +271,7 @@ Write the complete, valid JSON for a sendMessage JSON-RPC 2.0 call with:
 - params.message.role: "ROLE_USER"
 - params.message.messageId: a placeholder UUID
 - params.message.contextId: a different placeholder UUID
-- params.message.parts: one TextPart with the instruction "Analyze the sentiment of the attached earnings call transcript. Return a JSON array where each item has: quote (string), sentiment_score (float -1.0 to 1.0), and category (enum: positive, negative, neutral)." and one FilePart where file.name is "q3-2026-earnings.txt", file.mimeType is "text/plain", and file.bytes is the string "BASE64_ENCODED_TRANSCRIPT"
+- params.message.parts: one TextPart with the instruction "Analyze the sentiment of the attached earnings call transcript. Return a JSON array where each item has: quote (string), sentiment_score (float -1.0 to 1.0), and category (enum: positive, negative, neutral)." and one FilePart where file.name is "q3-2026-earnings.txt", file.mediaType is "text/plain", and file.bytes is the string "BASE64_ENCODED_TRANSCRIPT"
 - params.configuration.acceptedOutputModes: ["text", "data"]
 - params.configuration.blocking: false
 
@@ -274,7 +294,7 @@ Format the JSON cleanly with proper indentation.`}
           "kind": "file",
           "file": {
             "name": "q3-2026-earnings.txt",
-            "mimeType": "text/plain",
+            "mediaType": "text/plain",
             "bytes": "BASE64_ENCODED_TRANSCRIPT"
           }
         }
@@ -296,10 +316,10 @@ Format the JSON cleanly with proper indentation.`}
 
 ### Step 1: AgentCard Fetch
 
-The client fetches the server agent's AgentCard — a JSON document at `/.well-known/agent.json`:
+The client fetches the server agent's AgentCard — a JSON document at `/.well-known/agent-card.json` (the canonical v1.0 path, per RFC 8615):
 
 ```http
-GET /.well-known/agent.json HTTP/1.1
+GET /.well-known/agent-card.json HTTP/1.1
 Host: sentiment-agent.internal
 ```
 
@@ -380,7 +400,7 @@ The AgentCard declares `securitySchemes` and `security`. In the example above, t
 Authorization: Bearer <token>
 ```
 
-In Chapter 8 we cover DPoP-bound tokens, which add a proof-of-possession layer that prevents token theft. For now, bearer tokens are the common baseline.
+In [[multi-agent-orchestration-a2a/chapter-08|Chapter 8]] we cover DPoP-bound tokens, which add a proof-of-possession layer that prevents token theft. For now, bearer tokens are the common baseline.
 
 Only after all four steps succeed does the client send `sendMessage`.
 
@@ -526,7 +546,7 @@ The `contextId` field is A2A's answer to the stateless-HTTP problem in multi-age
 
 1. **Retrieve prior messages** in the session from a shared context store
 2. **Resume a workflow** after a failure without replaying already-completed agent steps
-3. **Correlate distributed traces** across all agents in the chain (covered in Chapter 9)
+3. **Correlate distributed traces** across all agents in the chain (covered in [[multi-agent-orchestration-a2a/chapter-09|Chapter 9]])
 
 Here is how context flows in a three-agent orchestration:
 
@@ -572,7 +592,7 @@ A2A supports three distinct interaction patterns. Understanding which to use is 
 
 ### Pattern 1: Blocking Request/Response
 
-Set `configuration.blocking: true` in `sendMessage`. The HTTP connection stays open until the task reaches a terminal state (`COMPLETED`, `FAILED`, `CANCELED`). The response body contains the final Task object with all output Parts.
+Set `configuration.blocking: true` in `sendMessage`. The HTTP connection stays open until the task reaches a terminal state (`TASK_STATE_COMPLETED`, `TASK_STATE_FAILED`, `TASK_STATE_CANCELED`). The response body contains the final Task object with all output Parts.
 
 ```json
 "configuration": {
@@ -594,17 +614,17 @@ Set `configuration.blocking: false`. The server immediately returns a `Task` obj
   "result": {
     "id": "task-def456",
     "contextId": "ctx-abc",
-    "status": {"state": "SUBMITTED"},
+    "status": {"state": "TASK_STATE_SUBMITTED"},
     "history": []
   },
   "id": "req-001"
 }
 
 // Client polls after 2s:
-// getTask({"id": "task-def456"}) → {"status": {"state": "WORKING"}, ...}
+// getTask({"id": "task-def456"}) → {"status": {"state": "TASK_STATE_WORKING"}, ...}
 
 // Client polls after 8s:
-// getTask({"id": "task-def456"}) → {"status": {"state": "COMPLETED"}, "artifacts": [...]}
+// getTask({"id": "task-def456"}) → {"status": {"state": "TASK_STATE_COMPLETED"}, "artifacts": [...]}
 ```
 
 **When to use**: Medium-duration tasks (30 seconds to 10 minutes), any task where you need to show progress to a user. The polling interval should be adaptive: start at 1 second, back off to 5 seconds after the first `WORKING` state, and reset to 1 second after receiving `INPUT_REQUIRED`.
@@ -615,7 +635,7 @@ Use `sendStreamingMessage` instead of `sendMessage`. The server responds with a 
 
 ```
 event: task_status_updated
-data: {"taskId": "task-def456", "status": {"state": "WORKING"}}
+data: {"taskId": "task-def456", "status": {"state": "TASK_STATE_WORKING"}}
 
 event: message_chunk
 data: {"messageId": "msg-789", "parts": [{"kind": "text", "text": "Based on the Q3 transcript, "}]}
@@ -624,7 +644,7 @@ event: message_chunk
 data: {"messageId": "msg-789", "parts": [{"kind": "text", "text": "revenue grew 12% year-over-year..."}]}
 
 event: task_status_updated
-data: {"taskId": "task-def456", "status": {"state": "COMPLETED"}}
+data: {"taskId": "task-def456", "status": {"state": "TASK_STATE_COMPLETED"}}
 ```
 
 **When to use**: Long tasks (over 10 minutes), any user-facing pipeline where displaying incremental output improves perceived performance, agents that produce large text outputs. SSE is the right default for anything the user will watch in real time.
@@ -666,7 +686,7 @@ Write the complete JSON-RPC `sendMessage` payload. Include:
 
 **Message 1 Response: Initial Task State**
 
-Write the JSON-RPC response from the specialist. The task is in `SUBMITTED` state. Include: `taskId`, `contextId`, `status.state`, empty `history` array, empty `artifacts` array.
+Write the JSON-RPC response from the specialist. The task is in `TASK_STATE_SUBMITTED` state. Include: `taskId`, `contextId`, `status.state`, empty `history` array, empty `artifacts` array.
 
 ---
 
@@ -678,13 +698,13 @@ Write the JSON-RPC `getTask` call using the `taskId` from Message 1's response.
 
 **Message 2 Response: Working State**
 
-Write the `getTask` response showing the task in `WORKING` state.
+Write the `getTask` response showing the task in `TASK_STATE_WORKING` state.
 
 ---
 
 **Message 3: Final `getTask` Response — Completed**
 
-Write the `getTask` response showing the task in `COMPLETED` state with an `artifacts` array containing one DataPart artifact. The artifact should be a JSON array with two risk findings for the contract text above.
+Write the `getTask` response showing the task in `TASK_STATE_COMPLETED` state with an `artifacts` array containing one DataPart artifact. The artifact should be a JSON array with two risk findings for the contract text above.
 
 ---
 
@@ -695,9 +715,9 @@ Fill in the state machine table as you complete each message:
 | Step | Event | Task State | Expected Next State |
 |---|---|---|---|
 | 0 | AgentCard fetched | (no task yet) | Ready to send |
-| 1 | `sendMessage` sent | `SUBMITTED` | `WORKING` |
-| 2 | `getTask` (2s later) | `WORKING` | `COMPLETED` (or still `WORKING`) |
-| 3 | `getTask` (8s later) | `COMPLETED` | Terminal — no further polling |
+| 1 | `sendMessage` sent | `TASK_STATE_SUBMITTED` | `TASK_STATE_WORKING` |
+| 2 | `getTask` (2s later) | `TASK_STATE_WORKING` | `TASK_STATE_COMPLETED` (or still `TASK_STATE_WORKING`) |
+| 3 | `getTask` (8s later) | `TASK_STATE_COMPLETED` | Terminal — no further polling |
 
 ---
 
@@ -736,4 +756,4 @@ You now know what agents say to each other. In Chapter 3, you'll learn how they 
 
 ---
 
-*Sources: [A2A Specification v1.0.0](https://a2a-protocol.org/latest/specification/) · [JSON-RPC 2.0 Specification](https://www.jsonrpc.org/specification) · [A2A GitHub Repository](https://github.com/a2aproject/A2A) · [A2A Agent Discovery](https://a2a-protocol.org/latest/topics/agent-discovery/) · [A2A Streaming](https://a2a-protocol.org/latest/topics/streaming/) · [Google A2A Announcement, Apr 2025](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)*
+*Sources: [A2A Specification v1.0.0](https://a2a-protocol.org/latest/specification/) · [JSON-RPC 2.0 Specification](https://www.jsonrpc.org/specification) · [A2A GitHub Repository](https://github.com/a2aproject/A2A) · [A2A Agent Discovery](https://a2a-protocol.org/latest/topics/agent-discovery/) · [A2A Streaming & Async](https://a2a-protocol.org/latest/topics/streaming-and-async/) · [Google A2A Announcement, Apr 2025](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)*
