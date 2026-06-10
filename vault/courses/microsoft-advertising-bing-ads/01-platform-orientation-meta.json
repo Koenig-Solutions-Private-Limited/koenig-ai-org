@@ -1,0 +1,20 @@
+{
+  "chapter_num": 1,
+  "course_slug": "microsoft-advertising-bing-ads",
+  "chapter_slug": "01-platform-orientation",
+  "title": "Microsoft Advertising Platform Orientation: Interface, Account Structure & the Google Ads Migrant's Mindset",
+  "assets_generated": true,
+  "tool": "generate_course_audio.py + python-pptx",
+  "tool_tier": 3,
+  "notebooklm_fallback_reason": "storage_state.json permission denied (root-owned, running as node); open-notebook not available on port 5055",
+  "slide_count": 7,
+  "slides_path": "vault/courses/microsoft-advertising-bing-ads/ch01-slides.pptx",
+  "audio_path": "vault/courses/microsoft-advertising-bing-ads/ch01-audio.mp3",
+  "duration_audio_sec": 693,
+  "audio_format": "mp3",
+  "audio_voice": "alloy",
+  "audio_model": "tts-1",
+  "produced_at": "2026-06-10T16:26:00Z",
+  "g0_review_required": true,
+  "notebooklm_rerun_queued": true
+}
