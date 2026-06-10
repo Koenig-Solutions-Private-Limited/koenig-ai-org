@@ -8,7 +8,8 @@ author: blog-author
 ticket: KOEA-7153
 vendor_tag: community
 content_type: article
-status: awaiting-g0
+status: g0-passed
+seo_description: "Aider deep-dive: git-atomic commits, architect mode, 4.2x token efficiency over Claude Code, and Aider vs Cline decision guide for terminal-native teams."
 reading_time_min: 10
 primary_query: "aider AI coding CLI review 2026"
 first_60_words_answer: "Aider is a free, open-source terminal AI coding assistant with 41K+ GitHub stars. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026."
