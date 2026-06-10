@@ -1,6 +1,7 @@
 ---
 title: "Choose Codex CLI for automation and Cursor Composer 2 for IDE pair programming"
 description: "Codex CLI and Cursor Composer 2 solve different AI coding jobs: one is a terminal-native automation harness, the other is an IDE-native pair-programming loop."
+seo_description: "Codex CLI and Cursor Composer 2 solve different AI coding jobs: one is a terminal-native automation harness, the other is an IDE-native pair-programming loop."
 slug: 2026-05-17-codex-cli-vs-cursor-composer-2
 date: 2026-05-17
 author: blog-author
@@ -76,6 +77,11 @@ references:
     url: https://cursor.com/blog/bootstrapping-composer-with-autoinstall
     date: 2026-05-06
     retrieved: 2026-05-26
+inline_images:
+  - after_heading: "Benchmark the harness with three small tasks"
+    url: /img/blogs/codex-cli-vs-cursor-composer-2/diagrams/03.png
+    alt: "Side-by-side comparison of Codex CLI audit trail and Cursor Composer IDE agent task panel."
+    caption: "The practical split is audit-first terminal automation versus IDE-native human steering."
 ---
 
 <ArticleMetaPill label="7 min read" />
@@ -85,6 +91,25 @@ references:
 Codex CLI is the better first pick when an AI coding agent needs to run from a terminal, remote shell, clean worktree, or repeatable automation harness. Cursor Composer 2 is the better first pick when a developer is actively steering the agent inside Cursor, reviewing diffs as they appear, and iterating in the IDE. OpenAI documents Codex CLI as a local terminal coding agent that can read, change, and run code in the selected directory [1]. Cursor presents Composer 2 as its in-house coding model for the Cursor IDE, with benchmark gains and lower pricing than its prior Composer generation in a March 2026 launch post [5].
 
 The mistake is treating this as a model leaderboard. Actually, the harness matters more than the model name. Codex CLI and Cursor Composer 2 answer different operating questions: should the agent be something you can **operate** in a shell, or something you can **pair with** in an editor?
+
+<figure>
+
+```mermaid
+flowchart TD
+    A[Which tool?] --> B{Is a human\nsteering live\nin the IDE?}
+    B -->|Yes| C{Audit trail\nrequired?}
+    B -->|No — delegated| D[Codex CLI\nbatch automation]
+    C -->|Yes| E[Codex CLI\n--sandbox + transcript]
+    C -->|No| F{Task bounded\nand ticket-sized?}
+    F -->|Yes| G[Cursor Composer 2\nIDE pair-programming]
+    F -->|No — exploratory| H[Composer 2 to shape\nCodex CLI to verify]
+    D --> I{Needs approval\npolicy?}
+    I -->|Yes| J[requirements.toml\nenterprise mode]
+    I -->|No| K[codex --sandbox\nauto mode]
+```
+
+<figcaption>Fig 1 — Decision tree: Codex CLI for batch automation or Cursor Composer 2 for interactive pair-programming. The key branch is whether a human is actively steering in the IDE. For delegated work — overnight runs, CI pipelines, backlog cleanup — Codex CLI's audit trail and sandbox make it the right primitive. For live IDE-resident work, Composer 2's integrated diffs and instant feedback win.</figcaption>
+</figure>
 
 For adjacent Academy context, read [[openai-agents-sdk-mastery]] for agent runtime architecture, [[picking-a-frontier-model-2026-q2]] for cost-per-task model selection, and [[course/cursor-composer-2]] for Cursor-specific workflows.
 
@@ -119,6 +144,27 @@ The tradeoff is portability. Composer 2 can be excellent inside Cursor and still
 ## Benchmark the harness with three small tasks
 
 Do not run a giant subjective bakeoff. Run three small tasks in your own repository and score the human cost of getting to a mergeable patch. Terminal-Bench is useful because it focuses on hard command-line tasks rather than generic coding demos [7], while Render's coding-agent benchmark is useful as a reminder that setup speed, deployment friction, and output review all affect real adoption [8].
+
+<figure>
+
+```mermaid
+quadrantChart
+    title Automation Intensity vs Human Steering (2026)
+    x-axis Low Human-Steering --> High Human-Steering
+    y-axis Low Automation --> High Automation
+    quadrant-1 Both High
+    quadrant-2 Automated
+    quadrant-3 Manual
+    quadrant-4 Human-Steered
+    Codex CLI: [0.20, 0.80]
+    Cursor Composer 2: [0.75, 0.40]
+    CI batch refactor: [0.10, 0.90]
+    Feature scaffolding: [0.65, 0.55]
+    Bug fix interactive: [0.80, 0.25]
+```
+
+<figcaption>Fig 2 — Automation intensity (y-axis) vs human steering (x-axis) for Codex CLI and Cursor Composer 2, with three representative use cases plotted. Codex CLI lives in the high-automation, low-steering quadrant: it operates unattended. Composer 2 sits in the high-steering quadrant: a developer is directing every step. CI batch refactors and bug-fix interactive sessions anchor the extremes; feature scaffolding lands in the middle where hybrid use of both tools is strongest.</figcaption>
+</figure>
 
 Use this scorecard for both tools:
 
