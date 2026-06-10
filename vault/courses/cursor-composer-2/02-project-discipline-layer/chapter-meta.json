@@ -1,0 +1,14 @@
+{
+  "course_slug": "cursor-composer-2",
+  "chapter_num": 2,
+  "chapter_slug": "02-project-discipline-layer",
+  "status": "slides-done",
+  "assets": {
+    "slides_url": "vault/courses/cursor-composer-2/02-project-discipline-layer/slides.pptx",
+    "audio_url": "vault/courses/cursor-composer-2/02-project-discipline-layer/audio.mp3"
+  },
+  "tool": "generate_course_audio.py",
+  "slide_count": 7,
+  "duration_audio_sec": 1244,
+  "produced_at": "2026-06-10T17:33:00Z"
+}
