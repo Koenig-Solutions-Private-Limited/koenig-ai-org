@@ -14,11 +14,17 @@ reading_time_min: 9
 primary_query: "mcp production patterns 2026"
 contrarian_angle: "The registry lists 9,652 servers — but only 8.5% implement OAuth 2.1. Production MCP is primarily an auth and context-budget problem, not a transport problem."
 first_60_words_answer: "Use MCP when you need one server to serve multiple AI clients without rewriting connectors, and when the data source is live — not static. As of 2026, the spec is mature enough for production: Streamable HTTP handles load balancing, OAuth 2.1 is specified for auth, and 41% of surveyed engineering orgs are already in production. The gap is tooling, not protocol."
+seo_description: "Production MCP in 2026: OAuth 2.1, progressive tool disclosure, per-server sandboxing, and the failure modes teams hit first."
 positions: none
 last_updated: 2026-06-02
 hero_image:
   url: /img/blogs/mcp-1-0-production-patterns-2026/hero.png
   alt: "Diagram of an MCP server routing tool calls from Claude, ChatGPT, and Cursor clients to a shared database backend"
+inline_images:
+  - after_heading: "Production Patterns: Auth, Orchestration, Observability"
+    url: /img/blogs/2026-06-02-mcp-1-0-production-patterns-2026/diagrams/03.png
+    alt: "Official MCP Registry interface showing server metadata and production integration details."
+    caption: "Production MCP work starts with discoverable server metadata, explicit auth, and observable tool boundaries."
 sources:
   - https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate
   - https://www.digitalapplied.com/blog/mcp-adoption-statistics-2026-model-context-protocol

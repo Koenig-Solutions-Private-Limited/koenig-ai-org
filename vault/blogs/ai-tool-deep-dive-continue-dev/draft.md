@@ -9,6 +9,7 @@ reading_time_min: 8-10
 primary_query: "Continue.dev review 2026"
 contrarian_angle: "Continue.dev's real moat isn't IDE integration — it's model routing. Teams that configure a free local model for autocomplete and reserve a frontier API for chat save $3,000+ per year per 10 developers, an edge Cursor and Cline cannot match."
 first_60_words_answer: "Continue.dev is a free, open-source AI coding assistant (Apache 2.0) that runs inside VS Code and JetBrains. It lets you wire any model — local or cloud — to specific roles: autocomplete, chat, edit, embed. The base extension costs nothing; you pay only for API tokens. For teams that need cross-IDE support, centralized config sharing, and model-cost control, it is the strongest free option in 2026."
+seo_description: "Continue.dev review 2026: free open-source AI assistant for VS Code and JetBrains with explicit model routing for chat, autocomplete, edit, and embed roles."
 positions: none
 sources:
   - https://mstone.ai/tools-wizard/continue-dev-features-pricing
@@ -41,6 +42,11 @@ last_updated: 2026-06-02
 hero_image:
   url: /img/blogs/ai-tool-deep-dive-continue-dev/hero.png
   alt: "Continue.dev interface showing model routing configuration in VS Code with chat and autocomplete role assignments"
+inline_images:
+  - after_heading: "Setup Walkthrough: Continue.dev in VS Code in 10 Steps"
+    url: /img/blogs/ai-tool-deep-dive-continue-dev/diagrams/03.png
+    alt: "Continue.dev sidebar in VS Code with model-role configuration for chat, autocomplete, and edit workflows."
+    caption: "Continue.dev's advantage is explicit model routing across IDE chat, autocomplete, edit, and apply roles."
 internal_links:
   - /blog/ai-coding-agents-production-2026-buyers-guide
   - /blog/mcp-2026-roadmap-explained

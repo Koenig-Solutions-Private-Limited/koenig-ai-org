@@ -23,6 +23,11 @@ last_updated: 2026-06-10
 hero_image:
   url: /img/blogs/ai-tool-deep-dive-aider/hero.png
   alt: "Aider terminal session showing git diff of AI-generated rate limiter code alongside the polyglot leaderboard benchmark scores for GPT-5, Claude Sonnet 4.6, and DeepSeek V3"
+inline_images:
+  - after_heading: "Set Up Aider in 10 Steps"
+    url: /img/blogs/ai-tool-deep-dive-aider/diagrams/03.png
+    alt: "Aider terminal session showing files in chat, model selection, and an AI-generated git commit in a sample repository."
+    caption: "Aider's product surface is the git-native terminal loop: choose files, ask for a change, review the commit."
 whats_new:
   - "Aider processes 15 billion tokens/week and uses 4.2× fewer tokens than Claude Code — the cheapest credible AI coding workflow in 2026"
 learning_objectives:
