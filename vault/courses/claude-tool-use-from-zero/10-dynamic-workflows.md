@@ -35,8 +35,8 @@ tags:
   - fan-out
   - orchestration
 positions:
-  - id: stance:arch-claude-agent-sdk
-    engagement: defends
+  - stance_id: cli-first-workflows-for-production-teams
+    mode: defends
 chapter_primary_query: "claude code dynamic workflows fan-out multi-agent orchestration"
 first_60_words_answer: "Claude Code dynamic workflows let a single orchestrator Claude instance write and execute orchestration scripts that fan work out to tens or hundreds of parallel sub-agents, checkpoint progress between stages, and verify results before handing anything back. This replaces sequential single-prompt chains with genuine parallelism and adds structured recovery points that survive partial failures."
 faq:
