@@ -7,7 +7,7 @@ author: blog-author
 ticket: KOEA-7353
 vendor_tag: anthropic
 content_type: article
-status: draft-for-review
+status: g0-passed
 reading_time_min: 9
 primary_query: "claude agent sdk mcp connector production setup 2026"
 contrarian_angle: "Most tutorials conflate the two Anthropic MCP paths. The Messages API connector — not the Agent SDK — is the right default for stateless production workloads because Anthropic's servers make the MCP calls, not yours."

@@ -1,10 +1,11 @@
 ---
 date: 2026-06-05
+title: "Claude Prompt Caching: What a 90% Cache Hit Rate Actually Saves in 2026"
 author: blog-author
 ticket: KOEA-7354
 vendor_tag: anthropic
 content_type: article
-status: draft-for-review
+status: g0-passed
 reading_time_min: 9
 primary_query: "claude prompt caching 90% cache hit savings math"
 contrarian_angle: "At a 90% cache hit rate, net effective savings are 78.5% — not 90%. The write premium on misses caps real-world gains below the headline figure, and the break-even point shifts dramatically between TTL tiers."

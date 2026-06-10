@@ -1,10 +1,12 @@
 ---
 date: 2026-06-05
+title: "What to Put in Your CLAUDE.md File in 2026: The Hierarchy Most Guides Miss"
 author: blog-author
+description: "Your CLAUDE.md should be a 4-layer hierarchy of pointers, not a dumping ground. Here's exactly what belongs in each layer (and what should live in .claude/rules/ or CLAUDE.local.md instead)."
 ticket: KOEA-7350
 vendor_tag: anthropic
 content_type: article
-status: draft-for-review
+status: g0-passed
 reading_time_min: 8-12
 primary_query: "what to put in CLAUDE.md Claude Code 2026"
 contrarian_angle: "The highest-performing CLAUDE.md files are mostly empty pointers — teams that pile in every convention they want Claude to remember get worse output than teams who use the four-layer hierarchy and put content in the right layer"
