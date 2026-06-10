@@ -1,7 +1,8 @@
 ---
 course_slug: microsoft-advertising-bing-ads
 title: "Microsoft Advertising for Performance Marketers: Search, Audiences & Cross-Platform Strategy"
-status: outline-g0-passed
+status: g3-passed
+publish_state: g4-approved
 course_track: career
 toc_locked: true
 video_overview: true
