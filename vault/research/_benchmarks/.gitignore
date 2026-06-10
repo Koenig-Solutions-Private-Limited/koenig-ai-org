@@ -1,0 +1,2 @@
+# Benchmark result CSVs accumulate data across runs and must not be reset by git checkout
+*.csv
