@@ -1,13 +1,17 @@
 ---
 date: 2026-06-02
+title: "Aider in 2026: The Git-Native AI Coding CLI That Writes 72% of Its Own Code"
+description: "Deep-dive review of Aider — the free, open-source AI coding CLI with 41K+ GitHub stars. Covers git-atomic commits, architect mode, token efficiency, failure modes, and a head-to-head comparison with Cline."
+slug: "2026-06-02-aider-deep-dive"
+tags: ["aider", "ai-coding-cli", "git-native-ai", "architect-mode", "open-source-2026"]
 author: blog-author
 ticket: KOEA-7153
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: awaiting-g0
 reading_time_min: 10
 primary_query: "aider AI coding CLI review 2026"
-first_60_words_answer: "Aider is a free, open-source terminal AI coding assistant with 39K+ GitHub stars and 4.1 million installations. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026."
+first_60_words_answer: "Aider is a free, open-source terminal AI coding assistant with 41K+ GitHub stars and 4.1 million installations. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026."
 contrarian_angle: "Aider's refusal to add MCP and IDE integration is intentional discipline, not a roadmap gap — its git-atomic commit philosophy is the audit-trail pattern that Claude Code and Cline users are now copying for enterprise governance."
 positions:
   - id: cli-first-workflows-for-production-teams
@@ -15,7 +19,7 @@ positions:
   - id: mcp-as-interoperability-moat
     engagement: refines
 original_data: false
-last_updated: 2026-06-02
+last_updated: 2026-06-10
 hero_image:
   url: /img/blogs/ai-tool-deep-dive-aider/hero.png
   alt: "Aider terminal session showing git diff of AI-generated rate limiter code alongside the polyglot leaderboard benchmark scores for GPT-5, Claude Sonnet 4.6, and DeepSeek V3"
@@ -137,7 +141,7 @@ schema_jsonld:
 
 # Aider in 2026: The Git-Native AI Coding CLI That Writes 72% of Its Own Code
 
-Aider is a free, open-source terminal AI coding assistant with 39K+ GitHub stars and 4.1 million installations. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026.
+Aider is a free, open-source terminal AI coding assistant with 41K+ GitHub stars and 4.1 million installations. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026.
 
 The counterintuitive fact about Aider is that its spartan feature set is a product decision, not a roadmap gap. While competitors sprint toward IDE panels, MCP server orchestration, and browser automation dashboards, Aider has doubled down on one idea: every AI edit should be a git commit, every session should run on a branch, and every change should be auditable through tools developers already know. That philosophy — now over two years old — is quietly influencing how teams configure Claude Code and Cline's audit trails. Aider figured out the governance pattern first.
 
@@ -315,7 +319,7 @@ Aider and Cline are the two strongest open-source, bring-your-own-model CLI tool
 | Token efficiency | 4.2× better than Claude Code | Variable by model/task |
 | Local model support | Yes (Ollama, LM Studio) | Yes |
 | Open source | Apache 2.0 | Apache 2.0 |
-| GitHub Stars | 39K+ | 58K+ |
+| GitHub Stars | 41K+ | 58K+ |
 
 **Choose Aider** when your workflow is terminal-native, you want a clean git audit trail without IDE overhead, and you do not need MCP servers. Aider's git-atomic philosophy aligns precisely with the [production CLI-first patterns covered in our seven-CLI comparison](https://academy.kspl.tech/blog/seven-cli-comparison) — teams that treat AI edits as code review artifacts rather than interactive conversations.
 
