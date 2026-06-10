@@ -1,10 +1,12 @@
 ---
 date: 2026-06-05
+title: "Hermes AI Gateway Model-Selection in 2026: When to Escalate Sonnet to Opus"
 author: blog-author
+description: "Escalating from Sonnet 4.6 to Opus 4.7 in Hermes is not a 67% cost increase — it's 3x once auxiliary tasks bill at main-model rates. Here's the measurable trigger and the config that fixes it."
 ticket: KOEA-7356
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: g0-passed
 reading_time_min: 8-12
 primary_query: "hermes ai gateway model selection when to escalate sonnet to opus"
 contrarian_angle: "The raw $3-vs-$5 token rate is a red herring. Hermes's auxiliary task system silently bills every screenshot analysis, page summary, and context compression against your main model — so Opus as your default can cost 3x what the headline rate implies."

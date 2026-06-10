@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-7358
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: g0-passed
 reading_time_min: 9
 title: "Open Notebook: Self-Hosted NotebookLM Alternative 2026"
 description: "Open Notebook is the self-hosted NotebookLM alternative with a full REST API, Ollama support, and no daily audio caps — built for MD-to-PDF and audio-at-scale pipelines in 2026."
