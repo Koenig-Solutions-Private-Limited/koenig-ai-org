@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: performance-marketing-budget-management
 title: "The Cross-Channel Budget Mental Model — Marginal ROAS and Diminishing Returns"
-status: g0-passed
+status: g1-passed
 author: course-author
 ticket: KOEA-7478
 learning_objectives:

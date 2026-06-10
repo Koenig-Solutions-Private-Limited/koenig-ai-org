@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: performance-marketing-budget-management
 title: "Budget Pacing, Reallocation Cadences, and Mid-Flight Decisions"
-status: g0-passed
+status: g1-passed
 author: course-author
 ticket: KOEA-7478
 learning_objectives:

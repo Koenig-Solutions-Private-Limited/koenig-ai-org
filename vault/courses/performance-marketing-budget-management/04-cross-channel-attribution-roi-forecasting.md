@@ -2,7 +2,7 @@
 chapter_num: 4
 course_slug: performance-marketing-budget-management
 title: "Cross-Channel Attribution, ROI Forecasting, and Making the Budget Case"
-status: g0-passed
+status: g1-passed
 author: course-author
 ticket: KOEA-7478
 learning_objectives:
