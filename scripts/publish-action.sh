@@ -12,18 +12,35 @@
 
 set -euo pipefail
 
-REPO_ROOT="/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="$REPO_ROOT/.env.koenig"
 PAPERCLIP_URL="${PAPERCLIP_URL:-http://localhost:3100}"
-COMPANY_ID="${COMPANY_ID:-${KOENIG_COMPANY_ID:-2a77f89b-33f0-4133-a20c-77ddaac5e744}}"
+CANONICAL_COMPANY_ID="2a77f89b-33f0-4133-a20c-77ddaac5e744"
 GH_DISPATCH_REPO="Koenig-Solutions-Private-Limited/learnovaBeast"
 PROD_URL="https://academy.kspl.tech"
-LOG_DIR="/paperclip/logs"
+LOG_DIR="${PAPERCLIP_LOG_DIR:-${HOME}/.paperclip/logs}"
+SKIPPED_SENTINEL="$LOG_DIR/publish-action.skipped"
 mkdir -p "$LOG_DIR"
 LOG="$LOG_DIR/publish-action.log"
 cd "$REPO_ROOT"
 
+published_url_for_slug() {
+  local slug="${1:-}"
+  if [[ -n "$slug" ]]; then
+    echo "$PROD_URL/blog/$slug"
+  else
+    echo "$PROD_URL"
+  fi
+}
+
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG"; }
+
+mark_dispatch_skipped() {
+  local phase="$1"
+  log "WARN: skipping $phase — fix .env.koenig (GH_PAT_DISPATCH missing)"
+  mkdir -p "$(dirname "$SKIPPED_SENTINEL")"
+  printf '%s phase=%s reason=GH_PAT_DISPATCH_missing\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$phase" > "$SKIPPED_SENTINEL"
+}
 
 tg_alert() {
   local msg="$1"
@@ -46,41 +63,104 @@ BLOCKED_STATES=()
 BLOCKED_ISSUES=()
 GUARD_ALLOWED_COUNT=0
 
-fetch_issues_by_slug() {
+fetch_all_issues() {
   if [ -n "${GUARD_ISSUE_CACHE:-}" ] && [ -s "$GUARD_ISSUE_CACHE" ]; then
     return 0
   fi
 
   GUARD_ISSUE_CACHE="$LOG_DIR/.issue-cache.$$.json"
-  local auth_args=()
-  if [ -n "${PAPERCLIP_API_KEY:-}" ]; then
-    auth_args=(-H "Authorization: Bearer ${PAPERCLIP_API_KEY}")
+  if [ -z "${PAPERCLIP_AUTH_TOKEN:-}" ]; then
+    GUARD_API_ERROR=1
+    log "guard:no-auth → block (PAPERCLIP_BOARD_TOKEN/PAPERCLIP_API_KEY missing)"
+    return 1
   fi
 
-  if ! curl -sf "${auth_args[@]}" \
-    "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues?limit=2000" \
-    -o "$GUARD_ISSUE_CACHE"; then
-    GUARD_API_ERROR=1
-    if [ -z "${PAPERCLIP_API_KEY:-}" ]; then
-      log "guard:no-auth → block"
-    else
+  local aggregate_tmp page_tmp normalized_tmp
+  local offset=0
+  local page_size=1000
+
+  aggregate_tmp="$(mktemp)"
+  echo "[]" > "$aggregate_tmp"
+
+  while true; do
+    page_tmp="$(mktemp)"
+    normalized_tmp="$(mktemp)"
+    if ! curl -sf "${AUTH_HEADER[@]}" \
+      "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues?limit=${page_size}&offset=${offset}" \
+      -o "$page_tmp"; then
+      rm -f "$aggregate_tmp" "$page_tmp" "$normalized_tmp"
+      GUARD_API_ERROR=1
       log "guard:api-error"
+      return 1
     fi
-    return 1
-  fi
 
-  if [ ! -s "$GUARD_ISSUE_CACHE" ]; then
-    GUARD_API_ERROR=1
-    log "guard:api-error empty issue response"
-    return 1
-  fi
+    if ! python3 - "$page_tmp" > "$normalized_tmp" 2>/dev/null <<'PY'
+import json
+import sys
+
+path = sys.argv[1]
+with open(path, "r", encoding="utf-8") as fh:
+    data = json.load(fh)
+items = data.get("items", data) if isinstance(data, dict) else data
+if not isinstance(items, list):
+    raise ValueError("issue list payload must be an array or object with items[]")
+print(json.dumps(items))
+PY
+    then
+      rm -f "$aggregate_tmp" "$page_tmp" "$normalized_tmp"
+      GUARD_API_ERROR=1
+      log "guard:api-error invalid issue response payload"
+      return 1
+    fi
+
+    if ! python3 - "$aggregate_tmp" "$normalized_tmp" > "$GUARD_ISSUE_CACHE" 2>/dev/null <<'PY'
+import json
+import sys
+
+aggregate_path, page_path = sys.argv[1], sys.argv[2]
+with open(aggregate_path, "r", encoding="utf-8") as fh:
+    aggregate = json.load(fh)
+with open(page_path, "r", encoding="utf-8") as fh:
+    page = json.load(fh)
+if not isinstance(aggregate, list) or not isinstance(page, list):
+    raise ValueError("normalized payload is not an array")
+aggregate.extend(page)
+print(json.dumps(aggregate))
+PY
+    then
+      rm -f "$aggregate_tmp" "$page_tmp" "$normalized_tmp" "$GUARD_ISSUE_CACHE"
+      GUARD_API_ERROR=1
+      log "guard:api-error failed to merge issue pages"
+      return 1
+    fi
+
+    mv "$GUARD_ISSUE_CACHE" "$aggregate_tmp"
+    local page_count
+    page_count="$(python3 - "$normalized_tmp" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], "r", encoding="utf-8") as fh:
+    data = json.load(fh)
+print(len(data))
+PY
+)"
+    rm -f "$page_tmp" "$normalized_tmp"
+    if [ "$page_count" -lt "$page_size" ]; then
+      break
+    fi
+    offset=$((offset + page_size))
+  done
+
+  mv "$aggregate_tmp" "$GUARD_ISSUE_CACHE"
+  log "issue-list: fetched $((offset + page_count)) issues (paginated, page_size=$page_size)"
 
   return 0
 }
 
 slug_to_issue_info() {
   local slug="$1"
-  fetch_issues_by_slug || {
+  fetch_all_issues || {
     echo -e "api-error\tapi-error"
     return 0
   }
@@ -129,7 +209,7 @@ create_guard_watchdog_issue() {
     return 0
   fi
 
-  if [ -z "${PAPERCLIP_API_KEY:-}" ]; then
+  if [ -z "${PAPERCLIP_AUTH_TOKEN:-}" ]; then
     log "guard:no-auth watchdog issue not created"
     return 1
   fi
@@ -170,7 +250,7 @@ print(json.dumps(payload))
 PY
 
   if curl -sf -X POST "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues" \
-    -H "Authorization: Bearer ${PAPERCLIP_API_KEY}" \
+    "${AUTH_HEADER[@]}" \
     -H "Content-Type: application/json" \
     --data @"$payload_file" > "$response_file"; then
     issue_id="$(python3 - "$response_file" <<'PY'
@@ -274,10 +354,52 @@ set -a
 source "$ENV_FILE"
 set +a
 
-GH_PAT_DISPATCH="$(grep -m1 -E "^(GH_PAT_DISPATCH|GH_TOKEN_BOT|GH_TOKEN)=" "$ENV_FILE" | cut -d= -f2- || true)"
+env_value() {
+  local key="$1"
+  local value="${!key:-}"
+  if [[ -z "$value" && -f "$ENV_FILE" ]]; then
+    value="$(grep -E "^${key}=" "$ENV_FILE" | tail -n1 | cut -d= -f2- || true)"
+    value="${value%\"}"
+    value="${value#\"}"
+    value="${value%\'}"
+    value="${value#\'}"
+  fi
+  printf '%s' "$value"
+}
+
+PAPERCLIP_URL="$(env_value PAPERCLIP_API_URL)"
+if [[ -z "$PAPERCLIP_URL" ]]; then
+  PAPERCLIP_URL="$(env_value PAPERCLIP_URL)"
+fi
+PAPERCLIP_URL="${PAPERCLIP_URL:-http://localhost:3100}"
+
+COMPANY_ID="$(env_value PAPERCLIP_COMPANY_ID)"
+if [[ -z "$COMPANY_ID" ]]; then
+  COMPANY_ID="$(env_value COMPANY_ID)"
+fi
+if [[ -z "$COMPANY_ID" ]]; then
+  log "ERROR: PAPERCLIP_COMPANY_ID/COMPANY_ID missing in environment/$ENV_FILE. Skipping publish-action run."
+  exit 0
+fi
+
+PAPERCLIP_AUTH_TOKEN="$(env_value PAPERCLIP_BOARD_TOKEN)"
+if [[ -z "$PAPERCLIP_AUTH_TOKEN" ]]; then
+  PAPERCLIP_AUTH_TOKEN="$(env_value PAPERCLIP_API_KEY)"
+fi
+if [[ -z "$PAPERCLIP_AUTH_TOKEN" ]]; then
+  log "ERROR: PAPERCLIP_BOARD_TOKEN/PAPERCLIP_API_KEY missing in environment/$ENV_FILE. Skipping publish-action run."
+  exit 0
+fi
+AUTH_HEADER=(-H "Authorization: Bearer $PAPERCLIP_AUTH_TOKEN")
+
+GH_PAT_DISPATCH="$(env_value GH_PAT_DISPATCH)"
+if [[ -z "$GH_PAT_DISPATCH" ]]; then
+  GH_PAT_DISPATCH="$(grep -m1 -E "^(GH_TOKEN_BOT|GH_TOKEN)=" "$ENV_FILE" | cut -d= -f2- || true)"
+fi
 if [[ -z "$GH_PAT_DISPATCH" ]]; then
   log "WARN: GH_PAT_DISPATCH missing in $ENV_FILE — Phase 1 and Phase 2 will be skipped."
 fi
+rm -f "$SKIPPED_SENTINEL"
 
 # ── Phase 0: vault git-sync ──────────────────────────────────────────────────
 
@@ -344,22 +466,27 @@ fi
 
 log "Phase 1: scanning for publish_state=g4-approved issues..."
 
-G4_ISSUES_JSON="$(curl -s -H "Authorization: Bearer ${PAPERCLIP_API_KEY}" "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues?limit=2000" | python3 -c "
+if ! fetch_all_issues; then
+  G4_ISSUES_JSON="[]"
+else
+  G4_ISSUES_JSON="$(python3 - "$GUARD_ISSUE_CACHE" <<'PY'
 import json, sys
-items = json.load(sys.stdin)
-if isinstance(items, dict): items = items.get('items', [])
+with open(sys.argv[1], "r", encoding="utf-8") as fh:
+    items = json.load(fh)
 result = []
 for i in items:
     md = i.get('metadata') or {}
     if i.get('status') == 'done' and md.get('publish_state') == 'g4-approved':
         result.append({'id': i['id'], 'slug': md.get('slug', i['id'])})
 print(json.dumps(result))
-")"
+PY
+)"
+fi
 
 if [[ -z "$G4_ISSUES_JSON" ]] || [[ "$G4_ISSUES_JSON" == "[]" ]]; then
   log "Phase 1: no g4-approved issues found."
 elif [[ -z "$GH_PAT_DISPATCH" ]]; then
-  log "Phase 1: SKIPPED — GH_PAT_DISPATCH not set."
+  mark_dispatch_skipped "phase1"
 else
   while IFS=$'\t' read -r ISSUE_ID SLUG; do
     log "Phase 1: dispatching publish-ready for issue=$ISSUE_ID slug=$SLUG"
@@ -372,9 +499,9 @@ else
     if [[ "$DISPATCH_HTTP" == "204" ]]; then
       DISPATCHED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
       log "Phase 1: dispatch accepted (204) for $ISSUE_ID — setting dispatching at $DISPATCHED_AT"
-      curl -sX PATCH -H "Authorization: Bearer ${PAPERCLIP_BOARD_TOKEN}" "$PAPERCLIP_URL/api/issues/$ISSUE_ID" \
+      curl -sX PATCH "${AUTH_HEADER[@]}" "$PAPERCLIP_URL/api/issues/$ISSUE_ID" \
         -H "Content-Type: application/json" \
-        -d "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'dispatching','dispatched_at':'$DISPATCHED_AT'}}))")" \
+        -d "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'dispatching','dispatched_at':'$DISPATCHED_AT','slug':'$SLUG'}}))")" \
         -o /dev/null
     else
       log "Phase 1: dispatch FAILED (HTTP $DISPATCH_HTTP) for $ISSUE_ID"
@@ -391,22 +518,27 @@ fi
 
 log "Phase 2: scanning for publish_state=dispatching issues..."
 
-DISPATCHING_JSON="$(curl -s -H "Authorization: Bearer ${PAPERCLIP_API_KEY}" "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues?limit=2000" | python3 -c "
+if ! fetch_all_issues; then
+  DISPATCHING_JSON="[]"
+else
+  DISPATCHING_JSON="$(python3 - "$GUARD_ISSUE_CACHE" <<'PY'
 import json, sys
-items = json.load(sys.stdin)
-if isinstance(items, dict): items = items.get('items', [])
+with open(sys.argv[1], "r", encoding="utf-8") as fh:
+    items = json.load(fh)
 result = []
 for i in items:
     md = i.get('metadata') or {}
     if md.get('publish_state') == 'dispatching':
-        result.append({'id': i['id'], 'dispatched_at': md.get('dispatched_at', '')})
+        result.append({'id': i['id'], 'dispatched_at': md.get('dispatched_at', ''), 'slug': md.get('slug', '')})
 print(json.dumps(result))
-")"
+PY
+)"
+fi
 
 if [[ -z "$DISPATCHING_JSON" ]] || [[ "$DISPATCHING_JSON" == "[]" ]]; then
   log "Phase 2: no dispatching issues found."
 elif [[ -z "$GH_PAT_DISPATCH" ]]; then
-  log "Phase 2: SKIPPED — GH_PAT_DISPATCH not set."
+  mark_dispatch_skipped "phase2"
 else
   GH_RUNS_TMP="$(mktemp)"
   curl -s \
@@ -415,7 +547,7 @@ else
     -H "Accept: application/vnd.github+json" \
     -H "X-GitHub-Api-Version: 2022-11-28" > "$GH_RUNS_TMP"
 
-  PV_AGENT_ID="$(curl -s -H "Authorization: Bearer ${PAPERCLIP_API_KEY}" "$PAPERCLIP_URL/api/companies/$COMPANY_ID/agents" | python3 -c "
+  PV_AGENT_ID="$(curl -s "${AUTH_HEADER[@]}" "$PAPERCLIP_URL/api/companies/$COMPANY_ID/agents" | python3 -c "
 import json, sys
 data = json.load(sys.stdin)
 agents = data if isinstance(data, list) else data.get('items', [])
@@ -423,8 +555,9 @@ match = next((a['id'] for a in agents if a.get('urlKey') == 'publish-verifier'),
 print(match)
 ")"
 
-  while IFS=$'\t' read -r ISSUE_ID DISPATCHED_AT; do
-    log "Phase 2: checking GH Actions run for issue=$ISSUE_ID dispatched_at=${DISPATCHED_AT:-unknown}"
+  while IFS=$'\t' read -r ISSUE_ID DISPATCHED_AT SLUG; do
+    PUBLISHED_URL="$(published_url_for_slug "$SLUG")"
+    log "Phase 2: checking GH Actions run for issue=$ISSUE_ID dispatched_at=${DISPATCHED_AT:-unknown} slug=${SLUG:-none} published_url=$PUBLISHED_URL"
     RUN_STATUS="$(python3 -c "
 import json, sys
 from datetime import datetime, timezone
@@ -458,14 +591,15 @@ else:
     log "Phase 2: run status for $ISSUE_ID = $RUN_STATUS"
     case "$RUN_STATUS" in
       success)
-        log "Phase 2: marking $ISSUE_ID published url=$PROD_URL"
-        curl -sX PATCH -H "Authorization: Bearer ${PAPERCLIP_BOARD_TOKEN}" "$PAPERCLIP_URL/api/issues/$ISSUE_ID" \
+        log "Phase 2: marking $ISSUE_ID published url=$PUBLISHED_URL"
+        curl -sX PATCH "${AUTH_HEADER[@]}" "$PAPERCLIP_URL/api/issues/$ISSUE_ID" \
           -H "Content-Type: application/json" \
-          -d "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'published','published_url':'$PROD_URL','published_at':'$(date -u +%Y-%m-%dT%H:%M:%SZ)'}}))")" \
+          -d "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'published','published_url':'$PUBLISHED_URL','published_at':'$(date -u +%Y-%m-%dT%H:%M:%SZ)'}}))")" \
           -o /dev/null
         if [[ -n "$PV_AGENT_ID" ]]; then
           log "Phase 2: triggering publish-verifier (G5) for $ISSUE_ID"
           curl -sX POST "$PAPERCLIP_URL/api/agents/$PV_AGENT_ID/heartbeat/invoke" \
+            "${AUTH_HEADER[@]}" \
             -H "Content-Type: application/json" \
             -d "$(python3 -c "import json; print(json.dumps({'context':{'issue_id':'$ISSUE_ID'}}))")" \
             -o /dev/null
@@ -473,7 +607,7 @@ else:
         ;;
       failure|cancelled|timed_out|action_required|startup_failure)
         log "Phase 2: marking $ISSUE_ID dispatch_failed (run_status=$RUN_STATUS)"
-        curl -sX PATCH -H "Authorization: Bearer ${PAPERCLIP_BOARD_TOKEN}" "$PAPERCLIP_URL/api/issues/$ISSUE_ID" \
+        curl -sX PATCH "${AUTH_HEADER[@]}" "$PAPERCLIP_URL/api/issues/$ISSUE_ID" \
           -H "Content-Type: application/json" \
           -d "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'dispatch_failed','dispatch_failure_reason':'GH Actions run status: $RUN_STATUS'}}))")" \
           -o /dev/null
@@ -489,7 +623,7 @@ else:
 import json, sys
 items = json.load(sys.stdin)
 for i in items:
-    print(i['id'] + '\t' + i.get('dispatched_at', ''))
+    print(i['id'] + '\t' + i.get('dispatched_at', '') + '\t' + i.get('slug', ''))
 ")
 
   rm -f "$GH_RUNS_TMP"
