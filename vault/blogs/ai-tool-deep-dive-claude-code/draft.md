@@ -6,6 +6,7 @@ vendor_tag: anthropic
 content_type: article
 status: g0-passed
 reading_time_min: 10
+seo_description: "Claude Code 2026: terminal-native coding agent with Opus 4.7, MCP integration, and git worktree isolation. Best for autonomous, auditable pipeline work."
 primary_query: "claude code review 2026 is it worth it"
 contrarian_angle: "Claude Code's value isn't the model — it's the harness: subagents, worktrees, and MCP plugins turn a CLI tool into a programmable multi-agent pipeline that Cursor's IDE architecture cannot replicate"
 first_60_words_answer: "Claude Code is Anthropic's terminal-native coding agent. In 2026, it's the strongest choice for autonomous, auditable, pipeline-composable coding work: best-in-class SWE-bench performance with Opus 4.7, native MCP integration across hundreds of servers, git worktree isolation, and a programmable Agent SDK. Its main weaknesses are per-task cost on Opus and context exhaustion on large monorepos."
@@ -56,6 +57,11 @@ learning_objectives:
   - "Evaluate whether Claude Code or Cursor Composer 2 fits your team's actual workflow"
   - "Configure Claude Code with CLAUDE.md, MCP plugins, and git worktrees for safe production use"
   - "Identify the three workflow scenarios where Claude Code is the wrong choice"
+inline_images:
+  - after_heading: "Set Up Claude Code for Production: 10 Steps"
+    url: /img/blogs/ai-tool-deep-dive-claude-code/diagrams/03.png
+    alt: "Claude Code terminal session showing the initial setup flow: npm install, claude auth login, and CLAUDE.md configuration with MCP plugin registration"
+    caption: "Claude Code's setup earns its power through CLAUDE.md and MCP plugins — the install and auth steps take minutes; the harness configuration is where the leverage is."
 ---
 
 # Use Claude Code in Production in 2026: Strengths, Failure Modes, and Setup

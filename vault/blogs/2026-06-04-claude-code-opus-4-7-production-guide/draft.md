@@ -6,6 +6,7 @@ vendor_tag: anthropic
 content_type: article
 status: g0-passed
 reading_time_min: 10-12
+seo_description: "Claude Code Opus 4.7 production guide: 87.6% SWE-bench Verified, real-world cost up 15–35%, and the Detailed Plan Pattern that controls it."
 primary_query: "claude code opus 4.7 production guide 2026"
 contrarian_angle: "Opus 4.7's 1.5–3× real-world cost increase is the direct consequence of the precision that earned 87.6% SWE-bench Verified. The model shifted from 'helpful assistant' to 'precise operator' — both the community sticker shock and the production coding wins trace back to that one design decision."
 first_60_words_answer: "Claude Code Opus 4.7 is the right pick when code correctness matters more than speed or cost: SWE-bench Verified 87.6%, SWE-bench Pro 64.3% — best in class as of April 2026. It launched April 16 at $5/$25 per MTok — identical list price to Opus 4.6 — but a new tokenizer makes real-world workloads 15–35% more expensive before any usage changes."
@@ -52,6 +53,11 @@ learning_objectives:
 schema:
   - BlogPosting
   - FAQPage
+inline_images:
+  - after_heading: "Memory, Plan Mode, and Long-Context Workflows"
+    url: /img/blogs/2026-06-04-claude-code-opus-4-7-production-guide/diagrams/03.png
+    alt: "Claude Code terminal showing Opus 4.7 in plan mode with a structured Detailed Plan: intent, scope boundaries, file references with line numbers, and specialist agent assignments"
+    caption: "Opus 4.7's literal execution makes the Detailed Plan Pattern the primary quality lever — front-loaded scope and line references replace iterative clarification rounds."
 ---
 
 # Run Claude Code Opus 4.7 in Production in 2026: The Complete Guide

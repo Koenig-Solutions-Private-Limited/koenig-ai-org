@@ -11,6 +11,7 @@ content_type: article
 status: g0-passed
 reading_time_min: 9
 tags: [cursor, cursor-composer-2-5, ai-coding-agents, ide-agents, kimi-k2-5, post-training]
+seo_description: "Cursor Composer 2.5 review: top-3 coding agent at $0.07 per task, but 'confidently incompetent' on complex changes. When to use it in 2026."
 primary_query: "cursor composer 2.5 review 2026"
 first_60_words_answer: "Cursor Composer 2.5, shipped May 18 2026, climbs to third on the Artificial Analysis Coding Agent Index (62) at $0.07 per standard task — a fraction of Claude Opus 4.7 (66) or GPT-5.5 (65). The model wins on price and speed inside the Cursor IDE, but community testing flags 'confidently incompetent' behaviour on complex multi-step changes. Pick it for ticket-sized work where a human is steering, not for autonomous overnight runs."
 contrarian_angle: "The frontier shifted because of post-training, not a new base model. Cursor took Moonshot's open-weight Kimi K2.5 and spent 85% of its compute budget on additional training — proof that custom RL on the right harness beats a bigger model on the wrong one."
@@ -113,6 +114,11 @@ references:
     title: "Composer 2.5 launch — Swfte"
     url: https://www.swfte.com/de/blog/cursor-composer-2-5-launch-may-2026
     retrieved: 2026-06-02
+inline_images:
+  - after_heading: "Workflow patterns that actually work"
+    url: /img/blogs/2026-06-02-cursor-composer-2-5-deep-dive/diagrams/03.png
+    alt: "Cursor Composer 2.5 IDE panel showing a scaffold-and-fill workflow with multi-file diff preview and per-change accept/reject controls"
+    caption: "Composer 2.5 earns its place as the scaffold-and-fill engine: IDE-native context, low latency, and 30-second accept cycles keep the human in the loop."
 ---
 
 # Cursor Composer 2.5: When the IDE-Bound Coding Agent Wins (and When It Doesn't) in 2026
