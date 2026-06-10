@@ -28,11 +28,25 @@ tags:
   - mcp
   - claude-code
   - connectors
+last_updated: 2026-06-10
+chapter_primary_query: "What is MCP and how does it extend Claude's capabilities beyond native function calling?"
+first_60_words_answer: "MCP (Model Context Protocol) is a standard protocol that moves reusable AI capabilities into connector servers. A host application connects to MCP servers through MCP clients; those servers expose tools, resources, and prompts as standardized primitives. This collapses the n×m integration problem—teams deploy one MCP server per capability domain instead of re-implementing connectors in every application."
+positions:
+  - mcp-as-interoperability-moat
+faq:
+  - question: "What is the difference between MCP tools, resources, and prompts?"
+    answer: "Tools are callable actions the server executes on demand—like querying a database or creating a ticket (MCP tools specification: https://modelcontextprotocol.io/specification/draft/server/tools). Resources are readable context identified by URIs, such as policy documents or README files. Prompts are reusable instruction templates that accept arguments and return messages for a workflow, such as a collection-email draft template."
+  - question: "When should I use native function calling instead of MCP?"
+    answer: "Use native [[function-calling]] when a capability is small, private to one application, and not worth sharing across environments. According to the MCP architecture overview (https://modelcontextprotocol.io/docs/learn/architecture), MCP becomes the right choice when a capability should be reusable across multiple host applications, maintained by a specialized team, or deployed as a standardized connector that multiple AI frameworks can consume."
+  - question: "How does MCP handle authentication and secrets?"
+    answer: "MCP does not handle authentication—it standardizes how capabilities are exposed and called, but your server still owns authentication, authorization, input validation, rate limits, and audit logs. For Claude Code specifically, the Claude Code MCP documentation (https://code.claude.com/docs/en/mcp) recommends passing secrets as environment variables to the server process, using OAuth for remote servers, and never embedding API keys directly in MCP configuration files or prompts."
 ---
 
 # Beyond Function Calling: Understanding MCP
 
-Chapter 1 gave Claude one client-side function: a stock-price lookup that your host application described, executed, and returned to the model. That pattern is the foundation of tool use. It also exposes the first scaling problem. If every AI application has to hand-code its own GitHub connector, database connector, design-system connector, and finance connector, the industry ends up with dozens of one-off integrations that all solve discovery, credentials, logs, and safety in slightly different ways.
+[[mcp|MCP]] (Model Context Protocol) is a standard protocol that moves reusable AI capabilities into connector servers. A host application connects to MCP servers through MCP clients; those servers expose tools, resources, and prompts as standardized primitives. This collapses the n×m integration problem—teams deploy one MCP server per capability domain instead of re-implementing connectors in every application.
+
+Chapter 1 introduced the foundation: [[tool-use]] through client-side [[function-calling]], where your host application describes a function, Claude calls it, and the host returns the result. That pattern works for small, private capabilities. The scaling problem surfaces as soon as multiple applications need the same connector—GitHub, a database, a finance system—and each team re-implements discovery, credentials, logging, and safety in slightly different ways.
 
 The Model Context Protocol, or MCP, is the standard layer that moves reusable capabilities behind a protocol boundary. The official architecture documentation describes MCP as a system where host applications connect to MCP servers through MCP clients, and those servers expose capabilities such as tools, resources, and prompts.[^architecture] The practical result is simple: instead of saying, "My app gave Claude a Python function," you can say, "Claude Code connected to a server that advertises a controlled set of capabilities."
 
@@ -400,9 +414,9 @@ Success criteria:
 
 Chapter 3 turns this architecture into code. You will build a local MCP server with one narrow file-browsing tool, connect it through stdio, and practice returning controlled errors instead of leaking raw filesystem or stack-trace details.
 
-[^architecture]: Model Context Protocol, "Architecture overview," https://modelcontextprotocol.io/docs/learn/architecture
-[^tools]: Model Context Protocol specification, "Tools," https://modelcontextprotocol.io/specification/draft/server/tools
-[^resources]: Model Context Protocol specification, "Resources," https://modelcontextprotocol.io/specification/draft/server/resources
-[^prompts]: Model Context Protocol specification, "Prompts," https://modelcontextprotocol.io/specification/draft/server/prompts
-[^typescript-sdk]: Model Context Protocol TypeScript SDK, https://github.com/modelcontextprotocol/typescript-sdk
-[^claude-code]: Anthropic Claude Code docs, "Connect Claude Code to tools via MCP," https://code.claude.com/docs/en/mcp
+[^architecture]: Model Context Protocol, "Architecture overview," https://modelcontextprotocol.io/docs/learn/architecture · retrieved 2026-06-10
+[^tools]: Model Context Protocol specification, "Tools," https://modelcontextprotocol.io/specification/draft/server/tools · retrieved 2026-06-10
+[^resources]: Model Context Protocol specification, "Resources," https://modelcontextprotocol.io/specification/draft/server/resources · retrieved 2026-06-10
+[^prompts]: Model Context Protocol specification, "Prompts," https://modelcontextprotocol.io/specification/draft/server/prompts · retrieved 2026-06-10
+[^typescript-sdk]: Model Context Protocol TypeScript SDK, https://github.com/modelcontextprotocol/typescript-sdk · retrieved 2026-06-10
+[^claude-code]: Anthropic Claude Code docs, "Connect Claude Code to tools via MCP," https://code.claude.com/docs/en/mcp · retrieved 2026-06-10
