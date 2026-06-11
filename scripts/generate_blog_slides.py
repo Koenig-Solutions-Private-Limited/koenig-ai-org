@@ -97,9 +97,14 @@ def extract_sections(body: str):
             if stripped.startswith(">"):
                 continue  # skip blockquotes
             cleaned = clean_line(stripped)
+            # MCQ options (A–D) and question stems may exceed 120 chars; raise cap selectively.
+            # Regular paragraph text and other list items stay at 120 to keep body slides clean.
+            is_mcq_option = bool(re.match(r'^[A-D]\)\s', cleaned))
+            is_question_stem = bool(re.match(r'Question\s+\d+', cleaned))
+            max_len = 220 if is_question_stem else (200 if is_mcq_option else 120)
             if (cleaned
                     and len(cleaned) > 15
-                    and len(cleaned) <= 120  # skip long paragraphs rather than truncating
+                    and len(cleaned) <= max_len
                     and not cleaned.startswith("|")
                     and not cleaned.startswith("![")):
                 bullets.append(cleaned)
@@ -170,11 +175,16 @@ def make_content_slide(prs, section_title: str, bullets: list[str]):
     rect.line.fill.background()
 
     top = Inches(1.75)
-    for bullet in bullets[:4]:
+    display = bullets[:5]
+    # Use tighter spacing when there are 5 items so all fit above the footer
+    step = Inches(0.95) if len(display) == 5 else Inches(1.15)
+    box_h = Inches(0.85) if len(display) == 5 else Inches(1.05)
+    font_size = 15 if len(display) == 5 else 17
+    for bullet in display:
         _add_text(slide, f"  {bullet}",
-                  Inches(0.8), top, Inches(11.7), Inches(1.05),
-                  size=17, color=WHITE)
-        top += Inches(1.15)
+                  Inches(0.8), top, Inches(11.7), box_h,
+                  size=font_size, color=WHITE)
+        top += step
 
     _add_footer(slide)
 
