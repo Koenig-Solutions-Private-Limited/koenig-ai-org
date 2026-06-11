@@ -2,7 +2,7 @@
 chapter_num: 6
 course_slug: mobile-app-marketing-performance
 title: "Paid Mobile User Acquisition: Google App Campaigns & Meta App Ads"
-status: awaiting-g0
+status: g0-blocked
 duration_min: 30
 vendor_tag: "Google Ads / Meta Ads / AppsFlyer"
 learning_objectives:
