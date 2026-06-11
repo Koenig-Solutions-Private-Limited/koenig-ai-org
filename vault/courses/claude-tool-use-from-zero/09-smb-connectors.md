@@ -69,6 +69,12 @@ An SMB connector rarely talks to one system. A real workflow may touch:
 - Email or workspace: reminders, internal review threads, attachments.
 - Document system: statements, contracts, receipts.
 
+```takeaways
+- An SMB connector typically spans multiple systems; the design job is to present a coherent set of business actions rather than one raw endpoint per vendor.
+- Replacing vendor-specific primitives (quickbooks_query, paypal_get) with workflow-level tools (find_unmatched_settlements, draft_missing_payment_reminders) makes approval and logging tractable.
+- Finance connectors specifically benefit from boring, narrow interfaces — the more sensitive the action, the less ambiguity the tool should allow.
+```
+
 The connector should present these as business actions, not raw vendor endpoints.
 
 Bad:
@@ -107,6 +113,12 @@ The Payroll Assistant should not combine "find mismatches" and "email customers"
 6. Request human approval.
 7. Send only after approval.
 
+```takeaways
+- Combining reconciliation and customer-facing send into one tool call makes approval impossible and audit trail ambiguous.
+- Each stage carries different risk: matching is read-heavy, drafting is reversible, sending is external — these belong in separate tools.
+- Splitting stages also means a failure in matching does not roll back a send that already happened.
+```
+
 Each stage has different risk. Matching is read-heavy. Drafting is reversible. Sending is external and customer-facing.
 
 <RunPromptCell
@@ -142,6 +154,12 @@ Use an explicit `awaiting_approval` state for sensitive actions. Do not hide it 
 }
 ```
 
+```takeaways
+- An explicit `awaiting_approval` status in the tool result gives the host application a machine-readable state it can enforce, not just prose Claude can explain away.
+- The approval object should include run_id, a quantitative summary, and what specifically requires approval — enough for a human to decide without seeing full private data.
+- The host must gate the next write action on a confirmed approval event; Claude presenting the draft is not an approval.
+```
+
 This object gives Claude something clear to explain and gives the host application a state machine it can enforce.
 
 ## CRM coordination
@@ -151,6 +169,12 @@ CRM updates are also write actions. A safe connector can draft proposed updates:
 - "Move deal to Payment follow-up."
 - "Add note: settlement missing for invoice INV-123."
 - "Assign owner Alex because account owner is Alex."
+
+```takeaways
+- CRM updates that trigger automated sequences are effectively external actions and require the same approval gate as customer-facing emails.
+- The safe pattern is propose_crm_updates → human approval → apply_approved_crm_updates, not a direct write after finding a mismatch.
+- Whether CRM notes are low-risk depends on whether they trigger downstream automations — risk must be assessed at the workflow level, not just the field level.
+```
 
 But the connector should not silently update every customer record. If your organization treats CRM notes as low-risk, you may allow writes with role-based authorization. If CRM updates trigger automations, treat them like external actions and require approval.
 

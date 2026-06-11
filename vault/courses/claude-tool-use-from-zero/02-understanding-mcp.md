@@ -66,6 +66,12 @@ You also need a terminal where you can run basic commands. The hands-on exercise
 
 Native tool use is local to an application. You describe a tool in the API request, and your application handles the result. This is ideal when the tool is small, private to your product, or not worth sharing across environments.
 
+```takeaways
+- Native tool use is per-application; MCP moves capability behind a protocol boundary that any MCP-compatible host can reuse.
+- An MCP server encapsulates domain logic, credentials, and policy so every host application does not have to re-implement them.
+- The official TypeScript SDK structure is: create an McpServer, register capabilities, create a transport, connect — the same shape applies in Python.
+```
+
 MCP becomes useful when a capability should be reusable. A finance connector might need to query invoices, summarize customer balances, expose an accounts-receivable policy, and offer a reusable collection-email prompt. Those pieces should not be copied into every AI application. They belong in a connector server maintained by the team that understands the finance system.
 
 The official MCP TypeScript SDK frames server development around three steps: create an `McpServer`, register tools/resources/prompts, create a transport, and connect the server to that transport.[^typescript-sdk] That shape is what you will build in Chapter 3. For now, focus on the architecture:
@@ -84,6 +90,12 @@ MCP is not a security product by itself. It standardizes how capabilities are ex
 ## The three primitives: tools, resources, and prompts
 
 MCP has several protocol concepts, but this course starts with the three primitives you will use constantly: tools, resources, and prompts.
+
+```takeaways
+- Tools are callable actions with side effects or query logic; resources are stable, readable context identified by URIs; prompts are reusable instruction templates.
+- Modeling a stable policy document as a tool (`get_refund_policy()`) obscures its read-only nature and pollutes the action surface.
+- Classifying capabilities correctly affects safety, UX, and observability — not just naming convention.
+```
 
 Tools are callable actions. The MCP tools specification describes tools as functions exposed by a server that can be invoked by clients, with names, descriptions, input schemas, and returned content.[^tools] Use a tool when something needs to happen: search invoices, create a ticket, list files, run a diagnostic query, or draft a document from live data.
 
@@ -150,6 +162,12 @@ The server boundary is where you turn a messy internal system into a model-frien
 
 The MCP architecture is easiest to understand as a responsibility split:
 
+```takeaways
+- The host is the user-facing application (e.g., Claude Code), the client is its protocol component, and the server is the external capability provider.
+- Use local stdio for scripts that need direct machine access; use remote HTTP for cloud services; SSE is deprecated for new work.
+- Configuration scope (local, project, user) controls who can see the server, and secrets should use environment variable expansion rather than committed values.
+```
+
 | Part | Responsibility | Example |
 |---|---|---|
 | Host | User-facing AI application and UX | Claude Code |
@@ -174,6 +192,12 @@ Treat `.mcp.json` like infrastructure configuration. It can describe which serve
 ## What discovery changes
 
 In Chapter 1, your application passed tool definitions directly to Claude in the request. With MCP, the host can discover what the server offers. That discovery shift affects maintenance.
+
+```takeaways
+- MCP discovery means a server can advertise new capabilities without requiring every host application to be updated with hardcoded tool definitions.
+- Discovery does not grant automatic trust; a responsible host can still filter, require approval, or disable advertised capabilities.
+- Tool names and descriptions are part of the interface the model and host use to determine relevance, so a vague name is a bad MCP tool even if the code works.
+```
 
 Suppose the finance team adds a new `explain_late_fee(customer_id, invoice_id)` tool. In a one-off native integration, every host application might need code or configuration changes. In an MCP setup, the finance server can advertise the new capability through the protocol. The host still needs UX and approval policies, but the connector's capability surface is no longer embedded inside every application.
 

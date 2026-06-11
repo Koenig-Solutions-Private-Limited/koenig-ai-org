@@ -46,6 +46,12 @@ Use two categories:
 - Operational logs help engineers debug reliability: latency, exception class, retry count, dependency status.
 - Audit events help reviewers reconstruct sensitive actions: actor, tool name, target object, authorization result, timestamp.
 
+```takeaways
+- Operational logs serve engineers debugging reliability; audit events serve reviewers reconstructing sensitive actions — both can share a pipeline but must be distinguishable.
+- A timeout reading a config file is operational; a user approving an external send is audit-worthy.
+- Mixing the two categories makes logs harder to search and compliance reviews harder to scope.
+```
+
 They can go to the same logging pipeline, but they should be distinguishable. A timeout reading `config/refund.en-US.json` is operational. A user approving `send_invoice_reminder` is audit-worthy.
 
 ## The minimum useful log event
@@ -60,6 +66,12 @@ Every tool call should emit:
 - `success`: boolean.
 - `duration_ms`: elapsed time.
 - `error_code`: controlled code when failed.
+
+```takeaways
+- A stable `event` name and a `request_id` make logs searchable and correlatable across distributed systems.
+- `input_summary` must be a sanitized version of the input — never log raw credentials or full customer records.
+- Consistent event shape across every tool is what makes logs usable; copying logging code into each handler destroys consistency.
+```
 
 <Callout type="warning">
 Do not log raw credentials, full customer records, or prompt transcripts by default. Observability that leaks sensitive data creates a second incident.
@@ -127,6 +139,12 @@ Claude should explain that request_id, tool_name, sanitized input, success, and 
 ## Audit examples
 
 Read-only file listing may not need a durable audit record in a toy project. A legal document redaction tool does. A payroll approval tool definitely does.
+
+```takeaways
+- The sensitivity of the operation determines whether a durable audit record is required, not just whether the call succeeded.
+- Audit records should capture actor, connector, tool, target, authorization result, and timestamp — without dumping private data into logs.
+- Separating the audit event from the operational log means compliance reviewers can read one stream without sorting through latency metrics.
+```
 
 Audit records should focus on business meaning:
 

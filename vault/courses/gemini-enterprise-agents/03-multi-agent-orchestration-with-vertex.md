@@ -47,6 +47,12 @@ This chapter builds that coordinator. By the end you will have a two-agent resea
 
 Before writing code, you need to decide which pattern fits your use case. The choice has downstream consequences for debugging, cost, and reliability.
 
+```takeaways
+- Deterministic orchestration (via `SequentialAgent` or `ParallelAgent`) hardcodes the routing logic in code and gives predictable costs; generative orchestration lets the model decide routing at runtime, which is more flexible but produces non-deterministic costs.
+- Use generative orchestration when routing decisions depend on user input content you cannot enumerate at design time; use deterministic orchestration for ETL-style pipelines where step order never changes.
+- In a multi-agent system, using the most expensive model for every agent is an anti-pattern — the Supervisor/Planner warrants Gemini Pro, while Worker/Specialist agents running well-defined tasks can use Flash or Flash-Lite at roughly 13× lower cost.
+```
+
 ### Deterministic orchestration
 
 You write the routing logic. Sub-agent A always runs first, then sub-agent B gets A's output. Or: A and B run in parallel; their outputs are merged by a deterministic merge function.
@@ -92,6 +98,12 @@ For this chapter we build a generative orchestration pipeline, because it showca
 ---
 
 ## Building the sub-agent: Retriever
+
+```takeaways
+- A sub-agent is a standard ADK `Agent` instance with its own instruction, tools, and model — the same class used for any agent, just scoped to a specialist task.
+- The Retriever's instruction should constrain it to only return what it found without adding interpretation, keeping the specialization boundary clean between retrieval and synthesis.
+- In production, the `search_knowledge_base` tool replaces the canned demo responses with a vector database or search API call, while the agent wiring and instruction remain unchanged.
+```
 
 Create `research_pipeline/retriever.py`:
 
@@ -145,6 +157,12 @@ If the search returns no results, say so clearly.""",
 ## Building the orchestrator: Planner
 
 The Planner does two things: it decomposes a complex question into sub-questions, and it hands each sub-question to the Retriever using `transfer_to_agent`.
+
+```takeaways
+- `transfer_to_agent` is a built-in ADK tool that routes a message to a named sub-agent and returns that sub-agent's response into the orchestrator's context automatically.
+- Declaring `sub_agents=["retriever"]` in the orchestrator serves as both a security boundary and a documentation aid that Agent Registry uses to build the graph of agent dependencies.
+- Without an explicit "wait for result before the next transfer" rule in the Planner instruction, a generative orchestrator can fire multiple delegations simultaneously before receiving any responses.
+```
 
 Create `research_pipeline/planner.py`:
 
@@ -287,6 +305,12 @@ After registration, any other agent in the same project can call `transfer_to_ag
 ## Step 5: Reading an Observability trace
 
 When the Planner hands off to the Retriever and the Retriever returns the wrong answer, how do you debug it? The Agent Observability console shows the full execution trace.
+
+```takeaways
+- Each node in the observability trace is clickable in the GCP console, letting you inspect the exact input and output of every model call and tool call in a multi-agent chain.
+- Query transformation is the most common source of sub-agent failures: the orchestrator rephrases a sub-question before handing it off, and the rephrased query fails to match knowledge base entries.
+- Agent Anomaly Detection flags infinite delegation loops — where two agents keep calling each other — automatically within 2-3 hops without requiring custom watchdog code.
+```
 
 A trace for a multi-agent call looks like this:
 

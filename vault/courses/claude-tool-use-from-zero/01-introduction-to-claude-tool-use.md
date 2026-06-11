@@ -52,6 +52,12 @@ A tool-use exchange has four parts:
 3. Your host validates the tool name and input, executes local code, and returns a `tool_result`.
 4. Claude uses that result to produce the final answer or request another tool.
 
+```takeaways
+- Claude only proposes a tool call; your host application is always the executor and the security boundary.
+- The stop reason `tool_use` signals that Claude is requesting a tool rather than producing a final answer.
+- The four-step loop (request → tool_use block → tool_result → final answer) is the stable control flow regardless of SDK version.
+```
+
 The tool description is part of the model's context. It should say what the tool does, when to use it, and what each field means. The input schema is the contract your code can validate before execution. Anthropic recommends precise tool definitions because ambiguous descriptions make tool selection less reliable.[^1]
 
 Here is the smallest useful stock-price tool. It uses a fake in-memory price table so the first exercise is reproducible without a paid market-data provider.
@@ -77,6 +83,12 @@ The important phrase is "your host returns." Claude does not know the price. The
 ## A first implementation shape
 
 The exact SDK syntax can change, but the control flow is stable:
+
+```takeaways
+- SDK syntax evolves between releases, but the underlying request-tool_use-tool_result-answer loop does not change.
+- The tool definition object must include a name, description, and a JSON input schema with required fields declared explicitly.
+- In a full application, tool dispatch is a switch or map by tool name, not a single hardcoded function.
+```
 
 ```python
 TOOLS = [
@@ -113,6 +125,12 @@ In a full app, the code around this function calls the Messages API, checks for 
 
 Without a schema, every tool call becomes a guess. The model may send `stock`, `symbol`, `ticker_symbol`, or `company_name`. Your application then either breaks or accepts loose input that later creates security problems.
 
+```takeaways
+- Without a required input schema, the model has no contract and will use inconsistent field names across calls.
+- A well-defined schema lets your host reject malformed input before it touches any external system.
+- Specific descriptions ("return the latest quote for one uppercase ticker") are more reliable than vague descriptions ("fetch data").
+```
+
 Schemas protect both sides:
 
 - Claude gets a compact contract for which fields to fill.
@@ -128,6 +146,12 @@ Do not connect a write-capable production tool on your first pass. Start with a 
 ## Common first failures
 
 The first failure is over-broad tools. A tool named `run_python` or `query_database` is easy to demo and dangerous to operate. It gives the model a low-level execution primitive instead of a business action. Prefer `get_invoice_status`, `lookup_stock_price`, or `list_open_support_cases`.
+
+```takeaways
+- Over-broad tools like `run_python` or `query_database` hand the model a general primitive instead of a bounded business action.
+- Hidden side effects (a tool that reads, updates, and emails) must be named explicitly in the description and confirmed in host code.
+- Model-produced JSON must still be validated in your runtime; schemas guide the model but do not replace server-side input checks.
+```
 
 The second failure is hidden side effects. A tool named `sync_customer` might read from Salesforce, update Stripe, and email an account manager. The model cannot reason about that safely from the name. If a tool changes state, say so in the description and require confirmation in your host.
 
