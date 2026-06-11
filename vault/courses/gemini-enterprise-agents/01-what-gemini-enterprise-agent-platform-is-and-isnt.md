@@ -102,6 +102,12 @@ The platform comprises five components that together cover user access, agent lo
 
 <KnowledgeCheck question="Which component is the workforce-facing surface where employees interact with agents?" options={["Agent Platform — the developer control plane on Google Cloud", "Vertex AI Agent Engine — the managed runtime for deployed agents", "Gemini Enterprise app — the agentic surface for knowledge workers", "ADK — the code-first framework for agent logic"]} correctIdx={2} explanation="Gemini Enterprise app is the interface employees use for daily tasks. Agent Platform is the developer platform (build, scale, govern, optimize). Workforce agents are consumed through the app; developer-built agents are shipped through Agent Platform." />
 
+```takeaways
+- Gemini Enterprise app, Agent Platform, Vertex AI Agent Engine, ADK, A2A, and MCP each own a distinct slice: user access, developer control plane, managed runtime, agent logic, cross-agent coordination, and tool connectivity respectively.
+- Agent Platform is the developer control plane (config, governance, optimization); Vertex AI Agent Engine is the execution runtime where deployed agent apps actually run — the two are not interchangeable.
+- MCP connects agents to external tools and data sources; A2A routes tasks between independently deployed agents across process or team boundaries.
+```
+
 ## Four lifecycle boundaries
 
 The components do not all act at the same moment. Framing the platform through four time horizons reveals which layer you reach for when:
@@ -120,6 +126,12 @@ A common mistake is conflating Agent Platform with Vertex AI Agent Engine. Agent
 </Callout>
 
 <KnowledgeCheck question="A deployed agent needs to resume a user's conversation after a timeout. Which component manages session state?" options={["ADK — it persists session state inside the agent process", "Agent Platform — it stores state in the developer control plane", "Vertex AI Agent Engine — it provides managed session persistence at runtime", "Gemini Enterprise app — it holds session state at the workforce layer"]} correctIdx={2} explanation="Vertex AI Agent Engine is the run-time layer: it deploys agent apps and manages session state. Agent Platform is the control plane (config, governance), not the execution runtime. ADK defines session APIs but does not itself persist state outside of local runs." />
+
+```takeaways
+- The platform operates at four time horizons: build-time (ADK + Agent Platform tooling), run-time (Vertex AI Agent Engine manages sessions and traces), route-time (in-process ADK or cross-process A2A), and operate-time (Agent Platform observability, evaluation, and cost tracking).
+- Session state lives in Vertex AI Agent Engine at run-time, not in Agent Platform; when a production agent fails to resume a conversation, check Agent Engine traces first, then Agent Platform dashboards.
+- Route-time is where most production complexity concentrates: in-process ADK sub-agents suit single-team deployments; A2A routing is required when agents span separate codebases or deployment boundaries.
+```
 
 ## A2A — what in-process calls cannot do
 
@@ -140,6 +152,12 @@ The five-component map clarifies a distinction that product marketing often blur
 **Developer-built agents** are created in ADK, deployed on Vertex AI Agent Engine, and managed through Agent Platform. They can surface inside Gemini Enterprise app as well, but they originate in code. The developer controls the tool set, the routing logic, and the deployment configuration.
 
 The boundary matters for ownership, budgeting, and incident response. Workforce agents are consumed; developer-built agents are shipped. Mixing up responsibility — who monitors, who debugs, who pays the bill — is a common source of production incidents on multi-team platforms.
+
+```takeaways
+- Workforce agents are configured through Gemini Enterprise app and consumed by knowledge workers without code; developer-built agents are authored in ADK, deployed on Vertex AI Agent Engine, and managed through Agent Platform.
+- The ownership boundary is operational: who monitors, who debugs, and who bears the cost differs depending on whether the agent is a workforce agent or a developer-built agent.
+- A developer-built agent can surface inside Gemini Enterprise app, but the team that wrote it owns its tool set, routing logic, and deployment configuration.
+```
 
 ## Hands-on exercise
 
