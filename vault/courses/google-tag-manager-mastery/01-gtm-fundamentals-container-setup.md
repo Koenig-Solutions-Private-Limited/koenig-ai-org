@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: google-tag-manager-mastery
 title: "GTM Fundamentals: Container Setup and the Tag–Trigger–Variable Model"
-status: g0-blocked
+status: awaiting-g0
 duration_min: 18
 vendor_tag: Google Tag Manager
 learning_objectives:
@@ -148,7 +148,7 @@ One container per website. Installing one shared container across multiple unrel
 
 <KnowledgeCheck question="A colleague installed only the JavaScript snippet in the <head> and skipped the noscript iframe. What is the practical consequence?" options={["No consequence — the noscript iframe is a legacy fallback that modern browsers ignore", "Users with JavaScript disabled produce no tracking data at all", "Tags still fire, but only on the second page load after the container initializes", "GTM generates a validation error and refuses to publish the container"]} correctIdx={1} explanation="The noscript iframe is the fallback for environments where JavaScript is unavailable or blocked. Omitting it means those sessions generate zero data. Both snippets are required for complete coverage." />
 
-## The Tag–Trigger–Variable Model
+## The Tag-Trigger-Variable Model
 
 Every container operates on a three-component causal chain:
 
@@ -195,7 +195,7 @@ Never publish without verifying. Click **Preview**, enter your site URL in Tag A
 
 Correct publish sequence: **Save → Preview → Verify Tags Fired → Submit → Publish**. A misfiring trigger produces zero data with no error message.
 
-## The Platform–Event–Audience Naming Convention
+## The Platform-Event-Audience Naming Convention
 
 A container with free-form names — "GA4 tag", "my trigger", "click var 2" — becomes unauditable within weeks. Apply one consistent three-part pattern to every tag, trigger, and variable:
 

@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: google-tag-manager-mastery
 title: "GA4 Integration via GTM: Configuration Tag and Custom Event Tracking"
-status: g0-blocked
+status: awaiting-g0
 duration_min: 22
 vendor_tag: Google Tag Manager / GA4
 learning_objectives:
@@ -132,7 +132,7 @@ Create the GA4 Event tag: Tags → New → **Google Analytics: GA4 Event**. Meas
 
 Create the event tag: GA4 Event → Event Name `scroll` → parameter `percent_scrolled` = `{{Scroll Depth Threshold}}`.
 
-**Outbound click** uses the **Click – Just Links** trigger, which fires exclusively on `<a>` anchor elements and ignores buttons, divs, and images. First enable the Click URL built-in variable: Variables → Configure → Clicks section → check *Click URL*. Then create the trigger: Triggers → New → **Click – Just Links** → Some Link Clicks → *Click URL* → *does not contain* → `yourdomain.com`. Enable Wait for Tags.
+**Outbound click** uses the **Click – Just Links** trigger, which fires exclusively on `<a>` anchor elements and ignores buttons, divs, and images. Ensure the Click URL built-in variable is enabled (covered in [[01-gtm-fundamentals-container-setup]]). Then create the trigger: Triggers → New → **Click – Just Links** → Some Link Clicks → *Click URL* → *does not contain* → `yourdomain.com`. Enable Wait for Tags.
 
 Create the event tag: Event Name `click`, parameters `link_url` = `{{Click URL}}` and `outbound` = `true`.
 
@@ -146,7 +146,7 @@ GTM Preview confirms a tag fires on the client side. GA4 DebugView confirms the 
 
 When GTM Preview launches, Tag Assistant automatically appends a `_dbg` parameter to the site URL, which enables DebugView for your session. No separate `debug_mode: true` tag parameter is needed. Open GA4: Admin → Data display → DebugView.
 
-According to the [GA4 DebugView documentation](https://support.google.com/analytics/answer/7201382), DebugView provides two time windows: a *Seconds stream* showing the last 60 seconds of events, and a *Minutes stream* showing per-minute event counts across the last 30 minutes. Click any event name to expand its parameter list. For each event you configured, confirm: the event name matches exactly what you set in the GA4 Event tag; expected parameters appear with correct values (`form_id`, `percent_scrolled`, `link_url`); and no unexpected duplicate events appear. A `generate_lead` that fires twice per form submission points to a trigger scoping problem — fix it before you publish.
+DebugView provides two time windows: *Seconds stream* (last 60 seconds) and *Minutes stream* (per-minute counts over 30 minutes); see the [GA4 DebugView documentation](https://support.google.com/analytics/answer/7201382). Click any event name to expand its parameter list. For each event you configured, confirm: the event name matches exactly what you set in the GA4 Event tag; expected parameters appear with correct values (`form_id`, `percent_scrolled`, `link_url`); and no unexpected duplicate events appear. A `generate_lead` that fires twice per form submission points to a trigger scoping problem — fix it before you publish.
 
 DebugView data is a diagnostic overlay; it is not included in standard GA4 reports and does not affect production metrics.
 
@@ -163,7 +163,7 @@ Using a real or sandbox GTM container connected to a GA4 property, build and val
 1. Create the Google tag with your GA4 Measurement ID on the Initialization – All Pages trigger. In GTM Preview, confirm it fires. In GA4 DebugView, confirm `page_view` appears within five seconds with `page_location` and `page_title` parameters.
 2. Identify a form on your site. Create a Form Submission trigger scoped to that form's CSS selector with Wait for Tags and Check Validation enabled. Create a GA4 Event tag named `generate_lead` with a `form_id` parameter. Submit the form in Preview mode and confirm the event in DebugView.
 3. Create a Scroll Depth trigger for `25,50,75,100` percent at Window Load. Wire it to a GA4 Event tag named `scroll` with `percent_scrolled` as a parameter. Scroll through a long page in Preview mode and confirm four separate `scroll` events in DebugView with the correct threshold values.
-4. Enable the Click URL built-in variable. Create a Click – Just Links trigger for outbound links. Create a GA4 Event tag named `click` with `link_url` and `outbound` parameters. Click an external link in Preview mode and confirm in DebugView.
+4. Create a Click – Just Links trigger for outbound links. Create a GA4 Event tag named `click` with `link_url` and `outbound` parameters. Click an external link in Preview mode and confirm in DebugView.
 5. Publish the container. Name the version to reflect its contents.
 
 **Success criteria:** All four events visible in GA4 DebugView with correct parameter values before publish. Container version published with a descriptive name that includes the event types added.
