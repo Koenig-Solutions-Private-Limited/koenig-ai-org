@@ -386,6 +386,29 @@ describe("gate-review verdict write guards", () => {
     expect(mockIssueService.update).not.toHaveBeenCalled();
   });
 
+  it("allows PATCH BLOCK verdict when effective status is not blocked", async () => {
+    const existing = makeIssue({ status: "in_review", assigneeAgentId: null, assigneeUserId: null });
+    const updated = { ...existing };
+    mockIssueService.getById.mockResolvedValue(existing);
+    mockIssueService.update.mockResolvedValue(updated);
+    mockIssueService.addComment.mockResolvedValue({
+      id: "comment-block-nonblocked",
+      issueId: existing.id,
+      companyId: existing.companyId,
+      body: "G0 BLOCK",
+    });
+
+    const res = await request(await createApp())
+      .patch(`/api/issues/${existing.id}`)
+      .send({
+        comment: "G0 BLOCK",
+      });
+
+    expect(res.status).toBe(200);
+    expect(mockIssueService.update).toHaveBeenCalled();
+    expect(mockIssueService.addComment).toHaveBeenCalled();
+  });
+
   it("accepts PATCH BLOCK when existing blockers are retained", async () => {
     const blockerId = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
     const existing = makeIssue({ status: "in_review", assigneeAgentId: null, assigneeUserId: null });

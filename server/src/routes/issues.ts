@@ -143,7 +143,6 @@ function validateGateVerdictWrite(input: {
   effectiveAssigneeUserId: string | null;
   effectiveBlockedByIssueIds: string[];
   allowPassWithoutDone?: boolean;
-  enforceBlockOnlyWhenBlocked?: boolean;
 }):
   | { ok: true }
   | { ok: false; code: string; message: string } {
@@ -154,7 +153,6 @@ function validateGateVerdictWrite(input: {
     effectiveAssigneeUserId,
     effectiveBlockedByIssueIds,
     allowPassWithoutDone = false,
-    enforceBlockOnlyWhenBlocked = false,
   } = input;
   if (!verdict) return { ok: true };
 
@@ -166,9 +164,7 @@ function validateGateVerdictWrite(input: {
     };
   }
 
-  const shouldEnforceBlockHandoff =
-    verdict === "block" && (!enforceBlockOnlyWhenBlocked || effectiveNextStatus === "blocked");
-  if (shouldEnforceBlockHandoff) {
+  if (verdict === "block" && effectiveNextStatus === "blocked") {
     const hasAssignee = effectiveAssigneeAgentId !== null || effectiveAssigneeUserId !== null;
     const hasBlockers = effectiveBlockedByIssueIds.length > 0;
     if (!hasAssignee && !hasBlockers) {
@@ -3577,7 +3573,6 @@ export function issueRoutes(
       effectiveAssigneeUserId: issue.assigneeUserId,
       effectiveBlockedByIssueIds: commentBlockedByIssueIds,
       allowPassWithoutDone: false,
-      enforceBlockOnlyWhenBlocked: true,
     });
     if (!gateVerdictValidation.ok) {
       res.status(400).json({
