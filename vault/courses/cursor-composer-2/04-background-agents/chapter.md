@@ -39,7 +39,7 @@ tags:
 duration_min: 45
 read_time_min: 18
 last_updated: 2026-06-11
-status: awaiting-g0
+status: g0-passed
 author: content-author
 ticket: KOEA-7739
 whats_new: "Chapter introduces Cursor Background Agents in both in-IDE (Agents Window) and Cloud modes, the .cursor/environment.json + worktrees.json configuration pattern, and the routing position of Background Agents relative to the Chapter 3 IDE vs CLI decision tree."
