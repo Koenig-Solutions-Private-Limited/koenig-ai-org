@@ -1,0 +1,14 @@
+{
+  "course_slug": "cursor-composer-2",
+  "chapter_num": 4,
+  "chapter_slug": "04-background-agents",
+  "status": "slides-done",
+  "assets": {
+    "slides_url": "vault/courses/cursor-composer-2/04-background-agents/slides.pptx",
+    "audio_url": "vault/courses/cursor-composer-2/04-background-agents/audio.mp3"
+  },
+  "tool": "generate_course_audio.py",
+  "slide_count": 7,
+  "duration_audio_sec": 1583,
+  "produced_at": "2026-06-11T05:11:00Z"
+}
