@@ -37,7 +37,7 @@ tags:
 duration_min: 45
 read_time_min: 10
 last_updated: 2026-06-11
-status: awaiting-g0
+status: g0-passed
 author: content-author
 ticket: KOEA-7796
 whats_new: "Chapter introduces /multitask (Cursor 3.2) and the parent-child async subagent model, covering task decomposition patterns, workflow_state.md coordination, worktree housekeeping at scale, credit budget awareness, and the conditions under which /multitask should not be used."
