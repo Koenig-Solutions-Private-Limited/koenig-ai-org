@@ -2,7 +2,7 @@
 course_slug: cursor-composer-2
 chapter_num: 2
 title: ".cursorrules + AGENTS.md — The Project-Discipline Layer"
-status: g0-passed
+status: awaiting-g0
 author: course-author
 ticket: KOEA-2385
 chapter_primary_query: "How do I make .cursorrules and AGENTS.md actually enforce rules in Cursor sessions?"
