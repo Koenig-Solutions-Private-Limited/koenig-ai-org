@@ -90,7 +90,26 @@ Look for:
 
 Score: 5/5 if reads natural. <4 → BLOCK.
 
-### 7. Decide + comment
+### 7. Re-review precheck (revision wakes only)
+
+When the wake reason is a Blog Author revision handoff (re-review after G0 BLOCK), **before** opening the draft or searching git history:
+
+1. Scan the handoff comment for `- Commit SHA:` and `- Vault path:`.
+2. If either field is missing or the SHA is not 40 hex characters, return immediately as an author handoff defect — do not burn a heartbeat searching vault history or inferring SHAs.
+
+```
+❌ HANDOFF DEFECT · missing revision pointer
+
+Blog Author revision handoff is missing required fields:
+- Commit SHA: <missing|invalid>
+- Vault path: <missing>
+
+→ @blog-author: re-handoff with Revision complete / Commit SHA / Vault path / Changes per blog-write Step 6. Content Reviewer will not search history as a fallback.
+```
+
+3. When both fields are present, verify with `git show <sha> -- <vault-path>` (after pulling master if needed). Proceed to dimensions 1–6 only after the pointer resolves.
+
+### 8. Decide + comment
 
 **PASS:**
 
@@ -127,7 +146,7 @@ COMPLETENESS (<n> blockers)
 → @content-author: revise + re-route via awaiting-g0
 ```
 
-### 8. Flip Paperclip ticket status
+### 9. Flip Paperclip ticket status
 
 - PASS → status `in_review` + `metadata.review_state="awaiting-g3"` → @ceo (G3 alignment kicks off automatically). (**"awaiting-g3" is not a valid status enum — use metadata.**)
 - BLOCK → status `in_progress` + `metadata.review_state="awaiting-revision"` → @content-author. (**"awaiting-revision" is not a valid status enum — use metadata.**)
