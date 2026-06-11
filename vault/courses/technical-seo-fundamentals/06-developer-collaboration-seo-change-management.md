@@ -2,9 +2,12 @@
 chapter_num: 6
 course_slug: technical-seo-fundamentals
 title: "Developer Collaboration & SEO Change Management"
-status: g0-blocked
+description: "Workflows for translating SEO audit findings into developer-ready tickets, executing site migration checklists, and communicating SEO risk in sprint planning."
+status: awaiting-g0
+last_updated: 2026-06-11
 duration_min: 22
 vendor_tag: google-search-central
+positions: []
 learning_objectives:
   - "Write developer-ready SEO tickets with problem description, testable acceptance criteria, and impact statement"
   - "Execute a sequenced pre-launch migration checklist covering redirect mapping, GSC verification, and staging noindex removal"
@@ -58,9 +61,9 @@ word_budget: { min: 800, max: 1200 }
 quiz:
   - question: "Which three elements are required in a developer-ready SEO ticket?"
     options:
-      - "Ticket title, plain-text description, and a time-to-fix estimate"
+      - "Ticket title, a plain-text problem description, and a time-to-fix estimate"
       - "Problem description with example URLs, testable acceptance criteria, and an impact statement"
-      - "Target keyword, fix category label, and sprint priority score"
+      - "Target keyword, a fix category label, and a sprint priority score"
       - "HTTP status code expected, implementation steps, and QA sign-off checklist"
     correct_idx: 1
     explanation: "A developer-ready SEO ticket needs: (1) a problem description anchored to real example URLs, (2) testable acceptance criteria that specify the exact output constituting 'done', and (3) an impact statement linking the fix to search performance or revenue outcome."
@@ -69,8 +72,8 @@ quiz:
     options:
       - "Submit the Change of Address form in GSC and enable 301 redirects on the server"
       - "Verify both the old and new domain properties in GSC and build the URL-to-URL redirect mapping"
-      - "Run the post-launch spot-check crawl and verify redirect response codes"
-      - "Submit the new XML sitemap to GSC and remove staging password protection"
+      - "Run the post-launch spot-check crawl and verify 301 redirect response codes for old URLs"
+      - "Submit the new XML sitemap to GSC and remove both staging password protection and access controls"
     correct_idx: 1
     explanation: "DNS verification for a new GSC domain property can take 2–3 days. Both old and new properties must be verified before migration day — the Change of Address form is unavailable otherwise. The redirect map also requires pre-migration baseline data from the old property."
     section_anchor: "pre-launch-migration-seo-checklist"
@@ -94,7 +97,7 @@ quiz:
     section_anchor: "30-day-gsc-monitoring-plan"
   - question: "How should an SEO practitioner frame a P1 SEO ticket in a sprint planning meeting with engineering leads?"
     options:
-      - "Use SEO industry terminology (e.g., 'crawl budget', 'equity dilution') to establish domain authority"
+      - "Use SEO industry terminology (e.g., 'crawl budget', 'link equity dilution') to establish domain expertise and credibility"
       - "Translate the SEO impact into system-reliability language and map it to an engineering severity tier with revenue evidence"
       - "File the ticket in the backlog and rely on the product manager to champion it during planning"
       - "Present the raw keyword ranking drop and crawl error count to show the technical scope"
