@@ -45,10 +45,10 @@ if m:
     [ -n "$URL" ] && notebooklm source add "$URL" -n "$ID" >> "$LOG" 2>&1
   done < "$WORK/$CH.urls"
   sleep 6
-  INSTR="Audience: $AUDIENCE Focus on this chapter: $TITLE. Practical, example-driven."
-  notebooklm generate slide-deck "$INSTR" -n "$ID" >> "$LOG" 2>&1; sleep 3
-  notebooklm generate audio "Deep dive. $INSTR" --format deep-dive -n "$ID" >> "$LOG" 2>&1; sleep 3
-  notebooklm generate video "Explainer. $INSTR" -n "$ID" >> "$LOG" 2>&1; sleep 3
+  INSTR="Audience: $AUDIENCE Focus on this chapter: $TITLE. Practical, example-driven. Prioritize the research dossier for facts, benchmark numbers, and comparison tables; cite specific figures rather than vague claims."
+  notebooklm generate slide-deck "$INSTR Follow the chapter's section structure. Include the comparison tables and slide-worthy benchmarks from the research dossier as dedicated slides, and render the visual-framework descriptions as diagrams. End with a practice/next-steps slide." -n "$ID" >> "$LOG" 2>&1; sleep 3
+  notebooklm generate audio "Deep dive. $INSTR Use the dossier's audience scenario as the running example through the conversation." --format deep-dive -n "$ID" >> "$LOG" 2>&1; sleep 3
+  notebooklm generate video "Explainer. $INSTR Build around the visual frameworks described in the dossier." -n "$ID" >> "$LOG" 2>&1; sleep 3
   notebooklm generate quiz "Simple comprehension check. $INSTR" --difficulty easy --quantity standard -n "$ID" >> "$LOG" 2>&1; sleep 3
   notebooklm generate flashcards "Key terms. $INSTR" -n "$ID" >> "$LOG" 2>&1; sleep 3
   notebooklm generate report --format study-guide --append "$INSTR" -n "$ID" >> "$LOG" 2>&1; sleep 3
