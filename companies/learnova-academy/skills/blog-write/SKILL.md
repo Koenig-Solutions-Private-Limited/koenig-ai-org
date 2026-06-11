@@ -169,9 +169,28 @@ status: awaiting-g0
 assignee: @content-reviewer
 ```
 
-Comment on ticket:
+**Revision handoff contract (required for every handoff, especially re-review after G0 BLOCK):**
+
+Before flipping to `@content-reviewer`, pull canonical master and resolve the path-specific commit SHA:
+
+```bash
+git -C /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org pull origin master --rebase=false
+git -C /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org log -n 1 --format=%H -- vault/blogs/<slug>/draft.md
+```
+
+Do not hand off until publish-action has synced your revision to `origin/master`. If the expected content is not on master yet, stand down or block per KOEA-6993 instead of guessing a SHA.
+
+Comment on ticket (initial draft or revision — same template):
 ```
 14:22 ✅ Blog draft ready · vault/blogs/<date>-<slug>/draft.md
+
+Revision complete:
+- Commit SHA: <40-char sha from log command above>
+- Vault path: vault/blogs/<slug>/draft.md
+- Changes:
+  - <bullet: what changed in this revision>
+  - <bullet: blockers addressed, if re-review>
+
 - 1,140 words; 1 RunPromptCell, 1 KnowledgeCheck
 - Primary query: "<...>"
 - Contrarian angle: "<...>"
