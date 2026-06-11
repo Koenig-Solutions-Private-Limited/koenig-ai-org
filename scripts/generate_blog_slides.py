@@ -56,6 +56,7 @@ def parse_frontmatter(text: str):
 
 def clean_line(line: str) -> str:
     """Strip markdown syntax for display as plain bullet text."""
+    line = re.sub(r'\[\[(?:[^\]|]+\|)?([^\]]+)\]\]', r'\1', line)  # [[target]] or [[target|display]]
     line = re.sub(r'\*\*(.+?)\*\*', r'\1', line)
     line = re.sub(r'\*(.+?)\*', r'\1', line)
     line = re.sub(r'`([^`]+)`', r'\1', line)
@@ -72,26 +73,36 @@ def extract_sections(body: str):
     sections = []
     current_title = None
     bullets: list[str] = []
+    in_code_block = False
 
     for raw_line in body.splitlines():
+        # Track code fences; skip content inside them
+        if raw_line.startswith("```"):
+            in_code_block = not in_code_block
+            continue
+        if in_code_block:
+            continue
+
         if raw_line.startswith("## "):
             if current_title is not None:
                 sections.append((current_title, bullets[:5]))
             current_title = raw_line[3:].strip()
             bullets = []
         elif raw_line.startswith("### "):
-            # treat as sub-bullet header
-            sub = raw_line[4:].strip()
+            sub = clean_line(raw_line[4:].strip())
             if sub:
-                bullets.append(sub[:100])
+                bullets.append(sub)
         elif current_title is not None:
-            cleaned = clean_line(raw_line)
+            stripped = raw_line.strip()
+            if stripped.startswith(">"):
+                continue  # skip blockquotes
+            cleaned = clean_line(stripped)
             if (cleaned
                     and len(cleaned) > 15
+                    and len(cleaned) <= 120  # skip long paragraphs rather than truncating
                     and not cleaned.startswith("|")
-                    and not cleaned.startswith("```")
                     and not cleaned.startswith("![")):
-                bullets.append(cleaned[:120])
+                bullets.append(cleaned)
 
     if current_title is not None:
         sections.append((current_title, bullets[:5]))
