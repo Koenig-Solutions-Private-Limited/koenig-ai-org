@@ -7,7 +7,7 @@ last_updated: 2026-06-11
 duration_min: 20
 vendor_tag: Google Search Central
 chapter_primary_query: "how to implement structured data and optimize on-page elements for SEO"
-first_60_words_answer: "Optimize the three most-audited on-page elements — title tags (≤60 characters to prevent Google auto-rewrites), H1 headings (one per page, aligned to your primary keyword), and meta descriptions (≤155 characters framed as a user benefit). Then layer in JSON-LD structured data to qualify for rich results in Google Search."
+first_60_words_answer: "The three most-audited on-page elements are also the most commonly misimplemented: title tags (Google truncates by device width, not a fixed limit; the 60-character guideline prevents auto-rewrites), H1 headings (one per page aligned to the primary keyword), and meta descriptions (≤155 characters framed as a user benefit). Each element is a distinct optimization lever."
 description: "Learn to audit and rewrite title tags, implement Article, Product, and BreadcrumbList JSON-LD for the correct page type, validate structured data using Google's Rich Results Test and Schema.org Validator, encode E-E-A-T signals through author markup and publisher schema, and build pillar-spoke internal link structures that distribute PageRank across a topic cluster."
 tags:
   - on-page-seo
@@ -96,8 +96,8 @@ quiz:
   - question: "Which combination of Article schema properties collectively encodes three E-E-A-T signals?"
     options:
       - "author.name, datePublished, and a BreadcrumbList linking to the topic cluster"
-      - "author.name plus author.url, datePublished and dateModified, and publisher.sameAs"
-      - "headline, three image aspect ratios, and a sku on the article node"
+      - "author.name and author.url, both datePublished and dateModified fields, and publisher.sameAs"
+      - "headline, image aspect ratios, and a sku on the article"
       - "author.name, priceCurrency, and validThrough nested on the publisher node"
     correct_idx: 1
     explanation: "author.name + author.url (Expertise/Experience via bio link), datePublished/dateModified (Trustworthiness via freshness), and publisher.sameAs linking to a known entity (Authoritativeness). The other options mix in irrelevant or non-existent properties."
@@ -178,7 +178,7 @@ Three encodable signals in Article schema:
 
 The pillar-spoke model is the on-page mechanism by which link equity circulates within a topic cluster.
 
-**Pillar page**: A comprehensive, long-form page (3,000–5,000 words) covering a broad topic. It typically accumulates the most external backlinks in a cluster. Every crawlable `<a href>` link from the pillar to a spoke page passes a fraction of the pillar's PageRank to that spoke. [Internal Linking Strategy & Topical Authority Playbook 2026](https://www.digitalapplied.com/blog/internal-linking-strategy-topical-authority-playbook-2026)
+**Pillar page**: A comprehensive, long-form page (2,000–5,000+ words) covering a broad topic. It typically accumulates the most external backlinks in a cluster. Every crawlable `<a href>` link from the pillar to a spoke page passes a fraction of the pillar's PageRank to that spoke. [Internal Linking Strategy & Topical Authority Playbook 2026](https://www.digitalapplied.com/blog/internal-linking-strategy-topical-authority-playbook-2026)
 
 **Cluster (spoke) pages**: Focused pages on sub-topics. Each must link back to the pillar using anchor text containing the pillar's target keyword — reinforcing the pillar's topical authority signal. Equity flows bidirectionally: external links enter through the pillar, distribute outward to spokes; spoke-to-pillar return links amplify the pillar's standing.
 
