@@ -79,6 +79,12 @@ You should see a version string beginning with `1.` (the current release is in t
 
 In ADK, a **tool** is a Python function. The function's docstring is the tool description — the model reads it to decide when to call the function. Type annotations are the parameter schema.
 
+```takeaways
+- ADK infers the tool schema from the Python function's type annotations and docstring at runtime — no decorator or separate JSON schema file is required.
+- The docstring quality directly controls when the model calls a tool; "Use this tool when..." phrasing is the trigger phrase that shapes model behavior.
+- Tools must return strings or JSON-serialisable values because the model reads the return value as tool output; structured data should be returned as JSON strings for complex results.
+```
+
 Create `budget_tracker/tools.py`:
 
 ```python
@@ -142,6 +148,12 @@ Three things to notice:
 ---
 
 ## Step 3: Wire the agent
+
+```takeaways
+- The `instruction` field in the Agent constructor is the system prompt and acts as the most important variable controlling agent behavior — it should be version-controlled and tested like production code.
+- Explicit per-tool rules in the instruction (when to call, what not to do) reduce wrong-tool invocations and hallucinated data significantly compared with a vague persona prompt.
+- The `Agent` constructor requires only `name`, `model`, `description`, `instruction`, and `tools` to produce a deployable agent with automatic multi-step tool use.
+```
 
 Create `budget_tracker/agent.py`:
 
@@ -241,6 +253,12 @@ The agent correctly identifies two separate expenses from one message, calls `lo
 
 Right now, expenses vanish when the process restarts. The `_expenses` list is in memory. Real agents need state that survives restarts. GEAP offers two layers: **Session state** (within a conversation) and **Memory Bank** (across all conversations for a user).
 
+```takeaways
+- ADK injects a `Session` object into tool functions automatically when the parameter is typed as `Session` — no manual wiring is required by the caller.
+- `session.state` is a dictionary that ADK persists through the conversation and restores if the same session ID is resumed after a process restart.
+- Switching from local `InMemorySessionService` to production `VertexAiSessionService` requires only a one-line constructor swap; all tool code and the Session API remain unchanged.
+```
+
 Let's start with Session state. Modify `agent.py`:
 
 ```python
@@ -334,6 +352,12 @@ Key insight: ADK injects `session` automatically when a tool function declares a
 ## Step 6: Understanding Session vs Memory Bank
 
 The distinction between these two concepts is the most important architectural choice in this chapter:
+
+```takeaways
+- Session state is scoped to one conversation and holds raw data you write explicitly; Memory Bank is scoped to a user across all conversations and holds distilled "Memory Profiles" the platform generates automatically.
+- Memory Bank profiles are created by running a model over completed sessions to extract relevant facts, enabling agents to recall user preferences and history at low latency without loading full conversation transcripts.
+- Memory Bank requires deploying to Vertex AI with `VertexAiSessionService` and is not available with `InMemorySessionService` used in local development.
+```
 
 | | **Session state** | **Memory Bank** |
 |---|---|---|

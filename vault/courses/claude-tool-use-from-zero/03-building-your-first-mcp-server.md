@@ -47,11 +47,23 @@ list_project_files(root_label, relative_path)
 
 It lists files under a pre-approved project root. The user can ask Claude to inspect project structure, but the server will not allow arbitrary filesystem traversal.
 
+```takeaways
+- The server enforces the security boundary; the model never decides which paths are off-limits.
+- Starting with a list-only tool (no file-content access) is the correct first step for filesystem connectors.
+- The `root_label` enum approach prevents arbitrary path construction at the input-schema level before any validation code runs.
+```
+
 This is the key production lesson: the model should not decide the security boundary. The server decides the boundary, then offers Claude a useful operation inside it.
 
 ## Minimal server shape
 
 An MCP server has identity, registered capabilities, and a transport. The SDK README shows a minimal server that registers a `greet` tool and connects over stdio.[^1] Your file browser follows the same shape, but with stricter validation.
+
+```takeaways
+- Every MCP server needs three things: an identity object, registered capabilities, and a connected transport.
+- `path.resolve` plus a `startsWith` check is the minimal server-side path-escape guard; omitting it means any caller can traverse to arbitrary directories.
+- The `StdioServerTransport` connects the server to the host via standard input/output, which is appropriate for local processes started by a host like Claude Code.
+```
 
 ```ts
 import { McpServer } from "@modelcontextprotocol/server";
@@ -110,6 +122,12 @@ await server.connect(transport);
 
 A raw `read_file(path)` tool looks convenient. It is also an invitation to leak secrets. The model might request `.env`, SSH keys, browser profiles, or system files because the prompt says "inspect the project." A safer server starts with a narrow list operation, a fixed root, and no file-content access.
 
+```takeaways
+- A generic `read_file(path)` tool exposes every file the server process can read, including secrets and credentials.
+- Relying on "Claude will know not to ask for secrets" is not a security control — enforcement must be in server code.
+- Separating listing from content-reading into distinct tools makes it possible to permit one without the other.
+```
+
 <Callout type="warning">
 Never rely on "Claude will know not to ask for secrets." A connector must enforce policy in code. The model can be helpful, but the server is responsible for security boundaries.
 </Callout>
@@ -117,6 +135,12 @@ Never rely on "Claude will know not to ask for secrets." A connector must enforc
 ## Controlled errors
 
 Errors are part of the user experience. A stack trace is useful to an attacker and confusing to a learner. A controlled error says what failed and what the caller can do next.
+
+```takeaways
+- Returning a raw stack trace leaks implementation details that help attackers and confuse end users.
+- Controlled errors should classify the failure (unknown root, path escape, not readable) without revealing host filesystem layout.
+- Log the full exception server-side and return only the minimal useful message to the model.
+```
 
 For this chapter, use three predictable errors:
 

@@ -68,7 +68,13 @@ Cloudflare Agents is a TypeScript SDK that runs on Cloudflare Workers, with stat
 
 ## State management: the deepest divergence
 
-How each platform handles state is the most architecturally significant difference. It determines your data model, your failure modes, and your migration path.
+How each platform handles state is the most architecturally significant difference. It determines your data model, your failure forces, and your migration path.
+
+```takeaways
+- GEAP manages state automatically via platform services (Session state + Memory Bank), eliminating database schema work but making raw state opaque and difficult to migrate or inspect directly.
+- Claude Agent SDK has no built-in state management — conversation history, long-term memory, context compression, and cross-session summarization are all the developer's responsibility, representing weeks of engineering for a production-grade implementation.
+- Cloudflare's `this.setState()` on a Durable Object is atomic, immediately consistent, and co-located with compute, but Durable Objects are Cloudflare-proprietary so the state layer must be rewritten to leave the platform.
+```
 
 ### GEAP: managed, layered, opinionated
 
@@ -162,6 +168,12 @@ Cloudflare's model is elegantly simple: `this.state` is a typed object backed by
 
 Where your agent runs determines latency, cost, and operational complexity.
 
+```takeaways
+- Cloudflare Agents runs on 300+ global edge locations with sub-millisecond cold starts, making it the clear winner for real-time, user-facing, latency-sensitive workloads.
+- GEAP runs on GCP regional infrastructure and wins on compliance features and deep GCP ecosystem integration, while Claude SDK runs on whatever infrastructure the developer chooses, giving maximum portability.
+- WebSocket support and native scheduling via Durable Object alarms are built into Cloudflare Agents, while GEAP requires the bidirectional streaming API and Cloud Scheduler, and Claude SDK requires manual implementation of both.
+```
+
 | | **GEAP** | **Claude SDK** | **Cloudflare Agents** |
 |---|---|---|---|
 | **Where it runs** | GCP regions (us-central1, europe-west4, etc.) | Wherever you deploy | Cloudflare edge (300+ PoPs globally) |
@@ -195,6 +207,12 @@ A nuance worth naming: GEAP lists 200+ models including Claude, but features lik
 ## Lock-in surface area
 
 This is the most important section for anyone building a production system. Lock-in is not binary — it is a spectrum. The question is not "can I leave?" but "how much does it cost to leave?"
+
+```takeaways
+- GEAP has the highest lock-in surface: Memory Bank has no export API at launch, Agent Registry stores your tool catalogue in GCP, and Agent Gateway rules are GCP-native; only the ADK agent logic is portable.
+- Claude Agent SDK has the lowest lock-in: agent logic is plain Python, state is in your own database, and switching providers requires only pointing API calls at a different endpoint, with prompt tuning as the only hard dependency.
+- Cloudflare Agents is medium lock-in: the `@callable()` decorated methods are portable, but Durable Objects state, Durable Object alarms, and WebSocket connection management must all be rebuilt to leave Cloudflare.
+```
 
 ### GEAP lock-in surface
 
@@ -231,6 +249,12 @@ The agent logic itself — the methods decorated with `@callable()` — is porta
 ## Decision framework: which platform for which workload
 
 Use this framework when you are choosing a platform for a new agent workload.
+
+```takeaways
+- GEAP is the right choice when you are already on GCP, need enterprise governance (Agent Identity, Anomaly Detection, Security Command Center), or are managing 5+ agents where Agent Registry and Agent Gateway were purpose-built for that scale.
+- Claude Agent SDK is the right choice when reasoning quality is the primary constraint (Claude Opus 4.7 leads on complex multi-step tasks), when vendor lock-in must be avoided, or when the stack is heterogeneous and not GCP-native.
+- Cloudflare Agents is the right choice when latency is the primary constraint, the app is already on Cloudflare Workers, the team is TypeScript-native, or state requirements are simple enough for `this.setState()` without an external database.
+```
 
 ### Choose GEAP when
 
