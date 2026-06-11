@@ -2,7 +2,7 @@
 chapter_num: 6
 course_slug: mobile-app-marketing-performance
 title: "Paid Mobile User Acquisition: Google App Campaigns & Meta App Ads"
-status: awaiting-g0
+status: g0-blocked
 duration_min: 30
 vendor_tag: "Google Ads / Meta Ads / AppsFlyer"
 learning_objectives:
@@ -91,7 +91,7 @@ quiz:
   - question: "After checking AppsFlyer's SKAN postbacks filtered by Meta, you see a postback with a valid attribution-signature and a decoded conversion value. What does this confirm?"
     options:
       - "The iOS user consented to ATT tracking and full user-level IDFA data is now available for attribution"
-      - "The install occurred on a real device, Apple verified the Meta network ID, and the conversion value was not manipulated"
+      - "The install was on a real device, Apple verified Meta's network ID, and the CV was not tampered"
       - "The campaign's tCPA bid is correctly calibrated and the SKAN conversion window aligns with the target event"
       - "Meta's Aggregated Event Measurement configuration is correctly set up and reporting iOS install conversion data"
     correct_idx: 1
@@ -109,7 +109,7 @@ quiz:
   - question: "Your Meta App Ads campaign shows high CTR but low install-to-event rate (ITR) for hotel bookings. What does this pattern indicate?"
     options:
       - "The creative is weak — users are not clicking on the ad at sufficient rate"
-      - "The audience is correct and the creative works, but post-install onboarding or paywall friction is losing users"
+      - "The creative and audience are working, but post-install onboarding or paywall friction is losing users"
       - "The CPM is too high, causing the algorithm to deliver to a narrow low-quality audience"
       - "SKAdNetwork postbacks for this campaign are not arriving or decoding correctly in AppsFlyer"
     correct_idx: 1
@@ -118,7 +118,7 @@ quiz:
   - question: "What is the primary difference between running a Meta App Ads campaign with the App Installs objective vs switching the optimization goal to App Event Optimization (AEO) for purchase?"
     options:
       - "AEO bills on CPC rather than CPM, making it more cost-efficient at small budgets"
-      - "AEO changes delivery to target users predicted to complete a specific in-app event rather than users predicted to install"
+      - "AEO shifts delivery to find users predicted to complete a specific in-app event rather than to install"
       - "AEO disables SKAdNetwork entirely and switches to direct IDFA-based user-level attribution for iOS campaigns"
       - "AEO is available only on Android because Apple's ATT blocks purchase signal for iOS delivery"
     correct_idx: 1

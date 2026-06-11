@@ -2,7 +2,7 @@
 chapter_num: 4
 course_slug: technical-seo-fundamentals
 title: "On-Page Optimization & Structured Data Implementation"
-status: g0-blocked
+status: awaiting-g0
 last_updated: 2026-06-11
 duration_min: 20
 vendor_tag: Google Search Central
@@ -12,6 +12,7 @@ learning_objectives:
   - "Validate structured data using both the Google Rich Results Test and Schema.org Validator"
   - "Encode E-E-A-T signals through author markup, datePublished/dateModified, and publisher.sameAs"
   - "Build pillar-to-spoke internal link structures that distribute PageRank across a topic cluster"
+positions: []
 sources:
   - url: "https://developers.google.com/search/docs/appearance/title-link"
     title: "Google Search Central: Control your title links in search results"
@@ -78,7 +79,7 @@ quiz:
     section_anchor: json-ld-structured-data-article-product-and-breadcrumblist
   - question: "Which combination of Article schema properties collectively encodes three E-E-A-T signals?"
     options:
-      - "author.name, datePublished, and BreadcrumbList position across the cluster"
+      - "author.name, datePublished, and a BreadcrumbList linking to the topic cluster"
       - "author.name plus author.url, datePublished and dateModified, and publisher.sameAs"
       - "headline, three image aspect ratios, and a sku on the article node"
       - "author.name, priceCurrency, and validThrough nested on the publisher node"
@@ -167,7 +168,7 @@ The pillar-spoke model is the on-page mechanism by which link equity circulates 
 
 The entire model depends on crawlable `<a href="...">` anchor elements. JavaScript-only navigation (onclick handlers, `href="#"` with JS routing) does not reliably transfer PageRank — Google states it can "only reliably crawl" standard HTML anchor elements.
 
-**Anchor text selection**: Use descriptive phrases that tell Google what the destination page covers. Avoid "click here" or "read more." Recommended distribution: exact-match ~15–25%, partial-match ~30–40%, semantic variants ~25–35%. Target 3–5 contextual internal links per article.
+**Anchor text selection**: Use descriptive phrases that tell Google what the destination page covers. Avoid "click here" or "read more." Vary anchor text across exact-match, partial-match, and semantic phrase variants — avoid over-indexing on any single type. Target 3–5 contextual internal links per article.
 
 The crawl-side audit for discovering which pages have zero inbound internal links is covered in [[01-crawlability-indexation-fundamentals|Chapter 1: Crawlability, Indexation & Site Architecture Fundamentals]].
 
