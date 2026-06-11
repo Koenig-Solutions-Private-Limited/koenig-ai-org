@@ -183,7 +183,11 @@ if not isinstance(items, list):
     sys.exit(0)
 
 for item in items:
-    metadata = item.get("metadata") or {}
+    if not isinstance(item, dict):
+        continue
+    metadata = item.get("metadata")
+    if not isinstance(metadata, dict):
+        metadata = {}
     if metadata.get("slug") == slug:
         issue = item.get("identifier") or item.get("issueIdentifier") or item.get("id") or "unknown"
         state = metadata.get("publish_state") or "null"
@@ -473,11 +477,27 @@ else
 import json, sys
 with open(sys.argv[1], "r", encoding="utf-8") as fh:
     items = json.load(fh)
+# 2026-06-11 KOEA-6012: defensive — earlier shape AttributeError ('list' object
+# has no attribute 'get') was caused by a page-shape edge case where some items
+# come through as bare lists rather than dicts. Skip those safely instead of
+# crashing Phase 1.
 result = []
+skipped = 0
 for i in items:
-    md = i.get('metadata') or {}
+    if not isinstance(i, dict):
+        skipped += 1
+        continue
+    md = i.get('metadata')
+    # 2026-06-11 KOEA-6012 fix #2: metadata is sometimes a list (or null or
+    # primitive) instead of a dict — the `or {}` previously did not normalize
+    # truthy non-empty lists. Force-coerce to {} when not a dict so .get()
+    # never raises.
+    if not isinstance(md, dict):
+        md = {}
     if i.get('status') == 'done' and md.get('publish_state') == 'g4-approved':
         result.append({'id': i['id'], 'slug': md.get('slug', i['id'])})
+if skipped:
+    sys.stderr.write(f"phase1-scan: skipped {skipped} non-dict items\n")
 print(json.dumps(result))
 PY
 )"
@@ -495,13 +515,13 @@ else
       -H "Authorization: Bearer $GH_PAT_DISPATCH" \
       -H "Accept: application/vnd.github+json" \
       -H "X-GitHub-Api-Version: 2022-11-28" \
-      -d "$(python3 -c "import json; print(json.dumps({'event_type':'publish-ready','client_payload':{'issue_id':'$ISSUE_ID','slug':'$SLUG'}}))")")"
+      -d "$(ISSUE_ID="$ISSUE_ID" SLUG="$SLUG" python3 -c 'import json,os;print(json.dumps({"event_type":"publish-ready","client_payload":{"issue_id":os.environ["ISSUE_ID"],"slug":os.environ["SLUG"]}}))')")"
     if [[ "$DISPATCH_HTTP" == "204" ]]; then
       DISPATCHED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
       log "Phase 1: dispatch accepted (204) for $ISSUE_ID — setting dispatching at $DISPATCHED_AT"
       curl -sX PATCH "${AUTH_HEADER[@]}" "$PAPERCLIP_URL/api/issues/$ISSUE_ID" \
         -H "Content-Type: application/json" \
-        -d "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'dispatching','dispatched_at':'$DISPATCHED_AT','slug':'$SLUG'}}))")" \
+        -d "$(SLUG="$SLUG" DISPATCHED_AT="$DISPATCHED_AT" python3 -c 'import json,os;print(json.dumps({"metadata":{"publish_state":"dispatching","dispatched_at":os.environ["DISPATCHED_AT"],"slug":os.environ["SLUG"]}}))')" \
         -o /dev/null
     else
       log "Phase 1: dispatch FAILED (HTTP $DISPATCH_HTTP) for $ISSUE_ID"
@@ -527,7 +547,11 @@ with open(sys.argv[1], "r", encoding="utf-8") as fh:
     items = json.load(fh)
 result = []
 for i in items:
-    md = i.get('metadata') or {}
+    if not isinstance(i, dict):
+        continue
+    md = i.get('metadata')
+    if not isinstance(md, dict):
+        md = {}
     if md.get('publish_state') == 'dispatching':
         result.append({'id': i['id'], 'dispatched_at': md.get('dispatched_at', ''), 'slug': md.get('slug', '')})
 print(json.dumps(result))
