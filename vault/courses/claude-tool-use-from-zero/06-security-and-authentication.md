@@ -51,11 +51,23 @@ Examples:
 - Authentication: the MCP server receives `FINANCE_API_KEY` as an environment variable.
 - Authorization: that key can read settlement records but cannot issue refunds.
 
+```takeaways
+- Authentication and authorization are separate concerns: a valid credential does not automatically permit every tool or every target.
+- Per-tool authorization (not just per-server) is necessary because different tools carry different risk levels.
+- The pattern "authenticate → derive actor → authorize action → execute → log result" is the correct ordering for every tool handler.
+```
+
 Do not collapse these concepts. A valid credential does not imply permission for every tool.
 
 ## Least privilege for connectors
 
 Least privilege means the connector receives only the access needed for its declared operations. A file browser for a demo project should not mount the whole home directory. A payroll assistant should not receive a write token if it only drafts reminder emails. A legal redaction tool should not retain original documents after output is produced unless policy requires retention.
+
+```takeaways
+- Least privilege applies at the credential level (scope of the API key or token) and at the tool level (which operations the connector exposes).
+- An "admin token plus prompt instructions" security model is not authorization — prompt rules are suggestions, authorization checks are enforced in code.
+- MCP's ease of exposing capabilities is a design pressure toward over-permission; narrow tools and scoped credentials counteract it.
+```
 
 MCP makes it easy to expose capabilities. That ease is exactly why you must design them narrowly.
 
@@ -119,6 +131,12 @@ The write-capable external action has the strongest gate.`}
 ## Human-in-the-loop approval
 
 Some tools should not execute immediately even when authorized. Approval gates are appropriate when a tool sends money, changes legal text, deletes data, emails customers, or modifies production systems.
+
+```takeaways
+- Authorization is necessary but not sufficient for high-risk actions; approval gates add a human decision point after authorization passes.
+- A tool should return an `awaiting_approval` object with enough preview data for a human to make an informed decision without exposing full private content.
+- The application must enforce the approval state in code; Claude explaining the draft is not a substitute for a required user click.
+```
 
 A safe tool can return a pending action:
 

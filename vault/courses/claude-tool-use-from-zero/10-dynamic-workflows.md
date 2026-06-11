@@ -80,6 +80,12 @@ User prompt → Claude decides → Tool A → Claude decides → Tool B → Fina
 
 A static chain is correct for most tasks. Claude reads the last tool result before calling the next tool, so it can adapt. The price is latency: each tool call is a synchronous round trip through the model, and you can only run one at a time.
 
+```takeaways
+- A static chain is sequential and adaptive but limited to one tool call at a time, making it slow for large-batch workloads.
+- Dynamic workflows replace the sequential conversation loop with an orchestration script that spawns multiple sub-agents in parallel.
+- Wall-clock time compresses with dynamic workflows, but token spend multiplies — each sub-agent is a full Claude invocation.
+```
+
 **Dynamic workflows** break that constraint. The orchestrator Claude instance does not call tools sequentially from inside a conversation loop. Instead, it writes an **orchestration script** — executable code that the host environment runs — and that script spawns multiple [[sub-agent]] instances in parallel.[^1]
 
 ```
@@ -102,6 +108,12 @@ The orchestrator is responsible for four things:
 3. **Checkpointing** each sub-agent's output to a persistent store.
 4. **Verifying** that the checkpoint store is complete and correct before proceeding.
 
+```takeaways
+- Sub-agents receive only the context the orchestrator explicitly provides — they do not share memory with each other or with the orchestrator's conversation thread.
+- Sub-agent isolation prevents one agent's error state from contaminating another's result, but also means dense sequential dependencies cannot be parallelized.
+- The orchestrator's four responsibilities (decompose, spawn, checkpoint, verify) must all be present; missing one makes the others harder to operate.
+```
+
 Sub-agents are isolated. They receive only the context the orchestrator hands them — a slice of the task, any tools they need, and output format instructions. They do not share memory with each other or with the orchestrator's conversation thread.
 
 This isolation is a feature, not a limitation. It prevents one sub-agent's error state from contaminating another's result. The downside: if your task has dense sequential dependencies (the output of step 3 is required input to step 4), dynamic workflows do not help and may hurt.
@@ -109,6 +121,12 @@ This isolation is a feature, not a limitation. It prevents one sub-agent's error
 ## Fan-out patterns
 
 There are two structurally different fan-out shapes.
+
+```takeaways
+- Homogeneous fan-out applies the same task structure to different inputs; results are structurally identical and easy to aggregate.
+- Heterogeneous fan-out assigns genuinely independent analysis dimensions to different sub-agents; results must be merged by the orchestrator.
+- Use sequential chaining inside the orchestrator for steps with dense dependencies — forcing them into a heterogeneous fan-out adds complexity without parallelism benefit.
+```
 
 ### Homogeneous fan-out
 
@@ -199,6 +217,12 @@ Heterogeneous fan-out is useful when the analysis dimensions are genuinely indep
 ## Token budget math
 
 Dynamic workflows multiply token spend. Every sub-agent is a full Claude invocation. A homogeneous fan-out of 50 sub-agents costs 50× the tokens of running one.
+
+```takeaways
+- Token spend scales linearly with sub-agent count: a 50-agent fan-out costs 50× a single invocation, and Claude Code plan weekly limits apply to the total.
+- Log `input_tokens` and `output_tokens` from every sub-agent and aggregate them in the checkpoint store to create a cost record per orchestration run.
+- Measure token spend on a small pilot run before scheduling a recurring large fan-out; cost accumulation is invisible without explicit tracking.
+```
 
 Rule of thumb for estimating cost before you build:
 
