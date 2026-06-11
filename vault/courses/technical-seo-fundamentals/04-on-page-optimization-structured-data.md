@@ -6,6 +6,13 @@ status: awaiting-g0
 last_updated: 2026-06-11
 duration_min: 20
 vendor_tag: Google Search Central
+description: "Learn to audit and rewrite title tags, implement Article, Product, and BreadcrumbList JSON-LD for the correct page type, validate structured data using Google's Rich Results Test and Schema.org Validator, encode E-E-A-T signals through author markup and publisher schema, and build pillar-spoke internal link structures that distribute PageRank across a topic cluster."
+tags:
+  - on-page-seo
+  - structured-data
+  - json-ld
+  - e-e-a-t
+  - internal-linking
 learning_objectives:
   - "Audit title tags against the ≤60-character desktop guideline and rewrite them to prevent Google auto-substitution"
   - "Implement Article, Product, and BreadcrumbList JSON-LD for the correct page type"
@@ -58,6 +65,13 @@ notebooklm_source_focus:
   - "E-E-A-T signals and author schema Google documentation"
   - "internal linking strategy for topic clusters 2026"
 word_budget: { min: 800, max: 1200 }
+faq:
+  - question: "What is the recommended title tag length for desktop SERPs, and why?"
+    answer: "Google does not publish a fixed character limit — titles are truncated by device width. The industry-accepted guideline is ≤60 characters (≈580px on desktop), derived from observing where truncation most reliably occurs. Exceeding this threshold risks Google clipping your title mid-keyword or triggering an automatic rewrite from your H1. Source: [Google Search Central — title links](https://developers.google.com/search/docs/appearance/title-link)"
+  - question: "Which JSON-LD type should a travel OTA use for an editorial destination guide versus a bookable hotel page?"
+    answer: "Use `@type: Article` (or BlogPosting) for editorial content like destination guides where the primary purpose is information rather than a purchase. Use `@type: Product` with an `Offer` node for transactional pages — this unlocks Product Snippets showing price and availability directly in SERPs. Mixing these types causes incorrect rich-result classification. Source: [Google Search Central — Article structured data](https://developers.google.com/search/docs/appearance/structured-data/article)"
+  - question: "How do you validate JSON-LD structured data before deploying to production?"
+    answer: "Run two separate tools sequentially. First, validate syntactic Schema.org compliance using validator.schema.org — this confirms the markup is well-formed against the Schema.org specification. Second, test rich-result eligibility using Google's Rich Results Test at search.google.com/test/rich-results, which applies Google-specific requirements on top of basic schema validity. A schema can pass the Schema.org validator and still be ineligible for rich results. Source: [Google Search Central — structured data](https://developers.google.com/search/docs/appearance/structured-data)"
 quiz:
   - question: "What is the industry-accepted maximum title tag length for desktop SERPs before truncation commonly occurs, and what is its basis?"
     options:
@@ -143,6 +157,8 @@ Workflow: write JSON-LD → validate syntax on `validator.schema.org` → test r
 <Callout type="warning">
 A schema that passes validator.schema.org is syntactically valid — not rich-result eligible. Only the Google Rich Results Test confirms Google-specific eligibility. Run both tools before closing any structured-data implementation ticket.
 </Callout>
+
+For how to write structured-data implementation tickets and hand them off to engineering, see [[06-developer-collaboration-seo-change-management|Chapter 6: Developer Collaboration & SEO Change Management]].
 
 ## E-E-A-T Signals in Structured Data
 
