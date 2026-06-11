@@ -2,7 +2,7 @@
 chapter_num: 6
 course_slug: technical-seo-fundamentals
 title: "Developer Collaboration & SEO Change Management"
-status: awaiting-g0
+status: g0-blocked
 duration_min: 22
 vendor_tag: google-search-central
 learning_objectives:
