@@ -3,13 +3,18 @@
   "chapter_id": "07-measuring-reporting-performance-end-to-end",
   "course_slug": "mobile-app-marketing-performance",
   "title": "Measuring & Reporting Mobile Marketing Performance End-to-End",
-  "generated_at": "2026-06-11T03:30:46.595Z",
-  "generated_by": "tier3-fallback: audio=generate_course_audio.py (openai-tts-1/alloy), slides=reportlab-pdf",
-  "fallback_reason": "notebooklm-py storage_state.json permission denied (root-owned); open-notebook not running on port 5055",
+  "generated_at": "2026-06-11T04:53:22.364Z",
+  "generated_by": "notebooklm-py via upload-chapter-assets.mjs",
+  "notebook_id": "ac1e926d-3931-4067-a113-9d4989e60acc",
   "source_file": "vault/courses/mobile-app-marketing-performance/07-measuring-reporting-performance-end-to-end.md",
   "assets": {
     "audio_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/07-measuring-reporting-performance-end-to-end/audio.mp3",
-    "slide_deck_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/07-measuring-reporting-performance-end-to-end/slide-deck.pdf"
+    "slide_deck_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/07-measuring-reporting-performance-end-to-end/slide-deck.pdf",
+    "quiz_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/07-measuring-reporting-performance-end-to-end/quiz-easy.json",
+    "quiz_challenge_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/07-measuring-reporting-performance-end-to-end/quiz-hard.json",
+    "flashcards_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/07-measuring-reporting-performance-end-to-end/flashcards.json",
+    "study_guide_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/07-measuring-reporting-performance-end-to-end/study-guide.md",
+    "mind_map_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/07-measuring-reporting-performance-end-to-end/mind-map.json"
   },
   "asset_metadata": {
     "audio": {
@@ -19,6 +24,26 @@
     "slide_deck": {
       "size_bytes": 15705,
       "format": "pdf"
+    },
+    "quiz": {
+      "size_bytes": 14125,
+      "format": "json"
+    },
+    "quiz_challenge": {
+      "size_bytes": 14766,
+      "format": "json"
+    },
+    "flashcards": {
+      "size_bytes": 12801,
+      "format": "json"
+    },
+    "study_guide": {
+      "size_bytes": 8677,
+      "format": "md"
+    },
+    "mind_map": {
+      "size_bytes": 4518,
+      "format": "json"
     }
   },
   "verification": {
