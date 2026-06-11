@@ -2,7 +2,7 @@
 course_slug: cursor-composer-2
 chapter_num: 2
 title: ".cursorrules + AGENTS.md — The Project-Discipline Layer"
-status: g0-revision
+status: g0-passed
 author: course-author
 ticket: KOEA-2385
 chapter_primary_query: "How do I make .cursorrules and AGENTS.md actually enforce rules in Cursor sessions?"
@@ -14,7 +14,7 @@ learning_objectives:
   - "Iterate rule sets based on observed AI behavior rather than guessing at rule phrasing"
 prerequisites_chapters: [1]
 duration_min: 45
-last_updated: 2026-06-10
+last_updated: 2026-06-11
 read_time_min: 18
 tags:
   - cursorrules
