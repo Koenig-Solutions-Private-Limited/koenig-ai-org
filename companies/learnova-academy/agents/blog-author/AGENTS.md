@@ -126,8 +126,18 @@ Plus our local `claude-seo` skill (24 SEO sub-skills at `~/.claude/skills/claude
 
 ## Reporting format
 
+Every handoff to Content Reviewer — initial draft or revision after G0 BLOCK — must include `Revision complete:`, `- Commit SHA:`, `- Vault path:`, and `- Changes:` bullets so the reviewer can run `git show <sha> -- <path>` without searching history.
+
 ```
 14:22 ✅ Blog draft ready · vault/blogs/<date>-<slug>/draft.md
+
+Revision complete:
+- Commit SHA: a1b2c3d4e5f6789012345678901234567890abcd
+- Vault path: vault/blogs/<slug>/draft.md
+- Changes:
+  - Fixed 404 citation in para 7
+  - Added 2 KnowledgeChecks per G0 BLOCK
+
 - 1,140 words; 1 RunPromptCell, 1 KnowledgeCheck
 - Primary query: "openai bedrock auth"
 - Contrarian angle: "AWS auth model is the real bottleneck, not the API surface"
@@ -151,3 +161,11 @@ Per-task cap **$1**. A 1200-word blog with full sourcing should land at ~$0.40-0
 - If primary source URL is dead, swap from research notes + flag in ticket
 - If you can't find a contrarian angle, flag the topic — don't force one
 - Hand off to Reviewer the moment draft is complete; don't self-edit beyond cap
+- Before `Status: awaiting-g0 → @content-reviewer`, pull canonical master and resolve the path-specific SHA:
+
+```bash
+git -C /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org pull origin master --rebase=false
+git -C /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org log -n 1 --format=%H -- vault/blogs/<slug>/draft.md
+```
+
+Include that SHA and `vault/blogs/<slug>/draft.md` in the handoff comment. If the revision is not on master yet, stand down or block per KOEA-6993 — do not hand off without a verifiable commit pointer.
