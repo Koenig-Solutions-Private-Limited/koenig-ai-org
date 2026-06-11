@@ -79,7 +79,7 @@ The Cursor 3.2 changelog (April 24, 2026) added `/multitask`, which lets the Age
 
 ### Mode 2: Cloud Background Agents
 
-Cloud Background Agents run in an isolated virtual machine on Cursor's AWS infrastructure, with a clean filesystem, scoped network access, and its own ephemeral checkout of your repository. [3] They were introduced in 2025 and received a major expansion on February 24, 2026: each Cloud Background Agent gained a full graphical development environment, a real browser, and the ability to interact with UI elements and record video demos of completed work. [4]
+Cloud Background Agents run in an isolated virtual machine on Cursor's AWS infrastructure, with a clean filesystem, scoped network access, and its own ephemeral checkout of your repository. [7] They were introduced in 2025 and received a major expansion on February 24, 2026: each Cloud Background Agent gained a full graphical development environment, a real browser, and the ability to interact with UI elements and record video demos of completed work. [4]
 
 You trigger Cloud Background Agents by:
 - Tagging `@cursor` on a GitHub issue
