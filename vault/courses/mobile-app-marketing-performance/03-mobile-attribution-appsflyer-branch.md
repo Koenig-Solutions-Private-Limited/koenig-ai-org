@@ -2,7 +2,7 @@
 chapter_num: 3
 course_slug: mobile-app-marketing-performance
 title: "Mobile Attribution with AppsFlyer & Branch: Setup, Events & Privacy"
-status: awaiting-g0
+status: g0-passed
 duration_min: 30
 vendor_tag: AppsFlyer | Branch
 learning_objectives:
@@ -118,11 +118,11 @@ Before your first campaign goes live, one question determines whether your perfo
 
 AppsFlyer is the de-facto standard for travel-tech apps running Google UAC and Meta App Ads. It measures over 200,000 apps and tracks more than $28 billion in annual ad spend, giving its attribution graph deterministic matching power backed by signed integrations with every major ad network, including full [AppsFlyer Protect360](https://www.appsflyer.com/product/protect360/) fraud coverage. Branch holds less than 1% global attribution market share but excels as a deep-linking layer — its SDK-level Universal Links and App Links infrastructure is covered in this chapter; routing users to specific in-app screens post-install is deferred to ch4.
 
-For a travel app with Google UAC, Meta App Ads, and a meaningful organic install base, AppsFlyer is the correct primary MMP. Branch is worth adding if you specifically need its Predictive Aggregate Measurement (PAM), which claims a ~40% reduction in missing iOS attribution claims versus SKAN-only measurement per [Branch vs AppsFlyer](https://www.branch.io/branch-vs-appsflyer/).
+For a travel app with Google UAC, Meta App Ads, and a meaningful organic install base, AppsFlyer is the correct primary MMP. Branch adds Predictive Aggregate Measurement (PAM), claiming ~40% fewer missing iOS attribution claims than SKAN-only per [Branch vs AppsFlyer](https://www.branch.io/branch-vs-appsflyer/).
 
 ## SDK Integration
 
-**iOS setup** requires two credentials before `start()` fires: `AppsFlyerLib.shared().appsFlyerDevKey` (your account-level key, shared across all apps) and `AppsFlyerLib.shared().appleAppID` (numeric App Store ID, no "id" prefix). On iOS 14.5+ you must call `waitForATTUserAuthorization(timeoutInterval: 60)` before `start()`. If `start()` fires first, the SDK sends attribution data without the IDFA — and that install is permanently attributed probabilistically; IDFA cannot be retroactively applied. Request the ATT system prompt in `applicationDidBecomeActive` so users see it after experiencing app value, not cold on launch.
+**iOS setup** requires two credentials before `start()` fires: `AppsFlyerLib.shared().appsFlyerDevKey` (your account-level key, shared across all apps) and `AppsFlyerLib.shared().appleAppID` (numeric App Store ID, no "id" prefix). On iOS 14.5+ you must call `waitForATTUserAuthorization(timeoutInterval: 60)` before `start()`. If `start()` fires first, the SDK sends attribution data without the IDFA — and that install is permanently attributed probabilistically; IDFA cannot be retroactively applied. Request the ATT prompt in `applicationDidBecomeActive` — after users experience app value, not on cold launch.
 
 **Android setup** adds `af-android-sdk` and `installreferrer` to Gradle. From SDK v6.8.0 the `AD_ID` permission is auto-merged into the manifest; children's app developers must revoke it explicitly. Android attribution is more stable in 2026 than iOS: Google cancelled the Privacy Sandbox initiative on October 17, 2025, leaving GAID fully available and eliminating the previously planned migration to the Attribution Reporting API.
 
@@ -164,7 +164,7 @@ Three attribution models coexist in every MMP report, and none is sufficient alo
 
 **Last-click** assigns 100% credit to the final click before install. It cannot assert assist-channel contributions: a Meta retargeting ad that re-engaged a lapsed user before a Google UAC click closed the install gets zero credit. Last-click is reliable for CPI benchmarking but misleads budget allocation decisions.
 
-**Multi-touch** distributes credit across all touchpoints. Data-driven multi-touch models require 600 conversions per month to produce statistically reliable outputs; below that threshold, rule-based models (linear, time-decay) are more stable.
+**Multi-touch** distributes credit across all touchpoints. Data-driven models require ≥600 monthly conversions; below that, rule-based models (linear or time-decay) are more stable.
 
 **SKAN 4.0** is Apple's privacy-preserving framework for iOS. It cannot assert individual user-level install data — only aggregated cohort signals by ad network. Three asynchronous postbacks cover 35 days post-install: postback 1 (days 0–2) carries fine 6-bit conversion values (0–63); postbacks 2 and 3 (days 3–7 and 8–35) return only coarse tiers (`none/low/medium/high`). Design your conversion value schema before launch — changing it mid-campaign invalidates historical comparisons, per [How SKAdNetwork 4 Works](https://help.adjust.com/en/article/how-skadnetwork-4-works).
 
@@ -184,7 +184,6 @@ Configure Protect360 with two CTIT validation rules: block installs where CTIT <
 
 The channel breakdown report shows media source → campaign → ad set → creative with install counts, in-app event rates, and revenue per row. Cohort view adds D1/D7/D30 retention per acquisition source — use this to compare paid vs organic user quality, not just install volume.
 
-Data confidence labels are non-negotiable. Rows marked "SKAN" carry aggregated modeled data; rows marked "attributed" carry deterministic click-matched data. Never aggregate both columns into a single total without labeling the source type — the measurement methodologies are incompatible and the numbers are not additive.
 
 ---
 
@@ -201,4 +200,4 @@ Set up a test AppsFlyer tracking link for a Google UAC campaign in your staging 
 
 ---
 
-The next chapter covers reaching users after install — push notification and in-app message campaign design: [[04-push-notifications-in-app-messaging]].
+Next: push notification and in-app message campaign design — [[04-push-notifications-in-app-messaging]].
