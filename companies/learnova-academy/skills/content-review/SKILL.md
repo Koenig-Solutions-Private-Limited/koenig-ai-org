@@ -26,11 +26,30 @@ You PASS or BLOCK. You don't rewrite.
 
 ## Workflow
 
-### 1. Read the draft in full
+### 1. Re-review precheck (revision wakes only)
+
+When the wake reason is a Blog Author revision handoff (re-review after G0 BLOCK), **before** opening the draft or searching git history:
+
+1. Scan the handoff comment for `- Commit SHA:` and `- Vault path:`.
+2. If either field is missing or the SHA is not 40 hex characters, return immediately as an author handoff defect — do not burn a heartbeat searching vault history or inferring SHAs.
+
+```
+❌ HANDOFF DEFECT · missing revision pointer
+
+Blog Author revision handoff is missing required fields:
+- Commit SHA: <missing|invalid>
+- Vault path: <missing>
+
+→ @blog-author: re-handoff with Revision complete / Commit SHA / Vault path / Changes per blog-write Step 6. Content Reviewer will not search history as a fallback.
+```
+
+3. When both fields are present, verify with `git show <sha> -- <vault-path>` (after pulling master if needed). Proceed to steps 2–7 only after the pointer resolves.
+
+### 2. Read the draft in full
 
 Then re-read with each dimension in mind.
 
-### 2. Accuracy dimension
+### 3. Accuracy dimension
 
 For every factual claim:
 - WebFetch the cited URL — must return 200
@@ -39,7 +58,7 @@ For every factual claim:
 
 Score: 5/5 if all claims verified. Subtract 1 per unverified claim. <4 → BLOCK.
 
-### 3. Brand voice dimension
+### 4. Brand voice dimension
 
 Check for:
 - [ ] Answer-first H1 ("How to ..." > "Guide to ...")
@@ -51,7 +70,7 @@ Check for:
 
 Score: 5/5 if all check. Subtract 1 per missed item. <4 → BLOCK.
 
-### 4. Structure dimension (V3-1b enforced 2026-04-30)
+### 5. Structure dimension (V3-1b enforced 2026-04-30)
 
 Check (each item is BLOCK-level if missing):
 - [ ] H1 → H2 → H3 hierarchy clean
@@ -70,7 +89,7 @@ Score: 5/5 if all. Subtract 1 per missing. <4 → BLOCK.
 
 **Why this matters:** these are the V3-1 citation-authority patterns. Wikipedia-style leads earn 67% more AI citations (8K-citation Search Engine Land study); numbered Key facts earn 40% more in Perplexity; References footer signals primary-source vs commentary; Person author earns 2-4x AI Overview lift.
 
-### 5. Completeness dimension
+### 6. Completeness dimension
 
 Match against original ticket DOD:
 - Word count within target?
@@ -80,7 +99,7 @@ Match against original ticket DOD:
 
 Score: 5/5 if all met. <5 → BLOCK (completeness is binary; partial doesn't count).
 
-### 6. Spam-brain dimension
+### 7. Spam-brain dimension
 
 Look for:
 - [ ] Keyword stuffing? (any phrase repeats >3x in same paragraph)
@@ -89,25 +108,6 @@ Look for:
 - [ ] Reads as written-by-a-human-with-AI-help, not raw LLM
 
 Score: 5/5 if reads natural. <4 → BLOCK.
-
-### 7. Re-review precheck (revision wakes only)
-
-When the wake reason is a Blog Author revision handoff (re-review after G0 BLOCK), **before** opening the draft or searching git history:
-
-1. Scan the handoff comment for `- Commit SHA:` and `- Vault path:`.
-2. If either field is missing or the SHA is not 40 hex characters, return immediately as an author handoff defect — do not burn a heartbeat searching vault history or inferring SHAs.
-
-```
-❌ HANDOFF DEFECT · missing revision pointer
-
-Blog Author revision handoff is missing required fields:
-- Commit SHA: <missing|invalid>
-- Vault path: <missing>
-
-→ @blog-author: re-handoff with Revision complete / Commit SHA / Vault path / Changes per blog-write Step 6. Content Reviewer will not search history as a fallback.
-```
-
-3. When both fields are present, verify with `git show <sha> -- <vault-path>` (after pulling master if needed). Proceed to dimensions 1–6 only after the pointer resolves.
 
 ### 8. Decide + comment
 

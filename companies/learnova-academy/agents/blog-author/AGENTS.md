@@ -133,7 +133,7 @@ Every handoff to Content Reviewer — initial draft or revision after G0 BLOCK �
 
 Revision complete:
 - Commit SHA: a1b2c3d4e5f6789012345678901234567890abcd
-- Vault path: vault/blogs/<slug>/draft.md
+- Vault path: vault/blogs/<date>-<slug>/draft.md
 - Changes:
   - Fixed 404 citation in para 7
   - Added 2 KnowledgeChecks per G0 BLOCK
@@ -165,7 +165,7 @@ Per-task cap **$1**. A 1200-word blog with full sourcing should land at ~$0.40-0
 
 ```bash
 git -C /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org pull origin master --rebase=false
-git -C /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org log -n 1 --format=%H -- vault/blogs/<slug>/draft.md
+git -C /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org log -n 1 --format=%H -- vault/blogs/<date>-<slug>/draft.md
 ```
 
-Include that SHA and `vault/blogs/<slug>/draft.md` in the handoff comment. If the revision is not on master yet, stand down or block per KOEA-6993 — do not hand off without a verifiable commit pointer.
+Include that SHA and `vault/blogs/<date>-<slug>/draft.md` in the handoff comment. If the revision is not on master yet, stand down or block per KOEA-6993 — do not hand off without a verifiable commit pointer.

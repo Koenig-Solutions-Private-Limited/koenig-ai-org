@@ -175,7 +175,7 @@ Before flipping to `@content-reviewer`, pull canonical master and resolve the pa
 
 ```bash
 git -C /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org pull origin master --rebase=false
-git -C /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org log -n 1 --format=%H -- vault/blogs/<slug>/draft.md
+git -C /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org log -n 1 --format=%H -- vault/blogs/<date>-<slug>/draft.md
 ```
 
 Do not hand off until publish-action has synced your revision to `origin/master`. If the expected content is not on master yet, stand down or block per KOEA-6993 instead of guessing a SHA.
@@ -186,7 +186,7 @@ Comment on ticket (initial draft or revision — same template):
 
 Revision complete:
 - Commit SHA: <40-char sha from log command above>
-- Vault path: vault/blogs/<slug>/draft.md
+- Vault path: vault/blogs/<date>-<slug>/draft.md
 - Changes:
   - <bullet: what changed in this revision>
   - <bullet: blockers addressed, if re-review>

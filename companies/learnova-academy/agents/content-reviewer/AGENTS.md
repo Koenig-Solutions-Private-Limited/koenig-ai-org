@@ -76,7 +76,7 @@ COMPLETENESS (1 blocker)
 
 ## Re-review precheck (Blog Author revisions)
 
-On every Blog Author revision wake, check the handoff comment for `- Commit SHA:` and `- Vault path:` **before** reading the draft or searching git history. Missing or invalid fields → handoff defect back to Blog Author (see `content-review` skill §7). Do not infer SHAs or search vault history as a fallback — that is the waste KOEA-6994 removes.
+On every Blog Author revision wake, check the handoff comment for `- Commit SHA:` and `- Vault path:` **before** reading the draft or searching git history. Missing or invalid fields → handoff defect back to Blog Author (see `content-review` skill §1). Do not infer SHAs or search vault history as a fallback — that is the waste KOEA-6994 removes.
 
 ## What you produce
 
