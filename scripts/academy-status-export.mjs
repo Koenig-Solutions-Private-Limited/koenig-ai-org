@@ -98,6 +98,7 @@ for (const slug of readdirSync(VAULT)) {
     title: fm("title") ?? slug,
     status: fm("status") ?? "?",
     publish_state: fm("publish_state") ?? null,
+    live: ["g4-approved", "dispatching", "published"].includes(fm("publish_state") ?? ""),
     course_track: fm("course_track") ?? null,
     chapter_count_planned: Number(fm("chapter_count")) || chapterFiles.length,
     chapters_written: chapterFiles.length,
@@ -108,7 +109,7 @@ for (const slug of readdirSync(VAULT)) {
 
 // ── active career-v3 pipelines from Paperclip ──────────────────────────
 const pipelineRows = psql(
-  "select p.identifier, p.title, coalesce(substring(i.title from '\\[([A-Z]+)\\]'), 'OTHER'), i.status, count(*) from issues i join issues p on p.id = i.parent_id where p.title like '%[career-v3]%' and p.status not in ('done','cancelled') group by 1,2,3,4 order by 1",
+  "select p.identifier, p.title, coalesce(substring(i.title from '\\[([A-Z]+)\\]'), 'OTHER'), i.status, count(*) from issues i join issues p on p.id = i.parent_id where (p.title like '%[career-v3]%' or p.title like 'Course build:%' or p.title like 'Course request:%') and p.created_at > now() - interval '14 days' group by 1,2,3,4 order by 1",
 );
 const pipelines = {};
 for (const [ident, title, kind, status, count] of pipelineRows) {
