@@ -46,6 +46,9 @@ sources:
   - https://openai.github.io/openai-agents-python/agents/
   - https://developers.openai.com/api/docs/assistants/migration
   - https://developers.openai.com/api/docs/guides/migrate-to-responses
+  - https://platform.openai.com/docs/pricing
+  - https://platform.openai.com/docs/api-reference/responses
+  - https://pypi.org/project/openai-agents/
 ---
 
 # The Agent SDK & Responses API Model (2026)
@@ -80,7 +83,7 @@ The practical rule: **if you are building an agent, use the Responses API and Ag
 
 ### What the Responses API Adds
 
-The Responses API's design principle is "send input items and get output items back." Each response can include:
+The Responses API's design principle is "send input items and get output items back." ([Responses API Reference](https://platform.openai.com/docs/api-reference/responses)) Each response can include:
 
 - **Built-in tools**: `web_search`, `code_interpreter`, `file_search`, `computer_use` — no manual tool dispatch required.
 - **Stateful conversations**: Set `stored=true` to persist context server-side, referenced by `previous_response_id`.
@@ -143,6 +146,8 @@ Verify the install:
 from agents import Agent, Runner
 print("Agents SDK ready")
 ```
+
+The `openai-agents` package is available on [PyPI](https://pypi.org/project/openai-agents/) — check there for the latest release version and changelog.
 
 ### TypeScript / Node.js Setup
 
@@ -449,4 +454,4 @@ The loop runs. The tools are next.
 
 ---
 
-*Sources: [OpenAI Platform Changelog](https://developers.openai.com/api/docs/changelog) · [New Tools for Building Agents (Mar 2025)](https://openai.com/index/new-tools-for-building-agents/) · [Agents SDK Documentation](https://openai.github.io/openai-agents-python/agents/) · [Assistants API Migration Guide](https://developers.openai.com/api/docs/assistants/migration) · [Migrate to Responses API](https://developers.openai.com/api/docs/guides/migrate-to-responses)*
+*Sources: [OpenAI Platform Changelog](https://developers.openai.com/api/docs/changelog) · [New Tools for Building Agents (Mar 2025)](https://openai.com/index/new-tools-for-building-agents/) · [Agents SDK Documentation](https://openai.github.io/openai-agents-python/agents/) · [Assistants API Migration Guide](https://developers.openai.com/api/docs/assistants/migration) · [Migrate to Responses API](https://developers.openai.com/api/docs/guides/migrate-to-responses) · [OpenAI Pricing](https://platform.openai.com/docs/pricing) · [Responses API Reference](https://platform.openai.com/docs/api-reference/responses) · [openai-agents on PyPI](https://pypi.org/project/openai-agents/)*

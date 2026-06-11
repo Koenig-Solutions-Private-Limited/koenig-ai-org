@@ -73,6 +73,18 @@ Most coverage will lead with the feature list. That's the wrong lens. Here's the
 
 ## The Four Priority Areas — What Changes for You
 
+```mermaid
+flowchart TD
+    A[MCP 2026 Roadmap] --> B["Working Group Governance\nSEP process · external contributors\nno single-vendor control"]
+    A --> C[4 Priority Areas]
+    C --> D["Transport Scalability\nStateless sessions\n.well-known discovery"]
+    C --> E["Agent Task Semantics\nTasks primitive\nasync multi-step flows"]
+    C --> F["Enterprise Readiness\nAudit trails · SSO · gateways\nextensions not core spec"]
+    C --> G["Security SEPs\nSEP-1932 DPoP token binding\nSEP-1933 Workload Identity Federation"]
+    B --> H["Domain Working Groups\nAccept SEPs in their scope\nwithout Core Maintainer veto"]
+```
+*Alt: Flowchart of the MCP 2026 roadmap showing the shift to Working Group governance plus four priority areas: transport scalability, agent task semantics, enterprise extensions, and security SEPs including DPoP token binding.*
+
 ### 1. Transport Scalability: Stateless Sessions and Discovery
 
 The current Streamable HTTP transport requires a stateful session — the connection must stay alive to know what a server can do. The 2026 roadmap addresses two production pain points [[1]](https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/):

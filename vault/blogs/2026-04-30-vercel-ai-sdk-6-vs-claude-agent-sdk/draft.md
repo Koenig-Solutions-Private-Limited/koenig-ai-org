@@ -78,6 +78,16 @@ To choose between Vercel AI SDK 6 and the Claude Agent SDK, ask one architectura
 
 ## How to Read the Key Facts Before Picking an SDK
 
+```mermaid
+flowchart TD
+    A["Choose Your Agent SDK"] --> B{"Who should own\nthe execution loop?"}
+    B -->|"Your infrastructure:\nprovider portability · CI/CD\ncustom observability"| C["Vercel AI SDK 6\nnpm install ai @ai-sdk/anthropic\nToolLoopAgent on your infra"]
+    B -->|"Anthropic-managed:\nsimpler code · server tools\nmanaged reliability"| D["Claude Agent SDK\n@anthropic-ai/claude-agent-sdk\nLoop runs on Anthropic compute"]
+    C --> E["✅ Swap providers in 1 string\n✅ Log every loop iteration\n⚠️ Own sandboxes + retry logic"]
+    D --> F["✅ code_execution $0.05/container-hr\n✅ Hosted web_search + MCP Connector\n⚠️ No cross-provider portability"]
+```
+*Alt: Decision flowchart for choosing between Vercel AI SDK 6 and the Claude Agent SDK — the axis is who owns the execution loop, your infrastructure or Anthropic's managed compute, with cost and portability tradeoffs listed for each path.*
+
 1. AI SDK 6 launched December 22, 2025 with `ToolLoopAgent`, full MCP OAuth support, DevTools middleware, and over 20 million monthly downloads across startups to Fortune 500 companies. [1]
 2. Anthropic's Agent Capabilities API shipped May 22, 2025 with three server-side tools: `code_execution`, `web_search_20260209`, and a hosted MCP Connector that requires no client-side transport code. [2]
 3. `code_execution` grants 50 free container-hours per organization per day; additional usage costs $0.05/container-hour. [2]

@@ -95,6 +95,19 @@ In May 2026, Anthropic and OpenAI quietly converged on an identical commercial s
 
 ## What changed in May 2026
 
+```mermaid
+flowchart TD
+    A["Developer or team needs AI capacity"] --> B{"Individual hits daily\nusage limits?"}
+    B -->|"Yes — personal heavy use"| C{"Primary workflow?"}
+    B -->|"No — team or automated"| D["API Metering or\nTeam / Business / Enterprise seat\nBetter auditability + cost controls"]
+    C -->|"Claude Code · multi-hour\ndebugging sessions"| E["Claude Max\n$100/mo — 5× Pro limits\n$200/mo — 20× Pro limits"]
+    C -->|"Codex · deep research\nlong-context reasoning"| F["ChatGPT Pro\n$100/mo — GPT-5.5 + Codex\n$200/mo — expanded limits"]
+    D --> G["⚠️ Never buy premium seats\nfor automated agents,\nqueues, or batch pipelines"]
+    E --> G
+    F --> G
+```
+*Alt: Decision flowchart for choosing Claude Max versus ChatGPT Pro versus API metering — premium subscriptions are only justified for individual developers who personally hit daily capacity limits, not for teams or automated workloads.*
+
 **[Claude Code](/blog/cursor-3-2-vs-claude-code-workflow) limits doubled.** On May 6, Anthropic raised Claude Code five-hour rate limits for Pro, Max, Team, and seat-based Enterprise users, and [removed peak-hour reductions for Pro and Max](https://www.anthropic.com/news/higher-limits-spacex).[[2]](https://www.anthropic.com/news/higher-limits-spacex) That's not an abstract throughput announcement. It directly changes whether a senior engineer can run a 3-hour debugging session without hitting a wall at the 90-minute mark. The May 6 update makes Claude Max meaningfully more useful for coding-heavy workflows than it was in April.
 
 **ChatGPT Pro bundled more.** OpenAI's $100 and $200 Pro tiers now include [GPT-5.5 Pro access, expanded Codex tasks, deep research, and larger context windows](https://community.openai.com/t/introducing-new-100-month-pro-tier/1378752).[[6]](https://community.openai.com/t/introducing-new-100-month-pro-tier/1378752) The $100 tier is running a temporary 10× Codex usage promo through May 31, 2026, per [OpenAI's Codex pricing page](https://openai.com/pricing).[[7]](https://openai.com/pricing) After the promo, the value equation tightens, but the bundled-access model remains.

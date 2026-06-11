@@ -2,7 +2,8 @@
 chapter_num: 6
 course_slug: google-tag-manager-mastery
 title: "Consent Mode v2 and Privacy-Compliant Tracking for Performance Campaigns"
-status: awaiting-g0
+status: g0-passed
+last_updated: 2026-06-11
 duration_min: 18
 vendor_tag: Google Tag Manager
 learning_objectives:

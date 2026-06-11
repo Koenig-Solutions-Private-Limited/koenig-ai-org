@@ -75,6 +75,16 @@ Cursor 3.2 is a major IDE release from Anysphere, shipped April 24, 2026, that r
 
 ## Why IDE-as-agent-runtime is the new standard
 
+```mermaid
+flowchart LR
+    A[Multi-file coding task] --> B{Where should the loop live?}
+    B -->|"Interactive · visual diffs\nhuman-in-the-loop"| C["Cursor 3.2\n/multitask async subagents\nServer-side state persistence"]
+    B -->|"Automated pipelines\nCI/CD · BYOS control"| D["Claude Code Agent SDK\nLocal process you own\nCustom restart + budget cap"]
+    C --> E["Agents Window\nMulti-root workspace\nSingle-click worktree"]
+    D --> F["Shell primitive or TS/Python lib\nRuns in your infra\nPortable to any pipeline"]
+```
+*Alt: Flowchart comparing Cursor 3.2 and Claude Code Agent SDK showing the architectural split — Cursor keeps the loop server-side for IDE interactivity while Claude Code hands loop ownership to your infrastructure for automation.*
+
 The transition of both tools into agent runtimes is not a coincidence — it is an architectural convergence. In early 2026, coding assistants were largely restricted to single-file edits or sequential multi-file changes. By April 2026, both shipped an orchestrated-subagent model: parallel workers, worktree isolation, and multi-repo targeting in a single session.
 
 The real question for engineering teams is no longer "which tool is smarter" but "where do you want the loop to live when a multi-hour ticket hits an edge case at step 7 of 12?" Cursor treats the agent as a workspace affordance — something you interact with via tiled panes and visual diffs. Claude Code treats it as a shell primitive or a programmable library. This tradeoff becomes concrete under load.

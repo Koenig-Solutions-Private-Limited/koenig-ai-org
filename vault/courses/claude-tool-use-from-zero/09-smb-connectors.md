@@ -2,9 +2,16 @@
 chapter_num: 9
 course_slug: claude-tool-use-from-zero
 title: "SMB and Growth Connectors"
-status: draft-for-review
+status: g4-approved
 author: course-author
 ticket: KOEA-2461
+g3_passed_by: ceo
+g3_passed_at: 2026-06-11
+g3_bundle_ticket: KOEA-7719
+g4_approved_by: vardaan-koenig
+g4_approved_at: 2026-06-11
+g4_approval_id: 57cf6a00-c85f-439c-89ea-5ef6286e9424
+parent_brief: KOEA-2241
 learning_objectives:
   - "Design SMB connectors that coordinate finance, CRM, document, and workspace tools"
   - "Separate reconciliation, drafting, and sending actions into distinct tool calls"

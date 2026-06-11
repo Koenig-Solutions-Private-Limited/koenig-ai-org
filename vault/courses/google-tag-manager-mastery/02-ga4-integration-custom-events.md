@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: google-tag-manager-mastery
 title: "GA4 Integration via GTM: Configuration Tag and Custom Event Tracking"
-status: awaiting-g0
+status: g0-passed
 duration_min: 22
 vendor_tag: Google Tag Manager / GA4
 learning_objectives:

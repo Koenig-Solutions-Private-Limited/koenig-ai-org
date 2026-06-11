@@ -2,7 +2,7 @@
 chapter_num: 7
 course_slug: microsoft-advertising-bing-ads
 title: "Cross-Platform Budget Allocation: Splitting Spend Between Google Ads and Microsoft Advertising"
-status: awaiting-g0
+status: g0-passed
 duration_min: 12
 vendor_tag: Microsoft Advertising
 learning_objectives:
@@ -48,6 +48,8 @@ notebooklm_source_focus:
   - "cross-platform paid search budget allocation frameworks"
   - "GA4 multi-channel attribution for paid search"
 word_budget: { min: 800, max: 1200 }
+positions: []
+last_updated: 2026-06-10
 quiz:
   - question: "What is the recommended starting budget split for a travel advertiser running both Google Ads and Microsoft Advertising for the first time?"
     options:
@@ -83,7 +85,7 @@ quiz:
     options:
       - "Divide Microsoft's platform-reported revenue by its total spend during the test period"
       - "Subtract Google Ads ROAS from Microsoft ROAS and average the result across both"
-      - "Divide the revenue delta between test geos and control geos by Microsoft spend in test geos"
+      - "Divide the test-vs-control revenue delta by Microsoft's spend in the test geos"
       - "Use GA4 data-driven attribution to isolate Microsoft conversions and then divide by spend"
     correct_idx: 2
     explanation: "iROAS = Incremental Revenue ÷ Incremental Spend. Incremental Revenue is the revenue gap between test geos (Microsoft running) and control geos (Microsoft paused, Google unchanged). Dividing that delta by Microsoft spend in test geos yields the true incremental return. Platform-reported ROAS includes overlapping conversions and systematically overstates impact."
@@ -102,15 +104,15 @@ quiz:
 
 ## The 2026 Travel Benchmarks You Need to Know
 
-Before you split a single dollar, anchor on the 2026 numbers. Google Ads travel campaigns average a $2.14 CPC, a 9.32% CTR, and a 5.83% conversion rate — delivering a CPA of $44.70 according to [WordStream's 2026 benchmark report](https://www.wordstream.com/blog/2026-google-ads-benchmarks), which analyzed 13,474 US campaigns. Microsoft Advertising's hospitality CPA sits at roughly $15 — the lowest of any vertical on the platform — while travel CPC drops to $0.73 per [SearchLab.nl 2026 statistics](https://searchlab.nl/en/statistics/microsoft-ads-statistics-2026). That is a 67% cost-per-acquisition advantage in favor of Microsoft for hotel campaigns.
+Before you split a single dollar, anchor on the 2026 numbers. Google Ads travel campaigns average a $2.14 CPC, a 9.32% CTR, and a 5.83% conversion rate — delivering a CPA of $44.70 according to [WordStream's 2026 benchmark report](https://www.wordstream.com/blog/2026-google-ads-benchmarks), which analyzed 13,474 US campaigns. Microsoft Advertising's hospitality CPA sits at roughly $15 — the lowest of any vertical on the platform — while travel CPC drops to $0.73 per [SearchLab.nl 2026 statistics](https://searchlab.nl/en/statistics/microsoft-ads-statistics-2026). That is a 67% CPA advantage for hotel campaigns.
 
-The caveat is volume. Microsoft's US desktop search share is 14.2%, and its travel CVR is 2.4% vs Google's 5.83%. Lower CPCs get partially offset by lower conversion rates, and the CPA gap compresses for mobile-intent queries. Microsoft's advantage is strongest at the bottom of the funnel for hospitality-category purchases.
+The caveat is volume. Microsoft's US desktop search share is 14.2%, and its travel CVR is 2.4% vs Google's 5.83%. Microsoft's advantage is strongest at the bottom of the funnel for hospitality-category purchases.
 
 What transforms Microsoft Advertising from "cheaper reach" into a genuine growth channel is audience exclusivity: 38% of Bing users are unreachable via Google Ads. Those are not the same users at a lower price — they are different users entirely. That figure is your primary justification for running both platforms simultaneously.
 
 ## The 70/30 Starting Split
 
-For any advertiser running both platforms for the first time, start at 70% Google Ads / 30% Microsoft Advertising. Google carries the proven conversion volume that keeps your CPA stable while Microsoft accumulates the 50+ conversions required for campaign-level statistical validity. The split is not a gut call — it reflects the market scale gap.
+For any advertiser running both platforms for the first time, start at 70% Google Ads / 30% Microsoft Advertising. Google carries the proven conversion volume that keeps your CPA stable while Microsoft accumulates the 50+ conversions required for campaign-level statistical validity.
 
 Two conditions shift the default. If your audience skews under 35 or is heavily mobile, tilt to 80/20 Google: Microsoft's user base averages 45 years old and is Windows-desktop concentrated. If your product targets business travelers or higher-income households, the 70/30 baseline stays defensible long-term — Microsoft users are 40% more likely to earn over $75K, a strong fit for premium travel products.
 
@@ -120,7 +122,7 @@ On a $10,000 monthly budget: $7,000 to Google, $3,000 to Microsoft from day one.
 
 ## Running the 30-60 Day Test Window
 
-A 30-60 day window is the minimum before any reallocation decision. Microsoft's smart bidding needs 3 days to recalibrate after budget changes up to 25%, and 7 days after larger changes per [Dataslayer 2026](https://www.dataslayer.ai/blog/cross-platform-ad-budget-optimization). New campaigns in lower-volume markets may require the full 60 days to clear 50 conversions — the statistical floor for campaign-level analysis.
+A 30-60 day window is the minimum before any reallocation decision. Microsoft's smart bidding needs 3 days to recalibrate after budget changes up to 25%, and 7 days after larger changes per [Dataslayer 2026](https://www.dataslayer.ai/blog/cross-platform-ad-budget-optimization). Lower-volume markets may need the full 60 days to reach 50 conversions.
 
 Four performance triggers determine your action during the window:
 
@@ -137,11 +139,11 @@ Every budget change exceeding 25% resets the smart bidding learning cycle. Make 
 
 ## Building Your Cross-Platform Unified View
 
-In-platform dashboards overstate results because Google Ads and Microsoft Advertising both claim credit for the same conversions when their attribution windows overlap. You need a single measurement source outside both platforms.
+In-platform dashboards overstate results because Google Ads and Microsoft Advertising both claim credit for the same conversions when their attribution windows overlap.
 
 GA4 is the default. Go to Admin → Attribution Settings and set the model to data-driven attribution (DDA) — if you have 400+ conversions on your key event and 20,000+ total conversion events in the lookback window. Below those thresholds, GA4 falls back to last-click, which systematically undervalues Microsoft Advertising as an assist channel. The interim fix: use GA4's Model Comparison report with linear attribution as a proxy, per the [1ClickReport GA4 guide](https://www.1clickreport.com/blog/ga4-attribution-report-2026-guide).
 
-Expect 20-40% variance between what Google Ads reports and what GA4 attributes — that is normal, not a tracking failure. The GA4 number is closer to the truth.
+Expect 20-40% variance between what Google Ads reports and what GA4 attributes — normal, not a tracking failure.
 
 <KnowledgeCheck question="You've been running both platforms for 50 days but only have 310 conversions on your key event. GA4's DDA model hasn't activated. What is the correct approach to cross-platform attribution while you wait?" options={["Use the Model Comparison report with linear attribution as a proxy until DDA activates", "Switch to last-click attribution permanently — it's the most transparent model available", "Wait for DDA to activate and make no attribution decisions in the meantime", "Use Microsoft Advertising's own attribution as the cross-platform source of truth"]} correctIdx={0} explanation="GA4 DDA requires 400+ conversions on the key event to activate. The correct interim approach is the Model Comparison report with linear attribution, which distributes credit across all touchpoints and avoids last-click's systematic bias against assist channels like Microsoft Advertising." />
 
@@ -165,12 +167,10 @@ After the test window closes and you have iROAS data, three factors drive the re
 
 **3. Audience overlap rate.** If more than 30% of your Microsoft Advertising audience was already converted through Google Ads in the prior 30 days, Microsoft is largely bidding on already-won customers rather than incremental users, per [Myntagency's overlap analysis](https://articles.myntagency.com/audience-overlap-analysis-preventing-channel-cannibalization-in-growth-campaigns/). Below 30% overlap, you have meaningful incremental reach.
 
-Before implementing any split change above 15% of total budget, document the rationale: platform CPA, desktop share percentage, overlap rate, iROAS result. That log is what makes the decision auditable and reversible — without it, teams revert to default splits six months later because the reasoning was never recorded.
+Before any split change above 15% of total budget, document the rationale: platform CPA, desktop share percentage, overlap rate, iROAS result. That log keeps the decision auditable and reversible.
 
 ## Hands-On Exercise: Build Your First Allocation Decision Log
 
 Using your Google Analytics 4 account, open Explore → Segment Overlap. Add `Session source / medium` as a dimension and compare `google / cpc` vs `bing / cpc` for the last 30 days. Record four data points in a shared document: (1) CPA per channel, (2) desktop conversion share as a percentage of total conversions, (3) overlap estimate using GA4's User Explorer with matched hashed-email audiences, and (4) a proposed starting split with a one-line justification referencing each of the three decision factors.
 
 **Success criteria:** A filled allocation rationale document that names a specific split percentage, cites your measured CPA by channel, states whether your desktop conversion share clears the 40% threshold, and includes your audience overlap estimate.
-
-This is the final chapter in the course — you now have the complete framework to launch, measure, and continuously optimize a dual-platform paid search strategy from first setup through evidence-driven budget allocation.

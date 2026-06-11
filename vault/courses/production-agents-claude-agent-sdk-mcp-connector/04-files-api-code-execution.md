@@ -71,6 +71,12 @@ The Files API supports different file types that map to different content block 
 
 For file types not in this table (`.docx`, `.xlsx`, `.md`), the recommended approach is conversion: convert to plain text or PDF first, then upload.
 
+```takeaways
+- PDFs and plain text use the `document` content block type; images use `image`; files passed to code execution use `container_upload` — using the wrong type returns a 400 error.
+- The Files API beta header `files-api-2025-04-14` is required on every request.
+- Maximum file size is 500 MB per file; total workspace storage is 100 GB per organization.
+```
+
 ## Uploading files
 
 Install the Anthropic SDK (not the Agent SDK):
@@ -208,6 +214,12 @@ The implications for a document-heavy agent:
 
 For agents that run many queries against the same document in a single session, consider using extended prompt caching (1-hour TTL) to reduce the per-call token cost after the first invocation.
 
+```takeaways
+- File storage operations (upload, download, list, metadata, delete) are free; file content is billed as input tokens every time a `file_id` is referenced in a Messages request.
+- The "upload once" pitch saves bandwidth and latency but not token cost — 100 queries against the same file cost 100× the document's token price.
+- Enable 1-hour extended prompt caching when running many queries against the same document in one session to reduce per-call costs to approximately 10% of full input price.
+```
+
 ## Code execution with the Files API
 
 The code execution tool gives Claude a sandboxed Python environment. You can pass files to it via `container_upload` blocks, run code, and download output files via the Files API:
@@ -292,6 +304,12 @@ def cleanup_old_files(client: Anthropic, max_age_days: int = 30):
 <Callout type="info">
 The Files API rate limit is approximately 100 requests per minute during the beta period. If you're bulk-uploading documents at ingestion time, add a delay between uploads or batch them during off-peak windows. Contact sales@anthropic.com for higher limits.
 </Callout>
+
+```takeaways
+- Files persist until explicitly deleted; build a retention policy from day one to avoid hitting the 100 GB per-organization storage limit.
+- A `cleanup_old_files()` function that checks `created_at` and deletes stale entries is the minimum viable retention policy for production agents.
+- The Files API rate limit during beta is approximately 100 requests per minute; batch bulk uploads during off-peak windows if you need to ingest many documents at once.
+```
 
 ## Extended prompt caching with Files API
 
@@ -395,6 +413,12 @@ Knowing the limits prevents surprises:
   prompt="I uploaded a PDF contract using the Files API. I now want to ask three questions about it: (1) what are the payment terms, (2) what are the termination conditions, and (3) who are the parties. Walk me through the most cost-efficient way to run all three queries."
   expectedOutput="Claude explains: upload the PDF once (free), then make three separate Messages API calls each referencing the same file_id. To minimize token cost, enable the 1-hour extended prompt caching TTL so the PDF tokens are cached after the first call — the second and third calls pay only cache read tokens (much cheaper) rather than full input tokens. Include citations: {enabled: true} to get inline references to specific clauses."
 />
+
+```takeaways
+- The Files API is not available on Amazon Bedrock or Google Vertex AI — it is Anthropic-direct only.
+- You can download files created by code execution or skills, but not files you originally uploaded yourself.
+- Files uploaded via the Files API are ineligible for Zero Data Retention and are not access-controlled within a workspace — any API key in your organization can delete them.
+```
 
 ## Hands-on exercise
 

@@ -15,33 +15,6 @@ This script mirrors the approved Chapter 1 source and is intended as the narrati
 
 ---
 
----
-chapter_num: 1
-title: "What Gemini Enterprise Agent Platform Actually Is (and Isn't)"
-course_slug: gemini-enterprise-agent-platform-hands-on-tour
-prerequisites_chapters: []
-duration_min: 40
-reading_time_min: 40
-date: 2026-04-30
-status: draft-for-review
-author: "Koenig AI Academy"
-agent_drafted_by: course-author
-content_type: course-chapter
-ticket: KOE-33
-vendor_tag: google
-learning_objectives:
-  - "Describe the four pillars (Build / Scale / Govern / Optimize) and name two concrete features under each"
-  - "Distinguish GEAP from Vertex AI Agent Builder, Dialogflow CX, and Model Garden"
-  - "Identify three things GEAP explicitly does NOT do"
-  - "Read a GEAP architecture diagram and label key components"
-sources:
-  - https://cloud.google.com/blog/products/ai-machine-learning/introducing-gemini-enterprise-agent-platform
-  - https://adk.dev/
-  - https://cloud.google.com/vertex-ai/docs
-  - https://developers.cloudflare.com/agents/
-  - https://docs.anthropic.com/en/docs/agents-and-tools
----
-
 # What Gemini Enterprise Agent Platform Actually Is (and Isn't)
 
 Google's **Gemini Enterprise Agent Platform** (GEAP), which reached general availability on 23 April 2026, is not a new product. It is a consolidation: every AI capability Google has shipped over the past four years — Vertex AI, Model Garden, Agent Builder, Dialogflow CX — now lives under one brand and one API surface. [1] For builders, understanding what that means in practice separates the people who benefit from the platform from those who spend three months wiring together services that already talk to each other.
@@ -104,7 +77,7 @@ Scale is where your agents move from working to production-grade. The key featur
 
 **Memory Bank** adds a layer above sessions: long-term, cross-session memory. Where a session holds raw conversation history, Memory Bank distills it — it uses a model to generate "Memory Profiles" (structured summaries) and retrieves them at low latency when a new session starts. The practical effect is that an agent that spoke to a user three months ago can recall relevant facts without loading three months of transcript.
 
-**Agent-to-agent orchestration** supports both deterministic patterns (you define the routing logic) and generative patterns (the orchestrator model decides which sub-agent to invoke). This distinction matters more than it seems — we cover it in [[gemini-enterprise-agent-platform-hands-on-tour/03-multi-agent-orchestration-with-vertex]].
+**Agent-to-agent orchestration** supports both deterministic patterns (you define the routing logic) and generative patterns (the orchestrator model decides which sub-agent to invoke). This distinction matters more than it seems — we cover it in [[gemini-enterprise-agents/03-multi-agent-orchestration-with-vertex]].
 
 ### Pillar 3: Govern
 
@@ -143,7 +116,7 @@ The four pillars are comprehensive enough that it is easy to assume GEAP is ever
 **It is not Dialogflow CX rebranded.** Dialogflow CX was a flow-based, deterministic dialogue manager. GEAP's agents reason with LLMs and make probabilistic decisions. Existing Dialogflow CX flows can be migrated, but the mental model is fundamentally different. If you build a GEAP agent expecting it to follow a defined script reliably, you will be surprised.
 
 <Callout type="warning">
-**Lock-in surface area**: Using Agent Runtime, Memory Bank, and Agent Registry together creates deep GCP lock-in. Your agent logic is in ADK (portable), but your state, tool registry, and identity system are GCP-proprietary. Plan for this before you commit. [[gemini-enterprise-agent-platform-hands-on-tour/04-comparing-to-claude-agent-sdk-and-cloudflare-agents]] compares exit paths across GEAP, Claude Agent SDK, and Cloudflare Agents.
+**Lock-in surface area**: Using Agent Runtime, Memory Bank, and Agent Registry together creates deep GCP lock-in. Your agent logic is in ADK (portable), but your state, tool registry, and identity system are GCP-proprietary. Plan for this before you commit. [[gemini-enterprise-agents/04-comparing-to-claude-agent-sdk-and-cloudflare-agents]] compares exit paths across GEAP, Claude Agent SDK, and Cloudflare Agents.
 </Callout>
 
 ---
@@ -232,7 +205,7 @@ GEAP's consolidation narrative is compelling, but it carries a real cost: **surf
 
 For a solo developer building a weekend project, GEAP is overkill. The four-pillar architecture is enterprise governance applied to a problem that might be solved with a single API call and a Postgres table. The marketing targets "enterprise scale" — and if your workload is not that, the platform actively gets in your way.
 
-The more honest framing: GEAP is the right platform when you need **at least two of the four pillars** in production. If you need Build + Govern (multiple agents with compliance requirements), GEAP is compelling. If you only need Build, you are paying for three pillars you do not use. We make this trade-off concrete in [[gemini-enterprise-agent-platform-hands-on-tour/04-comparing-to-claude-agent-sdk-and-cloudflare-agents]].
+The more honest framing: GEAP is the right platform when you need **at least two of the four pillars** in production. If you need Build + Govern (multiple agents with compliance requirements), GEAP is compelling. If you only need Build, you are paying for three pillars you do not use. We make this trade-off concrete in [[gemini-enterprise-agents/04-comparing-to-claude-agent-sdk-and-cloudflare-agents]].
 
 ---
 
@@ -255,7 +228,7 @@ Pick a real (or plausible) agent you want to build. On paper or in a diagramming
 
 Chapter 2 gets hands-on: you will install ADK, define a Python function as a tool, wire it into an Agent, and add session and Memory Bank persistence. By the end you will have an agent that remembers your last session — even after a process restart.
 
-See [[gemini-enterprise-agent-platform-hands-on-tour/02-hello-world-agent-tool-state-persistence]] to continue.
+See [[gemini-enterprise-agents/02-hello-world-agent-tool-state-persistence]] to continue.
 
 ---
 

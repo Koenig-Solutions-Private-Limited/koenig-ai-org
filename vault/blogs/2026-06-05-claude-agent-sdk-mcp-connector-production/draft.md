@@ -79,6 +79,18 @@ Most tutorials treat these as synonyms. They are not. The Agent SDK is a persist
 
 ## Two Paths, One Protocol
 
+```mermaid
+flowchart LR
+    A[Your Application] --> B{Choose Integration Path}
+    B -->|"Persistent sessions\nSubagent orchestration\nFilesystem access"| C["Claude Agent SDK\nclaude_agent_sdk.query()"]
+    B -->|"Stateless calls\nRemote HTTP MCP\nNo client process"| D["Messages API Connector\nclient.beta.messages.create\n+ mcp_servers param"]
+    C --> E["Client-side Session Process\nYour infra owns state + retries"]
+    D --> F["Anthropic Infrastructure\nMakes MCP calls on your behalf"]
+    E --> G[MCP Server]
+    F --> G
+```
+*Alt: Flowchart showing two Anthropic MCP integration paths — the Agent SDK maintaining a persistent client-side session versus the Messages API connector routing through Anthropic's infrastructure for stateless calls.*
+
 [[glossary/model-context-protocol|MCP (Model Context Protocol)]] is now the default integration layer for production AI agents. Its spec `2025-11-25` ships Streamable HTTP as the standard remote transport, and the upcoming `2026-07-28` release candidate eliminates protocol-level sessions entirely — stateless servers can run behind round-robin load balancers with no sticky routing required.[^1] Both Anthropic paths converge on MCP; they differ in *who* runs the MCP client.
 
 | Dimension | Messages API MCP connector | Agent SDK |

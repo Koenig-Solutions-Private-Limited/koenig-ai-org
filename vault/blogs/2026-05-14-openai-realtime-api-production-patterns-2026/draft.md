@@ -78,6 +78,20 @@ The missed point is that Realtime is not a faster text-to-speech endpoint. [Cart
 
 ## How to Choose Realtime Over Whisper+TTS for Conversational Workloads
 
+```mermaid
+flowchart TD
+    A[Voice Agent Use Case] --> B{Live interruptions needed?}
+    B -->|Yes| C{Tool calls mid-turn?}
+    B -->|No| H["Whisper + LLM + TTS Pipeline\nCheaper · 2–3 s turns\nOwn endpointing + playback sync"]
+    C -->|Yes| D{Sub-second feel required?}
+    C -->|No| H
+    D -->|Yes| E["✅ OpenAI Realtime API\nWebSocket stateful loop\n24 kHz PCM16 or G.711"]
+    D -->|No| H
+    E --> F["Design checklist:\n• Interruption truncation first\n• Session rollover plan\n• Rate-limit observability"]
+    H --> G["Design checklist:\n• Whisper batch pipeline\n• Push-to-talk or pause-OK UX"]
+```
+*Alt: Decision flowchart for choosing between OpenAI Realtime API and a Whisper+TTS pipeline based on live interruptions, mid-turn tool calls, and latency requirements.*
+
 Realtime is worth the premium when the product promise is "talk to the agent." OpenAI's current Realtime model page describes `gpt-realtime-2` as a speech-to-speech model for complex voice-agent workflows with configurable reasoning effort, tool use, and Realtime endpoints; the developer portal also foregrounds new Realtime voice, translation, and transcription models.<CitationFootnote source="https://developers.openai.com/api/docs/models/gpt-realtime-2">OpenAI `gpt-realtime-2` model reference</CitationFootnote><CitationFootnote source="https://developers.openai.com/">OpenAI developer portal Realtime model overview</CitationFootnote> That is the right mental model: this is a runtime for live speech applications, not a media conversion API.
 
 Use Realtime for inbound support, tutoring, live translation, scheduling, IVR, sales intake, and any workflow where the user will talk over the assistant. The pipeline version of the same system has three serial boxes: STT, reasoning, and TTS. That is useful when the work is batch transcription, a narrated report, voicemail summarization, or a push-to-talk tool where a pause is acceptable. It is the wrong default when the user expects a human-like turn.

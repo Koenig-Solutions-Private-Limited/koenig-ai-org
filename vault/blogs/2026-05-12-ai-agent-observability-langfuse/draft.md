@@ -104,6 +104,32 @@ The common pitch for Langfuse is "open source alternative to LangSmith." That un
 
 ## Key facts
 
+```mermaid
+flowchart LR
+    subgraph agents["Coding Agents — OTLP Emitters"]
+        CC["Claude Code\nOTEL export via SDK"]
+        CX["Codex\nconfig.yaml OTLP export"]
+        OC["OpenCode\nplugin OTLP export"]
+    end
+    subgraph langfuse["Langfuse Self-Hosted Stack (6 containers)"]
+        LW["Web — UI + API"]
+        WK["Worker — async processing"]
+        PG["Postgres — metadata + prompts"]
+        CH["ClickHouse — trace + event data"]
+        RD["Redis — queue"]
+        MN["MinIO — blob storage"]
+    end
+    CC -->|"OTLP HTTP/gRPC"| LW
+    CX -->|"OTLP HTTP/gRPC"| LW
+    OC -->|"OTLP HTTP/gRPC"| LW
+    LW --> WK
+    WK --> PG
+    WK --> CH
+    LW --> RD
+    WK --> MN
+```
+*Alt: Flowchart showing Claude Code, Codex, and OpenCode emitting OTLP traces to a six-container self-hosted Langfuse stack — Web, Worker, Postgres, ClickHouse, Redis, and MinIO — providing unified cost, session, and trace views across mixed agent runtimes.*
+
 1. Langfuse recommends Docker Compose only for low-scale or local use and recommends Kubernetes or Terraform on AWS, Azure, or GCP for production and high availability.[1]
 2. Langfuse's tracing model is built around prompts, model responses, latency, tool executions, retrieval steps, and metadata rather than generic APM spans.[2]
 3. Langfuse accepts OTLP traces directly at `/api/public/otel`, supports HTTP JSON and HTTP protobuf, and uses standard OTEL attributes for user, session, tags, and model data.[7]

@@ -53,6 +53,33 @@ The right question is not whether Cloudflare "won" the neutral agent layer. It i
 
 ## When Cloudflare is the right fit
 
+```mermaid
+flowchart TD
+    subgraph cf["Cloudflare Control Plane"]
+        G["AI Gateway\nRouting · quota · fallback policy"]
+        DO["Durable Objects\nLong-lived session state\nSurvives process churn"]
+        VW["Voice Workflows\nTelephony + audio"]
+        MC["MCP Controls\nTool boundaries + guardrails"]
+    end
+    subgraph providers["Model Providers"]
+        OP["OpenAI"]
+        AN["Anthropic"]
+        GM["Google"]
+        WA["Workers AI"]
+    end
+    A["Agent Request"] --> G
+    G --> OP
+    G --> AN
+    G --> GM
+    G --> WA
+    A --> DO
+    A --> VW
+    A --> MC
+    note1["⚠️ Not fully neutral:\nruntime coupling · observability semantics\nmanaged tool opinions"]
+    MC --> note1
+```
+*Alt: Architecture diagram showing Cloudflare's agentic control plane — AI Gateway routing across OpenAI, Anthropic, Google, and Workers AI, with Durable Objects for session state, voice workflows, and MCP controls, plus a callout on partial neutrality tradeoffs.*
+
 Cloudflare is a strong fit when the product problem is operational orchestration rather than model research. If you need to route requests across OpenAI, Anthropic, Google, and Workers AI, Cloudflare gives you a place to centralize that policy without forcing the application to know about every backend directly. That matters when fallback behavior, retries, quota management, and traffic shaping are part of the application contract instead of an afterthought.
 
 It is also a good fit when the agent itself needs durable execution. Durable Objects and Project Think are useful precisely because they make long-lived state, session continuity, and background work part of the runtime boundary. If the agent needs to survive process churn, keep tool state, or coordinate multiple steps across time, Cloudflare has already collapsed those concerns into the platform layer rather than asking you to glue together Redis, queues, and separate workflow infrastructure.

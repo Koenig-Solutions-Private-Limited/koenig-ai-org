@@ -78,6 +78,16 @@ faq:
 
 ## Multi-Step Agentic Planning: Why it isn't just a gimmick
 
+```mermaid
+xychart-beta
+    title "Benchmark Score Lift: GPT-5.4 (bar) → GPT-5.5 (line)"
+    x-axis ["Terminal-Bench 2.0", "CyberGym Security"]
+    y-axis "Score (%)" 70 --> 88
+    bar [75.1, 79.0]
+    line [82.7, 81.8]
+```
+*Alt: Bar and line chart comparing GPT-5.4 versus GPT-5.5 scores on Terminal-Bench 2.0 (75.1% → 82.7%) and CyberGym Security (79.0% → 81.8%), showing the benchmark lift from the new reasoning architecture.*
+
 When OpenAI announced the new reasoning capabilities for GPT-5.5 on April 23, 2026, the immediate reaction from the developer community was to compare it to existing reasoning models like Claude [Opus 4.7](/blog/2026-04-30-opus-4-7-long-running-coding-benchmark) [2]. However, the true differentiator in GPT-5.5 is that reasoning is now a first-class citizen in the token stream. Instead of the model simply "talking to itself" in a hidden scratchpad, it uses specialized reasoning tokens to simulate execution paths before committing changes to disk [1].
 
 This "thinking" phase is not just about producing better text; it's about predicting the outcome of tool calls. By simulating the state of the terminal or the file system before actually committing a change, GPT-5.5 can catch errors that would have traditionally required multiple execution-fix-execution loops. This is particularly visible in its 82.7% score on Terminal-Bench 2.0, a benchmark designed to break models that cannot plan across multiple steps [1, 5]. For developers, this means the difference between a model that tries to fix an error and a model that understands *why* the error occurred in the context of the entire system.

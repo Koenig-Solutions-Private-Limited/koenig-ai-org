@@ -74,6 +74,12 @@ Frontier model evaluation is the practice of measuring AI model capabilities alo
 
 ---
 
+```takeaways
+- MMLU, HumanEval, and GPQA measure knowledge recall, single-function code generation, and graduate reasoning — none directly measures tool-use determinism, structured-output stability, or mid-context retrieval accuracy.
+- The "production gap" is most pronounced in function-calling tasks; benchmark scores and real-world tool-orchestration reliability can diverge substantially.
+- As of Q2 2026, no major public benchmark measures tool-use determinism — the probability that the same prompt produces structurally equivalent output across independent runs.
+```
+
 ## Why the standard benchmarks fail builders
 
 Every model release in 2026 ships with a table comparing MMLU, HumanEval, GPQA, and MATH scores. These benchmarks are not fraudulent — they measure real things. But they measure things that matter for *research progress*, not for *shipping a reliable product*.
@@ -95,6 +101,12 @@ This is not a criticism of the research community. These benchmarks serve their 
 The exercise above illustrates a key insight: **the model cannot tell you its own production reliability.** The vendor's benchmark table cannot either. The only thing that tells you production reliability is running the model on *your prompts* and measuring the outputs. That is what Chapters 2–4 of this course are built around.
 
 ---
+
+```takeaways
+- A model cannot tell you its own production reliability, and neither can the vendor's benchmark table — only running the model on your prompts with measurement produces actionable data.
+- MMLU measures knowledge recall across 57 academic subjects via multiple-choice; your agentic pipeline calls tools with structured JSON schemas, retrieves from documents you provide, and produces outputs downstream code must parse — none of which MMLU measures.
+- HumanEval measures single-function correctness, not multi-step tool-integrated code generation; high HumanEval scores do not prevent malformed JSON schemas in function-calling pipelines.
+```
 
 ## The 7 dimensions that predict production success
 
@@ -136,6 +148,12 @@ Whether the endpoint, access path, and model lifecycle fit production. Preview m
 
 ---
 
+```takeaways
+- Tool-use determinism — the probability that the same prompt produces structurally equivalent output across independent runs — is the foundational reliability metric for any agentic workload.
+- A 10% variance per step compounds multiplicatively: a 5-step pipeline where each step has 90% structural stability has only a 59% end-to-end success rate.
+- Governance and lifecycle risk matters: preview model IDs require configurable IDs, changelog review, deprecation monitoring, and fallback routing before production use.
+```
+
 ## The 3 dimensions you can probably ignore
 
 Not everything matters equally. Here are three dimensions frequently cited in benchmark tables that correlate weakly with most production workloads:
@@ -153,6 +171,12 @@ Unless your use case involves answering graduate-level science questions or broa
 If you're building an English-language product, a model's Chinese or Arabic benchmark scores are irrelevant. Benchmark tables aggregate across many settings; make sure the dimension being measured applies to your actual distribution.
 
 ---
+
+```takeaways
+- MMLU and GPQA aggregate scores have weak correlation with production outcomes for most builders; a 3-point delta in reasoning score is noise compared to a 5% difference in tool-use determinism.
+- Peak capability (e.g., "can solve competition math") describes the ceiling; for production the floor matters more — what the model does on the 10% of prompts where it struggles.
+- Benchmark dimensions that don't apply to your actual distribution should be excluded from your scorecard entirely; don't let irrelevant axes influence the model decision.
+```
 
 ## Building your scorecard
 

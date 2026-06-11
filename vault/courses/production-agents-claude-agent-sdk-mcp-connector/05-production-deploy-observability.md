@@ -78,6 +78,12 @@ options = ClaudeAgentOptions(
 
 The `matcher` is a Python regex. `"Edit|Write"` matches any tool whose name contains "Edit" or "Write". Use `".*"` to match everything.
 
+```takeaways
+- Hooks are synchronous callback functions that run in your process before or after every tool call; `HookMatcher` filters by tool name using a Python regex.
+- `PreToolUse` runs before execution — use it to block risky calls before side effects occur; `PostToolUse` runs after — use it for logging and audit, not prevention.
+- Python SDK callbacks do not support `SessionStart` or `SessionEnd`; TypeScript SDK callbacks add these session lifecycle events.
+```
+
 ## Hook 1: Audit log (PostToolUse)
 
 Every file modification should be logged with a timestamp, file path, and session ID. This hook runs after every successful Edit or Write call:
@@ -263,6 +269,12 @@ options = ClaudeAgentOptions(
 )
 ```
 
+```takeaways
+- `UserPromptSubmit` fires before the user message reaches the model — use it to strip PII, redact phone numbers and SSNs, and prevent sensitive data from entering the model's context.
+- Always log when PII redaction occurs, including which pattern was found and the session ID, to maintain compliance audit trails.
+- The four production hooks together cover the full agent lifecycle: input sanitization, pre-execution cost control, post-execution audit logging, and session telemetry.
+```
+
 ## The complete production hook stack
 
 Put it all together into a factory function you can reuse across agents:
@@ -394,6 +406,12 @@ Before any agent goes to production, verify all five:
 `bypassPermissions` is occasionally used in CI/CD pipelines where there's no human in the loop to approve tool calls. This is understandable but risky: it disables ALL safety prompts, including protections against destructive Bash commands. The safer alternative is to list every allowed tool explicitly in `allowedTools` and use `permissionMode: "acceptEdits"` for file operations. If your CI pipeline runs code that generates new files, that combination covers the common cases without the blast radius of `bypassPermissions`.
 </Callout>
 
+```takeaways
+- Never use `bypassPermissions` in production; combine `permissionMode: "acceptEdits"` with explicit `allowedTools` grants to cover both file edits and MCP tool calls safely.
+- Production agents must pass five checks: minimal permissions, wired cost controls, active audit logging, secrets out of config, and session files with a retention policy.
+- Structured JSON logs — not print statements — enable per-session cost breakdown, error rate by tool type, and session duration distribution from day one.
+```
+
 ## Hands-on exercise
 
 **Harden an existing agent with the production hook stack and verify the circuit breaker.**
@@ -501,6 +519,12 @@ ANTHROPIC_API_KEY=sk-ant-...          # or use Bedrock/Vertex credentials
 CLAUDE_SESSIONS_DIR=/var/agent/sessions  # writable, with retention policy
 DEPLOY_ENV=production                   # for log filtering
 SERVICE_NAME=research-agent             # for log correlation
+```
+
+```takeaways
+- Lambda/Cloud Functions suit agents that complete in under 15 minutes; set `CLAUDE_SESSIONS_DIR` to `/tmp` since session files disappear after cold starts and cannot be resumed across invocations.
+- Long-running containers need a cron job to trim JSONL session files older than 7 days to prevent unbounded disk growth.
+- Managed Agents is the right deployment target for long-running async tasks where you don't want to manage the container — event history is persisted server-side.
 ```
 
 ## The contrarian production advice: log before you optimize

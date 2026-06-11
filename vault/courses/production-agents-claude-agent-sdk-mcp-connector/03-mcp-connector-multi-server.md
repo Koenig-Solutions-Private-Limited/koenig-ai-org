@@ -69,6 +69,12 @@ mcp__github__get_pull_request
 
 This prefix structure matters because it's what you put in `allowedTools`. The wildcard pattern `mcp__github__*` allows all tools from the `github` server. The explicit pattern `mcp__github__list_issues` allows only that one tool.
 
+```takeaways
+- MCP tools follow the naming pattern `mcp__<server-name>__<tool-name>` where the server name is the key used in `mcpServers`, not the package name.
+- Use `mcp__<server>__*` wildcards during development; narrow to specific tool names in production to minimize blast radius.
+- All MCP tools require explicit `allowedTools` grants — `permissionMode: "acceptEdits"` does not auto-approve MCP tool calls.
+```
+
 ## The three transport types
 
 ### stdio — local process servers
@@ -246,6 +252,12 @@ asyncio.run(investigate_issue(
 ))
 ```
 
+```takeaways
+- Multiple MCP servers with different transport types (stdio, HTTP, SSE) can be configured in a single `mcpServers` dict; the agent uses whichever tools match the task.
+- Check the `mcp_servers` list in the `SystemMessage` init event before the agent starts work to catch connection failures before tokens are wasted.
+- Never hard-code secrets in `mcpServers.env` — use `os.environ["KEY"]` or `process.env.KEY` to pull credentials from environment variables.
+```
+
 ## Why `permissionMode: "acceptEdits"` is not enough
 
 This is the most common production mistake with MCP. The Agent SDK has three permission modes:
@@ -312,6 +324,12 @@ Common failure causes by transport:
 
 The default connection timeout for stdio servers is 60 seconds. If your server process takes longer than that to respond to its first handshake, it fails. Pre-warm slow servers before starting a query.
 
+```takeaways
+- Check the `mcp_servers` list in the `SystemMessage` init event before the agent does any work — servers fail silently if you don't inspect this event.
+- The three most common stdio failure causes are: `npx` not on PATH, missing environment variables, and servers that take longer than 60 seconds to start.
+- Pre-warm slow server processes before starting a query to avoid the default 60-second connection timeout.
+```
+
 ## Project-level config with `.mcp.json`
 
 For projects where the same servers are always needed, put them in `.mcp.json` at the project root. The SDK loads this file automatically when `project` is in `settingSources` (the default):
@@ -344,7 +362,7 @@ As of May 2026, Anthropic has packaged several enterprise-grade connectors speci
 
 The "SMB Stack" typically includes:
 - **Financial**: QuickBooks, PayPal
-- **CRM/Growth**: HubSpot, Salesforce
+- **CRM/Growth**: HubSpot
 - **Creative/Docs**: Canva, DocuSign, Google Workspace, Microsoft 365
 
 The power of the Agent SDK is **coordination**. A single `query()` can reconcile PayPal settlements against a QuickBooks ledger and then trigger a HubSpot "deal won" update.
@@ -352,11 +370,14 @@ The power of the Agent SDK is **coordination**. A single `query()` can reconcile
 ### Example: Automated Payment Reconciliation
 
 ```python
+# NOTE: The URLs below are illustrative placeholders. Claude Cowork connectors are
+# product-layer integrations, not public Agent SDK HTTP endpoints. Replace these with
+# the actual MCP endpoint URLs provided by each connector service.
 options = ClaudeAgentOptions(
     mcp_servers={
-        "quickbooks": {"type": "http", "url": "https://api.anthropic.com/connectors/quickbooks"},
-        "paypal": {"type": "http", "url": "https://api.anthropic.com/connectors/paypal"},
-        "hubspot": {"type": "http", "url": "https://api.anthropic.com/connectors/hubspot"},
+        "quickbooks": {"type": "http", "url": "https://your-quickbooks-mcp.example.com/mcp"},
+        "paypal": {"type": "http", "url": "https://your-paypal-mcp.example.com/mcp"},
+        "hubspot": {"type": "http", "url": "https://your-hubspot-mcp.example.com/mcp"},
     },
     allowed_tools=["mcp__quickbooks__*", "mcp__paypal__*", "mcp__hubspot__*"]
 )
@@ -379,6 +400,12 @@ prompt = "Find all PayPal transactions from yesterday, match them to QuickBooks 
 When you configure many MCP servers simultaneously, their tool definitions can fill a significant portion of the context window. The SDK's tool search feature addresses this: it withholds tool definitions from context and loads only the ones Claude needs for each turn, based on a vector similarity search over the tool names and descriptions.
 
 Tool search is enabled by default. You can verify it's active by checking whether long tool definition lists appear in your debug output. If you need to disable it for a specific server (e.g., a server with tools that always need to be in context), configure it in the `mcpServers` entry per the [tool search docs](https://code.claude.com/docs/en/agent-sdk/tool-search).
+
+```takeaways
+- Tool search is enabled by default; it withholds all tool definitions from context and loads only tools relevant to each turn using vector similarity search.
+- Without tool search, a system with 200 MCP tools sends every definition to Claude on every turn, consuming large amounts of context window before any work begins.
+- Project-level `.mcp.json` files keep MCP config declarative and version-controllable; use `${VAR}` syntax for environment variable expansion.
+```
 
 ## OAuth2 authentication
 

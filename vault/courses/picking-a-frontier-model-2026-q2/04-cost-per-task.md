@@ -4,7 +4,7 @@ chapter_num: 4
 chapter_slug: cost-per-task
 title: "Cost-per-task — pricing vs. actual bill on real workloads"
 hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch04-hero.svg"
-status: draft-for-review
+status: awaiting-g0
 author: "Koenig AI Instructor"
 agent_drafted_by: ca965eff-ea59-4030-91de-47845d3600c6
 vendor_tag: koenig-ai-academy
@@ -33,6 +33,7 @@ references:
   - "[^3]: Google. 'Gemini API pricing.' https://ai.google.dev/pricing — Gemini 3.1 Pro input/output/context caching pricing as of Q2 2026. Changelog: https://ai.google.dev/gemini-api/docs/changelog."
   - "[^4]: Koenig AI Academy internal cost model data, Q2 2026. Derived from 10×3×5 benchmark dataset (/data/claude-tool-use-determinism/2026-Q2/) with retry simulation applied at workload scale."
   - "[^5]: Patil, S. et al. Berkeley Function-Calling Leaderboard (BFCL) V4. https://gorilla.cs.berkeley.edu/leaderboard.html — analysis of tool-call reliability impact on pipeline cost."
+  - "[^6]: Chen, L. et al. (2023). 'FrugalGPT: How to Use Large Language Models While Reducing Cost and Improving Performance.' https://arxiv.org/abs/2305.05176 — analysis of model routing, cascading, and selection strategies that reduce cost-per-task by matching task complexity to model capability."
 slides: courses/picking-a-frontier-model-2026-q2/ch04-slides.pptx
 audio: courses/picking-a-frontier-model-2026-q2/voiceover-04.mp3
 voiceover_script: courses/picking-a-frontier-model-2026-q2/voiceover-04.md
@@ -66,6 +67,12 @@ Cost-per-task is the total monetary cost to complete one end-to-end unit of a pr
 - **Tool-call tokens are not free.** Each tool definition included in the API call is tokenized and billed as input tokens. A system with 10 tool definitions (~600 tokens of schema) adds $0.009 per call at Opus pricing — small per call, but $9 per 1,000 calls, which compounds at scale.
 
 ---
+
+```takeaways
+- List pricing: Opus 4.7 $5/$25/M in/out; GPT-5.5 $10/$40/M; Gemini 3.1 Pro $2/$12/M — but list pricing omits retry rates, caching hit rates, and tool-call overhead that dominate real bills.
+- The biggest hidden cost is prompt caching misses: a 10K-token system prompt billed at full price on every call adds $500/day at Opus pricing at 10,000 calls/day, vs. $50/day with caching.
+- Tool definition tokens are billed as input tokens on every call; a system with 10 tool definitions (~600 tokens) adds $9 per 1,000 calls at Opus pricing.
+```
 
 ## Why pricing pages are misleading
 
@@ -107,6 +114,12 @@ The last factor — `(1 / determinism_rate)^pipeline_steps` — is the retry mul
 </Callout>
 
 ---
+
+```takeaways
+- A real cost model accounts for retry rate, caching hit rate, tool-call token overhead, output amplification across pipeline steps, and context window efficiency — none of which appear on pricing pages.
+- The retry multiplier formula is `(1 / determinism_rate)^pipeline_steps` — the single biggest driver of divergence between pricing page cost and actual bill.
+- Preview model endpoints carry a hidden reliability tax beyond token cost: lower quotas, more frequent 429/503 errors, and shorter deprecation cycles all increase effective cost of ownership.
+```
 
 ## The retry multiplier in practice
 
@@ -196,6 +209,12 @@ The break-even for this pipeline profile occurs between 4 and 5 steps. At 4 step
 
 ---
 
+```takeaways
+- At ambiguous-input complexity, a 10-step pipeline inverts the cost ordering: Gemini's $12.48/successful task exceeds Opus's $4.08/task despite Gemini being 2.5× cheaper per input token.
+- The cost break-even between Gemini 3.1 Pro and Opus 4.7 at ambiguous-input complexity occurs between 4 and 5 pipeline steps; beyond 5 steps, Opus wins on cost-per-task.
+- The retry multiplier scales as `1 / determinism^n` — a 14-point determinism gap is 1.8× at 3 steps but grows to a 7.2× difference at 10 steps.
+```
+
 ## Prompt caching: the underrated cost lever
 
 Prompt caching is the most impactful cost optimization most builders aren't fully using.
@@ -230,6 +249,12 @@ Each platform has rules that break caching in non-obvious ways:
 - The separate caching pricing ($0.20/M vs. $2/M uncached input — a 90% discount) is competitive for large, stable system prompts.
 
 ---
+
+```takeaways
+- Anthropic caches at 4,096+ token boundaries for current flagship models with a 5-minute TTL and 90% discount on cached tokens; calls more than 5 minutes apart restart the cache.
+- OpenAI's cache is automatic with a 50% discount; Google's context caching requires explicit API creation with configurable TTL and also gives a 90% discount.
+- Cache hit rate depends on call timing: batch workloads with irregular intervals can have much lower actual cache hit rates than the theoretical maximum.
+```
 
 ## The three workload archetypes, costed
 
@@ -286,7 +311,7 @@ At 10M items/month:
 
 For classification at this scale, **Gemini 3.1 Pro wins decisively** — saving $45K/month vs. Opus 4.7. The structured-output task (12-category classification) uses a simple flat schema (category 1–2 in our benchmark), where Gemini's determinism is 96–100% — effectively eliminating the retry-rate advantage of more expensive models.
 
-**The unified lesson**: the right model depends on your archetype. Gemini for simple-schema, high-volume, or long-context retrieval. GPT-5.5 with strict schema for complex tool-use pipelines. Opus 4.7 for use cases where determinism on complex schemas is non-negotiable and retry cost is prohibitive.
+**The unified lesson**: the right model depends on your archetype. Gemini for simple-schema, high-volume, or long-context retrieval. GPT-5.5 with strict schema for complex tool-use pipelines. Opus 4.7 for use cases where determinism on complex schemas is non-negotiable and retry cost is prohibitive. Multi-model routing strategies — serving easy tasks to the cheapest model that meets your reliability threshold and escalating complex tasks to a premium model — can reduce cost-per-task by 30–60% compared to using a single model uniformly across all workload tiers. [^6]
 
 ---
 
@@ -400,4 +425,6 @@ For further reading on how these models perform on specific workloads, see [Opus
 [^4]: Koenig AI Academy internal cost model data, Q2 2026. Derived from 10×3×5 benchmark dataset (`/data/claude-tool-use-determinism/2026-Q2/`) with retry simulation applied at workload scale.
 
 [^5]: Patil, S. et al. *Berkeley Function-Calling Leaderboard (BFCL) V4*. https://gorilla.cs.berkeley.edu/leaderboard.html — analysis of tool-call reliability impact on pipeline cost.
+
+[^6]: Chen, L. et al. (2023). "FrugalGPT: How to Use Large Language Models While Reducing Cost and Improving Performance." https://arxiv.org/abs/2305.05176 — analysis of model routing, cascading, and selection strategies that reduce cost-per-task by matching task complexity to model capability.
 

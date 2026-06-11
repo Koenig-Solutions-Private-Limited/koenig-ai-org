@@ -76,6 +76,29 @@ Copy this to your team's runbook before your first deployment.
 
 ## What Changed at Google I/O 2026: Three APIs, Three Stability Tiers
 
+```mermaid
+flowchart TD
+    subgraph config["Agent Configuration"]
+        F["AGENTS.md + SKILL.md\nVersioned behavior files"]
+    end
+    subgraph api["Gemini Managed Agents API ⚠️ Preview"]
+        B["antigravity-preview-05-2026\nHeader: Api-Revision: 2026-05-20"]
+    end
+    subgraph exec["Execution"]
+        C{background=True?}
+        D["Antigravity Linux Sandbox\nServer-side inference loop\nsteps schema — not outputs"]
+        E["Synchronous Response"]
+        G["Poll /interactions/{id}/status"]
+    end
+    A["Your Code\nclient.interactions.create()"] --> B
+    F --> B
+    B --> C
+    C -->|"Tasks > 30 s"| D
+    C -->|"Short tasks"| E
+    D --> G
+```
+*Alt: Flowchart showing the Gemini Managed Agents API invocation path — from AGENTS.md configuration through the preview API to synchronous or background Antigravity sandbox execution, with the steps schema replacing the deprecated outputs field.*
+
 Google I/O 2026 shipped three interconnected surfaces. Each has a different stability tier, and conflating them is the most common operator mistake.
 
 ### Managed Agents API — Public Preview

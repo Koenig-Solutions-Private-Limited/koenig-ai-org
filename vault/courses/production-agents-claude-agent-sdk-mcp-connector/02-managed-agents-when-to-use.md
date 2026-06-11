@@ -68,6 +68,12 @@ Managed Agents introduces four concepts that don't exist in the Agent SDK. You n
 
 **Events** — the messages flowing between your application and the running session. You send `user.message` events; the agent emits `agent.message`, `agent.tool_use`, and eventually `session.status_idle` events back over SSE.
 
+```takeaways
+- Managed Agents uses four primitives: Agent (saved config), Environment (sandbox template), Session (running instance per task), and Events (SSE message stream).
+- Sessions are not reused — one session equals one task; when the task is done, start a new session for the next task.
+- Agent and Environment IDs are stable and should be created once and reused; only the Session is created per-task to avoid hitting the 300 create-requests-per-minute rate limit.
+```
+
 ## Creating your first agent
 
 Install the Anthropic SDK (not the Agent SDK — Managed Agents uses the standard Anthropic client):
@@ -211,6 +217,12 @@ for await (const event of stream) {
   expectedOutput="Claude emits an agent.message with a plan, then an agent.tool_use event for Bash, then another agent.message with results like: mean=308.0, median=340.0, std_dev=109.3. The session then emits session.status_idle."
 />
 
+```takeaways
+- Open the SSE stream before sending the first `user.message` event; events arrive in real time, including `agent.tool_use` calls and `agent.message` responses.
+- The `session.status_idle` event is the canonical signal that the agent has finished working; break the stream loop when you see it.
+- Always close idle sessions explicitly with `client.beta.sessions.update(session.id, status="completed")` to avoid ongoing runtime cost exposure.
+```
+
 ## The lifecycle cost trap most tutorials skip
 
 Here's the operational fact most tutorials bury: Managed Agents cost depends on session lifetime, not just the seconds when the model is actively generating. A session waiting for a user message, sleeping between tool calls, or paused after going idle but not explicitly closed can still create runtime exposure, so your app should treat `session.status_idle` as a cleanup signal and verify current billing rules in Anthropic's official quickstart [2].
@@ -244,6 +256,12 @@ The canonical migration path Anthropic documents is: prototype locally with the 
 <Callout type="hot">
 Managed Agents is in public beta as of April 2026. The `managed-agents-2026-04-01` beta header is required on every request. Behaviors can be refined between releases. Two capabilities — outcomes and multiagent — are in research preview and require a separate access request at `claude.com/form/claude-managed-agents`. Do not build production features that depend on research-preview capabilities without direct Anthropic support.
 </Callout>
+
+```takeaways
+- Use Managed Agents for long-running (>5 min), async tasks needing a cloud sandbox; use the Agent SDK for short, stateless, webhook-triggered, or locally-executed work.
+- Runtime pricing has two components: Managed Agents runtime plus standard Claude token costs — verify current rates in the official quickstart before launch.
+- The `managed-agents-2026-04-01` beta header is required on every request; outcomes and multiagent are in research preview and require a separate access request.
+```
 
 ## Steering a session mid-execution
 
@@ -320,6 +338,12 @@ This is fundamentally different from the Agent SDK's JSONL session files, which 
 - Multiple processes can query the same session's history
 
 The trade-off is that you're locked into Anthropic's event retention policy, not your own. Keep this in mind for compliance-sensitive workloads.
+
+```takeaways
+- Managed Agents persists the full event history server-side; if your stream disconnects, you can replay the complete log via `client.beta.sessions.events.list()`.
+- Unlike Agent SDK JSONL files on the local filesystem, Managed Agents event history survives network partitions and is inspectable retroactively for debugging and billing audit.
+- For compliance-sensitive workloads, event history stored server-side means surrendering control over retention policy to Anthropic's infrastructure rather than your own data store.
+```
 
 ## Multi-agent sessions (research preview)
 

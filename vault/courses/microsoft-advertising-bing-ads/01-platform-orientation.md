@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: microsoft-advertising-bing-ads
 title: "Microsoft Advertising Platform Orientation: Interface, Account Structure & the Google Ads Migrant's Mindset"
-status: g0-blocked
+status: awaiting-g0
 duration_min: 15
 vendor_tag: microsoft-advertising
 learning_objectives:
@@ -133,7 +133,7 @@ Navigate to **Campaigns → Create campaign** and select **Search** as the campa
 
 The network toggle deserves attention: **Search Partners** extends your reach to Yahoo, AOL, DuckDuckGo, and Ecosia in addition to Bing. For an initial test, disable Search Partners so you can isolate pure Bing performance first — partner traffic quality varies by category and can distort early CPCs.
 
-Inside the campaign, create at least one ad group with a tightly themed keyword set. Three to five exact-match terms aligned to a single user intent is the right starting size. Set a default CPC bid, then add at least one Responsive Search Ad placeholder — you will build out the full RSA with 15 headlines and 4 descriptions in ch3. The goal here is a working skeleton, not a finished creative.
+Inside the campaign, create at least one ad group with a tightly themed keyword set. Three to five exact-match terms aligned to a single user intent is the right starting size. Set a default CPC bid, then add at least one Responsive Search Ad placeholder — you will build out the full RSA with 15 headlines and 4 descriptions in [[03-keyword-strategy-rsa]]. The goal here is a working skeleton, not a finished creative.
 
 ## Five Structural Differences vs Google Ads
 
@@ -145,9 +145,11 @@ Reprogramming your Google Ads assumptions is half the work of launching on Micro
 
 **LinkedIn Profile Targeting.** Microsoft Advertising is the only platform other than LinkedIn itself that lets you layer LinkedIn profile attributes — Company, Industry, and Job Function — onto Search and Audience campaigns. It operates in **bid-only mode**: it raises bids for matching users but does not exclude others. Full configuration is covered in [[04-audience-targeting-linkedin-remarketing]].
 
-**Copilot surfaces.** "Copilot" refers to two distinct things here. First, **Copilot in Microsoft Advertising** is the AI assistant embedded in the platform UI — it generates ad copy, images, and banners, runs campaign diagnostics, and surfaces performance root causes. Second, **Ads in Copilot** is a distribution channel: your campaigns can appear inside Bing Copilot conversations via an "ad voice" format, with no extra bid required and no separate setup. Microsoft Copilot reached 320 million MAUs in Q2 FY2026 (+148% YoY), and advertisers in Copilot placements see on average 18% more reach without additional CPC cost.
+**Copilot surfaces.** "Copilot" refers to two distinct things here. First, **Copilot in Microsoft Advertising** is the AI assistant embedded in the platform UI — it generates ad copy, images, and banners, runs campaign diagnostics, and surfaces performance root causes. Second, **Ads in Copilot** is a distribution channel: your campaigns can appear inside Bing Copilot conversations via an "ad voice" format, with no extra bid required — Performance Max campaigns are auto-eligible (see [[05-performance-max-setup]]). According to [Microsoft's Copilot advertising overview](https://about.ads.microsoft.com/en/tools/productivity/copilot-in-microsoft-advertising), Copilot reached 320 million MAUs in Q2 FY2026 (+148% YoY), and advertisers in Copilot placements see on average 18% more reach without additional CPC cost.
 
 **Import fidelity.** The Import Center lives at **Tools → Import → Import from Google Ads** and pulls campaigns directly from Google via OAuth, with scheduled recurring imports available. The import is fast but not 1:1 — bid strategies without a Microsoft equivalent (e.g., Target Impression Share) revert to Manual CPC, and some ad extensions need manual re-association after import. The full import workflow and audit checklist are in [[02-importing-auditing-google-ads]].
+
+<KnowledgeCheck question="How is Ad Rank calculated in Microsoft Advertising, and what changed in December 2025?" options={["Bid amount only — there is no Quality Score component in the Microsoft formula", "Quality Score × Bid, with exact-match keywords getting explicit tie-breaking priority since December 2025", "Quality Score × Bid × Impression Share percentage, making Impression Share the dominant factor", "CPC × CTR divided by Landing Page Experience, using a 1–5 scale instead of 1–10"]} correctIdx={1} explanation="Microsoft Advertising uses Quality Score × Bid — the same formula concept as Google Ads. As of December 2025, exact-match keywords also receive explicit auction tie-breaking priority, a distinction that does not exist in Google Ads." />
 
 ## Hands-on Exercise: Orient and Configure
 

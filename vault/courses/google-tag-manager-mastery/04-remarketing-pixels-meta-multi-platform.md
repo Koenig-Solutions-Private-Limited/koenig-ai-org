@@ -2,8 +2,8 @@
 chapter_num: 4
 course_slug: google-tag-manager-mastery
 title: "Remarketing Pixels: Google Ads, Meta, and Multi-Platform Tag Deployment"
-status: g0-blocked
-last_updated: 2026-06-10
+status: g0-passed
+last_updated: 2026-06-11
 duration_min: 22
 vendor_tag: google-tag-manager
 learning_objectives:

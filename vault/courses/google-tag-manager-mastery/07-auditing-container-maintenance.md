@@ -2,7 +2,8 @@
 chapter_num: 7
 course_slug: google-tag-manager-mastery
 title: "GTM Auditing and Ongoing Container Maintenance for Performance Teams"
-status: awaiting-g0
+status: g3-passed
+last_updated: 2026-06-11
 duration_min: 22
 vendor_tag: Google Tag Manager
 learning_objectives:
