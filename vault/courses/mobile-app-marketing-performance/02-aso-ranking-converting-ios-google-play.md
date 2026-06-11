@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: mobile-app-marketing-performance
 title: "App Store Optimization (ASO): Ranking & Converting on iOS and Google Play"
-status: g0-blocked
+status: awaiting-g0
 last_updated: 2026-06-11
 duration_min: 20
 vendor_tag: App Store / Google Play
@@ -91,7 +91,7 @@ quiz:
       - "After 6 weeks of runtime using a t-test applied to total install volume at 95% confidence"
     correct_idx: 1
     explanation: "Google Play uses jackknife resampling plus sequential probability ratio testing at a 90% confidence threshold. Once significance is declared, the experiment auto-stops 14 days later. Developers must apply the winning variant within that window."
-    section_anchor: testing-creatives-play-experiments-and-apple-cpps
+    section_anchor: testing-creatives-play-experiments-and-apple-custom-product-pages
   - question: "A travel app is deciding when to trigger an iOS rating prompt. Which moment is most effective?"
     options:
       - "Immediately after the app first launches, while the user's initial curiosity is at its peak"
@@ -138,15 +138,15 @@ Screenshots are displayed at thumbnail scale in search results. The **3-second v
 
 Two practical rules for screenshot design:
 
-**Caption clarity at scale.** OCR-readable captions are treated as a keyword-aware surface by most ASO practitioners, following observed ranking shifts since June 2025 — Apple officially confirms indexing only the title, subtitle, and keyword field. Write captions that carry the page's benefit promise even at thumbnail resolution. The "squint test" is reliable: zoom out until your screenshot is postage-stamp size and check whether hierarchy and text remain legible. [ASO Trends 2026 — Phiture](https://phiture.com/asostack/aso-trends-in-2026/) The top-grossing app analysis from AppFollow found the first three screenshot frames account for roughly 70% of conversion weight. [ASO Screenshots 2026 — AppFollow](https://appfollow.io/blog/aso-screenshots-best-practices)
+**Caption clarity at scale.** OCR-readable captions are treated as keyword-aware by most practitioners following observed ranking shifts since June 2025 — Apple officially confirms only title, subtitle, and keyword field are indexed. Write captions that carry your benefit promise at thumbnail resolution, legible even at postage-stamp scale. [ASO Trends 2026 — Phiture](https://phiture.com/asostack/aso-trends-in-2026/) The top-grossing app analysis from AppFollow found the first three screenshot frames account for roughly 70% of conversion weight. [ASO Screenshots 2026 — AppFollow](https://appfollow.io/blog/aso-screenshots-best-practices)
 
 **Device framing conventions.** Use the correct dimensions per device: iPhone 6.9" requires 1320×2868 px; iPad requires its own set, not stretched phone screenshots. Submitting incorrect dimensions or cross-device reuse is a common reason for App Store review rejection.
 
 ## App Preview Videos
 
-iOS app previews autoplay muted at up to 30 seconds — audio activates only when the user unmutes. Google Play promo videos require a public or unlisted YouTube URL; only the first 30 seconds autoplay muted, and **core features must appear within the first 10 seconds**.
+iOS app previews autoplay muted up to 30 seconds. Google Play promo videos require a public or unlisted YouTube URL; only the first 30 seconds autoplay muted, and **core features must appear within the first 10 seconds**.
 
-For Google Play, portrait format yields 7% higher watch time and 5% better conversion than landscape for most app categories. Localization matters: since autoplay is muted, any voiceover is inaudible — translate or localize on-screen text overlays for international markets rather than relying on dubbed audio tracks.
+For Google Play, portrait format yields higher watch time than landscape for most app categories. Localize on-screen text overlays for international markets — dubbed audio is inaudible at autoplay.
 
 <KnowledgeCheck
   question="A developer's Google Play promo video shows the app's booking flow for the first time at the 18-second mark. What is the likely conversion impact?"
@@ -179,9 +179,9 @@ Apps with ratings below 3.5 stars face reduced visibility in App Store search re
 
 Choose based on your primary research need:
 
-- **AppTweak** (mid-to-enterprise): pulls keyword volume directly from Apple's Search Popularity API — the most accurate iOS keyword research available. Best for metadata strategy and competitive keyword gap analysis.
-- **AppFollow** (SMB-to-mid): optimized for review management automation with 30+ CRM integrations. Best for teams where review response speed and volume are tracked KPIs.
-- **Sensor Tower** (enterprise): competitive intelligence across downloads, revenue, and advertising spend across global markets. Use when you need market-level benchmarking beyond your own listing.
+- **AppTweak** (mid-to-enterprise): keyword volume directly from Apple's Search Popularity API — most accurate for iOS metadata strategy.
+- **AppFollow** (SMB-to-mid): review management automation with 30+ CRM integrations; best for teams tracking response speed KPIs.
+- **Sensor Tower** (enterprise): competitive intelligence across downloads, revenue, and ad spend globally; use for market-level benchmarking.
 
 ---
 
