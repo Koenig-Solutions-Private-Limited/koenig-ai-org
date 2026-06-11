@@ -3,24 +3,47 @@
   "chapter_id": "ch01-sdk-responses-api",
   "course_slug": "openai-agents-sdk-mastery",
   "title": "The Agent SDK & Responses API Model (2026)",
-  "generated_at": "2026-06-11T14:29:15.860Z",
-  "generated_by": "manual (notebooklm unavailable; open-notebook unavailable; OpenAI TTS quota exhausted) via upload-chapter-assets.mjs",
-  "tool": "manual",
-  "audio_blocked": true,
-  "audio_blocked_reason": "All 3 audio tiers down: notebooklm-py not installed, open-notebook not running on :5055, OpenAI TTS 429 insufficient_quota (KOEA-7801)",
-  "source_file": "vault/courses/openai-agents-sdk-mastery/ch01-sdk-responses-api/chapter.md",
+  "generated_at": "2026-06-11T14:51:41.395Z",
+  "generated_by": "notebooklm-py via upload-chapter-assets.mjs",
+  "notebook_id": "63d86a7d-14fd-49c1-8d91-cc5c6f8a0ad9",
+  "source_file": "vault/courses/openai-agents-sdk-mastery/ch01-sdk-responses-api.md",
   "assets": {
     "flashcards_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/openai-agents-sdk-mastery/ch01-sdk-responses-api/flashcards.json",
-    "mind_map_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/openai-agents-sdk-mastery/ch01-sdk-responses-api/mind-map.json"
+    "mind_map_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/openai-agents-sdk-mastery/ch01-sdk-responses-api/mind-map.json",
+    "audio_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/openai-agents-sdk-mastery/ch01-sdk-responses-api/audio.mp3",
+    "quiz_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/openai-agents-sdk-mastery/ch01-sdk-responses-api/quiz-easy.json",
+    "quiz_challenge_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/openai-agents-sdk-mastery/ch01-sdk-responses-api/quiz-hard.json",
+    "study_guide_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/openai-agents-sdk-mastery/ch01-sdk-responses-api/study-guide.md",
+    "slide_deck_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/openai-agents-sdk-mastery/ch01-sdk-responses-api/slide-deck.pdf"
   },
   "asset_metadata": {
     "flashcards": {
-      "size_bytes": 2742,
+      "size_bytes": 9719,
       "format": "json"
     },
     "mind_map": {
-      "size_bytes": 3403,
+      "size_bytes": 4254,
       "format": "json"
+    },
+    "audio": {
+      "size_bytes": 37379717,
+      "format": "mp3"
+    },
+    "quiz": {
+      "size_bytes": 12886,
+      "format": "json"
+    },
+    "quiz_challenge": {
+      "size_bytes": 14676,
+      "format": "json"
+    },
+    "study_guide": {
+      "size_bytes": 8631,
+      "format": "md"
+    },
+    "slide_deck": {
+      "size_bytes": 9880651,
+      "format": "pdf"
     }
   },
   "verification": {
