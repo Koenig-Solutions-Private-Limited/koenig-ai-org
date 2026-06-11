@@ -6,6 +6,8 @@ status: awaiting-g0
 last_updated: 2026-06-11
 duration_min: 20
 vendor_tag: Google Search Central
+chapter_primary_query: "how to implement structured data and optimize on-page elements for SEO"
+first_60_words_answer: "Optimize the three most-audited on-page elements — title tags (≤60 characters to prevent Google auto-rewrites), H1 headings (one per page, aligned to your primary keyword), and meta descriptions (≤155 characters framed as a user benefit). Then layer in JSON-LD structured data to qualify for rich results in Google Search."
 description: "Learn to audit and rewrite title tags, implement Article, Product, and BreadcrumbList JSON-LD for the correct page type, validate structured data using Google's Rich Results Test and Schema.org Validator, encode E-E-A-T signals through author markup and publisher schema, and build pillar-spoke internal link structures that distribute PageRank across a topic cluster."
 tags:
   - on-page-seo
@@ -71,7 +73,7 @@ faq:
   - question: "Which JSON-LD type should a travel OTA use for an editorial destination guide versus a bookable hotel page?"
     answer: "Use `@type: Article` (or BlogPosting) for editorial content like destination guides where the primary purpose is information rather than a purchase. Use `@type: Product` with an `Offer` node for transactional pages — this unlocks Product Snippets showing price and availability directly in SERPs. Mixing these types causes incorrect rich-result classification. Source: [Google Search Central — Article structured data](https://developers.google.com/search/docs/appearance/structured-data/article)"
   - question: "How do you validate JSON-LD structured data before deploying to production?"
-    answer: "Run two separate tools sequentially. First, validate syntactic Schema.org compliance using validator.schema.org — this confirms the markup is well-formed against the Schema.org specification. Second, test rich-result eligibility using Google's Rich Results Test at search.google.com/test/rich-results, which applies Google-specific requirements on top of basic schema validity. A schema can pass the Schema.org validator and still be ineligible for rich results. Source: [Google Search Central — structured data](https://developers.google.com/search/docs/appearance/structured-data)"
+    answer: "Run two separate tools sequentially. First, validate syntactic Schema.org compliance using validator.schema.org — this confirms the markup is well-formed against the Schema.org specification. Second, test rich-result eligibility using Google's Rich Results Test at search.google.com/test/rich-results, which applies Google-specific requirements on top of basic schema validity. A schema can pass the Schema.org validator and still be ineligible for rich results. Source: [Google Search Central — structured data](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data)"
 quiz:
   - question: "What is the industry-accepted maximum title tag length for desktop SERPs before truncation commonly occurs, and what is its basis?"
     options:
@@ -142,7 +144,7 @@ JSON-LD is Google's preferred structured-data format — a `<script type="applic
 
 **BreadcrumbList**: Encodes a page's position in the site hierarchy as an ordered list of `ListItem` entries. Requires at minimum two items; the final breadcrumb omits the `item` URL (it represents the current page). Note: BreadcrumbList rich results currently render on **desktop only** — do not expect mobile breadcrumb paths. [Breadcrumb structured data](https://developers.google.com/search/docs/appearance/structured-data/breadcrumb)
 
-<KnowledgeCheck question="A travel OTA publishes a 3,000-word Bali editorial guide and a hotel booking page with live pricing. Which schema types apply to each page?" options={["Article for both — all travel content qualifies as editorial", "Product for both — all travel pages should expose pricing and availability", "Article for the destination guide, Product with Offer for the hotel booking page", "BlogPosting for the guide, Organization for the hotel booking page"]} correctIdx={2} explanation="The destination guide is editorial content → Article (or BlogPosting). The booking page's primary purpose is a transaction → Product with an Offer node exposing price and availability for Product Snippet eligibility." />
+<KnowledgeCheck question="A travel OTA publishes a 3,000-word Bali editorial guide and a hotel booking page with live pricing. Which schema types apply to each page?" options={["Article for both — all travel content qualifies as editorial", "Product for both — all travel pages should expose pricing and availability", "Article for the destination guide, Product with Offer for the booking page", "BlogPosting for the guide, Organization for the hotel booking page"]} correctIdx={2} explanation="The destination guide is editorial content → Article (or BlogPosting). The booking page's primary purpose is a transaction → Product with an Offer node exposing price and availability for Product Snippet eligibility." />
 
 ## Validating Schema: Rich Results Test and Schema.org Validator
 
@@ -172,8 +174,6 @@ Three encodable signals in Article schema:
 
 **3. `publisher.sameAs`.** Links the publishing `Organization` node to a recognized entity: Wikipedia, Wikidata, or the official homepage. Helps Google disambiguate your brand in the Knowledge Graph. This signals Authoritativeness of the publishing organization.
 
-Trust is the most important E-E-A-T dimension per Google — and its weight is highest for YMYL topics (health, finance, safety).
-
 ## Topic-Cluster Internal Linking
 
 The pillar-spoke model is the on-page mechanism by which link equity circulates within a topic cluster.
@@ -198,7 +198,7 @@ Pick one destination guide URL from a site you have GSC access to.
 
 1. **Title audit.** Copy the `<title>` content and count characters. If it exceeds 60, rewrite using the formula `[Keyword] — [Value Prop] | [Brand]`. In GSC → URL Inspection, confirm Google is displaying your title, not a rewrite.
 
-2. **H1 check.** View source or use DevTools. Verify exactly one `<h1>` targets the same primary keyword as the title. Note any heading hierarchy gaps (e.g., H1 → H3 with no H2).
+2. **H1 check.** View source or use DevTools. Verify exactly one `<h1>` targets the same primary keyword as the title.
 
 3. **Meta description review.** Check character count (target ≤155 characters). Rewrite if it reads as a keyword list rather than a user benefit.
 
