@@ -2,7 +2,7 @@
 chapter_num: 5
 course_slug: microsoft-advertising-bing-ads
 title: "Performance Max on Microsoft Advertising: Setup, Asset Groups & AI Optimization"
-status: awaiting-g0
+status: g0-passed
 duration_min: 22
 vendor_tag: Microsoft Advertising
 learning_objectives:
@@ -126,7 +126,7 @@ Adding a Target ROAS or Target CPA before accumulating 30+ conversions forces th
 
 ## Asset Group Architecture for Travel Verticals
 
-The asset group replaces the traditional ad group inside PMax. Each group holds all creative assets — headlines, descriptions, images, logos, final URLs — plus up to 50 search themes and one optional audience group. The AI dynamically assembles ads from these assets for every eligible placement.
+The [[asset-group]] replaces the traditional ad group inside PMax. Each group holds all creative assets — headlines, descriptions, images, logos, final URLs — plus up to 50 search themes and one optional audience group. The AI dynamically assembles ads from these assets for every eligible placement.
 
 For a travel OTA, the right architecture separates groups by product intent. Domestic flight buyers and international package buyers have distinct search signals, respond to different creative, and convert on different landing pages. A "Domestic Flights" group routes to `flyease.com/flights/domestic`, uses search themes like *"book last-minute domestic flight"* and *"compare cheap US flights,"* and shows terminal or airport photography. An "International Packages" group routes to `flyease.com/packages/international`, uses themes like *"Europe vacation packages"* and *"international flight and hotel deals,"* and features destination lifestyle imagery.
 
@@ -156,25 +156,25 @@ Microsoft released three PMax transparency reports in [May 2026](https://about.a
 - **Landing Page report** — shows performance by final URL, revealing whether Final URL Expansion is routing users to off-topic pages instead of the booking form.
 - **Search Term report** — the newest report (rolling out May 2026), shows the actual customer queries that triggered your PMax ads. This is the primary tool for identifying irrelevant query traffic and informing search theme refinements.
 
-To find underperforming placements, filter the Website URL report for placements with sustained spend and ROAS below your target across multiple weeks. Add chronic underperformers to a campaign-level placement exclusion list. The May 2026 transparency guidance explicitly warns against excluding placements during the first two to four weeks — early exclusions interrupt the AI's ability to discover where conversions occur.
+To find underperforming placements, filter the Website URL report for spend and ROAS below your target across multiple weeks. Add underperformers to a campaign-level placement exclusion list. The May 2026 guidance warns against excluding placements during the first two to four weeks — early exclusions interrupt the AI's ability to discover where conversions occur.
 
 ## Search Theme Refinement
 
 Search themes are optimization signals, not keywords. The AI is not required to match them literally — they guide the optimizer toward relevant query territory. Since the [January 2026 update](https://about.ads.microsoft.com/en/blog/post/january-2026/performance-max-updates-and-other-product-news-for-january-2026), each asset group now supports up to 50 search themes, doubled from the previous 25-theme limit.
 
-Use the Search Term report to drive refinement. Export queries with more than 10 impressions and zero conversions, categorize by intent — booking vs. research vs. off-topic — and update your themes to reinforce purchase-intent signals. Don't confuse theme removal with negative keywords: removing a theme does not block a query. For hard exclusions, use negative keywords, now available via self-serve in 2026.
+Use the Search Term report to drive refinement. Export queries with 10+ impressions and zero conversions, group by intent (booking, research, off-topic), and update themes to reinforce purchase signals. Removing a theme does not block a query — for hard exclusions, add self-serve negative keywords (available since 2026).
 
 ## Hands-On Exercise: Launch a Two-Asset-Group PMax Campaign
 
-**Objective:** Build a PMax campaign for a travel OTA with separate domestic and international asset groups, then verify all three transparency reports are accessible.
+**Objective:** Build a two-asset-group PMax campaign for a travel OTA and verify all three transparency reports return data.
 
 **Steps:**
-1. Create a campaign with type **Performance Max**, bid strategy **Maximize Conversions**, and a daily budget sized to sustain consistent weekly conversions without delivery constraints during the learning period.
-2. Build asset group **"AG_DomesticFlights"**: add 5+ headlines, 2+ descriptions, one landscape image (1.91:1, ≥703×368 px), one square image (1:1, ≥300×300 px), and 5-10 booking-intent search themes.
-3. Build asset group **"AG_InternationalPkgs"** with destination-specific creative and themes.
+1. Create a **Performance Max** campaign with **Maximize Conversions** bid strategy and a daily budget sized for consistent weekly conversions during the learning period.
+2. Build **AG_DomesticFlights**: 5+ headlines, 2+ descriptions, landscape image (1.91:1, ≥703×368 px), square (1:1, ≥300×300 px), 5-10 booking-intent themes.
+3. Build **AG_InternationalPkgs** with destination-specific creative and themes.
 4. Do not add Target ROAS or Target CPA. Note the campaign launch date.
-5. After seven days, open **Reports → Performance Max** and confirm all three reports (Website URL, Landing Page, Search Term) return data rows.
+5. After seven days, open **Reports → Performance Max** and verify all three reports return populated rows.
 
-**Success criteria:** Both asset groups show active status, at least 5 conversions are logged in week 1, and all three transparency reports contain populated rows.
+**Success criteria:** Both asset groups active, 5+ conversions in week 1, all three transparency reports populated.
 
-Next up — setting up conversion goals that feed both PMax and your standard Search campaigns with accurate attribution: [[06-conversion-tracking-enhanced]].
+Next up — conversion goals that feed PMax and standard Search campaigns with accurate attribution: [[06-conversion-tracking-enhanced]].
