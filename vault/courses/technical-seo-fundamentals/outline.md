@@ -1,7 +1,8 @@
 ---
 course_slug: technical-seo-fundamentals
 title: "Technical & Advanced SEO: Audits, On-Page, and Link Strategy for Performance Marketers"
-status: outline-g0-passed
+status: g3-passed
+publish_state: g4-approved
 course_track: career
 toc_locked: true
 video_overview: true

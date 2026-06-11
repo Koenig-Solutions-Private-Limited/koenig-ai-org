@@ -1,7 +1,8 @@
 ---
 course_slug: mobile-app-marketing-performance
 title: "App & Mobile Marketing for Performance Marketers: ASO, Attribution & In-App Engagement"
-status: outline-g0-passed
+status: g3-passed
+publish_state: g4-approved
 course_track: career
 toc_locked: true
 video_overview: true

@@ -81,19 +81,19 @@ word_budget: { min: 800, max: 1200 }
 quiz:
   - question: "Which Firebase/GA4 event must be imported into Google Ads as a conversion action before a Google App Campaign for installs can attribute installs correctly?"
     options:
-      - "session_start, because it fires for every new session after install"
+      - "session_start, because it fires at the start of every new user session after app install"
       - "first_open, because it fires the first time a user opens the app after installation"
       - "app_install, a custom event you define in GA4 Admin to signal the install"
-      - "user_engagement, because it confirms the user interacted with the app"
+      - "user_engagement, because it fires when the user has interacted meaningfully with the app"
     correct_idx: 1
     explanation: "Google App Campaigns require the `first_open` event — auto-collected by the Firebase SDK on the first app launch after installation — as the install attribution conversion signal. It must be marked as a key event in GA4, linked to Google Ads, with auto-tagging enabled."
     section_anchor: linking-firebasega4-for-install-attribution
   - question: "After checking AppsFlyer's SKAN postbacks filtered by Meta, you see a postback with a valid attribution-signature and a decoded conversion value. What does this confirm?"
     options:
-      - "The iOS user consented to ATT tracking and full user-level data is available"
+      - "The iOS user consented to ATT tracking and full user-level IDFA data is now available for attribution"
       - "The install occurred on a real device, Apple verified the Meta network ID, and the conversion value was not manipulated"
-      - "The campaign's tCPA bid is correctly calibrated against the target purchase event"
-      - "Meta's Advanced Mobile Measurement (AMM) reporting is enabled for this campaign"
+      - "The campaign's tCPA bid is correctly calibrated and the SKAN conversion window aligns with the target event"
+      - "Meta's Aggregated Event Measurement configuration is correctly set up and reporting iOS install conversion data"
     correct_idx: 1
     explanation: "A validated SKAN postback in AppsFlyer confirms three things: the install was on a real device, Apple recognized the Meta ad network ID, and the conversion value wasn't tampered with. SKAN is aggregated by design — it does not restore user-level data regardless of ATT consent."
     section_anchor: meta-app-ads-campaign-structure-and-skadnetwork
@@ -111,7 +111,7 @@ quiz:
       - "The creative is weak — users are not clicking on the ad at sufficient rate"
       - "The audience is correct and the creative works, but post-install onboarding or paywall friction is losing users"
       - "The CPM is too high, causing the algorithm to deliver to a narrow low-quality audience"
-      - "SKAdNetwork postbacks are not being received correctly by AppsFlyer"
+      - "SKAdNetwork postbacks for this campaign are not arriving or decoding correctly in AppsFlyer"
     correct_idx: 1
     explanation: "High CTR means the creative is engaging the right users. Low ITR means users are installing but not converting inside the app. The funnel break is post-install — onboarding friction, paywall design, or creative-audience mismatch where clicks do not match purchase intent."
     section_anchor: campaign-diagnosis-using-the-install-to-event-funnel
@@ -119,7 +119,7 @@ quiz:
     options:
       - "AEO bills on CPC rather than CPM, making it more cost-efficient at small budgets"
       - "AEO changes delivery to target users predicted to complete a specific in-app event rather than users predicted to install"
-      - "AEO disables SKAdNetwork and switches to direct IDFA-based attribution for iOS"
+      - "AEO disables SKAdNetwork entirely and switches to direct IDFA-based user-level attribution for iOS campaigns"
       - "AEO is available only on Android because Apple's ATT blocks purchase signal for iOS delivery"
     correct_idx: 1
     explanation: "AEO changes Meta's delivery algorithm from 'find users likely to install' to 'find users likely to perform the specified in-app event (e.g., purchase).' Both objectives bill on CPM. AEO requires the target event to be mapped in Meta Events Manager and listed in the SKAN event priority configuration for iOS."
@@ -128,7 +128,7 @@ quiz:
 
 ## Google App Campaign Structure and Asset Groups
 
-Google App Campaigns for Installs (ACi) require creative ingredients rather than manually built ads. Supply up to 20 assets per type: headlines (30 chars each), descriptions (90 chars each), images in landscape (1.91:1) and square (1:1) format, HTML5 bundles, and video. Google's machine learning assembles combinations and serves them across Search, Play, YouTube, Display, Discover, and Gmail. ([About App campaigns - Google Ads Help](https://support.google.com/google-ads/answer/6247380))
+Google App Campaigns for Installs (ACi) take creative ingredients, not manually assembled ads. Supply up to 20 assets per type: headlines (30 chars), descriptions (90 chars), landscape images (1.91:1) and square (1:1), HTML5 bundles, and video. Google's ML assembles combinations across Search, Play, YouTube, Display, Discover, and Gmail. ([About App campaigns - Google Ads Help](https://support.google.com/google-ads/answer/6247380))
 
 Within the campaign, an **asset group** holds all creative elements plus audience signals. The dashboard rates each asset in a rolling 14-day window as **Learning** (insufficient data), **Low**, **Good**, or **Best** — relative to other assets of the same type in the same campaign. "Low" means the asset consistently loses internal comparisons; replace it rather than wait for it to recover. ([About asset reporting for App campaigns - Google Ads Help](https://support.google.com/google-ads/answer/6310436))
 
@@ -145,9 +145,9 @@ Google App Campaigns require a specific conversion signal: the `first_open` even
 
 ## Google App Campaign Bidding: tCPI vs tCPA
 
-**tCPI (Target Cost Per Install)** instructs Google to acquire installs at approximately your set average cost. Use tCPI when building install volume from scratch. The daily budget must be **≥50× the tCPI bid** — at a $4 tCPI, the minimum daily budget is $200. For iOS, set bids 1.5× higher than Android to compensate for ATT consent losses in the attribution signal.
+**tCPI (Target Cost Per Install)** targets a set average cost per install. Use tCPI when building install volume from scratch. The daily budget must be **≥50× the tCPI bid** — at a $4 tCPI, the minimum daily budget is $200. For iOS, set bids 1.5× higher than Android to account for ATT consent losses.
 
-**Graduate to tCPA (Target Cost Per Action)** — targeting a post-install event like `hotel_booking_completed` — when the campaign has accumulated **>100 post-install conversion events**. Set the opening tCPA bid at 20% above the observed actual CPA from the tCPI phase. Budget minimum shifts to ≥10× the tCPA bid. Never target more than one in-app action per tCPA campaign: Google's guidance is explicit that combining events produces a blended target that under-delivers on high-value conversions. ([Choose a bid strategy for your App campaign - Google Ads Help](https://support.google.com/google-ads/answer/12073727))
+**Graduate to tCPA (Target Cost Per Action)** — targeting a post-install event like `hotel_booking_completed` — when the campaign has accumulated **>100 post-install conversion events**. Set the opening tCPA bid at 20% above the observed actual CPA from the tCPI phase. Budget minimum shifts to ≥10× the tCPA bid. Never target more than one in-app action per tCPA campaign — combining events creates a blended target that under-delivers on high-value conversions. ([Choose a bid strategy for your App campaign - Google Ads Help](https://support.google.com/google-ads/answer/12073727))
 
 <Callout type="warning">
 Switching from tCPI to tCPA before 100 post-install conversions resets the learning phase and causes erratic delivery — typically doubling effective CPI for two to three weeks. Hold tCPI until the install volume supports the transition. ([Best practices for App campaigns - Google Ads Help](https://support.google.com/google-ads/answer/14104492))
@@ -155,25 +155,25 @@ Switching from tCPI to tCPA before 100 post-install conversions resets the learn
 
 ## Meta App Ads Campaign Structure and SKAdNetwork
 
-Meta App Ads follow a three-level hierarchy: **Campaign** (objective: App Installs) → **Ad Set** (audience, budget, optimization goal) → **Ad** (creative assets). Both standard installs and AEO campaigns bill on CPM.
+Meta App Ads use a three-tier structure: **Campaign** (App Installs) → **Ad Set** (audience, budget, optimization) → **Ad** (creative). Installs and AEO both bill on CPM.
 
-For iOS, Apple's **SKAdNetwork (SKAN)** is the privacy-preserving attribution mechanism. SKAN limits conversion data to 8 prioritized events from a maximum of 63 per app. Before running any iOS App Ads campaign, configure SKAN event priority in **Meta Events Manager → App → iOS App Settings → Aggregated Event Measurement**: set your AEO target event (e.g., `fb_mobile_purchase`) as priority 1. ([Configure SKAdNetwork in Meta Events Manager - Meta Business Help](https://www.facebook.com/business/help/670955636925518))
+For iOS, **SKAdNetwork (SKAN)** is the privacy-preserving attribution layer, limiting reportable data to 8 of 63 possible per-app events. Before launch, set SKAN priority in **Meta Events Manager → App → iOS App Settings → Aggregated Event Measurement**: place your AEO target event (e.g., `fb_mobile_purchase`) as priority 1. ([Configure SKAdNetwork in Meta Events Manager - Meta Business Help](https://www.facebook.com/business/help/670955636925518))
 
-Verify SKAN is working in **AppsFlyer: Reports → SKAN → Postbacks**, filtered by Meta. A postback with a valid `attribution-signature` and decoded conversion value (CV) confirms three things: the install occurred on a real device, Apple recognized Meta's network ID, and the CV was not manipulated in transit. ([SKAdNetwork (SKAN) interoperation with Meta ads - AppsFlyer Help Center](https://support.appsflyer.com/hc/en-us/articles/360017095198-SKAdNetwork-SKAN-interoperation-with-Meta-ads))
+Verify in **AppsFlyer** ([[03-mobile-attribution-appsflyer-branch]]): Reports → SKAN → Postbacks, filtered by Meta. A valid postback with a decoded CV confirms the install was on a real device, Apple recognized Meta's network ID, and the CV was not tampered with. ([SKAdNetwork (SKAN) interoperation with Meta ads - AppsFlyer Help Center](https://support.appsflyer.com/hc/en-us/articles/360017095198-SKAdNetwork-SKAN-interoperation-with-Meta-ads))
 
 <KnowledgeCheck question="You're launching a Meta iOS App Ads campaign. Why must you configure the SKAN event priority list in Meta Events Manager before launch?" options={["SKAN blocks all ad delivery until the priority list is submitted to Apple", "SKAN limits iOS to 8 reportable events — if your AEO target event is not prioritized, Meta cannot report or optimize on it", "The priority list sets the iOS bid floor for each conversion event", "Without a priority list, AppsFlyer cannot receive any iOS postbacks from Meta"]} correctIdx={1} explanation="SKAN restricts an app to 8 usable conversion events from 63 possible. If the AEO target event isn't in that priority list before campaign launch, Meta's algorithm has no signal to optimize delivery against for iOS users." />
 
 ## App Event Optimization (AEO): Going Beyond Installs
 
-AEO changes Meta's delivery algorithm from finding users likely to install to finding users predicted to complete a specific in-app event — `fb_mobile_purchase`, `fb_mobile_initiated_checkout`, Subscribe, and others. Configure AEO at the **ad set level**: Optimization & Delivery → Optimization Goal → App Events → select target event.
+AEO shifts delivery from targeting users likely to install to users predicted to complete a specific in-app event — purchase, initiated checkout, subscribe, and others. Configure at the **ad set level**: Optimization & Delivery → App Events → select target event.
 
 Ensure the event is mapped in Meta Events Manager before launching. Without a standard event mapping, the delivery algorithm has no training signal. ([About app event optimisation - Meta Business Help Centre](https://en-gb.facebook.com/business/help/2308889442692949))
 
 ## Re-engagement Campaigns and Deferred Deep Links
 
-To retarget lapsed users on Google, use **App Campaign for Engagement (ACe)** — which requires ≥50,000 installs and working deep links. Select the "Re-engage non-purchasers" or "Re-engage lapsed users" (inactive 7+ days) objective. Add a **deferred deep link** via the GA4 Firebase SDK pointing to a specific in-app screen (e.g., `/search?type=hotels&promo=welcome_back`) — this queues the destination before first open so returning users land directly on the relevant flow. ([About deferred deep linking - Google Ads Help](https://support.google.com/google-ads/answer/16420273))
+To retarget lapsed users on Google, use **App Campaign for Engagement (ACe)** — requiring ≥50,000 installs and working deep links. Select the "Re-engage non-purchasers" or "Re-engage lapsed users" (inactive 7+ days) objective. Add a **deferred deep link** via the Firebase SDK (e.g., `/hotels?promo=welcome_back`) to queue the destination before first open, routing returning users to the relevant screen. ([About deferred deep linking - Google Ads Help](https://support.google.com/google-ads/answer/16420273))
 
-Build the lapsed-user audience in **AppsFlyer Cohort Report**: filter by `install_date`, target event completions = 0, activity window = last 180 days. Export as a Customer Match list for Google Ads. Set AppsFlyer's **retargeting inactivity window** to 7 days to automatically exclude recently active users. ([Retargeting attribution guide - AppsFlyer Help Center](https://support.appsflyer.com/hc/en-us/articles/207033786-Retargeting-attribution-guide))
+Build the lapsed-user audience in **AppsFlyer Cohort Report**: filter by `install_date`, target event completions = 0, activity window = last 180 days. Export as a Customer Match list for Google Ads. Set AppsFlyer's **retargeting inactivity window** to 7 days to exclude recently active users; push notification re-engagement is in [[04-push-notifications-in-app-messaging]]. ([Retargeting attribution guide - AppsFlyer Help Center](https://support.appsflyer.com/hc/en-us/articles/207033786-Retargeting-attribution-guide))
 
 ## Campaign Diagnosis Using the Install-to-Event Funnel
 
@@ -190,7 +190,7 @@ When performance drops, trace the four-stage funnel using MMP data:
 2. If CTR is high but ITR is low, narrow the creative message to match the conversion goal: "Save 30% on your next hotel booking" targets purchase intent; "Book Hotels Anywhere" does not.
 
 **Two audience adjustment tactics:**
-1. In Meta, replace broad interest targeting with a lookalike audience built from users who completed `fb_mobile_purchase` in the past 90 days (not all-time installers — a tighter seed improves ITR).
+1. In Meta, replace broad interest targeting with a lookalike built from past-90-day `fb_mobile_purchase` completers — not all-time installers — for tighter ITR gains. Firebase audience setup is in [[05-mobile-analytics-ga4-gtm]].
 2. In the AppsFlyer cohort report, identify media sources where Day-7 ITR is below 2% and add them to exclusion lists in both Google and Meta.
 
 ---
