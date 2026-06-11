@@ -24,8 +24,8 @@ sources:
   - https://stevekinney.com/courses/ai-development/cursor-background-agents
   - https://www.digitalapplied.com/blog/cursor-3-agents-window-complete-guide
   - https://cursor.com/docs/configuration/worktrees
+  - https://cursor.com/changelog/04-02-26
   - https://www.deployhq.com/guides/cursor
-  - https://forum.cursor.com/t/cursor-2-5-async-subagents/152125
 tags:
   - cursor
   - multitask
@@ -51,7 +51,7 @@ positions:
 
 `/multitask` tells Cursor to break your request into independent chunks and hand each chunk to an async subagent running in its own worktree branch — instead of queuing tasks one after another. The result is a fleet of background workers tackling separate parts of a large project simultaneously, each reporting back to the parent agent that assembled the final work plan.
 
-Introduced in Cursor 3.2 (April 24, 2026) [1], `/multitask` is the systematic version of the parallel-agent pattern you first encountered in [[cursor-composer-2/04-background-agents]]'s Agents Window — except now the coordination happens automatically. You describe the work at a high level; the parent agent handles decomposition, branch naming, and progress tracking.
+Introduced in Cursor 3.2 (April 24, 2026) [1], `/multitask` is the systematic version of the parallel-agent pattern you first encountered in [[cursor-composer-2/04-background-agents]]'s Agents Window — a hub for running many agents in parallel across local, worktree, cloud, and remote SSH environments (Cursor 3.0, April 2, 2026 [5]) — except now the coordination happens automatically. You describe the work at a high level; the parent agent handles decomposition, branch naming, and progress tracking.
 
 ---
 
@@ -77,7 +77,7 @@ Every `/multitask` run has a two-level structure:
 - **Parent agent** — reads your prompt, decomposes it into N independent chunks, creates one subagent per chunk, monitors progress via `workflow_state.md`
 - **Subagents** — each owns exactly one chunk, executes in its own worktree branch, writes results without cross-subagent awareness
 
-The parent never merges output directly — that is your job. When all subagents signal done, you review each branch diff in the Agents Window and decide which to accept, discard, or merge. [2]
+The parent never merges output directly — that is your job. When all subagents signal done, you review each branch diff in the Agents Window and decide which to accept, discard, or merge. Cursor supports running multiple background agents in parallel on independent tasks simultaneously, which is what makes this two-level structure practical at scale. [2][6]
 
 This builds directly on the Background Agents architecture from Chapter 4: each subagent is isolated in a worktree exactly as a manually-launched Background Agent is. The `/multitask` innovation is the automated parent layer that eliminates manual task-splitting and branch-setup overhead.
 
@@ -115,7 +115,7 @@ The quality of a `/multitask` run depends on how cleanly the work divides. The t
 
 ## 5.4 workflow_state.md Coordination
 
-When a `/multitask` run is active, the parent agent writes a `workflow_state.md` file that acts as the coordination contract between parent and subagents. It typically tracks: [2] [5]
+When a `/multitask` run is active, the parent agent writes a `workflow_state.md` file that acts as the coordination contract between parent and subagents. It typically tracks: [2]
 
 - A task checklist with current status for each subagent (`pending` | `in-progress` | `done` | `blocked`)
 - The branch name each subagent is working on
@@ -144,7 +144,7 @@ Cursor automates some of this. The machine-level setting `cursor.worktreeCleanup
 
 ## 5.6 Budget and Credit Awareness
 
-Running N subagents in parallel costs roughly N× the credit consumption of a single agent run. Community data from the Background Agents preview puts a typical PR-scoped task in the $4–6 range of usage-based credits. [2] [6] Scale linearly: a ten-subagent refactor session can cost $40–60 before you see a single diff.
+Running N subagents in parallel costs roughly N× the credit consumption of a single agent run. Community data from the Background Agents preview puts a typical PR-scoped task in the $4–6 range of usage-based credits, based on Steve Kinney's course notes. [2] Scale linearly: a ten-subagent refactor session can cost $40–60 before you see a single diff.
 
 Practical guardrails before launching a large fleet:
 - Pilot with 2–3 subagents on a small representative task to establish a per-subagent cost baseline
@@ -214,6 +214,7 @@ The next chapter extends this toolkit to the review side: once a fleet of subage
 
 [4] Cursor Docs, "Worktrees Configuration" — https://cursor.com/docs/configuration/worktrees
 
-[5] DeployHQ. "Cursor 2026: Composer, Agent Mode, MCP & Background Agent." deployhq.com/guides/cursor. Retrieved 2026-06-11.
+[5] Cursor 3.0 Changelog, April 2, 2026 — https://cursor.com/changelog/04-02-26
 
-[6] Cursor Community Forum. "Cursor 2.5 Async Subagents." forum.cursor.com/t/cursor-2-5-async-subagents/152125. Retrieved 2026-06-11.
+[6] DeployHQ, "Cursor 2026: Composer, Agent Mode, MCP & Background Agent" — https://www.deployhq.com/guides/cursor
+
