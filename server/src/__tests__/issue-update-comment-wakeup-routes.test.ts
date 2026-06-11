@@ -10,6 +10,7 @@ const mockIssueService = vi.hoisted(() => ({
   addComment: vi.fn(),
   findMentionedAgents: vi.fn(),
   getRelationSummaries: vi.fn(),
+  getDependencyReadiness: vi.fn(),
   listWakeableBlockedDependents: vi.fn(),
   getWakeableParentAfterChildCompletion: vi.fn(),
 }));
@@ -195,6 +196,7 @@ describe("issue update comment wakeups", () => {
     vi.clearAllMocks();
     mockIssueService.findMentionedAgents.mockResolvedValue([]);
     mockIssueService.getRelationSummaries.mockResolvedValue({ blockedBy: [], blocks: [] });
+    mockIssueService.getDependencyReadiness.mockResolvedValue({ unresolvedBlockerCount: 0 });
     mockIssueService.listWakeableBlockedDependents.mockResolvedValue([]);
     mockIssueService.getWakeableParentAfterChildCompletion.mockResolvedValue(null);
   });
@@ -289,5 +291,167 @@ describe("issue update comment wakeups", () => {
         }),
       }),
     );
+  });
+});
+
+describe("gate-review verdict write guards", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    vi.doUnmock("../routes/issues.js");
+    vi.doUnmock("../routes/authz.js");
+    vi.doUnmock("../middleware/index.js");
+    registerModuleMocks();
+    vi.clearAllMocks();
+    mockIssueService.findMentionedAgents.mockResolvedValue([]);
+    mockIssueService.getRelationSummaries.mockResolvedValue({ blockedBy: [], blocks: [] });
+    mockIssueService.getDependencyReadiness.mockResolvedValue({ unresolvedBlockerCount: 0 });
+    mockIssueService.listWakeableBlockedDependents.mockResolvedValue([]);
+    mockIssueService.getWakeableParentAfterChildCompletion.mockResolvedValue(null);
+  });
+
+  it("rejects PATCH PASS verdict without status done", async () => {
+    const existing = makeIssue({ status: "in_review" });
+    mockIssueService.getById.mockResolvedValue(existing);
+
+    const res = await request(await createApp())
+      .patch(`/api/issues/${existing.id}`)
+      .send({ comment: "G2 PASS" });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toMatchObject({
+      code: "gate_verdict_requires_status_flip",
+    });
+    expect(mockIssueService.update).not.toHaveBeenCalled();
+    expect(mockIssueService.addComment).not.toHaveBeenCalled();
+  });
+
+  it("accepts PATCH PASS verdict when status flips to done", async () => {
+    const existing = makeIssue({ status: "in_review" });
+    const updated = makeIssue({ status: "done" });
+    mockIssueService.getById.mockResolvedValue(existing);
+    mockIssueService.update.mockResolvedValue(updated);
+    mockIssueService.addComment.mockResolvedValue({
+      id: "comment-pass",
+      issueId: existing.id,
+      companyId: existing.companyId,
+      body: "G2 PASS",
+    });
+
+    const res = await request(await createApp())
+      .patch(`/api/issues/${existing.id}`)
+      .send({
+        status: "done",
+        comment: "G2 PASS",
+      });
+
+    expect(res.status).toBe(200);
+    expect(mockIssueService.update).toHaveBeenCalled();
+  });
+
+  it("rejects PATCH metadata APPROVE verdict without status done", async () => {
+    const existing = makeIssue({ status: "in_review" });
+    mockIssueService.getById.mockResolvedValue(existing);
+
+    const res = await request(await createApp())
+      .patch(`/api/issues/${existing.id}`)
+      .send({
+        metadata: { g2: { verdict: "APPROVE" } },
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toMatchObject({
+      code: "gate_verdict_requires_status_flip",
+    });
+    expect(mockIssueService.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects PATCH BLOCK orphan without assignee or blockers", async () => {
+    const existing = makeIssue({ status: "in_review", assigneeAgentId: null, assigneeUserId: null });
+    mockIssueService.getById.mockResolvedValue(existing);
+    mockIssueService.getRelationSummaries.mockResolvedValue({ blockedBy: [], blocks: [] });
+
+    const res = await request(await createApp())
+      .patch(`/api/issues/${existing.id}`)
+      .send({
+        comment: "G0 BLOCK",
+        status: "blocked",
+        assigneeAgentId: null,
+        assigneeUserId: null,
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toMatchObject({
+      code: "gate_block_requires_owner_handoff",
+    });
+    expect(mockIssueService.update).not.toHaveBeenCalled();
+  });
+
+  it("accepts PATCH BLOCK when existing blockers are retained", async () => {
+    const blockerId = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+    const existing = makeIssue({ status: "in_review", assigneeAgentId: null, assigneeUserId: null });
+    const updated = makeIssue({ status: "blocked", assigneeAgentId: null, assigneeUserId: null });
+    mockIssueService.getById.mockResolvedValue(existing);
+    mockIssueService.getRelationSummaries.mockResolvedValue({
+      blockedBy: [{ id: blockerId, identifier: "PAP-1", title: "Blocker" }],
+      blocks: [],
+    });
+    mockIssueService.update.mockResolvedValue(updated);
+    mockIssueService.addComment.mockResolvedValue({
+      id: "comment-block",
+      issueId: existing.id,
+      companyId: existing.companyId,
+      body: "G0 BLOCK",
+    });
+
+    const res = await request(await createApp())
+      .patch(`/api/issues/${existing.id}`)
+      .send({
+        comment: "G0 BLOCK",
+        status: "blocked",
+        assigneeAgentId: null,
+        assigneeUserId: null,
+      });
+
+    expect(res.status).toBe(200);
+    expect(mockIssueService.update).toHaveBeenCalled();
+  });
+
+  it("rejects POST PASS verdict without reopen side effects", async () => {
+    const existing = makeIssue({ status: "blocked", assigneeAgentId: null, assigneeUserId: null });
+    mockIssueService.getById.mockResolvedValue(existing);
+
+    const res = await request(await createApp())
+      .post(`/api/issues/${existing.id}/comments`)
+      .send({ body: "G_code PASS", reopen: true });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toMatchObject({
+      code: "gate_verdict_requires_status_flip",
+    });
+    expect(mockIssueService.update).not.toHaveBeenCalled();
+    expect(mockIssueService.addComment).not.toHaveBeenCalled();
+  });
+
+  it("allows non-gate comments through unchanged", async () => {
+    const existing = makeIssue({
+      assigneeAgentId: ASSIGNEE_AGENT_ID,
+      assigneeUserId: null,
+      status: "in_progress",
+    });
+    mockIssueService.getById.mockResolvedValue(existing);
+    mockIssueService.addComment.mockResolvedValue({
+      id: "comment-plain",
+      issueId: existing.id,
+      companyId: existing.companyId,
+      body: "Looks good overall, please revise section two.",
+    });
+
+    const res = await request(await createApp())
+      .post(`/api/issues/${existing.id}/comments`)
+      .send({ body: "Looks good overall, please revise section two." });
+
+    expect(res.status).toBe(201);
+    expect(mockIssueService.addComment).toHaveBeenCalled();
+    expect(mockIssueService.update).not.toHaveBeenCalled();
   });
 });
