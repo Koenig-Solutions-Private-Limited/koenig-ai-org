@@ -12,7 +12,7 @@ learning_objectives:
   - "Evaluate the credit, connectivity, and scope limitations of Background Agents and design tasks that stay within those constraints"
 faq:
   - question: "Do Background Agents require Cursor to be open on my machine?"
-    answer: "It depends on the mode. In-IDE Background Agents (running in the Agents Window) require the Cursor application to be running on your machine. Cloud Background Agents run in a sandboxed Ubuntu VM on Cursor's AWS infrastructure and can produce PRs while your laptop is closed — you trigger them by tagging @cursor on a GitHub issue or a Slack message (source: deployhq.com/guides/cursor, retrieved 2026-06-11)."
+    answer: "It depends on the mode. In-IDE Background Agents (running in the Agents Window) require the Cursor application to be running on your machine. Cloud Background Agents run in a sandboxed Ubuntu VM on Cursor's cloud infrastructure and can produce PRs while your laptop is closed — you trigger them by tagging @cursor on a GitHub issue or a Slack message (source: deployhq.com/guides/cursor, retrieved 2026-06-11)."
   - question: "What is the difference between Background Agents and Composer Agent Mode?"
     answer: "Composer Agent Mode is synchronous — it presents diffs after each step and waits for your review before continuing. Background Agents are asynchronous — they run independently in a background thread or cloud VM, complete the full task, and return a diff or pull request when done. Background Agents trade real-time review granularity for uninterrupted developer flow (source: stevekinney.com/courses/ai-development/cursor-background-agents, retrieved 2026-06-11)."
   - question: "Can I use Background Agents in CI/CD pipelines as a replacement for Codex CLI or Claude Code?"
@@ -27,7 +27,6 @@ sources:
   - https://cursor.com/changelog/04-24-26
   - https://cursor.com/docs/configuration/worktrees
   - https://forum.cursor.com/t/cursor-2-5-async-subagents/152125
-  - https://cursor.com/blog/self-hosted-cloud-agents
   - https://cursor.com/security
 tags:
   - cursor
@@ -79,13 +78,13 @@ The Cursor 3.2 changelog (April 24, 2026) added `/multitask`, which lets the Age
 
 ### Mode 2: Cloud Background Agents
 
-Cloud Background Agents run in an isolated virtual machine on Cursor's AWS infrastructure, with a clean filesystem, scoped network access, and its own ephemeral checkout of your repository. [7] They were introduced in 2025 and received a major expansion on February 24, 2026: each Cloud Background Agent gained a full graphical development environment, a real browser, and the ability to interact with UI elements and record video demos of completed work. [4]
+Cloud Background Agents run in an isolated virtual machine on Cursor's cloud infrastructure, with a clean filesystem, scoped network access, and its own ephemeral checkout of your repository. [6] They were introduced in 2025 and received a major expansion on February 24, 2026: each Cloud Background Agent gained a full graphical development environment, a real browser, and the ability to interact with UI elements and record video demos of completed work. [3]
 
 You trigger Cloud Background Agents by:
 - Tagging `@cursor` on a GitHub issue
 - Sending a `@Cursor` message in a connected Slack channel
 
-The agent reads the issue or message, clones your repo, works the task, and opens a pull request — without your laptop needing to be open. [5]
+The agent reads the issue or message, clones your repo, works the task, and opens a pull request — without your laptop needing to be open. [4]
 
 **Key constraint:** These agents are tied to Cursor's platform and triggered through Cursor's own interfaces. They cannot be invoked from a generic CI runner or wired into an arbitrary pipeline script.
 
@@ -93,7 +92,7 @@ The agent reads the issue or message, clones your repo, works the task, and open
 
 | | In-IDE (Agents Window) | Cloud Background Agent |
 |---|---|---|
-| Where it runs | Cursor process on your machine | AWS Ubuntu VM |
+| Where it runs | Cursor process on your machine | Cloud Ubuntu VM |
 | IDE required? | Yes — Cursor must be open | No — laptop can be closed |
 | Triggered by | Agents Window UI, `/multitask` | GitHub `@cursor` tag, Slack |
 | Output | Diff in IDE | Pull request on GitHub |
@@ -106,7 +105,7 @@ The agent reads the issue or message, clones your repo, works the task, and open
 
 ### Subscription requirement
 
-Both Background Agent modes require a **Cursor Pro** subscription or above. Verify current tier limits at cursor.com/pricing — the feature is actively evolving and tier thresholds shift between releases. [4]
+Both Background Agent modes require a **Cursor Pro** subscription or above. Verify current tier limits at cursor.com/pricing — the feature is actively evolving and tier thresholds shift between releases. [3]
 
 ### environment.json — configuring the Cloud agent environment
 
@@ -122,7 +121,7 @@ The Cloud Background Agent reads `.cursor/environment.json` at your repository r
 }
 ```
 
-The agent executes every command in the `setup` array in order before tackling the actual task, so it has a working build environment from the start. For complex initialization, you can reference a `setup.sh` script instead of inlining commands. [5]
+The agent executes every command in the `setup` array in order before tackling the actual task, so it has a working build environment from the start. For complex initialization, you can reference a `setup.sh` script instead of inlining commands. [4]
 
 <RunPromptCell
   title="Draft your environment.json for a Next.js + Prisma project"
@@ -142,7 +141,7 @@ Produce the minimal environment.json that will let a Cloud Background Agent reac
 
 ### worktrees.json — configuring in-IDE parallel agents
 
-For in-IDE agents in the Agents Window, isolation is provided by git worktrees. Cursor creates a separate worktree (and branch) per agent to prevent file-level conflicts. Configure per-worktree setup in `.cursor/worktrees.json`: [6]
+For in-IDE agents in the Agents Window, isolation is provided by git worktrees. Cursor creates a separate worktree (and branch) per agent to prevent file-level conflicts. Configure per-worktree setup in `.cursor/worktrees.json`: [5]
 
 ```json
 {
@@ -153,7 +152,7 @@ For in-IDE agents in the Agents Window, isolation is provided by git worktrees. 
 }
 ```
 
-The `$ROOT_WORKTREE_PATH` variable resolves to the main project root, letting you copy non-tracked assets (`.env.local`, generated configs) into each isolated branch without hardcoding absolute paths. Steve Kinney's 2026 guide recommends maintaining a `workflow_state.md` file in the project root that agents read for task-coordination context during parallel runs. [5]
+The `$ROOT_WORKTREE_PATH` variable resolves to the main project root, letting you copy non-tracked assets (`.env.local`, generated configs) into each isolated branch without hardcoding absolute paths. Steve Kinney's 2026 guide recommends maintaining a `workflow_state.md` file in the project root that agents read for task-coordination context during parallel runs. [4]
 
 > <Callout type="info">
 > For a deeper look at MCP connectors that Background Agents can use to interact with external services (databases, APIs, issue trackers), see the Academy course [[mcp-from-first-principles-to-production|MCP from First Principles to Production]]. Cloud Background Agents support MCP-enabled tool use within their Ubuntu VM environment.
@@ -180,7 +179,7 @@ The `$ROOT_WORKTREE_PATH` variable resolves to the main project root, letting yo
 
 ## 4.3 Where Background Agents Shine
 
-Background Agents, in both modes, are designed for tasks you do not want to babysit. The pattern: hand off, keep working, review when done. [5]
+Background Agents, in both modes, are designed for tasks you do not want to babysit. The pattern: hand off, keep working, review when done. [4]
 
 ### High-value use cases
 
@@ -188,9 +187,9 @@ Background Agents, in both modes, are designed for tasks you do not want to baby
 
 **Large-scale refactoring.** Renames, interface migrations, and file-structure changes spanning dozens of files are strong candidates. In the Agents Window with worktrees, the agent works on an isolated branch, so half-finished refactors never land on your active development branch mid-flight.
 
-**Debugging with browser verification.** As of February 2026, Cloud Background Agents have a full browser and can spin up a dev server to verify visual correctness. [4] An agent can write a fix, start the server, navigate to the affected page, and screenshot the result — all before it opens the PR for your review.
+**Debugging with browser verification.** As of February 2026, Cloud Background Agents have a full browser and can spin up a dev server to verify visual correctness. [3] An agent can write a fix, start the server, navigate to the affected page, and screenshot the result — all before it opens the PR for your review.
 
-**GitHub issue → pull request.** The Cloud Background Agent's most high-leverage use case: tag `@cursor` on a well-described GitHub issue and the agent reads it, writes the fix, and opens a PR. This works best for scoped, well-documented bugs — a Sentry trace plus a clear reproduction case gives the agent the signal it needs without interactive clarification. [5]
+**GitHub issue → pull request.** The Cloud Background Agent's most high-leverage use case: tag `@cursor` on a well-described GitHub issue and the agent reads it, writes the fix, and opens a PR. This works best for scoped, well-documented bugs — a Sentry trace plus a clear reproduction case gives the agent the signal it needs without interactive clarification. [4]
 
 For deeper patterns on building agents that use tools effectively, the Academy course [[claude-tool-use-from-zero|Claude Tool Use from Zero]] covers tool-calling architecture that maps directly to how Background Agents reason about multi-step tasks.
 
@@ -212,11 +211,11 @@ Background Agents are not a replacement for headless CLI tools in CI pipelines. 
 
 **1. IDE dependency for in-IDE agents.** In-IDE Background Agents require the Cursor application to be running. They are an IDE productivity feature, not a scheduling system. [1]
 
-**2. Platform lock-in for Cloud agents.** Cloud Background Agents run on Cursor's AWS infrastructure and are triggered through Cursor's native interfaces (GitHub `@cursor`, Slack). You cannot invoke them from a GitHub Actions step, a cron job, or any other external pipeline orchestrator. [4]
+**2. Platform lock-in for Cloud agents.** Cloud Background Agents run on Cursor's cloud infrastructure and are triggered through Cursor's native interfaces (GitHub `@cursor`, Slack). You cannot invoke them from a GitHub Actions step, a cron job, or any other external pipeline orchestrator. [3]
 
-**3. Credit and compute cost.** Both modes consume Cursor's compute credits. Long-running agents on complex tasks accumulate significant spend. The Cursor dashboard shows agent run history and credit consumption — check it when running frequent background tasks against large codebases. [4]
+**3. Credit and compute cost.** Both modes consume Cursor's compute credits. Long-running agents on complex tasks accumulate significant spend. The Cursor dashboard shows agent run history and credit consumption — check it when running frequent background tasks against large codebases. [3]
 
-**4. Internet required.** Background Agents and Cloud Agents communicate with Anysphere's cloud infrastructure. Corporate proxies and firewalls may require whitelisting of Cursor's backend domains — check `cursor.com/security` for the current allowlist. [8]
+**4. Internet required.** Background Agents and Cloud Agents communicate with Anysphere's cloud infrastructure. Corporate proxies and firewalls may require whitelisting of Cursor's backend domains — check `cursor.com/security` for the current allowlist. [7]
 
 **5. No general unattended scheduling.** You cannot schedule a Background Agent to run at 2am without someone creating the trigger (a GitHub issue, a Slack message, or an open Agents Window session). For time-triggered automation, the routing from [[cursor-composer-2/03-cursor-cli-headless|Chapter 3]] still applies: use Codex CLI or Claude Code.
 
@@ -321,7 +320,7 @@ The updated rule: **Background Agents extend the IDE path for long or parallel a
 
 ```
 :::quick-takeaways
-- Background Agents come in two modes: in-IDE (Agents Window, requires Cursor open) and Cloud (AWS Ubuntu VM, can run with laptop closed).
+- Background Agents come in two modes: in-IDE (Agents Window, requires Cursor open) and Cloud (cloud Ubuntu VM, can run with laptop closed).
 - Cloud Background Agents are triggered by GitHub @cursor tags or Slack messages — not by CI runners or cron jobs.
 - Configure the Cloud agent environment in .cursor/environment.json; configure in-IDE worktree isolation in .cursor/worktrees.json.
 - Best use cases: test generation at scale, large-scope refactoring, GitHub issue → PR, browser-verified bug fixes.
@@ -345,9 +344,8 @@ This chapter completed the Background Agents picture — where they fit in the I
 
 1. Digital Applied. "Cursor 3: Agents Window, Cloud Agents, and What Changed." digitalapplied.com/blog/cursor-3-agents-window-complete-guide. Retrieved 2026-06-11.
 2. Cursor Changelog. "3.2 Multitask, Worktrees, and Multi-root Workspaces." cursor.com/changelog/04-24-26. Retrieved 2026-06-11.
-3. Cursor Blog. "Run cloud agents in your own infrastructure." cursor.com/blog/self-hosted-cloud-agents. Retrieved 2026-06-11.
-4. Neura Market. "Cursor 3 Review: Background Agents and the Agent-First IDE." neura.market/directories/cursor/blog/devto-3487552. Retrieved 2026-06-11.
-5. Steve Kinney. "Using Cursor Background Agents for Asynchronous Coding." stevekinney.com/courses/ai-development/cursor-background-agents. Retrieved 2026-06-11.
-6. Cursor Documentation. "Worktrees." cursor.com/docs/configuration/worktrees. Retrieved 2026-06-11.
-7. DeployHQ. "Cursor 2026: Composer, Agent Mode, MCP & Background Agent." deployhq.com/guides/cursor. Retrieved 2026-06-11.
-8. Cursor Security. "Security." cursor.com/security. Retrieved 2026-06-11.
+3. Neura Market. "Cursor 3 Review: Background Agents and the Agent-First IDE." neura.market/directories/cursor/blog/devto-3487552. Retrieved 2026-06-11.
+4. Steve Kinney. "Using Cursor Background Agents for Asynchronous Coding." stevekinney.com/courses/ai-development/cursor-background-agents. Retrieved 2026-06-11.
+5. Cursor Documentation. "Worktrees." cursor.com/docs/configuration/worktrees. Retrieved 2026-06-11.
+6. DeployHQ. "Cursor 2026: Composer, Agent Mode, MCP & Background Agent." deployhq.com/guides/cursor. Retrieved 2026-06-11.
+7. Cursor Security. "Security." cursor.com/security. Retrieved 2026-06-11.
