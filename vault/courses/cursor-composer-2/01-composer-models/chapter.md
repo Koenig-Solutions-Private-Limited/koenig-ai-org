@@ -2,7 +2,7 @@
 course_slug: cursor-composer-2
 chapter_num: 1
 title: "Chapter 1: Composer 2 Models & IDE-First Workflow (2026)"
-status: g0-blocked
+status: g0-passed
 author: course-author
 learning_objectives:
   - "Understand what Cursor Composer 2 is, including its model lineage and pricing"

@@ -2,7 +2,7 @@
 course_slug: cursor-composer-2
 chapter_num: 2
 title: ".cursorrules + AGENTS.md — The Project-Discipline Layer"
-status: awaiting-g0
+status: g0-revision
 author: course-author
 ticket: KOEA-2385
 chapter_primary_query: "How do I make .cursorrules and AGENTS.md actually enforce rules in Cursor sessions?"
@@ -24,7 +24,7 @@ tags:
 positions: []  # chapter is tool-specific tutorial; stance engagement deferred to course overview
 faq:
   - question: "Why does Cursor sometimes ignore .cursorrules?"
-    answer: "Three root causes account for most ignores: the file isn't in the context window (verify it's in the project root and restart the session), the rule is phrased too vaguely for the model to operationalize, or the rule conflicts with a strong prior from the model's training data. The compliance test protocol in section 2.4 isolates which cause applies. See [Rules for AI](https://cursor.com/docs/context/rules-for-ai) for context-loading details."
+    answer: "Three root causes account for most ignores: the file isn't in the context window (verify it's in the project root and restart the session), the rule is phrased too vaguely for the model to operationalize, or the rule conflicts with a strong prior from the model's training data. The compliance test protocol in section 2.4 isolates which cause applies. See [Rules for AI](https://cursor.com/docs/rules) for context-loading details."
   - question: "What's the difference between .cursorrules and AGENTS.md?"
     answer: ".cursorrules governs code-writing behavior — language versions, forbidden patterns, test requirements. AGENTS.md governs project identity and session coordination — what the system is, who the active agents are, what triggers escalation. Both are needed; they serve different surfaces of the same instruction contract. The [Background Agents docs](https://cursor.com/docs/background-agents) explain how AGENTS.md is consumed by autonomous sessions."
   - question: "Can I use the same .cursorrules file across multiple projects?"
@@ -34,7 +34,7 @@ inline_assets:
     path: ./img/rules-adherence-loop.svg
     alt: "Feedback loop for iterating .cursorrules: write rule → test compliance → diagnose failure → tighten rule wording → retest"
 sources:
-  - https://cursor.com/docs/context/rules-for-ai
+  - https://cursor.com/docs/rules
   - https://np.reddit.com/r/ClaudeAI/comments/1rozbzb/are_agents_actually_useful_for_complex_tasks/
   - https://www.reddit.com/r/cursor/comments/1t9gzd1/tips_for_using_composer_2_new_to_cursor/
   - https://news.ycombinator.com/item?id=46955895
@@ -342,7 +342,7 @@ Chapter 2 gave you the engineering discipline behind project rules: how to write
 
 ## References
 
-1. Cursor. "Rules for AI." cursor.com/docs/context/rules-for-ai. Retrieved 2026-06-10.
+1. Cursor. "Rules for AI." cursor.com/docs/rules. Retrieved 2026-06-10.
 2. Reddit r/ClaudeAI. "Are agents actually useful for complex tasks?" np.reddit.com/r/ClaudeAI/comments/1rozbzb/. Retrieved 2026-05-14.
 3. Reddit r/cursor. "Tips for using Composer 2 — new to Cursor." reddit.com/r/cursor/comments/1t9gzd1/. Retrieved 2026-05-14.
 4. HackerNews. "Prompt Contracts — persistent instruction surfaces for AI." news.ycombinator.com/item?id=46955895. Retrieved 2026-05-28.
