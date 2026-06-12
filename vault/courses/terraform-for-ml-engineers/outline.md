@@ -1,7 +1,8 @@
 ---
 course_slug: terraform-for-ml-engineers
 title: "Terraform for MLOps Engineers: Provisioning and Managing ML Infrastructure as Code"
-status: awaiting-g3
+status: g3-passed
+publish_state: g4-approved
 course_track: career
 toc_locked: true
 video_overview: true
