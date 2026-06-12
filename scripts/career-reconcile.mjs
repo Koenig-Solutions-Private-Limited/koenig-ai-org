@@ -2,6 +2,13 @@
 /**
  * Career Compass ⇄ Paperclip reconciler (course-gen v3).
  *
+ * Domain split (2026-06-12): the Career Compass vertical now serves from
+ * https://academy.koenig-solutions.com (repo
+ * Koenig-Solutions-Private-Limited/koenig-career-academy). The organic academy
+ * stays at academy.kspl.tech (learnovaBeast). Course-build issues dispatched
+ * from here carry course_track: career and publish to the new domain; the
+ * readiness-poller URL below points there.
+ *
  * R2 (career/requests/*.json on the academy `lms` bucket) is the only shared
  * state plane between Vercel and the local org. Every 30 min (Chief
  * Learning routine) this script, idempotently:
@@ -23,6 +30,11 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 
+// NOTE (domain split 2026-06-12): the Career Compass serving app is now
+// koenig-career-academy (academy.koenig-solutions.com). This createRequire path
+// still resolves @aws-sdk/client-s3 via the learnova-academy package.json — that
+// repo still exists and is used only as a node_modules resolution anchor here,
+// not as the serving app.
 const require = createRequire(
   "/Users/vardaankoenig/Documents/Paperclip/learnovaBeast/learnova-academy/package.json",
 );
@@ -121,7 +133,7 @@ function issueDescription(rec) {
     chapters,
     ``,
     `### Your job (Course Architect)`,
-    `Validate this TOC, expand it into vault/courses/${rec.suggested_slug}/toc.json + outline.md per your AGENTS.md, and dispatch the research/write/review/assets child tree. The readiness poller watches https://academy.kspl.tech/learn/${rec.suggested_slug} — slug is non-negotiable.`,
+    `Validate this TOC, expand it into vault/courses/${rec.suggested_slug}/toc.json + outline.md (set course_track: career) per your AGENTS.md, and dispatch the research/write/review/assets child tree. The readiness poller watches https://academy.koenig-solutions.com/learn/${rec.suggested_slug} — slug is non-negotiable.`,
   ].join("\n");
 }
 

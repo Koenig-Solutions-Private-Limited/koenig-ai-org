@@ -2,12 +2,25 @@
 # publish-action.sh — closes the loop on the auto-publish pipeline (V3.0).
 #
 # Phase 1: Scans for publish_state=g4-approved → fires repository_dispatch to
-#          learnovaBeast GitHub Actions, sets publish_state=dispatching + dispatched_at.
-# Phase 2: Scans for publish_state=dispatching → polls GH Actions for matching run,
+#          the per-track GitHub Actions repo, sets publish_state=dispatching +
+#          dispatched_at + dispatch_repo.
+# Phase 2: Scans for publish_state=dispatching → polls GH Actions on the
+#          per-issue dispatch_repo (metadata.dispatch_repo, fallback to the
+#          organic repo for in-flight items dispatched before this change),
 #          sets publish_state=published or dispatch_failed.
 #
-# Requires GH_PAT_DISPATCH (repo+workflow scopes on learnovaBeast) in $ENV_FILE.
-# Wired to launchd via com.koenig.publish-action.plist (every 60s).
+# Per-track dispatch contract (domain split, 2026-06-12):
+#   COURSE slugs read vault/courses/<slug>/outline.md frontmatter `course_track`.
+#     course_track == "career"  → Career Compass vertical:
+#         dispatch repo Koenig-Solutions-Private-Limited/koenig-career-academy,
+#         prod URL https://academy.koenig-solutions.com
+#     course_track absent/other → organic academy (current defaults).
+#   BLOG slugs always use the organic academy defaults.
+#   The chosen dispatch repo is persisted in issue metadata.dispatch_repo at
+#   dispatch time so Phase 2 polls the correct repo even across script versions.
+#
+# Requires GH_PAT_DISPATCH (repo+workflow scopes on BOTH dispatch repos) in
+# $ENV_FILE. Wired to launchd via com.koenig.publish-action.plist (every 60s).
 # Logs to ~/.paperclip/logs/publish-action.log.
 
 set -euo pipefail
@@ -16,20 +29,67 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="$REPO_ROOT/.env.koenig"
 PAPERCLIP_URL="${PAPERCLIP_URL:-http://localhost:3100}"
 CANONICAL_COMPANY_ID="2a77f89b-33f0-4133-a20c-77ddaac5e744"
+# Organic academy (default track) — learnovaBeast → academy.kspl.tech.
 GH_DISPATCH_REPO="Koenig-Solutions-Private-Limited/learnovaBeast"
 PROD_URL="https://academy.kspl.tech"
+# Career Compass vertical (course_track: career) — koenig-career-academy →
+# academy.koenig-solutions.com. Domain split, 2026-06-12.
+CAREER_GH_DISPATCH_REPO="Koenig-Solutions-Private-Limited/koenig-career-academy"
+CAREER_PROD_URL="https://academy.koenig-solutions.com"
 LOG_DIR="${PAPERCLIP_LOG_DIR:-${HOME}/.paperclip/logs}"
 SKIPPED_SENTINEL="$LOG_DIR/publish-action.skipped"
 mkdir -p "$LOG_DIR"
 LOG="$LOG_DIR/publish-action.log"
 cd "$REPO_ROOT"
 
-published_url_for_slug() {
+# Resolve the track for a slug. Course slugs map to vault/courses/<slug>/outline.md;
+# a frontmatter `course_track: career` routes to the Career Compass vertical.
+# Blogs (no such outline) and untracked courses fall through to the organic track.
+# Echoes the track name: "career" or "organic".
+track_for_slug() {
   local slug="${1:-}"
-  if [[ -n "$slug" ]]; then
-    echo "$PROD_URL/blog/$slug"
+  local outline="$REPO_ROOT/vault/courses/$slug/outline.md"
+  if [[ -n "$slug" && -f "$outline" ]]; then
+    local track
+    track="$(awk -F: '/^course_track:/{gsub(/[ \t"'"'"']/,"",$2); print $2; exit}' "$outline")"
+    if [[ "$track" == "career" ]]; then
+      echo "career"
+      return 0
+    fi
+  fi
+  echo "organic"
+}
+
+# Echo the GitHub dispatch repo for a track.
+dispatch_repo_for_track() {
+  if [[ "${1:-}" == "career" ]]; then
+    echo "$CAREER_GH_DISPATCH_REPO"
+  else
+    echo "$GH_DISPATCH_REPO"
+  fi
+}
+
+# Echo the production base URL for a track.
+prod_url_for_track() {
+  if [[ "${1:-}" == "career" ]]; then
+    echo "$CAREER_PROD_URL"
   else
     echo "$PROD_URL"
+  fi
+}
+
+# Build the published URL for a slug, track-aware. Only the base (domain) varies
+# by track; the path shape is unchanged from V3.0 (/blog/<slug>, or the track
+# home page for an empty slug).
+published_url_for_slug() {
+  local slug="${1:-}"
+  local track="${2:-organic}"
+  local base
+  base="$(prod_url_for_track "$track")"
+  if [[ -n "$slug" ]]; then
+    echo "$base/blog/$slug"
+  else
+    echo "$base"
   fi
 }
 
@@ -509,22 +569,24 @@ elif [[ -z "$GH_PAT_DISPATCH" ]]; then
   mark_dispatch_skipped "phase1"
 else
   while IFS=$'\t' read -r ISSUE_ID SLUG; do
-    log "Phase 1: dispatching publish-ready for issue=$ISSUE_ID slug=$SLUG"
+    TRACK="$(track_for_slug "$SLUG")"
+    DISPATCH_REPO="$(dispatch_repo_for_track "$TRACK")"
+    log "Phase 1: dispatching publish-ready for issue=$ISSUE_ID slug=$SLUG track=$TRACK repo=$DISPATCH_REPO"
     DISPATCH_HTTP="$(curl -s -o /dev/null -w "%{http_code}" -X POST \
-      "https://api.github.com/repos/$GH_DISPATCH_REPO/dispatches" \
+      "https://api.github.com/repos/$DISPATCH_REPO/dispatches" \
       -H "Authorization: Bearer $GH_PAT_DISPATCH" \
       -H "Accept: application/vnd.github+json" \
       -H "X-GitHub-Api-Version: 2022-11-28" \
       -d "$(ISSUE_ID="$ISSUE_ID" SLUG="$SLUG" python3 -c 'import json,os;print(json.dumps({"event_type":"publish-ready","client_payload":{"issue_id":os.environ["ISSUE_ID"],"slug":os.environ["SLUG"]}}))')")"
     if [[ "$DISPATCH_HTTP" == "204" ]]; then
       DISPATCHED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-      log "Phase 1: dispatch accepted (204) for $ISSUE_ID — setting dispatching at $DISPATCHED_AT"
+      log "Phase 1: dispatch accepted (204) for $ISSUE_ID — setting dispatching at $DISPATCHED_AT (repo=$DISPATCH_REPO)"
       curl -sX PATCH "${AUTH_HEADER[@]}" "$PAPERCLIP_URL/api/issues/$ISSUE_ID" \
         -H "Content-Type: application/json" \
-        -d "$(SLUG="$SLUG" DISPATCHED_AT="$DISPATCHED_AT" python3 -c 'import json,os;print(json.dumps({"metadata":{"publish_state":"dispatching","dispatched_at":os.environ["DISPATCHED_AT"],"slug":os.environ["SLUG"]}}))')" \
+        -d "$(SLUG="$SLUG" DISPATCHED_AT="$DISPATCHED_AT" DISPATCH_REPO="$DISPATCH_REPO" python3 -c 'import json,os;print(json.dumps({"metadata":{"publish_state":"dispatching","dispatched_at":os.environ["DISPATCHED_AT"],"dispatch_repo":os.environ["DISPATCH_REPO"],"slug":os.environ["SLUG"]}}))')" \
         -o /dev/null
     else
-      log "Phase 1: dispatch FAILED (HTTP $DISPATCH_HTTP) for $ISSUE_ID"
+      log "Phase 1: dispatch FAILED (HTTP $DISPATCH_HTTP) for $ISSUE_ID (repo=$DISPATCH_REPO)"
     fi
   done < <(echo "$G4_ISSUES_JSON" | python3 -c "
 import json, sys
@@ -553,7 +615,15 @@ for i in items:
     if not isinstance(md, dict):
         md = {}
     if md.get('publish_state') == 'dispatching':
-        result.append({'id': i['id'], 'dispatched_at': md.get('dispatched_at', ''), 'slug': md.get('slug', '')})
+        # dispatch_repo persisted by Phase 1 (domain split, 2026-06-12). Items
+        # dispatched before this change lack it — leave blank; the shell falls
+        # back to the organic dispatch repo so in-flight publishes still poll.
+        result.append({
+            'id': i['id'],
+            'dispatched_at': md.get('dispatched_at', ''),
+            'slug': md.get('slug', ''),
+            'dispatch_repo': md.get('dispatch_repo', ''),
+        })
 print(json.dumps(result))
 PY
 )"
@@ -564,12 +634,21 @@ if [[ -z "$DISPATCHING_JSON" ]] || [[ "$DISPATCHING_JSON" == "[]" ]]; then
 elif [[ -z "$GH_PAT_DISPATCH" ]]; then
   mark_dispatch_skipped "phase2"
 else
-  GH_RUNS_TMP="$(mktemp)"
-  curl -s \
-    "https://api.github.com/repos/$GH_DISPATCH_REPO/actions/runs?event=repository_dispatch&per_page=20" \
-    -H "Authorization: Bearer $GH_PAT_DISPATCH" \
-    -H "Accept: application/vnd.github+json" \
-    -H "X-GitHub-Api-Version: 2022-11-28" > "$GH_RUNS_TMP"
+  # GH Actions runs are fetched per dispatch repo, cached for this poll so that
+  # a mixed batch (organic + career) hits each repo's API at most once.
+  GH_RUNS_DIR="$(mktemp -d)"
+  fetch_runs_for_repo() {
+    local repo="$1"
+    local cache="$GH_RUNS_DIR/$(printf '%s' "$repo" | tr '/' '_').json"
+    if [[ ! -s "$cache" ]]; then
+      curl -s \
+        "https://api.github.com/repos/$repo/actions/runs?event=repository_dispatch&per_page=20" \
+        -H "Authorization: Bearer $GH_PAT_DISPATCH" \
+        -H "Accept: application/vnd.github+json" \
+        -H "X-GitHub-Api-Version: 2022-11-28" > "$cache"
+    fi
+    echo "$cache"
+  }
 
   PV_AGENT_ID="$(curl -s "${AUTH_HEADER[@]}" "$PAPERCLIP_URL/api/companies/$COMPANY_ID/agents" | python3 -c "
 import json, sys
@@ -579,9 +658,20 @@ match = next((a['id'] for a in agents if a.get('urlKey') == 'publish-verifier'),
 print(match)
 ")"
 
-  while IFS=$'\t' read -r ISSUE_ID DISPATCHED_AT SLUG; do
-    PUBLISHED_URL="$(published_url_for_slug "$SLUG")"
-    log "Phase 2: checking GH Actions run for issue=$ISSUE_ID dispatched_at=${DISPATCHED_AT:-unknown} slug=${SLUG:-none} published_url=$PUBLISHED_URL"
+  while IFS=$'\t' read -r ISSUE_ID DISPATCHED_AT SLUG DISPATCH_REPO; do
+    # Fallback to the organic repo for items dispatched before dispatch_repo
+    # was persisted (domain split, 2026-06-12).
+    if [[ -z "$DISPATCH_REPO" ]]; then
+      DISPATCH_REPO="$GH_DISPATCH_REPO"
+    fi
+    if [[ "$DISPATCH_REPO" == "$CAREER_GH_DISPATCH_REPO" ]]; then
+      TRACK="career"
+    else
+      TRACK="organic"
+    fi
+    PUBLISHED_URL="$(published_url_for_slug "$SLUG" "$TRACK")"
+    GH_RUNS_TMP="$(fetch_runs_for_repo "$DISPATCH_REPO")"
+    log "Phase 2: checking GH Actions run for issue=$ISSUE_ID dispatched_at=${DISPATCHED_AT:-unknown} slug=${SLUG:-none} repo=$DISPATCH_REPO published_url=$PUBLISHED_URL"
     RUN_STATUS="$(python3 -c "
 import json, sys
 from datetime import datetime, timezone
@@ -647,10 +737,10 @@ else:
 import json, sys
 items = json.load(sys.stdin)
 for i in items:
-    print(i['id'] + '\t' + i.get('dispatched_at', '') + '\t' + i.get('slug', ''))
+    print(i['id'] + '\t' + i.get('dispatched_at', '') + '\t' + i.get('slug', '') + '\t' + i.get('dispatch_repo', ''))
 ")
 
-  rm -f "$GH_RUNS_TMP"
+  rm -rf "$GH_RUNS_DIR"
 fi
 
 log "publish-action complete."

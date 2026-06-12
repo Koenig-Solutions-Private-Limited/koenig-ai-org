@@ -15,7 +15,11 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="$REPO_ROOT/.env.koenig"
 PAPERCLIP_URL="${PAPERCLIP_URL:-http://localhost:3100}"
+# Organic academy (default track). Career Compass courses (course_track: career)
+# resolve to CAREER_PROD_URL per-slug inside the python block (domain split,
+# 2026-06-12).
 PROD_URL="https://academy.kspl.tech"
+CAREER_PROD_URL="https://academy.koenig-solutions.com"
 APPLY=0
 
 if [[ "${1:-}" == "--apply" ]]; then
@@ -79,16 +83,35 @@ if ! curl -sf -H "Authorization: Bearer $AUTH_TOKEN" \
   exit 1
 fi
 
-python3 - "$ISSUES_JSON" "$REPO_ROOT" "$PROD_URL" "$APPLY" "$PAPERCLIP_URL" "$AUTH_TOKEN" <<'PY'
+python3 - "$ISSUES_JSON" "$REPO_ROOT" "$PROD_URL" "$APPLY" "$PAPERCLIP_URL" "$AUTH_TOKEN" "$CAREER_PROD_URL" <<'PY'
 import json
 import sys
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-issues_path, repo_root, prod_url, apply_flag, api_url, auth_token = sys.argv[1:7]
+issues_path, repo_root, prod_url, apply_flag, api_url, auth_token, career_prod_url = sys.argv[1:8]
 apply = apply_flag == "1"
 repo = Path(repo_root)
+
+def prod_url_for_slug(slug: str) -> str:
+    """Per-track PROD_URL: Career Compass courses (course_track: career) serve
+    from academy.koenig-solutions.com; everything else from the organic domain.
+    Cohort A is blog-only today, so this resolves to prod_url in practice, but
+    keeps the HTTP check correct if a career course ever lands here."""
+    if slug:
+        outline = repo / "vault" / "courses" / slug / "outline.md"
+        try:
+            for line in outline.read_text(encoding="utf-8").splitlines():
+                s = line.strip()
+                if s.startswith("course_track:"):
+                    val = s.split(":", 1)[1].strip().strip('"').strip("'")
+                    if val == "career":
+                        return career_prod_url
+                    break
+        except OSError:
+            pass
+    return prod_url
 
 with open(issues_path, "r", encoding="utf-8") as fh:
     data = json.load(fh)
@@ -115,7 +138,7 @@ for item in items:
     )
 
 def live_url_status(slug: str) -> int:
-    url = f"{prod_url}/blog/{slug}"
+    url = f"{prod_url_for_slug(slug)}/blog/{slug}"
     req = urllib.request.Request(url, method="HEAD")
     try:
         with urllib.request.urlopen(req, timeout=20) as resp:
@@ -158,7 +181,7 @@ now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 for item in cohort_a:
     slug = item["slug"]
-    published_url = f"{prod_url}/blog/{slug}"
+    published_url = f"{prod_url_for_slug(slug)}/blog/{slug}"
     http = live_url_status(slug)
     if http == 200:
         patch = {
