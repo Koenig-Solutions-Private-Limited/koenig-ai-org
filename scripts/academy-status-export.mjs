@@ -9,7 +9,8 @@
  *
  * Snapshot contents:
  *  - courses: per vault course — chapters written, sidecars, per-asset
- *    presence, outline status/publish_state, live URL guess
+ *    presence, outline status/publish_state, course_track, track-resolved
+ *    live_url (career → academy.koenig-solutions.com, else academy.kspl.tech)
  *  - pipelines: per active course-build parent issue (career-v3) — child
  *    ticket counts by kind+status
  *  - agents: name, status, last heartbeat, monthly budget/spend
@@ -29,6 +30,16 @@ const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const VAULT = join(ROOT, "vault", "courses");
+
+// Domain split (2026-06-12): Career Compass courses (course_track: career) serve
+// from academy.koenig-solutions.com; the organic academy stays on academy.kspl.tech.
+// The admin dashboard now lives on the new domain but reads this same R2
+// status.json — emitting a track-resolved live_url keeps cross-domain links correct
+// without the dashboard hardcoding a domain.
+const ORGANIC_PROD_URL = "https://academy.kspl.tech";
+const CAREER_PROD_URL = "https://academy.koenig-solutions.com";
+const baseUrlForTrack = (track) =>
+  track === "career" ? CAREER_PROD_URL : ORGANIC_PROD_URL;
 
 function env() {
   return Object.fromEntries(
@@ -93,13 +104,16 @@ for (const slug of readdirSync(VAULT)) {
       asset_count: ASSET_KEYS.filter((k) => assets[k]).length,
     };
   });
+  const courseTrack = fm("course_track") ?? null;
   courses.push({
     slug,
     title: fm("title") ?? slug,
     status: fm("status") ?? "?",
     publish_state: fm("publish_state") ?? null,
     live: ["g4-approved", "dispatching", "published"].includes(fm("publish_state") ?? ""),
-    course_track: fm("course_track") ?? null,
+    course_track: courseTrack,
+    // Track-resolved serving URL: career → academy.koenig-solutions.com.
+    live_url: `${baseUrlForTrack(courseTrack)}/learn/${slug}`,
     chapter_count_planned: Number(fm("chapter_count")) || chapterFiles.length,
     chapters_written: chapterFiles.length,
     sidecars: chapters.filter((c) => c.asset_count > 0).length,
