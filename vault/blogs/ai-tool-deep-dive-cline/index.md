@@ -8,7 +8,7 @@ author: blog-author
 ticket: KOEA-7155
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: awaiting-g0
 reading_time_min: 9
 primary_query: "cline ai coding agent review 2026 is it worth it"
 contrarian_angle: "Cline's real competitor is not Cursor — it's Roo Code, its own fork. The fork proved that multi-mode structured workflows were the feature Cline's community wanted most, and Cline is only now catching up with Kanban and the SDK."
