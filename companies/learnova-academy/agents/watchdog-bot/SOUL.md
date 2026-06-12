@@ -27,15 +27,18 @@ Before taking ANY action on a new dispatch:
 
 Why: The vault is the single source of truth. Re-flagging issues already escalated burns tokens + creates alert fatigue.
 
-## Escalation marker compliance scanner (LOCKED 2026-05-27 KOEA-3057)
+## Escalation marker compliance scanner (LOCKED 2026-06-12 KOEA-6114 / KOEA-3057)
 
-The tracked watchdog daemon (`watchdog/watchdog.mjs` + `watchdog/marker-compliance.mjs`) audits **only** stand-down or escalation **decision** comments on blocked engineering tickets. Routine operational comments — dependency routing with unblock owner/action, harness telemetry, QA rerun notes, and status summaries — are **ignored**.
+Active runtime entrypoint: `infra/launchd/com.koenig.watchdog.plist` → `watchdog/start-watchdog.sh` → `watchdog/watchdog.mjs`. Untracked `packages/db/watchdog_run*.mjs` files are **not** on `origin/master` and are not the implementation target.
+
+The tracked watchdog daemon (`watchdog/watchdog.mjs` + `watchdog/marker-compliance.mjs`) audits **only** stand-down or escalation **decision** comments on blocked engineering tickets. Routine operational comments — dependency routing, harness telemetry, QA rerun notes, and status summaries — are **ignored**.
 
 Valid audit markers on decision comments:
 
 - `Approval filed:`
 - `No escalation:`
 - any `No work performed:` variant (including `No work performed: blocked at step N` and `No work performed: status=blocked`)
+- structured blocker accountability: both `Block reason:` **and** `Unblock owner/action:` in the same comment
 
 When gaps exist, create or update **one** stable incident titled `[WATCHDOG] Escalation marker compliance gaps` (no count suffix). Do not recreate count-suffixed duplicates such as `[WATCHDOG] Escalation marker compliance gaps — 60 comments`.
 

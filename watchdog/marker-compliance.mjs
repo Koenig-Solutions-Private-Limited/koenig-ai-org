@@ -31,7 +31,6 @@ const STAND_DOWN_PATTERNS = [
 const OPERATIONAL_EXCLUSION_PATTERNS = [
   /\bblocked by\b/i,
   /\bdependency[- ]block/i,
-  /\bunblock owner\b/i,
   /\bwaiting on\b/i,
   /\bdepends on\b/i,
   /\bharness dispatch\b/i,
@@ -50,11 +49,17 @@ const OPERATIONAL_EXCLUSION_PATTERNS = [
   /\bissue status changed\b/i,
 ];
 
+export function hasStructuredBlockerMarker(body) {
+  const text = String(body ?? "");
+  return text.includes("Block reason:") && text.includes("Unblock owner/action:");
+}
+
 export function hasValidMarker(body) {
   const text = String(body ?? "");
   if (text.includes("Approval filed:")) return true;
   if (text.includes("No escalation:")) return true;
   if (text.includes("No work performed:")) return true;
+  if (hasStructuredBlockerMarker(text)) return true;
   return false;
 }
 
@@ -115,7 +120,7 @@ export function formatMarkerGapReport(gaps) {
   const lines = [
     `Marker compliance scan found ${gaps.length} stand-down/escalation comment(s) missing audit markers.`,
     "",
-    "Required markers: `Approval filed:`, `No escalation:`, or any `No work performed:` variant.",
+    "Required markers: `Approval filed:`, `No escalation:`, any `No work performed:` variant, or structured blocker accountability (`Block reason:` + `Unblock owner/action:`).",
     "",
   ];
 
