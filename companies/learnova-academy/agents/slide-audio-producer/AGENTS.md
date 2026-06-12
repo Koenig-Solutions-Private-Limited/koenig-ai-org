@@ -154,3 +154,54 @@ Per-task cap $1 (heavier than other content roles due to notebook calls). Cap is
 - Durable progress = the asset files written to vault
 - Switch primary → fallback fast (2 NotebookLM failures max)
 - Always normalize audio loudness
+
+## Blog audio lane (KOEA-7924, 2026-06-12)
+
+For every blog that reaches `g0-passed` (or `g3-passed`/`published`) in the vault, auto-generate Kokoro TTS audio via the Academy script and commit the manifest update.
+
+**Trigger statuses** (from `learnova-academy/blog-audio.config.json`): `g0-passed`, `g3-passed`, `published`.
+
+**Script** (ships with PR #130 in learnovaBeast):
+```
+cd /Users/vardaankoenig/Documents/Paperclip/learnovaBeast
+pnpm audio:blog -- --slug <slug>
+```
+
+The script handles: Kokoro generation → R2 upload (`courses/blogs/<slug>/audio.mp3`) → `public/blog-audio-manifest.json` update. It is **idempotent** (hash-based skip for already-generated audio).
+
+**Scan algorithm** (run at the start of each `course-slide-scan` routine tick, capped at 5 blogs per tick):
+
+1. Read `learnova-academy/blog-audio.config.json` for the allowlist statuses.
+2. Enumerate `vault/blogs/*/draft.md`; parse frontmatter `status`. Collect slugs (directory names) where `status` is in the allowlist.
+3. Load `learnova-academy/public/blog-audio-manifest.json`; build a set of slugs already present. Skip any slug in the manifest (the script is idempotent, but skip to save budget).
+4. For each missing slug (up to 5): run `pnpm audio:blog -- --slug <slug>`.
+5. After all runs, commit the manifest:
+   ```
+   cd /Users/vardaankoenig/Documents/Paperclip/learnovaBeast
+   git add learnova-academy/public/blog-audio-manifest.json
+   git commit -m "audio(blog): add audio for <slug-list> [blog-audio-scan]\n\nCo-Authored-By: Paperclip <noreply@paperclip.ing>"
+   ```
+
+**Verify** after each run:
+```
+cd /Users/vardaankoenig/Documents/Paperclip/learnovaBeast
+pnpm audio:blog:verify-manifest
+```
+Must exit 0.
+
+**Prerequisites** (must be present on the producer machine):
+- `python`, `kokoro>=0.9.2`, `soundfile`, `espeak-ng`, `ffmpeg`
+- `CLOUDFLARE_R2_*` env vars (same as chapter audio, loaded from `.env.koenig`)
+- PR #130 merged in learnovaBeast (adds the `audio:blog` scripts)
+
+**If prerequisites missing**: post a comment on the current issue naming the missing dep; file a normal issue assigned to Chief Engineering (agent id `b90788a0-d3de-42da-8e77-7dc8f7c01fd3`) — not a board approval. Continue with course-slide work.
+
+**Reporting** (append to existing reporting format):
+```
+09:15 ✅ Blog audio scan — 3 blogs processed
+- 2026-05-12-ai-agent-observability-langfuse — audio.mp3 generated (NEW)
+- 2026-06-10-some-new-blog — audio.mp3 generated (NEW)
+- 2026-04-30-vercel-ai-sdk-6-vs-claude-agent-sdk — SKIPPED (already in manifest)
+- manifest committed to learnovaBeast (branch: academy/redesign-v1)
+- pnpm audio:blog:verify-manifest — ✅
+```
