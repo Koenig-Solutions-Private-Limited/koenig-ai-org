@@ -3,7 +3,7 @@ chapter_num: 8
 course_slug: cursor-composer-2
 title: "Capstone: Build a Production Feature End-to-End with Cursor Composer 2"
 description: "Apply .cursorrules, Background Agents, Bugbot, and MCP together in a single 60-minute capstone exercise — webhook handler or data ingestion pipeline — and write the AI-first process document that makes the workflow reproducible."
-status: g0-revision
+status: awaiting-g0
 duration_min: 65
 vendor_tag: cursor
 last_updated: 2026-06-11
@@ -42,7 +42,7 @@ faq:
   - question: "When should I spawn a Background Agent instead of staying in Composer during the capstone?"
     answer: "Spawn a Background Agent when the task is fully independent of the current feature slice — for example, scaffolding a test suite in parallel with the handler logic. Background Agents run on isolated branches and complete concurrently; Composer is single-threaded and serializes work that could run in parallel. The routing table in the Routing Decisions section provides the full decision map. [2][3]"
   - question: "What does Bugbot Autofix do with an agent-generated PR?"
-    answer: "Bugbot scans the PR, identifies issues, applies targeted inline fixes, and pushes a corrected commit directly to the PR branch. No manual approval is required for each individual fix — the intervention is automatic on compatible PRs. Full configuration and Autofix behavior are covered in ch6. [6]"
+    answer: "Bugbot scans the PR, identifies issues, and surfaces targeted inline fixes directly in your Cursor editor or via a Background Agent for you to review and apply. The developer applies the fixes — Bugbot does not auto-commit to the PR branch. Full configuration and behavior are covered in ch6. [6]"
   - question: "What belongs in an AI-first engineering process document?"
     answer: "A minimal process document captures five observable layers: the feature spec, the prompt contracts used (.cursorrules version and any session-level prompts), the routing log (Composer vs Background Agents vs Bugbot decisions), the override log (where you manually corrected tool output), and the outcome summary. It does not capture model internals — only engineer decisions and tool verdicts. [4]"
 owns:
@@ -89,10 +89,10 @@ quiz:
     options:
       - "Bugbot closes the PR and reopens a replacement with a cleaned commit history"
       - "Bugbot posts a comment listing issues and waits for human approval of each fix"
-      - "Bugbot applies targeted inline fixes and pushes a corrected commit to the PR branch"
+      - "Bugbot reviews the PR, surfaces targeted inline fixes in the editor or via Background Agent for you to apply"
       - "Bugbot rolls back the branch to the most recent green CI commit automatically"
     correct_idx: 2
-    explanation: "Bugbot Autofix applies targeted inline fixes and pushes a corrected commit to the PR branch — no human approval step is required for each individual fix [6]. Full Bugbot configuration and Autofix behavior are covered in [[06-bugbot-pr-review|ch6]]."
+    explanation: "Bugbot reviews the PR, identifies issues, and surfaces targeted inline fixes directly in your Cursor editor or via a Background Agent for you to apply — significantly reducing manual review burden on agent-generated code [6]. Full configuration and behavior are covered in [[06-bugbot-pr-review|ch6]]."
     section_anchor: routing-decisions-a-decision-map
   - question: "Your Composer session pulls context from two repos and three MCP servers. Response quality drops. What is the first intervention?"
     options:
