@@ -76,6 +76,12 @@ try: d=json.load(sys.stdin)
 except Exception: sys.exit(0)
 for a in d.get('artifacts',[]): print(a['type_id'], a['status_id'])" > "$WORK/$CH.state"
     P=$(awk '$2==1||$2==2' "$WORK/$CH.state" | wc -l | tr -d ' ')
+    # An empty artifact list is a transient API hiccup, NOT completion —
+    # treating it as done strands slides/audio/video mid-generation.
+    if [ ! -s "$WORK/$CH.state" ]; then
+      log "poll#$i $CH: empty artifact list (transient) — still pending"
+      ALL=0; continue
+    fi
     log "poll#$i $CH: pending=$P"
     [ "$P" != "0" ] && ALL=0
     while read -r T S; do

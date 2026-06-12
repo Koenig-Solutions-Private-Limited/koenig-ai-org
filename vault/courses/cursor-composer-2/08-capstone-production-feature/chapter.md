@@ -3,10 +3,10 @@ chapter_num: 8
 course_slug: cursor-composer-2
 title: "Capstone: Build a Production Feature End-to-End with Cursor Composer 2"
 description: "Apply .cursorrules, Background Agents, Bugbot, and MCP together in a single 60-minute capstone exercise — webhook handler or data ingestion pipeline — and write the AI-first process document that makes the workflow reproducible."
-status: awaiting-g0
+status: g0-passed
 duration_min: 65
 vendor_tag: cursor
-last_updated: 2026-06-11
+last_updated: 2026-06-12
 tags:
   - cursor-composer-2
   - capstone
@@ -89,7 +89,7 @@ quiz:
     options:
       - "Bugbot closes the PR and reopens a replacement with a cleaned commit history"
       - "Bugbot posts a comment listing issues and waits for human approval of each fix"
-      - "Bugbot reviews the PR, surfaces targeted inline fixes in the editor or via Background Agent for you to apply"
+      - "Bugbot surfaces inline fixes in your editor or via Background Agent for you to apply"
       - "Bugbot rolls back the branch to the most recent green CI commit automatically"
     correct_idx: 2
     explanation: "Bugbot reviews the PR, identifies issues, and surfaces targeted inline fixes directly in your Cursor editor or via a Background Agent for you to apply — significantly reducing manual review burden on agent-generated code [6]. Full configuration and behavior are covered in [[06-bugbot-pr-review|ch6]]."

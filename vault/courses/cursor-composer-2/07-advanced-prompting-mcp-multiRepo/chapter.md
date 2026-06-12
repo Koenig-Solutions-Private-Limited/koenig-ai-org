@@ -2,7 +2,7 @@
 chapter_num: 7
 course_slug: cursor-composer-2
 title: "Advanced Prompting, MCP & Multi-Repo Workflows"
-status: awaiting-g0
+status: g0-passed
 duration_min: 60
 vendor_tag: Cursor
 learning_objectives:
@@ -84,7 +84,7 @@ quiz:
 
 # Advanced Prompting, MCP & Multi-Repo Workflows
 
-By Chapter 7, you have a full Cursor Composer 2 stack running: models selected, project rules applied, background agents dispatched, and Bugbot reviewing every PR. This chapter covers the last mile — prompting patterns that make Composer sessions deterministic, MCP servers that extend Cursor's tool reach beyond the IDE, multi-repo context strategies, and the cost hygiene that keeps AI spend under control at team scale.
+By Chapter 7, you have a full Cursor Composer 2 stack running: models selected, project rules applied, background agents dispatched, and [[cursor-composer-2/06-bugbot-pr-review]] reviewing every PR. This chapter covers the last mile — prompting patterns that make Composer sessions deterministic, MCP servers that extend Cursor's tool reach beyond the IDE, multi-repo context strategies, and the cost hygiene that keeps AI spend under control at team scale.
 
 ---
 
@@ -131,6 +131,8 @@ The practical approach:
 1. **Workspace per context unit.** Open the services that interact as a multi-root workspace. Cursor indexes all roots; the agent reasons across them within one session, covering cross-service API calls and shared type definitions.
 2. **Respect the saturation ceiling.** Long sessions on very large codebases hit context limits — community evidence is consistent on this pattern. When Composer starts producing off-base suggestions, the problem is usually a saturated context, not a model failure. End the session, summarise decisions in a note or commit message, start fresh with that summary as seed context.
 3. **Cross-repo contracts go in instruction files.** If your frontend depends on a specific API contract from the backend, document that contract in `.cursorrules` or a dedicated `CONTEXT.md`. Don't rely on the agent inferring cross-repo invariants from implicit patterns at runtime.
+
+A 2026 comparison of AI coding tools by [nxcode.io](https://www.nxcode.io/resources/news/openai-codex-vs-cursor-vs-claude-code-ai-coding-tools-2026) confirms this pattern: IDE-harness tools outperform terminal-native CLI agents on large NX monorepos precisely because they expose indexed project context without manual copying. The advantage narrows on smaller repos; it widens as the dependency graph grows.
 
 For genuine parallel cross-repo task dispatch — spinning one agent per repo to develop features independently — see Background Agents in [[cursor-composer-2/04-background-agents]].
 
