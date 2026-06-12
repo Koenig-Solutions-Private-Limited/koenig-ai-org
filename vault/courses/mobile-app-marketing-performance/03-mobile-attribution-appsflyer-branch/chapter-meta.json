@@ -3,7 +3,7 @@
   "chapter_id": "03-mobile-attribution-appsflyer-branch",
   "course_slug": "mobile-app-marketing-performance",
   "title": "Mobile Attribution with AppsFlyer & Branch: Setup, Events & Privacy",
-  "generated_at": "2026-06-11T05:22:41.671Z",
+  "generated_at": "2026-06-12T09:04:23.151Z",
   "generated_by": "notebooklm-py via upload-chapter-assets.mjs",
   "notebook_id": "2075e46a-b4a8-4a52-9131-8de32562a5db",
   "source_file": "vault/courses/mobile-app-marketing-performance/03-mobile-attribution-appsflyer-branch.md",
@@ -12,7 +12,8 @@
     "quiz_challenge_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/03-mobile-attribution-appsflyer-branch/quiz-hard.json",
     "flashcards_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/03-mobile-attribution-appsflyer-branch/flashcards.json",
     "study_guide_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/03-mobile-attribution-appsflyer-branch/study-guide.md",
-    "mind_map_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/03-mobile-attribution-appsflyer-branch/mind-map.json"
+    "mind_map_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/03-mobile-attribution-appsflyer-branch/mind-map.json",
+    "audio_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/03-mobile-attribution-appsflyer-branch/audio.mp3"
   },
   "asset_metadata": {
     "quiz": {
@@ -34,6 +35,10 @@
     "mind_map": {
       "size_bytes": 3220,
       "format": "json"
+    },
+    "audio": {
+      "size_bytes": 39785246,
+      "format": "mp3"
     }
   },
   "verification": {

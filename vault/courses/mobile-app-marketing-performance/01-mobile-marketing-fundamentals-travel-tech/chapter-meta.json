@@ -3,7 +3,7 @@
   "chapter_id": "01-mobile-marketing-fundamentals-travel-tech",
   "course_slug": "mobile-app-marketing-performance",
   "title": "Mobile App Marketing Fundamentals & the Travel-Tech Context",
-  "generated_at": "2026-06-11T04:57:49.628Z",
+  "generated_at": "2026-06-12T09:03:59.869Z",
   "generated_by": "notebooklm-py via upload-chapter-assets.mjs",
   "notebook_id": "fc544e4d-c362-4155-9082-f286e207000a",
   "source_file": "vault/courses/mobile-app-marketing-performance/01-mobile-marketing-fundamentals-travel-tech.md",
@@ -12,7 +12,9 @@
     "quiz_challenge_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/01-mobile-marketing-fundamentals-travel-tech/quiz-hard.json",
     "flashcards_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/01-mobile-marketing-fundamentals-travel-tech/flashcards.json",
     "study_guide_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/01-mobile-marketing-fundamentals-travel-tech/study-guide.md",
-    "mind_map_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/01-mobile-marketing-fundamentals-travel-tech/mind-map.json"
+    "mind_map_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/01-mobile-marketing-fundamentals-travel-tech/mind-map.json",
+    "audio_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/01-mobile-marketing-fundamentals-travel-tech/audio.mp3",
+    "slide_deck_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/mobile-app-marketing-performance/01-mobile-marketing-fundamentals-travel-tech/slide-deck.pdf"
   },
   "asset_metadata": {
     "quiz": {
@@ -34,6 +36,14 @@
     "mind_map": {
       "size_bytes": 3509,
       "format": "json"
+    },
+    "audio": {
+      "size_bytes": 35741628,
+      "format": "mp3"
+    },
+    "slide_deck": {
+      "size_bytes": 17993784,
+      "format": "pdf"
     }
   },
   "verification": {
