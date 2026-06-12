@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: cloudflare-agents-platform-workers-to-production
 title: "Durable Objects 2026: Your Cloudflare Agent's State Model"
-status: awaiting-g0
+status: g0-passed
 author: course-author
 ticket: KOEA-7068
 learning_objectives:
@@ -15,19 +15,19 @@ prerequisites_chapters:
 duration_min: 55
 level: Intermediate-Advanced
 positions:
-  - id: stance:arch-cloudflare-edge-native
+  - id: cli-first-workflows-for-production-teams
     engagement: defends
-  - id: stance:contrarian-geo-not-just-seo
+  - id: audit-trail-as-enterprise-gate
     engagement: defends
 chapter_primary_query: "How do Durable Objects work as agent state in Cloudflare Workers 2026?"
 first_60_words_answer: "Durable Objects give each Cloudflare Workers agent its own persistent SQLite database, co-located with its compute. Each DO instance is addressed by a unique ID — one per user session, one per agent persona, or one per domain entity. State reads have zero network latency because the data lives in the same V8 isolate as your code. No Redis, no external database, no serialization round-trip."
 faq:
   - question: "What is a Durable Object in Cloudflare Workers?"
-    answer: "A Durable Object is a V8 isolate with a globally unique identity, a built-in SQLite database, and a persistent routing guarantee. It can hibernate to save costs and wake on demand in milliseconds. Each DO instance has its own isolated storage that no other instance can access."
+    answer: "A Durable Object is a V8 isolate with a globally unique identity, a built-in SQLite database, and a persistent routing guarantee. It can hibernate to save costs and wake on demand in milliseconds. Each DO instance has its own isolated storage that no other instance can access. ([Cloudflare Durable Objects](https://developers.cloudflare.com/durable-objects/))"
   - question: "How does Durable Object SQLite compare to KV for agent memory?"
-    answer: "KV is eventually consistent and best for read-heavy global data. Durable Object SQLite is strongly consistent, co-located with your compute, supports ACID transactions, and lets you run arbitrary SQL queries including JOINs and aggregations. For agent conversation memory that needs ordering, deduplication, and structured queries, SQLite is the correct choice."
+    answer: "KV is eventually consistent and best for read-heavy global data. Durable Object SQLite is strongly consistent, co-located with your compute, supports ACID transactions, and lets you run arbitrary SQL queries including JOINs and aggregations. For agent conversation memory that needs ordering, deduplication, and structured queries, SQLite is the correct choice. ([Storage API](https://developers.cloudflare.com/durable-objects/api/storage-api/))"
   - question: "What are Durable Object alarms used for in agents?"
-    answer: "Alarms let a Durable Object schedule its own wake-up at a future time, even after hibernating. Agents use alarms for scheduled reminders, periodic memory consolidation, TTL-based context eviction, and background tasks that must run without a live user request triggering them."
+    answer: "Alarms let a Durable Object schedule its own wake-up at a future time, even after hibernating. Agents use alarms for scheduled reminders, periodic memory consolidation, TTL-based context eviction, and background tasks that must run without a live user request triggering them. ([DO Alarms](https://developers.cloudflare.com/durable-objects/api/alarms/))"
 howto_schema:
   name: "Add persistent memory to a Cloudflare Workers agent with Durable Objects"
   steps:
@@ -48,12 +48,12 @@ inline_assets:
   - type: diagram
     path: ./img/do-facets-pattern.svg
     alt: "DO Facets pattern showing a single AgentMemory class fanning out to multiple instances, each isolated per user session, with no cross-instance access"
-last_updated: 2026-06-01
+last_updated: 2026-06-12
 sources:
   - https://developers.cloudflare.com/durable-objects/
   - https://developers.cloudflare.com/durable-objects/api/storage-api/
-  - https://developers.cloudflare.com/durable-objects/best-practices/access-durable-objects-from-a-worker/
-  - https://developers.cloudflare.com/durable-objects/reference/alarms/
+  - https://developers.cloudflare.com/durable-objects/best-practices/create-durable-object-stubs-and-send-requests/
+  - https://developers.cloudflare.com/durable-objects/api/alarms/
   - https://blog.cloudflare.com/sqlite-in-durable-objects/
   - https://developers.cloudflare.com/agents/
 tags:
@@ -502,7 +502,7 @@ Keep it practical and self-contained — no external DB, no KV, everything in DO
 
 ## Hands-on exercise: refactor the Chapter 1 agent to use Durable Objects
 
-This exercise takes the "Hello World" agent from Chapter 1 — a stateless Worker that calls a model and returns a response — and refactors it to persist conversation history in a Durable Object SQLite table. At the end you'll verify that history survives a hibernation cycle.
+This exercise takes the "Hello World" agent from [[cloudflare-agents-platform-workers-to-production/01-what-the-agents-platform-actually-is|Chapter 1]] — a stateless Worker that calls a model and returns a response — and refactors it to persist conversation history in a Durable Object SQLite table. At the end you'll verify that history survives a hibernation cycle.
 
 ### Prerequisites
 
@@ -714,13 +714,13 @@ Why does the history disappear, and what is the correct fix using Durable Object
 
 You now have a fully persistent agent: each user session maps to a dedicated Durable Object instance with its own SQLite database, conversation history survives hibernation cycles, and the per-instance addressing model gives you tenant isolation for free.
 
-Chapter 3 moves up the stack to **tools** — the bindings your agent can invoke to interact with the rest of Cloudflare's platform. You'll add D1 for knowledge base queries, R2 for artifact storage, and Queues for async task dispatch. The central idea: on Cloudflare Workers, your tools are native platform bindings, not HTTP endpoints. That changes everything about latency, cost, and security. No network hop, no token management, no separate auth layer — the tool is the infrastructure.
+[[cloudflare-agents-platform-workers-to-production/03-designing-tools-for-workers-runtime|Chapter 3]] moves up the stack to **tools** — the bindings your agent can invoke to interact with the rest of Cloudflare's platform. You'll add D1 for knowledge base queries, R2 for artifact storage, and Queues for async task dispatch. The central idea: on Cloudflare Workers, your tools are native platform bindings, not HTTP endpoints. That changes everything about latency, cost, and security. No network hop, no token management, no separate auth layer — the tool is the infrastructure. For a broader view of how DOs fit into production multi-agent deployments, see [[blogs/2026-05-28-cloudflare-agents-workers-production-architecture/draft|Cloudflare Agents Production Architecture]].
 
 ---
 
 [^1]: [Cloudflare Durable Objects documentation](https://developers.cloudflare.com/durable-objects/)
 [^2]: [Durable Objects Storage API](https://developers.cloudflare.com/durable-objects/api/storage-api/)
-[^3]: [Accessing Durable Objects from a Worker](https://developers.cloudflare.com/durable-objects/best-practices/access-durable-objects-from-a-worker/)
-[^4]: [Durable Object Alarms reference](https://developers.cloudflare.com/durable-objects/reference/alarms/)
+[^3]: [Invoke methods — create stubs and send requests](https://developers.cloudflare.com/durable-objects/best-practices/create-durable-object-stubs-and-send-requests/)
+[^4]: [Durable Object Alarms API](https://developers.cloudflare.com/durable-objects/api/alarms/)
 [^5]: [SQLite in Durable Objects — Cloudflare Blog](https://blog.cloudflare.com/sqlite-in-durable-objects/)
 [^6]: [Cloudflare Agents SDK](https://developers.cloudflare.com/agents/)
