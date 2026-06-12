@@ -163,13 +163,13 @@ The root cause is round-trip latency: Cline's approval gates add human-in-the-lo
 
 ### Token cost can spiral without active management
 
-At $3/MTok input + $15/MTok output on Claude Sonnet 4.6, heavy Cline usage runs $3–8/hour. [Morph AI coding agent ranking, 2026](https://www.morphllm.com/ai-coding-agent) With Opus 4.7 at $15/$75 per MTok, a complex 40-file refactor with multiple plan iterations can cost $20–30. Cline has no built-in cost circuit breaker — you set spend limits in the settings panel manually, and they don't cascade to the CLI by default.
+At $3/MTok input + $15/MTok output on Claude Sonnet 4.6, heavy Cline usage runs $3–8/hour. ([Anthropic pricing](https://www.anthropic.com/pricing)) With Opus 4.7 at $15/$75 per MTok, a complex 40-file refactor with multiple plan iterations can cost $20–30. Cline has no built-in cost circuit breaker — you set spend limits in the settings panel manually, and they don't cascade to the CLI by default.
 
 Compare to Cursor at $20/month flat: for developers doing 4+ hours of daily interactive coding, Cursor's subscription pricing is predictably cheaper. Cline's BYOK model only beats subscriptions when you run cheaper models for most work and expensive models selectively.
 
 ### Setup friction is real
 
-Cline requires you to manage your own API keys, select your own models, configure MCP servers, and write your own `.clinerules`. There is no default "just works" configuration. Developers describe this as a feature (flexibility) and a bug (20-minute setup before first useful session) simultaneously. [Faros AI 2026 developer review](https://www.faros.ai/blog/best-ai-coding-agents-2026)
+Cline requires you to manage your own API keys, select your own models, configure MCP servers, and write your own `.clinerules`. There is no default "just works" configuration. Developers describe this as a feature (flexibility) and a bug (non-trivial setup before first useful session) simultaneously.
 
 The VS Code rating gap ([Roo Code at 5 stars](https://www.qodo.ai/blog/roo-code-vs-cline) vs [Cline at 4 stars / 292 reviews](https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev)) correlates with this: Roo Code ships opinionated defaults and a polished mode system; Cline ships maximum configuration surface. "Rewards deliberate users and frustrates those looking for a one-click experience" is the apt summary.
 
