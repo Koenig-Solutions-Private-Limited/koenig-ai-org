@@ -1518,17 +1518,21 @@ export function isDeferredCommentWakeReopenWorthy(input: {
   assigneeAgentId: string | null;
   deferredCommentIds: string[];
   deferredWakeReason: string | null;
-  requestedByActorType: string | null;
+  resumeIntent: boolean;
+  followUpRequested: boolean;
   deferredComments: DeferredWakeCommentSnapshot[];
   latestComment: DeferredWakeCommentSnapshot | null;
 }): boolean {
+  const isTerminalIssue = input.issueStatus === "done" || input.issueStatus === "cancelled";
+  const hasExplicitReopenIntent =
+    input.deferredWakeReason === "issue_reopened_via_comment" ||
+    input.resumeIntent ||
+    input.followUpRequested;
+
   const baseReopenCandidate =
     input.deferredCommentIds.length > 0 &&
-    (input.issueStatus === "done" || input.issueStatus === "cancelled") &&
-    (
-      input.requestedByActorType === "user" ||
-      input.deferredWakeReason === "issue_reopened_via_comment"
-    );
+    isTerminalIssue &&
+    hasExplicitReopenIntent;
 
   if (!baseReopenCandidate) return false;
   if (input.deferredComments.length === 0) return false;
@@ -6218,6 +6222,9 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
         }
         const deferredCommentIds = extractWakeCommentIds(deferredContextSeed);
         const deferredWakeReason = readNonEmptyString(deferredContextSeed.wakeReason);
+        const deferredResumeIntent =
+          deferredContextSeed.resumeIntent === true || deferredContextSeed.followUpRequested === true;
+        const isTerminalIssue = issue.status === "done" || issue.status === "cancelled";
         const deferredCommentRows =
           deferredCommentIds.length > 0
             ? await tx
@@ -6260,10 +6267,31 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
           assigneeAgentId: issue.assigneeAgentId,
           deferredCommentIds,
           deferredWakeReason,
-          requestedByActorType: deferred.requestedByActorType,
+          resumeIntent: deferredResumeIntent,
+          followUpRequested: deferredContextSeed.followUpRequested === true,
           deferredComments: deferredCommentRows,
           latestComment: latestCommentRow,
         });
+        const hasExplicitReopenIntent =
+          deferredWakeReason === "issue_reopened_via_comment" || deferredResumeIntent;
+
+        if (
+          isTerminalIssue &&
+          deferredCommentIds.length > 0 &&
+          !hasExplicitReopenIntent
+        ) {
+          await tx
+            .update(agentWakeupRequests)
+            .set({
+              status: "skipped",
+              reason: "terminal_issue_passive_comment_wake",
+              finishedAt: new Date(),
+              updatedAt: new Date(),
+            })
+            .where(eq(agentWakeupRequests.id, deferred.id));
+          continue;
+        }
+
         let reopenedActivity: LogActivityInput | null = null;
 
         if (shouldReopenDeferredCommentWake) {
