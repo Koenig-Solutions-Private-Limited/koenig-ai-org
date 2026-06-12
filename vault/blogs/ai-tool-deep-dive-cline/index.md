@@ -33,7 +33,7 @@ faq:
   - question: "What is Cline's Plan/Act mode and why does it matter?"
     answer: "Plan mode lets you align with the agent on strategy before any code changes. Cline uses the model to draft an approach, shows it to you, and only executes in Act mode once you approve. This matters because it catches scope creep and misunderstood requirements before the agent burns 10,000 tokens in the wrong direction. It's the primary way Cline keeps humans in control while still running autonomously within a task. ([DeployHQ Cline guide](https://www.deployhq.com/guides/cline))"
   - question: "What is the difference between Cline and Roo Code?"
-    answer: "Roo Code forked from Cline in 2024 and added a multi-mode system: Code, Architect, Ask, Debug, and community-built custom modes. Roo Code holds a perfect 5-star VS Code rating; [Cline sits at 4 stars with 292 reviews](https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev). Cline has more installs (8M+ vs Roo Code's ~1.2M), broader IDE support (JetBrains, CLI, SDK), and an enterprise offering with SSO. Choose Roo Code for structured mode-switching; choose Cline for broader platform reach and enterprise contracts."
+    answer: "Roo Code (now discontinued as of May 15, 2026) forked from Cline in 2024 and added a multi-mode system: Code, Architect, Ask, Debug, and community-built custom modes. The Roo Code team relaunched as **Kilo Code** — the active successor fork. Cline has more installs (8M+), broader IDE support (JetBrains, CLI, SDK), and an enterprise offering with SSO. If you want structured mode-switching in a maintained fork, evaluate Kilo Code; choose Cline for broader platform reach and enterprise contracts."
   - question: "Can Cline run headlessly in CI/CD pipelines?"
     answer: "Yes. The Cline CLI (`npm i -g cline`) supports fully headless operation for CI/CD integration — GitHub Actions, GitLab CI, or any Node 20+ pipeline. ([cline.bot](https://cline.bot)) The new Cline SDK extends this further, letting you embed the agent runtime programmatically with custom loop control, policy hooks, and structured output. For interactive use, Cline also runs as a VS Code extension, JetBrains plugin, or in the Kanban multi-agent board."
 sources:
@@ -42,7 +42,6 @@ sources:
   - https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev
   - https://serenitiesai.com/articles/roo-code-vs-cline-ai-coding-2026
   - https://www.faros.ai/blog/best-ai-coding-agents-2026
-  - https://www.morphllm.com/ai-coding-agent
   - https://frontman.sh/blog/best-open-source-ai-coding-tools-2026
   - https://github.com/cline/cline/issues/9174
   - https://www.deployhq.com/guides/cline
@@ -68,10 +67,6 @@ references:
   - n: 5
     title: "Best AI Coding Agents 2026 — Faros AI"
     url: https://www.faros.ai/blog/best-ai-coding-agents-2026
-    retrieved: 2026-06-12
-  - n: 6
-    title: "AI Coding Agent Rankings 2026 — Morph"
-    url: https://www.morphllm.com/ai-coding-agent
     retrieved: 2026-06-12
   - n: 7
     title: "Best Open-Source AI Coding Tools 2026 — Frontman"
@@ -242,6 +237,8 @@ This pattern works because Cline's MCP integration (covered in depth in [MCP 202
 
 ## Cline vs Roo Code: Choosing Your Open-Source Agent
 
+> **Note (May 2026):** Roo Code was discontinued on May 15, 2026. Its team relaunched as **Kilo Code**. All Roo Code references below are historical context; the active successor fork is [Kilo Code](https://kilocode.ai).
+
 Roo Code started as a Cline fork in 2024 and has diverged into its own product. [Frontman: best open-source AI coding tools 2026](https://frontman.sh/blog/best-open-source-ai-coding-tools-2026) The core question isn't "which is better" — they make opposite bets on how developers want to work.
 
 **The mode system is the defining difference.** Roo Code ships five built-in modes — Code, Architect, Ask, Debug, and Orchestrator — each with a different system prompt and tool set. Its community marketplace at v3.21 lets teams publish and download custom modes. You switch modes contextually: plan in Architect, implement in Code, diagnose in Debug. [Qodo: Roo Code vs Cline](https://www.qodo.ai/blog/roo-code-vs-cline) This structured approach produces Roo Code's perfect 5-star VS Code rating: the opinionated defaults reduce setup cognitive load.
@@ -252,7 +249,7 @@ Cline's single-agent model plus Plan/Act toggle achieves similar intent but requ
 
 **Enterprise: Cline has the contract.** Cline Bot Inc. offers an enterprise tier with SSO, audit trails, and compliance tooling. [Serenitiesai: Roo Code vs Cline 2026](https://serenitiesai.com/articles/roo-code-vs-cline-ai-coding-2026) Roo Code does not have a comparable commercial offering. For organizations that need vendor accountability, Cline is the only open-source option with an enterprise path.
 
-**The bottom line:** Choose Roo Code if you're VS Code-only, want structured mode-switching, and prioritize user satisfaction scores. Choose Cline if you need JetBrains or CLI support, are building on top of the agent runtime via SDK, or need an enterprise contract. See our full tool-selection matrix in the [AI coding agents production buyers' guide](/blog/ai-coding-agents-production-2026-buyers-guide).
+**The bottom line:** Roo Code was discontinued in May 2026; its active successor is **Kilo Code**, which continues the multi-mode approach (VS Code only, no enterprise offering). Choose Kilo Code if you want structured mode-switching in a maintained community fork. Choose Cline if you need JetBrains or CLI support, are building on top of the agent runtime via SDK, or require an enterprise contract. See our full tool-selection matrix in the [AI coding agents production buyers' guide](/blog/ai-coding-agents-production-2026-buyers-guide).
 
 ---
 
@@ -262,7 +259,7 @@ Cline's single-agent model plus Plan/Act toggle achieves similar intent but requ
 
 **Don't use it without active cost monitoring.** The BYOK model is only cheaper than subscriptions if you actively route cheaper models to commodity tasks. Developers who set Claude Opus 4.7 as default and run all-day coding sessions will pay more than a Cursor Pro subscription by mid-month. Cline has no built-in model routing by task complexity — you build that discipline yourself.
 
-**Don't use it as a drop-in replacement for Roo Code's multi-mode system.** If your team has already adopted Roo Code's mode-switching workflow — Code for implementation, Architect for design, Debug for root-cause analysis — switching to Cline loses the prompt tuning that each mode provides. You'd be rebuilding `.clinerules` approximations of what Roo Code ships by default.
+**Don't use it as a drop-in replacement for Kilo Code's multi-mode system.** If your team has adopted a mode-switching workflow — Code for implementation, Architect for design, Debug for root-cause analysis (the approach pioneered by Roo Code, now carried forward by its successor [Kilo Code](https://kilocode.ai)) — switching to Cline loses the prompt tuning that each mode provides. You'd be rebuilding `.clinerules` approximations of what Kilo Code ships by default.
 
 **Don't use auto-approve on an unfamiliar codebase.** YOLO mode without Plan-mode pre-review on a repo you don't know well is the documented $200-in-tokens failure pattern. Spend the 30 seconds in Plan mode first.
 
