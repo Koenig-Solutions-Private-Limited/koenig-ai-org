@@ -14,19 +14,31 @@ const ENGINEERING_AGENT_NAMES = new Set([
   "chief engineering",
 ]);
 
-const STAND_DOWN_PATTERNS = [
+const HIGH_CONFIDENCE_STAND_DOWN_PATTERNS = [
   /\bstanding down\b/i,
   /\bstand down\b/i,
   /\bwill not plan\b/i,
   /\bwill not execute\b/i,
   /\bblocked at step\b/i,
   /\bplan cannot be executed\b/i,
-  /\bplan drift\b/i,
   /\bfile(?:d|ing)?\s+(?:a\s+|an\s+|the\s+)?(?:board\s+)?approval\b/i,
   /\brequest(?:ing|ed)?\s+(?:board\s+)?approval\b/i,
-  /\bescalat(?:e|ing|ion)\b/i,
   /\broute(?:d)?\s+back\s+to\s+(?:planner|chief)\b/i,
 ];
+
+const WEAK_STAND_DOWN_PATTERNS = [/\bplan drift\b/i, /\bescalat(?:e|ing|ion)\b/i];
+
+function hasHighConfidenceStandDownDecision(text) {
+  return HIGH_CONFIDENCE_STAND_DOWN_PATTERNS.some((pattern) => pattern.test(text));
+}
+
+function matchesWeakStandDownDecision(text) {
+  if (/\b(?:not|no|isn't|is not)\s+plan drift\b/i.test(text)) return false;
+  if (/\bno escalation\b(?!:)/i.test(text)) return false;
+  if (/\bnot escalat/i.test(text)) return false;
+  if (/\bwithout escalation\b/i.test(text)) return false;
+  return WEAK_STAND_DOWN_PATTERNS.some((pattern) => pattern.test(text));
+}
 
 const OPERATIONAL_EXCLUSION_PATTERNS = [
   /\bblocked by\b/i,
@@ -76,16 +88,18 @@ export function classifyMarkerComment(body) {
     return { hasMarker: true, needsMarker: false, reason: "valid_marker" };
   }
 
+  if (hasHighConfidenceStandDownDecision(text)) {
+    return { hasMarker: false, needsMarker: true, reason: "stand_down_or_escalation_decision" };
+  }
+
   for (const pattern of OPERATIONAL_EXCLUSION_PATTERNS) {
     if (pattern.test(text)) {
       return { hasMarker: false, needsMarker: false, reason: "operational_routine" };
     }
   }
 
-  for (const pattern of STAND_DOWN_PATTERNS) {
-    if (pattern.test(text)) {
-      return { hasMarker: false, needsMarker: true, reason: "stand_down_or_escalation_decision" };
-    }
+  if (matchesWeakStandDownDecision(text)) {
+    return { hasMarker: false, needsMarker: true, reason: "stand_down_or_escalation_decision" };
   }
 
   return { hasMarker: false, needsMarker: false, reason: "not_audited" };

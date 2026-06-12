@@ -124,6 +124,25 @@ test("collectMarkerGaps surfaces only missing-marker stand-down comments", () =>
   assert.match(formatMarkerGapReport(gaps), /KOEA-8888/);
 });
 
+test("stand-down with dependency phrasing still requires marker", () => {
+  const body =
+    "Standing down — plan cannot be executed. Blocked by KOEA-1406; waiting on Planner.";
+  const result = classifyMarkerComment(body);
+  assert.equal(result.hasMarker, false);
+  assert.equal(result.needsMarker, true);
+  assert.equal(result.reason, "stand_down_or_escalation_decision");
+});
+
+test("negated plan drift and no-escalation wording are not stand-down gaps", () => {
+  for (const body of [
+    "This is not plan drift; the task remains blocked on approved dependency.",
+    "No escalation needed; duplicate watchdog incident already handled by CE.",
+  ]) {
+    const result = classifyMarkerComment(body);
+    assert.equal(result.needsMarker, false, body);
+  }
+});
+
 test("collectMarkerGaps ignores structured blocker accountability comments", () => {
   const gaps = collectMarkerGaps([
     {
