@@ -17,7 +17,7 @@ positions:
     engagement: defends
   - id: cli-first-workflows-for-production-teams
     engagement: refines
-last_updated: 2026-06-02
+last_updated: 2026-06-12
 hero_image:
   url: /img/blogs/ai-tool-deep-dive-cline/hero.png
   alt: "Cline AI coding agent sidebar in VS Code showing Plan/Act mode split with MCP tool calls and multi-file edit approvals"
@@ -29,7 +29,7 @@ faq:
   - question: "What is Cline's Plan/Act mode and why does it matter?"
     answer: "Plan mode lets you align with the agent on strategy before any code changes. Cline uses the model to draft an approach, shows it to you, and only executes in Act mode once you approve. This matters because it catches scope creep and misunderstood requirements before the agent burns 10,000 tokens in the wrong direction. It's the primary way Cline keeps humans in control while still running autonomously within a task."
   - question: "What is the difference between Cline and Roo Code?"
-    answer: "Roo Code forked from Cline in 2024 and added a multi-mode system: Code, Architect, Ask, Debug, and community-built custom modes. [Roo Code has a perfect 5-star VS Code rating with 331 reviews; Cline sits at 4 stars with 264](https://www.qodo.ai/blog/roo-code-vs-cline). Cline has more installs (8M+ vs Roo Code's ~1.2M), broader IDE support (JetBrains, CLI, SDK), and an enterprise offering with SSO. Choose Roo Code for structured mode-switching; choose Cline for broader platform reach and enterprise contracts."
+    answer: "Roo Code forked from Cline in 2024 and added a multi-mode system: Code, Architect, Ask, Debug, and community-built custom modes. Roo Code holds a perfect 5-star VS Code rating; [Cline sits at 4 stars with 292 reviews](https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev). Cline has more installs (8M+ vs Roo Code's ~1.2M), broader IDE support (JetBrains, CLI, SDK), and an enterprise offering with SSO. Choose Roo Code for structured mode-switching; choose Cline for broader platform reach and enterprise contracts."
   - question: "Can Cline run headlessly in CI/CD pipelines?"
     answer: "Yes. The Cline CLI (`npm i -g cline`) supports fully headless operation for CI/CD integration — GitHub Actions, GitLab CI, or any Node 20+ pipeline. The new Cline SDK extends this further, letting you embed the agent runtime programmatically with custom loop control, policy hooks, and structured output. For interactive use, Cline also runs as a VS Code extension, JetBrains plugin, or in the Kanban multi-agent board."
 sources:
@@ -77,7 +77,7 @@ Subscription tools like Cursor give you one underlying model with predictable bi
 
 Cline's Plan/Act toggle is the feature that earns its reputation for "developer control." In Plan mode, the agent uses your chosen model to reason through the task and produce a written strategy. You see every proposed step before a single byte of your codebase changes. Flip to Act mode to execute. Every file edit and terminal command still requires explicit approval — or you can flip on auto-approve for trusted tasks. [DeployHQ Cline guide](https://www.deployhq.com/guides/cline)
 
-This design is operationally significant for regulated environments. When Samsung Electronics rolled out Cline across Device eXperience [Morph AI coding agent ranking, 2026](https://www.morphllm.com/ai-coding-agent), the approval gates were not optional niceties — they were compliance requirements. A coding agent that lets you see the full execution plan before any change ships is a different risk profile than one that acts in the background.
+This design is operationally significant for regulated environments: [Cline's enterprise offering](https://cline.bot) with SSO and audit trails means the approval gates are not optional niceties — they are compliance requirements. A coding agent that lets you see the full execution plan before any change ships is a different risk profile than one that acts in the background.
 
 ### 3. MCP Marketplace built into the agent
 
@@ -108,7 +108,7 @@ Cline is no longer just a VS Code extension. The full platform in 2026:
 
 ### Speed: consistently 2× slower than Cursor
 
-On a standard React component task, independent benchmarks show Cline at ~90 seconds vs Cursor at ~45 seconds. [GitHub issue cline/cline #9174](https://github.com/cline/cline/issues/9174) For multi-file refactors where Cline correctly identified 7/8 files vs Cursor's 8/8, the speed gap plus the file miss is a real problem if you're doing 50 interactive tasks per day.
+On a standard React component task, developers in the Cline issue tracker report Cline at ~90 seconds vs Cursor at ~45 seconds. [GitHub issue cline/cline #9174](https://github.com/cline/cline/issues/9174) For multi-file refactors where Cline correctly identified 7/8 files vs Cursor's 8/8, the speed gap plus the file miss is a real problem if you're doing 50 interactive tasks per day.
 
 The root cause is round-trip latency: Cline's approval gates add human-in-the-loop pauses, and its context management reads more files to compensate for no built-in whole-repo semantic index. Cursor's background indexing and predictive completions eliminate those passes. For interactive, fast-iteration development, this matters.
 
@@ -122,7 +122,7 @@ Compare to Cursor at $20/month flat: for developers doing 4+ hours of daily inte
 
 Cline requires you to manage your own API keys, select your own models, configure MCP servers, and write your own `.clinerules`. There is no default "just works" configuration. Developers describe this as a feature (flexibility) and a bug (20-minute setup before first useful session) simultaneously. [Faros AI 2026 developer review](https://www.faros.ai/blog/best-ai-coding-agents-2026)
 
-The VS Code rating gap (Roo Code at 5 stars / 331 ratings vs Cline at 4 stars / 264 ratings) correlates with this: Roo Code ships opinionated defaults and a polished mode system; Cline ships maximum configuration surface. "Rewards deliberate users and frustrates those looking for a one-click experience" is the apt summary.
+The VS Code rating gap ([Roo Code at 5 stars](https://www.qodo.ai/blog/roo-code-vs-cline) vs [Cline at 4 stars / 292 reviews](https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev)) correlates with this: Roo Code ships opinionated defaults and a polished mode system; Cline ships maximum configuration surface. "Rewards deliberate users and frustrates those looking for a one-click experience" is the apt summary.
 
 ### YOLO mode carries real risk
 
@@ -251,4 +251,4 @@ D) Never — Act mode is always faster and the approvals provide sufficient safe
 
 ---
 
-Ready to go deeper? Our **[[course/ai-coding-agents-production-2026]]** course covers Cline, Roo Code, Cursor, and Claude Code in side-by-side exercises — including a module on `.clinerules` + MCP server configuration that shows exactly how each tool's convention system scales from solo developer to a 10-person engineering team. The [AI coding agent workflow primitives guide](/blog/ai-coding-agent-workflow-primitives-2026) covers the Plan/Act/checkpoint pattern in depth alongside worktree isolation and CI integration.
+Ready to go deeper? Our **[AI coding agents production buyers' guide](/blog/ai-coding-agents-production-2026-buyers-guide)** covers Cline, Roo Code, Cursor, and Claude Code in side-by-side exercises — including a module on `.clinerules` + MCP server configuration that shows exactly how each tool's convention system scales from solo developer to a 10-person engineering team. The [AI coding agent workflow primitives guide](/blog/ai-coding-agent-workflow-primitives-2026) covers the Plan/Act/checkpoint pattern in depth alongside worktree isolation and CI integration.
