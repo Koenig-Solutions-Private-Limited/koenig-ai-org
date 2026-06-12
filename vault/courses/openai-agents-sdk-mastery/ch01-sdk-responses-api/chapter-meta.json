@@ -3,7 +3,7 @@
   "chapter_id": "ch01-sdk-responses-api",
   "course_slug": "openai-agents-sdk-mastery",
   "title": "The Agent SDK & Responses API Model (2026)",
-  "generated_at": "2026-06-11T14:51:41.395Z",
+  "generated_at": "2026-06-12T04:48:54.811Z",
   "generated_by": "notebooklm-py via upload-chapter-assets.mjs",
   "notebook_id": "63d86a7d-14fd-49c1-8d91-cc5c6f8a0ad9",
   "source_file": "vault/courses/openai-agents-sdk-mastery/ch01-sdk-responses-api.md",
@@ -26,8 +26,12 @@
       "format": "json"
     },
     "audio": {
-      "size_bytes": 37379717,
-      "format": "mp3"
+      "size_bytes": 8702371,
+      "format": "mp3",
+      "duration_seconds": 544,
+      "bitrate_kbps": 128,
+      "lufs": -16,
+      "tool": "edge-tts v7.2.8 (en-US-GuyNeural) + ffmpeg loudnorm"
     },
     "quiz": {
       "size_bytes": 12886,
