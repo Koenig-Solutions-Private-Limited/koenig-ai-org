@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-7157
 vendor_tag: commercial
 content_type: article
-status: g0-passed
+status: awaiting-g0
 reading_time_min: 10
 primary_query: "windsurf codeium review 2026 is it worth it"
 contrarian_angle: "Every Windsurf review in 2026 focuses on SWE-1.5 speed and Codemaps. None of them engage with the real question: you are now buying into Cognition's roadmap, not the founding team's — because Google took Varun Mohan and Douglas Chen. The risk is not feature parity with Cursor. It's whether Cognition can sustain the developer trust that Codeium spent five years building."
@@ -94,7 +94,7 @@ The most concrete Cognition contribution to the post-acquisition Windsurf is SWE
 
 ### 2. Cascade: Genuinely Agentic, Not Glorified Autocomplete
 
-GitHub Copilot predicts the next tokens as you type. Cursor's Tab completion fills in the middle of a function. Cascade is a different category: describe a task in natural language, and the agent opens relevant files, traces call chains across your codebase, makes coordinated edits, runs terminal commands, and returns a reviewable diff. Cascade Hooks extend this further — you can instruct the agent to run your test suite before applying changes, or enforce a linting pass on every file it touches. This is the capability that makes Windsurf's agentic pitch credible rather than marketing language. See also our [seven CLI agent comparison](/blog/seven-cli-comparison) for how Cascade positions relative to Cline, Aider, and Codex CLI on the autonomy spectrum.
+GitHub Copilot predicts the next tokens as you type. Cursor's Tab completion fills in the middle of a function. Cascade is a different category: describe a task in natural language, and the agent opens relevant files, traces call chains across your codebase, makes coordinated edits, runs terminal commands, and returns a reviewable diff. Cascade Hooks extend this further — you can instruct the agent to run your test suite before applying changes, or enforce a linting pass on every file it touches. This is the capability that makes Windsurf's agentic pitch credible rather than marketing language. See also our [[seven-cli-comparison|seven CLI agent comparison]] for how Cascade positions relative to Cline, Aider, and Codex CLI on the autonomy spectrum.
 
 ### 3. Codemaps: Nobody Else Has This
 
@@ -118,7 +118,7 @@ The Windsurf IDE is a VS Code fork, but the legacy Codeium plugin portfolio cove
 
 **Hallucinated imports on unfamiliar frameworks.** Cascade is excellent on TypeScript/React, Python/FastAPI, Go, and Rust — the stacks well-represented in its training data. On niche frameworks (Elixir Phoenix, Gleam, legacy Angular, Zig) it generates plausible-looking imports that fail at compile time. Unlike Cline, which shows you every tool call before executing, Cascade applies changes and then surfaces the diff — so confabulated imports sometimes land in your working tree before you catch them.
 
-**JetBrains as a second-class experience.** The Windsurf IDE is VS Code-based. JetBrains users get the legacy Codeium plugin — Tab autocomplete, not Cascade. If your team cannot move off IntelliJ or PyCharm, the core value proposition does not transfer. See our [AI coding agents production buyers guide](/blog/ai-coding-agents-production-2026-buyers-guide) for a full IDE compatibility matrix across the major tools.
+**JetBrains as a second-class experience.** The Windsurf IDE is VS Code-based. JetBrains users get the legacy Codeium plugin — Tab autocomplete, not Cascade. If your team cannot move off IntelliJ or PyCharm, the core value proposition does not transfer. See our [[ai-coding-agents-production-2026-buyers-guide|AI coding agents production buyers guide]] for a full IDE compatibility matrix across the major tools.
 
 **No BYOK or model flexibility.** Windsurf locks you to SWE-1.5 and a curated model menu (Claude, GPT-4o, Gemini on Pro and Enterprise tiers). You cannot swap in DeepSeek, run local Ollama inference, or bring your own fine-tune. For teams with existing cloud model contracts — AWS Bedrock, Azure OpenAI, GCP Vertex — or compliance requirements around where inference runs, this is a blocker that Cline and Aider do not share.
 
