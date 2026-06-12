@@ -1,4 +1,8 @@
 ---
+title: "Cline in 2026: Deep-Dive Review — Strengths, Failure Modes, and Setup"
+description: "A thorough 2026 review of Cline: what the open-source coding agent actually does well, where it breaks, how to set it up in 10 steps, and when Roo Code or Cursor is the better choice."
+slug: 2026-06-12-cline-ai-coding-agent-review-2026
+tags: [cline, ai-coding-agents, open-source, mcp, vscode]
 date: 2026-06-02
 author: blog-author
 ticket: KOEA-7155
@@ -23,15 +27,15 @@ hero_image:
   alt: "Cline AI coding agent sidebar in VS Code showing Plan/Act mode split with MCP tool calls and multi-file edit approvals"
 faq:
   - question: "Is Cline free to use in 2026?"
-    answer: "Cline itself is free: the extension, CLI, and SDK are Apache 2.0 open-source. You pay your LLM provider directly with your own API key — Cline adds zero markup. On Claude Sonnet 4.6 ($3/MTok input, $15/MTok output), heavy coding sessions cost roughly $3–8/hour. Running local models via Ollama makes Cline completely free. The enterprise tier (SSO, audit trails) is priced separately through Cline Bot Inc."
+    answer: "Cline itself is free: the extension, CLI, and SDK are [Apache 2.0 open-source](https://github.com/cline/cline). You pay your LLM provider directly with your own API key — Cline adds zero markup. On Claude Sonnet 4.6 ($3/MTok input, $15/MTok output), heavy coding sessions cost roughly $3–8/hour. Running local models via Ollama makes Cline completely free. The enterprise tier (SSO, audit trails) is priced separately through [Cline Bot Inc.](https://cline.bot)"
   - question: "How does Cline compare to Cursor in 2026?"
     answer: "Cursor wins on speed ([45s vs Cline's ~90s on a typical React component](https://github.com/cline/cline/issues/9174)), IDE polish, and predictable flat-rate billing at $20/month. Cline wins on model flexibility (30+ providers vs Cursor's proprietary models), transparency (you see every tool call), MCP ecosystem, and JetBrains/CLI/SDK availability. Most engineering teams use Cursor for interactive development and Cline for autonomous, multi-file, or CI-integrated workflows."
   - question: "What is Cline's Plan/Act mode and why does it matter?"
-    answer: "Plan mode lets you align with the agent on strategy before any code changes. Cline uses the model to draft an approach, shows it to you, and only executes in Act mode once you approve. This matters because it catches scope creep and misunderstood requirements before the agent burns 10,000 tokens in the wrong direction. It's the primary way Cline keeps humans in control while still running autonomously within a task."
+    answer: "Plan mode lets you align with the agent on strategy before any code changes. Cline uses the model to draft an approach, shows it to you, and only executes in Act mode once you approve. This matters because it catches scope creep and misunderstood requirements before the agent burns 10,000 tokens in the wrong direction. It's the primary way Cline keeps humans in control while still running autonomously within a task. ([DeployHQ Cline guide](https://www.deployhq.com/guides/cline))"
   - question: "What is the difference between Cline and Roo Code?"
     answer: "Roo Code forked from Cline in 2024 and added a multi-mode system: Code, Architect, Ask, Debug, and community-built custom modes. Roo Code holds a perfect 5-star VS Code rating; [Cline sits at 4 stars with 292 reviews](https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev). Cline has more installs (8M+ vs Roo Code's ~1.2M), broader IDE support (JetBrains, CLI, SDK), and an enterprise offering with SSO. Choose Roo Code for structured mode-switching; choose Cline for broader platform reach and enterprise contracts."
   - question: "Can Cline run headlessly in CI/CD pipelines?"
-    answer: "Yes. The Cline CLI (`npm i -g cline`) supports fully headless operation for CI/CD integration — GitHub Actions, GitLab CI, or any Node 20+ pipeline. The new Cline SDK extends this further, letting you embed the agent runtime programmatically with custom loop control, policy hooks, and structured output. For interactive use, Cline also runs as a VS Code extension, JetBrains plugin, or in the Kanban multi-agent board."
+    answer: "Yes. The Cline CLI (`npm i -g cline`) supports fully headless operation for CI/CD integration — GitHub Actions, GitLab CI, or any Node 20+ pipeline. ([cline.bot](https://cline.bot)) The new Cline SDK extends this further, letting you embed the agent runtime programmatically with custom loop control, policy hooks, and structured output. For interactive use, Cline also runs as a VS Code extension, JetBrains plugin, or in the Kanban multi-agent board."
 sources:
   - https://cline.bot
   - https://github.com/cline/cline
@@ -44,6 +48,51 @@ sources:
   - https://www.deployhq.com/guides/cline
   - https://www.developersdigest.tech/blog/what-is-cline-open-source-ai-coding-tool
   - https://www.qodo.ai/blog/roo-code-vs-cline
+references:
+  - n: 1
+    title: "Cline — official site"
+    url: https://cline.bot
+    retrieved: 2026-06-12
+  - n: 2
+    title: "cline/cline — GitHub repository (Apache 2.0)"
+    url: https://github.com/cline/cline
+    retrieved: 2026-06-12
+  - n: 3
+    title: "Cline — Visual Studio Marketplace"
+    url: https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev
+    retrieved: 2026-06-12
+  - n: 4
+    title: "Roo Code vs Cline AI Coding 2026 — Serenitiesai"
+    url: https://serenitiesai.com/articles/roo-code-vs-cline-ai-coding-2026
+    retrieved: 2026-06-12
+  - n: 5
+    title: "Best AI Coding Agents 2026 — Faros AI"
+    url: https://www.faros.ai/blog/best-ai-coding-agents-2026
+    retrieved: 2026-06-12
+  - n: 6
+    title: "AI Coding Agent Rankings 2026 — Morph"
+    url: https://www.morphllm.com/ai-coding-agent
+    retrieved: 2026-06-12
+  - n: 7
+    title: "Best Open-Source AI Coding Tools 2026 — Frontman"
+    url: https://frontman.sh/blog/best-open-source-ai-coding-tools-2026
+    retrieved: 2026-06-12
+  - n: 8
+    title: "GitHub issue: speed comparison Cline vs Cursor #9174"
+    url: https://github.com/cline/cline/issues/9174
+    retrieved: 2026-06-12
+  - n: 9
+    title: "Cline Setup Guide — DeployHQ"
+    url: https://www.deployhq.com/guides/cline
+    retrieved: 2026-06-12
+  - n: 10
+    title: "What Is Cline? — Developers Digest"
+    url: https://www.developersdigest.tech/blog/what-is-cline-open-source-ai-coding-tool
+    retrieved: 2026-06-12
+  - n: 11
+    title: "Roo Code vs Cline — Qodo"
+    url: https://www.qodo.ai/blog/roo-code-vs-cline
+    retrieved: 2026-06-12
 whats_new:
   - "Cline's 8M+ installs make it the most adopted open-source coding agent — but its own fork, Roo Code, is winning on user satisfaction"
 learning_objectives:
