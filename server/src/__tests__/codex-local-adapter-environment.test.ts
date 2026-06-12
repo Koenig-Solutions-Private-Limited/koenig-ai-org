@@ -5,6 +5,7 @@ import path from "node:path";
 import { testEnvironment } from "@paperclipai/adapter-codex-local/server";
 
 const itWindows = process.platform === "win32" ? it : it.skip;
+const itNonWindows = process.platform !== "win32" ? it : it.skip;
 
 describe("codex_local environment diagnostics", () => {
   beforeEach(() => {
@@ -135,6 +136,55 @@ describe("codex_local environment diagnostics", () => {
 
       expect(result.status).toBe("pass");
       expect(result.checks.some((check) => check.code === "codex_hello_probe_passed")).toBe(true);
+    } finally {
+      await fs.rm(root, { recursive: true, force: true });
+    }
+  });
+
+  itNonWindows("passes hello probe and includes skip-git-repo-check + model in codex args", async () => {
+    const root = path.join(
+      os.tmpdir(),
+      `paperclip-codex-local-probe-args-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    );
+    const binDir = path.join(root, "bin");
+    const cwd = path.join(root, "workspace");
+    const fakeCodex = path.join(binDir, "codex");
+    const argsFile = path.join(root, "args.txt");
+    const script = [
+      "#!/usr/bin/env bash",
+      `printf '%s\\n' \"$@\" > ${JSON.stringify(argsFile)}`,
+      "echo '{\"type\":\"thread.started\",\"thread_id\":\"test-thread\"}'",
+      "echo '{\"type\":\"item.completed\",\"item\":{\"type\":\"agent_message\",\"text\":\"hello\"}}'",
+      "echo '{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":1,\"cached_input_tokens\":0,\"output_tokens\":1}}'",
+      "exit 0",
+      "",
+    ].join("\n");
+
+    try {
+      await fs.mkdir(binDir, { recursive: true });
+      await fs.writeFile(fakeCodex, script, "utf8");
+      await fs.chmod(fakeCodex, 0o755);
+
+      const result = await testEnvironment({
+        companyId: "company-1",
+        adapterType: "codex_local",
+        config: {
+          command: "codex",
+          cwd,
+          model: "gpt-5.5",
+          env: {
+            OPENAI_API_KEY: "test-key",
+            PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}`,
+          },
+        },
+      });
+
+      expect(result.status).toBe("pass");
+      expect(result.checks.some((check) => check.code === "codex_hello_probe_passed")).toBe(true);
+      const args = (await fs.readFile(argsFile, "utf8")).split(/\r?\n/).filter(Boolean);
+      expect(args).toContain("--skip-git-repo-check");
+      expect(args).toContain("--model");
+      expect(args).toContain("gpt-5.5");
     } finally {
       await fs.rm(root, { recursive: true, force: true });
     }

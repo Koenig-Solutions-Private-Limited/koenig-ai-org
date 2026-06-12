@@ -16,6 +16,7 @@ describe("buildCodexExecArgs", () => {
       "--search",
       "exec",
       "--json",
+      "--skip-git-repo-check",
       "--model",
       "gpt-5.4",
       "-c",
@@ -38,6 +39,7 @@ describe("buildCodexExecArgs", () => {
     expect(result.args).toEqual([
       "exec",
       "--json",
+      "--skip-git-repo-check",
       "--model",
       "gpt-5.5",
       "-c",
@@ -62,9 +64,28 @@ describe("buildCodexExecArgs", () => {
     expect(result.args).toEqual([
       "exec",
       "--json",
+      "--skip-git-repo-check",
       "--model",
       "gpt-5.3-codex",
       "-",
     ]);
+  });
+
+  it("does not duplicate --skip-git-repo-check when supplied by user args", () => {
+    const result = buildCodexExecArgs({
+      model: "gpt-5.5",
+      extraArgs: ["--skip-git-repo-check", "--some-flag"],
+    });
+
+    expect(result.args).toEqual([
+      "exec",
+      "--json",
+      "--model",
+      "gpt-5.5",
+      "--skip-git-repo-check",
+      "--some-flag",
+      "-",
+    ]);
+    expect(result.args.filter((arg) => arg === "--skip-git-repo-check")).toHaveLength(1);
   });
 });
