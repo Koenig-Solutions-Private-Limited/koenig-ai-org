@@ -52,7 +52,6 @@ learning_objectives:
   - "Identify the three workflow scenarios where Cline is the wrong choice"
 schema:
   - BlogPosting
-  - HowTo
   - FAQPage
 ---
 
@@ -133,11 +132,7 @@ Cline's auto-approve ("YOLO mode") skips per-action confirmation for file edits 
 
 ## Set Up Cline for Production: 10 Steps
 
-```schema:HowTo
-name: Set up Cline for production use in VS Code in 2026
-totalTime: PT25M
-estimatedCost: { currency: "USD", minValue: 0, maxValue: 0 }
-```
+The full setup takes about 25 minutes and costs nothing for the tooling itself — only your LLM provider charges apply.
 
 1. **Install the extension** — Open VS Code Extensions panel, search "Cline", install `saoudrizwan.claude-dev`. Or install via CLI: `npm i -g cline`.
 2. **Add your API key** — Click the Cline sidebar icon, open Settings, select your provider (Anthropic, OpenAI, OpenRouter, etc.), and paste your API key. No Cline account required for BYOK mode.
