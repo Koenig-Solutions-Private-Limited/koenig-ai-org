@@ -240,6 +240,7 @@ function mergeAdapterRecoveryMetadata(input: {
   };
 }
 const RUNNING_ISSUE_WAKE_REASONS_REQUIRING_FOLLOWUP = new Set(["approval_approved"]);
+const BLOCKED_AUTO_CHECKOUT_WAKE_REASONS = new Set(["issue_blockers_resolved"]);
 const SESSIONED_LOCAL_ADAPTERS = new Set([
   "claude_local",
   "codex_local",
@@ -1437,7 +1438,7 @@ function describeSessionResetReason(
   return null;
 }
 
-function shouldAutoCheckoutIssueForWake(input: {
+export function shouldAutoCheckoutIssueForWake(input: {
   contextSnapshot: Record<string, unknown> | null | undefined;
   issueStatus: string | null;
   issueAssigneeAgentId: string | null;
@@ -1461,6 +1462,13 @@ function shouldAutoCheckoutIssueForWake(input: {
   if (!wakeReason) return false;
   if (wakeReason === "issue_comment_mentioned") return false;
   if (wakeReason.startsWith("execution_")) return false;
+
+  // Deliberate blocked status must survive heartbeat finalization and chained
+  // follow-up runs (missing comment retry, liveness continuation, etc.). Only
+  // explicit blocker-resolution wakes may auto-checkout from blocked.
+  if (issueStatus === "blocked") {
+    return BLOCKED_AUTO_CHECKOUT_WAKE_REASONS.has(wakeReason);
+  }
 
   return true;
 }
