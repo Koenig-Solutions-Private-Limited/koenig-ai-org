@@ -52,7 +52,7 @@ references:
     retrieved: 2026-06-01
 whats_new:
   - browser-use wraps Playwright — they are not alternatives; one is the foundation, the other is the agent layer on top.
-  - The correct decision rule is task type, not library preference: agentic open-ended tasks → browser-use; scripted deterministic automation → raw Playwright.
+  - "The correct decision rule is task type, not library preference: agentic open-ended tasks → browser-use; scripted deterministic automation → raw Playwright."
 learning_objectives:
   - Understand the architectural difference between browser-use and Playwright
   - Apply the decision matrix to choose the right tool for a given automation task
@@ -67,7 +67,7 @@ faq:
   - question: "How fast is browser-use compared to Playwright?"
     answer: "Raw Playwright with pre-written selectors is faster on a per-task basis — no LLM inference overhead. browser-use adds 0.5–3s per action step for the LLM planning call. For interactive agentic tasks (booking flows, form navigation, research tasks), this overhead is imperceptible. For bulk scraping where you run the same selector 10,000 times, Playwright's scripted path is 5–20× faster. (github.com/browser-use/browser-use/releases)"
   - question: "Which AI agents framework works best with browser-use?"
-    answer: "browser-use has first-class integrations for LangChain and supports any OpenAI-compatible model. It works with Claude, GPT-4o, and Gemini as the planning LLM. For Anthropic-native stacks, instantiate the Agent with an Anthropic client — browser-use handles the tool-calling loop automatically. (docs.browser-use.com/integrations)"
+    answer: "browser-use has first-class integrations for LangChain and supports any OpenAI-compatible model. It works with Claude, GPT-4o, and Gemini as the planning LLM. For Anthropic-native stacks, instantiate the Agent with an Anthropic client — browser-use handles the tool-calling loop automatically. No custom wrapper code needed. (docs.browser-use.com/integrations)"
 positions:
   - id: cli-first-workflows-for-production-teams
     engagement: refines
