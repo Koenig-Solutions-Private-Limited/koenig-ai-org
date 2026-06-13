@@ -28,7 +28,7 @@ author: blog-author
 ticket: KOEA-5998
 vendor_tag: openai
 content_type: article
-status: g3-passed
+status: g4-passed
 reading_time_min: 7
 primary_query: "openai realtime api voice agents production patterns 2026"
 seo_description: "Production guide to OpenAI Realtime API voice agents: when to choose Realtime over Whisper+TTS, handling interruptions, sessions, cost, and rate limits."
@@ -106,6 +106,31 @@ That does not make TTS benchmarks irrelevant. It means they answer a narrower qu
 
 Instrument those as separate timestamps. Log user speech end, VAD decision, first model response event, first audio delta, playback start, interruption event, tool call start, tool call finish, truncate event, rate-limit headers, and session close. Without those events, every complaint becomes "the model is slow," even when the real problem is Bluetooth latency, client buffering, overly cautious VAD, or a tool call hidden behind a spoken filler phrase.
 
+```mermaid title="OpenAI Realtime API WebSocket conversation turn with tool call and interruption"
+sequenceDiagram
+    participant User as User (mic)
+    participant Client as Client
+    participant Model as OpenAI Realtime API
+    participant Tool as CRM Tool
+
+    User->>Client: speaks (audio in)
+    Client->>Model: audio chunks (PCM16 / G.711)
+    Model-->>Client: speech_started → speech_stopped (VAD)
+    Model-->>Client: response.audio.delta (audio out begins)
+    Client->>User: plays audio
+    User->>Client: interrupts mid-playback
+    Client->>Model: conversation.item.truncate
+    Model-->>Client: conversation.item.truncated
+    Note over Client,Model: Server state synced to what user heard
+    Model-->>Client: tool_call (CRM lookup)
+    Client->>Tool: execute()
+    Tool-->>Client: result
+    Client->>Model: tool_result
+    Model-->>Client: response.audio.delta (resumed)
+    Client->>User: plays continued response
+```
+*Alt: Sequence diagram of an OpenAI Realtime API WebSocket turn showing user audio in, VAD decision, audio playback, mid-playback interruption with `conversation.item.truncate`, tool dispatch and result, and resumed audio — illustrating the full stateful loop that requires synchronised client and server state.*
+
 ## Build around interruptions before you polish the prompt
 
 Interruption handling is where many demos become fragile. When the user talks over the model, the client must stop playback and the application must repair the model's conversation state. The Azure OpenAI Realtime audio reference describes `conversation.item.truncate` as the client event used to truncate a previous assistant message's audio, and OpenAI's official SDK exposes the matching `ConversationItemTruncateEvent` type.<CitationFootnote source="https://learn.microsoft.com/en-us/azure/ai-services/openai/realtime-audio-reference">Azure OpenAI Realtime audio event reference for `conversation.item.truncate`</CitationFootnote><CitationFootnote source="https://github.com/openai/openai-python/blob/main/api.md">OpenAI Python SDK Realtime event types</CitationFootnote> The production requirement is the same: server-side state should match what the user actually heard.
@@ -151,6 +176,15 @@ expected_output: |
 ## Budget for session growth instead of per-minute media
 
 Realtime costs are easy to underestimate because a live call is not just one audio input and one audio output. The research synthesis cites Realtime input audio at $32 per 1M input audio tokens, cached input at a steep discount, and output audio at $64 per 1M; it also summarizes estimates of about $0.11 for a 1-minute session, $0.92 for 5 minutes, and $5.28 for 15 minutes as history accumulates.<CitationFootnote source="https://www.latent.space/p/realtime-api">Latent Space Realtime API cost breakdown</CitationFootnote>
+
+```mermaid title="OpenAI Realtime session cost growth by call duration — $0.11 for 1 min, $0.92 for 5 min, $5.28 for 15 min"
+xychart-beta
+    title "Realtime Session Estimated Cost by Duration (conversation history accumulates)"
+    x-axis ["1 min", "5 min", "15 min"]
+    y-axis "Estimated cost (USD)" 0 --> 6
+    bar [0.11, 0.92, 5.28]
+```
+*Alt: Bar chart showing OpenAI Realtime API estimated session cost at $0.11 for a 1-minute call, $0.92 for 5 minutes, and $5.28 for 15 minutes — illustrating the disproportionate cost growth as conversation history accumulates across a call.*
 
 That curve is the reason the first production version needs summarization and rollover logic. Long calls should periodically compress prior turns, store tool state outside the model session, prune irrelevant items, and route non-live follow-up work through a cheaper asynchronous path. Rate limits are part of cost control too: OpenAI's `gpt-realtime-2` model reference lists tiered request and token limits, so teams should log remaining/reset headers where exposed and isolate production projects from development traffic.<CitationFootnote source="https://developers.openai.com/api/docs/models/gpt-realtime-2">OpenAI `gpt-realtime-2` pricing and rate-limit reference</CitationFootnote>
 
