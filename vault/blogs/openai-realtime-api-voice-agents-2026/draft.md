@@ -1,5 +1,5 @@
 ---
-title: "Use OpenAI Realtime API when voice agents need interruptions, tools, and sub-second turns"
+title: "Use OpenAI Realtime API when voice agents need interruptions, tools, and sub-second turns (2026)"
 slug: 2026-05-14-openai-realtime-api-voice-agents-2026
 description: "A production guide to OpenAI Realtime API voice agents in 2026: latency, cost, PCM16 and G.711 audio formats, interruption handling, rate limits, the 15-minute session cap, and when to choose Realtime over a Whisper plus TTS pipeline."
 hero_image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80"
@@ -13,6 +13,10 @@ content_type: article
 reading_time_min: 11
 primary_query: "openai realtime api voice agents production patterns 2026"
 contrarian_angle: "Realtime API is not mainly a faster TTS endpoint. Its production advantage is collapsing turn detection, interruption repair, telephony audio formats, tool calls, and session state into one speech-native loop."
+positions:
+  - id: benchmark-theater-vs-agent-trace-evaluation
+    engagement: defends
+first_60_words_answer: "OpenAI Realtime API is the better production choice for voice agents when the user experience depends on natural interruptions, speech-to-speech latency around 500-800ms, live tool calls, and phone or browser audio transport. A self-assembled Whisper plus LLM plus TTS pipeline is still cheaper and more modular, but it usually lands closer to 2-3 seconds end to end."
 learning_objectives:
   - "Choose between OpenAI Realtime API and a self-assembled Whisper plus TTS pipeline using latency, cost, and product requirements."
   - "Identify the production gotchas that break voice agents: PCM16 and G.711 audio chunks, interruption truncation, rate limits, and 15-minute sessions."
@@ -20,10 +24,10 @@ learning_objectives:
 whats_new:
   - "OpenAI Realtime is now a production voice-agent platform, not just a speech demo: the decision turns on barge-in, tools, telephony, and context cost."
 references:
-  - url: https://platform.openai.com/docs/guides/rate-limits
+  - url: https://developers.openai.com/docs/guides/rate-limits
     title: "OpenAI rate limits guide"
     retrieved: 2026-05-13
-  - url: https://platform.openai.com/docs/guides/realtime-models-prompting
+  - url: https://developers.openai.com/docs/guides/realtime-models-prompting
     title: "OpenAI Realtime models prompting guide"
     retrieved: 2026-05-13
   - url: https://platform.openai.com/docs/changelog
@@ -52,14 +56,14 @@ references:
     retrieved: 2026-05-13
 faq:
   - question: "Is OpenAI Realtime API better than Whisper plus TTS for voice agents?"
-    answer: "It is better for live agents that need sub-second turns, barge-in, prosody, tools, and telephony. Whisper plus TTS remains better for cheaper batch, push-to-talk, or modular voice workflows."
+    answer: "OpenAI Realtime API outperforms Whisper plus TTS for live agents that require sub-second turns, barge-in interruptions, prosody preservation, mid-stream tool calls, and telephony audio formats including PCM16 and G.711. Eesel's 2026 comparison confirms Realtime wins on live interaction quality, while Whisper plus TTS costs far less for batch, push-to-talk, or modular workflows that tolerate 2-3 second latency. (eesel.ai/blog/realtime-api-vs-whisper-vs-tts-api)"
   - question: "How fast is OpenAI Realtime API compared with a traditional voice pipeline?"
-    answer: "The synthesis cites roughly 500ms TTFB and an 800ms target for Realtime, compared with roughly 2-3 seconds for STT to LLM to TTS pipelines."
+    answer: "Realtime API targets approximately 500ms time-to-first-byte in US conditions, with an 800ms end-to-end conversational target. Traditional STT-to-LLM-to-TTS pipelines typically run 2-3 seconds due to serial processing across three stages. Latent Space's Realtime API production analysis documents these benchmarks and notes the gap widens further when accounting for endpointing and client-side audio buffering. (latent.space/p/realtime-api)"
   - question: "What production limit should teams plan around first?"
-    answer: "Plan around the 15-minute session limit and interruption truncation first. Both affect real calls before model quality becomes the limiting factor."
+    answer: "Teams should plan around the 15-minute session cap and the 16,384-token instruction limit first. The session cap requires a reconnect-and-summarize strategy for any call that may run long. The instruction limit hits agents combining detailed system prompts with multi-tool schemas — a constraint documented in the OpenAI Community forum by developers shipping Realtime with tool calling. (community.openai.com/t/realtime-api-instruction-limit-16-384-tokens)"
 ---
 
-# Use OpenAI Realtime API when voice agents need interruptions, tools, and sub-second turns
+# Use OpenAI Realtime API when voice agents need interruptions, tools, and sub-second turns (2026)
 
 OpenAI Realtime API is the better production choice for voice agents when the user experience depends on natural interruptions, speech-to-speech latency around 500-800ms, live tool calls, and phone or browser audio transport. A self-assembled Whisper plus LLM plus TTS pipeline is still cheaper and more modular, but it usually lands closer to 2-3 seconds end to end and makes your team own turn detection, playback sync, and conversation repair.[1][4][6]
 
@@ -142,7 +146,7 @@ For browser and mobile clients, the architecture pattern is a WebRTC path for us
 
 VAD is the second failure point. If silence detection is too aggressive, the model starts speaking while the user is still thinking. If it is too slow, every turn feels delayed. The synthesis flags `silence_duration_ms=800-1000ms` as a practical tuning range and calls out `reasoning.effort=minimal/low` as a latency optimization.[2][4] The right setting depends on the product. A medical intake agent should wait longer than a drive-through ordering assistant.
 
-Interruption handling is where demo code usually breaks. The synthesis cites the WorkAdventure implementation note: when the user interrupts, revert the model conversation with `conversation.item.truncate` and sync the audio playback promise so you do not keep context for words the user never heard.[9] If the assistant says, "Your appointment is at four..." and the user interrupts after "Your appointment," your conversation state must not pretend the user heard the rest.
+Interruption handling is where demo code usually breaks. The WorkAdventure implementation note demonstrates interruption handling through a `cancelResponse()` helper that clears audio playback and syncs conversation state so the model does not retain context for audio the user never heard.[9] At the Realtime API layer, this corresponds to sending `conversation.item.truncate` to align the server-side session with what was actually played before the barge-in. If the assistant says, "Your appointment is at four..." and the user interrupts after "Your appointment," your conversation state must not pretend the user heard the rest.
 
 Session limits are the third thing to design around. The synthesis cites a 15-minute session limit and a production complaint about a 16,384-token instruction limit for Realtime agents with tool calling.[4][10] Whether or not your calls usually last 15 minutes, you need a reconnection strategy before launch: summarize the call, store tool state outside the session, open a fresh session, and replay only what the next turn needs.
 
@@ -202,9 +206,9 @@ The practical takeaway: use OpenAI Realtime when speech is the interface. Use Wh
 
 ## Further reading
 
-[1] OpenAI rate limits guide: https://platform.openai.com/docs/guides/rate-limits
+[1] OpenAI rate limits guide: https://developers.openai.com/docs/guides/rate-limits
 
-[2] OpenAI Realtime models prompting guide: https://platform.openai.com/docs/guides/realtime-models-prompting
+[2] OpenAI Realtime models prompting guide: https://developers.openai.com/docs/guides/realtime-models-prompting
 
 [3] OpenAI platform changelog: https://platform.openai.com/docs/changelog
 
