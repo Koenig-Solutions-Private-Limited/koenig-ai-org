@@ -1,5 +1,8 @@
 ---
 date: 2026-06-01
+title: "Use Claude Computer Use in 2026: API Route, Cowork, and the Tool Loop Most Tutorials Skip"
+slug: "2026-06-01-how-to-use-claude-computer-use"
+description: "A hands-on tutorial covering both the Claude Computer Use API tool loop and Cowork, with a working Python example, sandbox requirements, and the three prompt injection vectors that make unsandboxed computer use dangerous."
 author: blog-author
 ticket: KOEA-7027
 vendor_tag: anthropic
@@ -19,10 +22,10 @@ sources:
   - https://platform.claude.com/docs/en/agents-and-tools/tool-use/computer-use-tool
   - https://www.digitalapplied.com/blog/anthropic-computer-use-api-guide
   - https://blog.laozhang.ai/en/posts/claude-computer-use
-  - https://tech-insider.org/anthropic-claude-computer-use-agent-2026
   - https://siliconangle.com/2026/03/23/anthropics-claude-gets-computer-use-capabilities-preview
   - https://www.hiddenlayer.com/research/indirect-prompt-injection-of-claude-computer-use
   - https://www.kunalganglani.com/blog/claude-computer-use-security-risks
+  - https://www.promptarmor.com/resources/claude-cowork-exfiltrates-files
 whats_new:
   - Claude Computer Use now has two separate execution contracts — API route for builders, Cowork for delegation — and conflating them produces either over-engineered or insecure systems
 learning_objectives:
@@ -31,13 +34,13 @@ learning_objectives:
   - Identify the three concrete prompt injection vectors that make unsandboxed computer use dangerous
 faq:
   - question: "How do I enable Claude computer use in the API?"
-    answer: "Pass the beta header `anthropic-beta: computer-use-2025-11-24` in your API request alongside a supported model (claude-sonnet-4-6 or claude-opus-4-7). Include a `computer` tool in your tools array. Claude will respond with tool_use blocks describing screenshot, mouse, or keyboard actions — your code executes them and returns tool_result. Retrieved 2026-06-01 from platform.claude.com/docs."
+    answer: "Pass the beta header `anthropic-beta: computer-use-2025-11-24` in your API request alongside a supported model (Opus 4.8, Opus 4.7, Opus 4.6, Sonnet 4.6, or Opus 4.5). Include a `computer` tool in your tools array. Claude will respond with tool_use blocks describing screenshot, mouse, or keyboard actions — your code executes them and returns tool_result. Retrieved 2026-06-01 from platform.claude.com/docs."
   - question: "Is Claude computer use safe to use?"
     answer: "Only with strict isolation. Anthropic explicitly recommends running computer use inside a Docker container or VM with restricted network access. The core risk is prompt injection: a malicious website or document can instruct Claude to take destructive actions like exfiltrating data. HiddenLayer demonstrated in 2026 that indirect injection can trigger `rm -rf /` on an unsandboxed machine. Retrieved 2026-06-01."
   - question: "What is the difference between Claude computer use API and Cowork?"
     answer: "The API route puts your code in control of the execution loop — Claude outputs action instructions and your application executes them inside a sandbox you control. Cowork is Anthropic's managed product where Claude interacts with your actual desktop without a custom loop. API = builder flexibility with full responsibility for security; Cowork = fast delegation with less control. Retrieved 2026-06-01 from blog.laozhang.ai."
   - question: "What models support Claude computer use in 2026?"
-    answer: "As of mid-2026, claude-sonnet-4-6 and claude-opus-4-7 support computer use with the `computer-use-2025-11-24` beta header. The beta adds 466–499 system-prompt tokens plus 735 tool-definition tokens per request before counting screenshot images. Retrieved 2026-06-01 from digitalapplied.com."
+    answer: "As of mid-2026, the `computer-use-2025-11-24` beta header supports Claude Opus 4.8, Opus 4.7, Opus 4.6, Sonnet 4.6, and Opus 4.5. A second header `computer-use-2025-01-24` covers Sonnet 4.5, Haiku 4.5, and deprecated models. The beta adds 466–499 system-prompt tokens plus 735 tool-definition tokens per request before counting screenshot images. Retrieved 2026-06-01 from platform.claude.com/docs."
 original_data: false
 last_updated: 2026-06-01
 hero_image:
@@ -78,7 +81,7 @@ If you're shipping an automation feature into a product, use the API route. If y
 
 ## How the API Tool Loop Actually Works
 
-The [computer use API](https://platform.claude.com/docs/en/agents-and-tools/tool-use/computer-use-tool) is a standard tool loop, not an autonomous agent. Here's the cycle:
+The [computer use API](https://platform.claude.com/docs/en/agents-and-tools/tool-use/computer-use-tool) is a standard [[glossary/tool-use]] loop, not an autonomous agent. Here's the cycle:
 
 1. Your code captures a screenshot of the desktop state.
 2. You send the screenshot plus a task to Claude with the `computer` tool enabled.
@@ -89,7 +92,7 @@ The [computer use API](https://platform.claude.com/docs/en/agents-and-tools/tool
 
 Claude never touches your machine directly. It produces structured instructions; your application decides whether and how to execute them. This is the architectural fact that most tutorials elide — and it's where your safety controls actually live.
 
-As of mid-2026, the beta header is [`computer-use-2025-11-24`](https://www.digitalapplied.com/blog/anthropic-computer-use-api-guide) for `claude-sonnet-4-6` and `claude-opus-4-7`.
+As of mid-2026, [`computer-use-2025-11-24`](https://platform.claude.com/docs/en/agents-and-tools/tool-use/computer-use-tool) supports Claude Opus 4.8, Opus 4.7, Opus 4.6, Sonnet 4.6, and Opus 4.5; a second header `computer-use-2025-01-24` covers Sonnet 4.5, Haiku 4.5, and deprecated models.
 
 ## Minimal Working Implementation
 
@@ -154,14 +157,14 @@ Note the token overhead: the `computer-use-2025-11-24` beta adds [466–499 syst
 
 Prompt injection is [OWASP's #1 LLM vulnerability in 2026](https://www.kunalganglani.com/blog/claude-computer-use-security-risks), and computer use makes it catastrophically more dangerous than in chatbot contexts.
 
-The attack is straightforward: a malicious website or document embeds hidden text — invisible to humans, visible to Claude's vision model — that contains instructions. When Claude reads the page as part of a task, it may execute the injected instructions. [HiddenLayer demonstrated](https://www.hiddenlayer.com/research/indirect-prompt-injection-of-claude-computer-use) that this can trigger `rm -rf /` on an unsandboxed machine. In January 2026, PromptArmor showed a complete enterprise attack chain where a Word document with invisible injection text caused Cowork to locate and exfiltrate financial documents to an attacker-controlled account.
+The attack is straightforward: a malicious website or document embeds hidden text — invisible to humans, visible to Claude's vision model — that contains instructions. When Claude reads the page as part of a task, it may execute the injected instructions. [HiddenLayer demonstrated](https://www.hiddenlayer.com/research/indirect-prompt-injection-of-claude-computer-use) that this can trigger `rm -rf /` on an unsandboxed machine. In January 2026, [PromptArmor](https://www.promptarmor.com/resources/claude-cowork-exfiltrates-files) showed a complete enterprise attack chain where a Word document with invisible injection text caused Cowork to locate and exfiltrate financial documents to an attacker-controlled account.
 
 Anthropic's own guidance for production use:
 
 - **Run inside a container or VM.** Never point computer use at your dev machine or production host.
 - **Restrict network access.** Whitelist only the domains the task requires. An agent that can't reach arbitrary URLs can't exfiltrate data.
 - **No credentials in the sandbox.** No browser password managers, no SSH keys, no API tokens.
-- **Log every action.** Screenshot every state transition. If you can't audit what Claude did, you can't meet compliance requirements.
+- **Log every action.** Screenshot every state transition. A complete [[glossary/audit-trail]] is the only way to answer compliance questions after the fact.
 
 The [audit trail requirement](https://www.truefoundry.com/blog/claude-cowork-security-risks) is particularly sharp for enterprise teams: as of mid-2026, Cowork sessions are explicitly excluded from Anthropic's Compliance API and Audit Logs. If your security or compliance team asks "what did Claude do on that machine at 14:32?", the API route with your own logging is the only path to an answer.
 
