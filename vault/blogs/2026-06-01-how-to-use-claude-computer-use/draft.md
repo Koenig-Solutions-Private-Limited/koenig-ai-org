@@ -26,6 +26,7 @@ sources:
   - https://www.hiddenlayer.com/research/indirect-prompt-injection-of-claude-computer-use
   - https://www.kunalganglani.com/blog/claude-computer-use-security-risks
   - https://www.promptarmor.com/resources/claude-cowork-exfiltrates-files
+  - https://www.truefoundry.com/blog/claude-cowork-security-risks
 whats_new:
   - Claude Computer Use now has two separate execution contracts — API route for builders, Cowork for delegation — and conflating them produces either over-engineered or insecure systems
 learning_objectives:
