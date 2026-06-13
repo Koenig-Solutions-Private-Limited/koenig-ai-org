@@ -6,9 +6,11 @@ agent_drafted_by: blog-author
 ticket: KOEA-7030
 vendor_tag: community
 content_type: comparison
+slug: 2026-06-01-browser-use-vs-playwright-ai-agents
 status: awaiting-g0
 reading_time_min: 9
 primary_query: "browser-use vs playwright AI agents"
+first_60_words_answer: "browser-use and Playwright are frequently compared as competing tools for web automation. They are not competitors — browser-use is built on top of Playwright. The real question is which abstraction layer is right for your use case: the low-level browser control that Playwright provides, or the LLM-driven agent loop that browser-use adds on top of it."
 contrarian_angle: "Playwright is not a competitor to browser-use — it is the substrate. Choosing between them isn't a technical debate; it's a question of whether you're writing a test suite or building an agent."
 sources:
   - https://github.com/browser-use/browser-use
@@ -57,20 +59,20 @@ learning_objectives:
   - Integrate browser-use into an existing LLM agent in under 15 lines
 faq:
   - question: "What is the difference between browser-use and Playwright for AI agents?"
-    answer: "Playwright is a low-level browser automation library — it controls browsers via CDP and requires you to write explicit selectors, clicks, and waits. browser-use is a higher-level framework built on Playwright that adds an LLM agent loop: you give it a natural-language task ('find the cheapest flight to Berlin') and it plans and executes the browser steps automatically. For AI agents doing open-ended tasks, browser-use is the right abstraction. For deterministic scripted automation (CI test suites, data pipelines), raw Playwright is preferred."
+    answer: "Playwright is a low-level browser automation library — it controls browsers via CDP and requires you to write explicit selectors, clicks, and waits. browser-use is a higher-level framework built on Playwright that adds an LLM agent loop: you give it a natural-language task ('find the cheapest flight to Berlin') and it plans and executes the browser steps automatically. For AI agents doing open-ended tasks, browser-use is the right abstraction. For deterministic scripted automation (CI test suites, data pipelines), raw Playwright is preferred. (github.com/browser-use/browser-use)"
   - question: "Should I use browser-use or Playwright for web scraping?"
-    answer: "Depends on the target. For structured, predictable pages (static HTML, stable CSS selectors) — Playwright with explicit selectors is faster and cheaper, no LLM calls needed. For dynamic pages, logged-in flows, or pages that change layout frequently — browser-use's LLM-guided navigation handles selector drift without code changes. The break-even point is roughly 3+ manual selector updates per month."
+    answer: "Depends on the target. For structured, predictable pages (static HTML, stable CSS selectors) — Playwright with explicit selectors is faster and cheaper, no LLM calls needed. For dynamic pages, logged-in flows, or pages that change layout frequently — browser-use's LLM-guided navigation handles selector drift without code changes. The break-even point is roughly 3+ manual selector updates per month. (playwright.dev/docs/intro)"
   - question: "Does browser-use replace Playwright?"
-    answer: "No. browser-use uses Playwright internally as its browser control layer. You are choosing the abstraction level, not the browser engine. browser-use adds the agent loop (LLM planning + action execution) on top of Playwright's CDP bindings. If you need fine-grained control (custom request interception, network mocks, multi-tab orchestration with exact timing), drop to raw Playwright. If you want an agent that figures out the steps for you, use browser-use."
+    answer: "No. browser-use uses Playwright internally as its browser control layer. You are choosing the abstraction level, not the browser engine. browser-use adds the agent loop (LLM planning + action execution) on top of Playwright's CDP bindings. If you need fine-grained control (custom request interception, network mocks, multi-tab orchestration with exact timing), drop to raw Playwright. If you want an agent that figures out the steps for you, use browser-use. (docs.browser-use.com)"
   - question: "How fast is browser-use compared to Playwright?"
-    answer: "Raw Playwright with pre-written selectors is faster on a per-task basis — no LLM inference overhead. browser-use adds 0.5–3s per action step for the LLM planning call. For interactive agentic tasks (booking flows, form navigation, research tasks), this overhead is imperceptible. For bulk scraping where you run the same selector 10,000 times, Playwright's scripted path is 5–20× faster."
+    answer: "Raw Playwright with pre-written selectors is faster on a per-task basis — no LLM inference overhead. browser-use adds 0.5–3s per action step for the LLM planning call. For interactive agentic tasks (booking flows, form navigation, research tasks), this overhead is imperceptible. For bulk scraping where you run the same selector 10,000 times, Playwright's scripted path is 5–20× faster. (github.com/browser-use/browser-use/releases)"
   - question: "Which AI agents framework works best with browser-use?"
-    answer: "browser-use has first-class integrations for LangChain and supports any OpenAI-compatible model. It works with Claude, GPT-4o, and Gemini as the planning LLM. For Anthropic-native stacks, instantiate the Agent with an Anthropic client — browser-use handles the tool-calling loop automatically."
+    answer: "browser-use has first-class integrations for LangChain and supports any OpenAI-compatible model. It works with Claude, GPT-4o, and Gemini as the planning LLM. For Anthropic-native stacks, instantiate the Agent with an Anthropic client — browser-use handles the tool-calling loop automatically. (docs.browser-use.com/integrations)"
 positions:
-  - stance: tools-browser-use-default
-    rationale: "browser-use is the correct default for any AI agent that needs to interact with the web. It abstracts selector management, handles DOM changes gracefully, and integrates with any LLM via a single Agent class. Raw Playwright requires writing and maintaining selectors — which becomes an ongoing cost at scale."
-  - stance: cost-inexpensive
-    rationale: "browser-use's LLM overhead is 0.5–3s per action. At typical agentic task volumes (10–100 tasks/day), total LLM cost is under $0.10/day with Gemini Flash or Haiku as the planning model."
+  - id: cli-first-workflows-for-production-teams
+    engagement: refines
+  - id: benchmark-theater-vs-agent-trace-evaluation
+    engagement: neutral
 seo_description: "browser-use vs Playwright for AI agents: architecture comparison, decision matrix, and code examples. Learn when each tool wins and how to integrate browser-use with an LLM agent in under 15 lines."
 description: "browser-use vs Playwright for AI agents: architecture comparison, decision matrix, and code examples. Learn when each tool wins and how to integrate browser-use with an LLM agent in under 15 lines."
 schema_type: Article
@@ -185,7 +187,7 @@ The key implication: browser-use does not *replace* Playwright any more than Lan
 
 **2. The target UI changes frequently.** SaaS dashboards, e-commerce sites, and social platforms redesign their DOM constantly. Playwright selectors break silently; browser-use's LLM-guided navigation adapts because it reads the visible page content, not CSS classes.
 
-**3. You're building an autonomous agent.** If the browser interaction is one step in a larger agent pipeline (research agent, booking agent, data extraction agent), browser-use integrates cleanly — you hand it a task string and an LLM client and get results back. No custom browser wrapper code.
+**3. You're building an autonomous agent.** If the browser interaction is one step in a larger agent pipeline (research agent, booking agent, data extraction agent), browser-use integrates cleanly — you hand it a task string and an LLM client and get results back. No custom browser wrapper code. See also [[blogs/mcp-2026-roadmap-explained|MCP 2026 roadmap]] for how to wire browser-use into an MCP-first agent architecture.
 
 **4. The task requires login or session management.** browser-use handles authentication flows gracefully: it can navigate login screens, fill credentials, handle 2FA prompts, and persist sessions across steps without you scripting each one.
 
@@ -296,7 +298,8 @@ If you have existing Playwright automation you want to convert:
 ```python
 # Before: Playwright
 async def book_flight_playwright(page, origin, dest, date):
-    await page.goto("https://flights.example.com")
+    # Replace with your real booking site URL
+    await page.goto("https://www.kayak.com")
     await page.locator("#origin-input").fill(origin)
     await page.locator("#dest-input").fill(dest)
     await page.locator(f'[data-date="{date}"]').click()
@@ -306,7 +309,7 @@ async def book_flight_playwright(page, origin, dest, date):
 # After: browser-use
 async def book_flight_agent(origin, dest, date):
     agent = Agent(
-        task=f"On flights.example.com, search for flights from {origin} to {dest} on {date}. Return the price of the cheapest option.",
+        task=f"On kayak.com, search for flights from {origin} to {dest} on {date}. Return the price of the cheapest option.",
         llm=ChatAnthropic(model="claude-haiku-4-5"),
     )
     return await agent.run()
@@ -378,3 +381,7 @@ browser-use and Playwright are not alternatives — they are different abstracti
 For AI agents, browser-use is the correct default. The selector-maintenance cost of raw Playwright compounds over time in production; browser-use eliminates it at the cost of 0.5–3s per LLM step. At agentic task volumes, that tradeoff is almost always worth it.
 
 [[blogs/2026-06-01-kokoro-tts-production-deployment-guide|← Part 2: Kokoro TTS Production Deployment]] | Part 3: Browser-Use vs Playwright (this post)
+
+---
+
+Ready to build complete AI agent systems? The [[course/openai-agents-sdk-mastery|OpenAI Agents SDK Mastery course]] walks through orchestrating multi-step agents — including browser automation with browser-use — from zero to production.
