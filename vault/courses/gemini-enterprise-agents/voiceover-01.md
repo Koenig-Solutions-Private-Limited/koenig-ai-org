@@ -4,242 +4,147 @@ chapter_num: 1
 type: voiceover-script
 source_chapter: vault/courses/gemini-enterprise-agents/01-what-gemini-enterprise-agent-platform-is-and-isnt.md
 audio_file: vault/courses/gemini-enterprise-agents/ch01-audio.mp3
-duration_sec: 720
-word_count: 2375
+duration_sec: 0
+word_count: 2569
 speaker: notebooklm-dual-narrator
 ---
 
-# Voiceover Script: Chapter 1 — The production agent landscape, why GEAP exists
+# Voiceover Script: Chapter 1 — Map the Platform Before You Build
 
-This script mirrors the approved Chapter 1 source and is intended as the narration backbone for the Ch1 voiceover package.
+[HOST] Most engineering teams I talk to make the same mistake when they first touch Google's Gemini enterprise agent stack. They start with the model. They get it working locally, they add some tools, things look great — and then six weeks later they're doing a full re-architecture because the pieces don't fit together the way they assumed. Today we're going to prevent that.
 
----
+[GUEST] Right, and I think the reason that happens is that the Gemini enterprise stack isn't one thing — it's five distinct components, each with a completely different job. And if you don't know which is which before you start building, you end up building on the wrong layer.
 
-# What Gemini Enterprise Agent Platform Actually Is (and Isn't)
+[HOST] Exactly. So let's do what the chapter title says: map the platform before we build. There are five components you need to be able to name and differentiate. Let's go through them one by one.
 
-Google's **Gemini Enterprise Agent Platform** (GEAP), which reached general availability on 23 April 2026, is not a new product. It is a consolidation: every AI capability Google has shipped over the past four years — Vertex AI, Model Garden, Agent Builder, Dialogflow CX — now lives under one brand and one API surface. [1] For builders, understanding what that means in practice separates the people who benefit from the platform from those who spend three months wiring together services that already talk to each other.
+[GUEST] Alright, first one.
 
-## Key facts
+[HOST] First: Gemini Enterprise app. This is the workforce-facing surface. It's the thing employees actually touch — the chat interface, the workflow interface, the place where a knowledge worker files an expense report or routes a legal question. The app abstracts everything below it completely. The person using it doesn't know or care what's running underneath.
 
-1. GA date: 23 April 2026
-2. Replaces and absorbs: Vertex AI Agent Builder, Model Garden (as a sub-surface), Dialogflow CX (legacy path)
-3. Architecture: four pillars — Build, Scale, Govern, Optimize
-4. Model access: 200+ models including Gemini 3.1 Pro/Flash, Gemma 4, Anthropic Claude (Opus/Sonnet/Haiku), and third-party open models
-5. Entry points: Agent Studio (low-code visual), ADK — Agent Development Kit (code-first Python/TypeScript)
-6. State primitives: Agent Sessions (conversation-scoped) + Memory Bank (long-term cross-session)
-7. Security primitives: Agent Identity (cryptographic ID per agent), Agent Gateway (unified traffic control), Agent Anomaly Detection
-8. Strategic signal: All future Vertex AI roadmap ships exclusively through GEAP — standalone Vertex services get no new features [1]
+[GUEST] So this is pure user interface territory.
 
----
+[HOST] Entirely. No code, no configuration from the end user's perspective. Now second component: Agent Platform. This is the developer platform on Google Cloud — the control plane. When a practitioner says "the GEAP console," they mean Agent Platform. It's where you build, scale, govern, and optimize agents. The dashboards, the configuration, the governance tooling — all of that lives here.
 
-## The consolidation nobody saw coming
+[GUEST] And I want to flag something because this trips people up constantly: Agent Platform is not where your agents run. It's the control plane *above* the runtime.
 
-When Google announced GEAP, industry coverage focused on the new features: sub-agent networks, Memory Bank, Agent Identity. The buried lede was the strategic declaration at the end of the announcement: **"All Vertex AI services and roadmap evolutions will be delivered exclusively through Agent Platform going forward, rather than as standalone services."** [1]
+[HOST] That distinction is so important and we're going to come back to it. Because the third component — Vertex AI Agent Engine — that is where your agents actually execute. Engine is the managed runtime. It handles session persistence, execution traces, cold starts, scaling — all the infrastructure concerns. When you deploy an ADK agent, it lives in Agent Engine. Not in Agent Platform. Agent Platform manages it; Agent Engine runs it.
 
-That is a major commitment. It means if you are using Vertex AI Pipelines, Vertex AI Evaluation, or any other standalone Vertex service, your upgrade path is now through GEAP. Google is betting that agent-orchestration is the right abstraction for the next era of enterprise AI — not individual model calls, not standalone pipelines.
+[GUEST] So Agent Platform is the dashboard and configuration layer, Agent Engine is the execution environment. Different jobs, different moments in your workflow.
 
-<Callout type="info">
-**Model Surfaces vs. Agent Platform**: Google's frontier models (like Gemini 3.1 Pro) appear in multiple "surfaces" simultaneously. You might see a model upgrade in **AI Studio** or the **Gemini API** weeks before it reaches **Vertex AI / Gemini Enterprise**. Other surfaces like **NotebookLM**, **Antigravity** (Google's experimental dev-tool), and **Jules** (Google's enterprise coding assistant) may expose different parameter sets or prompt ceilings. For this course, we focus on the **Gemini Enterprise Agent Platform (GEAP)** surface, which is the stable target for production-grade, CISO-defensible agents.
-</Callout>
+[HOST] Exactly. Now fourth component: ADK — the Agent Development Kit. This is the open-source, code-first framework. Python, TypeScript, Go, Java. ADK is where you write agent logic. You define how your agent selects tools, manages conversation turns, delegates to sub-agents. And critically — ADK is the only layer in this entire stack that you write yourself. Everything else is managed infrastructure.
 
-Whether that bet pays off for you depends on your use case. This chapter explains the architecture so you can make that judgment with clear eyes.
+[GUEST] That's an interesting way to frame it. One layer you write, everything else is managed service.
 
----
+[HOST] That's the core architectural pattern. And the fifth component is A2A — the Agent-to-Agent protocol. This is the cross-agent protocol layer. Where ADK sub-agents run inside a single process and share state directly, A2A spans process boundaries. It lets agents built by completely different teams, deployed on completely different services, exchange tasks and artifacts through a standard HTTP interface.
 
-## The four pillars
+[GUEST] We're going to spend a lot of time on A2A in a few minutes because I think it's the one that surprises people the most. But before we get there — there's actually a sixth component you mentioned in the chapter.
 
-GEAP is organized into four operational domains. Every feature belongs to one of them. Knowing which pillar a feature belongs to tells you when in your development lifecycle you need it.
+[HOST] Right — MCP, the Model Context Protocol. MCP is the tool-connectivity layer. Think of it this way: A2A routes work *between agents*, while MCP connects agents to external tools and data sources. Any MCP-compatible server exposes its capabilities to any MCP-compatible client, regardless of who built either. So A2A is agent-to-agent coordination; MCP is agent-to-tool connectivity. Different protocols, different problems.
 
-### Pillar 1: Build
+[GUEST] Okay so let's do a quick sanity check here. We've got Gemini Enterprise app as the workforce surface, Agent Platform as the developer control plane, Vertex AI Agent Engine as the managed runtime, ADK as the code framework, A2A as the cross-agent protocol, and MCP as the tool-connectivity layer. Six components total.
 
-Build is where you create agents. There are two entry points:
+[HOST] And the way I like to think about it is that each one owns a completely different slice of your system. User access, developer control plane, managed runtime, agent logic, cross-agent coordination, tool connectivity. Those are six different problems that require six different solutions.
 
-**Agent Studio** is a low-code, visual interface. You drag components, define tools from a catalogue, set an instruction prompt, and get a deployable agent without writing code. Studio is fast for prototyping and useful for non-engineers who need to configure agents within guardrails set by an engineering team.
+[GUEST] Now here's what I think is the most clarifying lens for understanding when you reach for which of these: lifecycle boundaries. The chapter breaks this into four time horizons.
 
-**Agent Development Kit (ADK)** is the code-first environment. It is a Python library (with TypeScript support) where agents are Python objects, tools are Python functions, and orchestration is expressed in code. ADK is where the rest of this course lives.
+[HOST] This is my favorite part of the chapter honestly, because it makes the five-component map concrete in a way that the component list alone doesn't. So let's walk through the four boundaries. Build-time: this is when you're writing and testing agent logic. ADK is your primary tool, plus Agent Platform tooling for configuration. This is where you spend most of your early weeks as a practitioner — writing tools as Python functions, configuring models, running local tests.
 
-Within Build, two other features matter:
+[GUEST] And build-time is the only boundary where you're actively writing code.
 
-- **Agent Garden**: pre-built agent templates for common enterprise tasks (code modernization, invoice processing, financial analysis). Think of these as starting points, not production systems — they require customization.
-- **Workspaces**: sandboxed environments where agents can execute bash commands and manage files. This is GEAP's answer to Code Interpreter: instead of running untrusted code on your infrastructure, agents get a hardened sandbox.
+[HOST] Right. Everything else is about what happens once you've written it. Run-time is the second boundary — this is when a live agent session is executing. Vertex AI Agent Engine is the primary layer here. Engine manages your active sessions, handles state persistence, runs your traces. When it's working well, run-time is invisible. You're focused on your ADK logic; Engine handles the infrastructure underneath.
 
-<Callout type="info">
-**Low-code vs code-first**: The two entry points are not mutually exclusive. Agent Studio can export an agent definition that ADK can consume. If you prototype in Studio and then need programmatic control, you can migrate without starting over.
-</Callout>
+[GUEST] Third boundary — route-time. This one I think is where most production complexity actually lives.
 
-### Pillar 2: Scale
+[HOST] Absolutely. Route-time is when tasks are being dispatched between agents. And here you have a choice: if you're in a single deployment with a single team, you use ADK sub-agents. That's in-process delegation — one Python process calls another, state is shared directly, no network hop. Fast, simple. But if your agents span team boundaries, separate codebases, separate deployments — that's where A2A comes in. A2A routing at route-time.
 
-Scale is where your agents move from working to production-grade. The key features:
+[GUEST] And the fourth boundary?
 
-**Agent Runtime** is GEAP's managed execution environment. It promises sub-second cold starts and provisions agents in seconds. Crucially, Agent Runtime does not require code changes — an ADK agent that runs locally deploys to Runtime with a configuration file, not a rewrite.
+[HOST] Operate-time. This is continuous — it never stops. Observability, evaluation, cost tracking, model lifecycle updates, audit logs. All of that surfaces in Agent Platform's dashboards. When something goes wrong in production, you look in Agent Engine traces first to see what happened in the runtime, and then in Agent Platform observability dashboards to understand the governance and performance picture.
 
-**Agent Sessions** provides conversation-scoped state management. Each session has a unique ID that you can map to an external record (a database row, a CRM contact). State stored in a session is available to any agent invocation that carries that session ID.
+[GUEST] So the lifecycle table is really a decision framework. Which layer am I in, what time boundary am I at, therefore which component do I reach for?
 
-**Memory Bank** adds a layer above sessions: long-term, cross-session memory. Where a session holds raw conversation history, Memory Bank distills it — it uses a model to generate "Memory Profiles" (structured summaries) and retrieves them at low latency when a new session starts. The practical effect is that an agent that spoke to a user three months ago can recall relevant facts without loading three months of transcript.
+[HOST] Exactly. And the single most dangerous confusion in the whole stack is conflating Agent Platform with Vertex AI Agent Engine. They're not interchangeable. Agent Platform is the developer control plane — dashboards, config, governance. Agent Engine is the execution runtime. Session state lives in Agent Engine at run-time. When a deployed agent fails to resume a conversation after a timeout, you go to Agent Engine traces first, not Agent Platform.
 
-**Agent-to-agent orchestration** supports both deterministic patterns (you define the routing logic) and generative patterns (the orchestrator model decides which sub-agent to invoke). This distinction matters more than it seems — we cover it in [[gemini-enterprise-agents/03-multi-agent-orchestration-with-vertex]].
+[GUEST] Alright, let's go deeper on A2A, because I think this is where the architecture gets interesting. You mentioned that in-process ADK sub-agents exist — when does A2A become necessary?
 
-### Pillar 3: Govern
+[HOST] So in-process sub-agents are simple and they're fast. One Python process delegates to another, state passes directly. If you have a single team shipping a single application, in-process is the right choice. No network overhead, no protocol to implement.
 
-Govern is GEAP's answer to the question "how do I run 50 agents in production without losing control of them?"
+[GUEST] But production enterprise environments almost never look like that.
 
-**Agent Identity** gives every deployed agent a unique cryptographic ID. Every action the agent takes is associated with that ID — tool calls, memory reads, external API calls. This creates an auditable trail you can query when something goes wrong.
+[HOST] Almost never. Think about a real enterprise scenario: you have an HR agent built by the People team. You have a Finance agent built by the Finance team. Those two agents will probably never share a codebase. They might be deployed in different cloud regions. They have different deployment lifecycles. In-process calls cannot cross those boundaries — full stop.
 
-**Agent Registry** is a central catalogue of approved tools, agents, and capabilities. Instead of every team defining their own version of a "get customer order" tool, Registry enforces a single canonical definition. Agents discover available tools through Registry rather than hardcoded imports.
+[GUEST] So A2A is the solution.
 
-**Agent Gateway** is the traffic layer. All agent-to-external and agent-to-agent traffic routes through Gateway, which applies consistent security policies, rate limits, and Model Armor protections. Model Armor is Google's term for prompt injection and data leakage defenses applied at the network layer — not inside the model.
+[HOST] A2A defines a standard HTTP task lifecycle. A calling agent posts a task to an A2A endpoint. The receiving agent processes it asynchronously. The result — including any artifacts — flows back through the same protocol. And here's what this unlocks: neither team needs to know how the other's agent is implemented. They only need to know the A2A interface contract. The People team doesn't need to understand the Finance team's deployment. The Finance team doesn't need to understand the People team's data model.
 
-**Agent Security Dashboard** integrates with Security Command Center for vulnerability scanning and asset discovery. If an agent starts making requests to unexpected IP ranges, this is where you see it.
+[GUEST] So deployment becomes decoupled from coordination.
 
-### Pillar 4: Optimize
+[HOST] Exactly. And at scale — when you have a multi-team, multi-department agent network — A2A is what makes coordination possible without creating a dependency nightmare. It makes agents first-class participants in enterprise workflows without requiring a shared runtime or shared codebase.
 
-Optimize is where you measure and improve agents after they are running.
+[GUEST] There's also a distinction in the chapter I want to make sure we highlight: workforce agents versus developer-built agents. Because those are genuinely different things.
 
-**Agent Simulation** lets you test agents against synthetic user interactions and virtualized tools before deploying changes. This is the equivalent of a staging environment specifically designed for agent behavior — tools return canned responses so you can test routing logic without hitting real APIs.
+[HOST] They are, and product marketing often blurs them. Workforce agents are delivered through Gemini Enterprise app. A knowledge worker uses them without writing code, without knowing what's running underneath. These are configured — often by Power Users or IT admins — through the app's interface.
 
-**Agent Evaluation** provides continuous scoring. Multi-turn autoraters score agent responses against rubrics you define, and turnkey dashboards track those scores over time. This is important: agent quality degrades as your tools change and your user base grows. Without evaluation, you find out by reading support tickets.
+[GUEST] Developer-built agents are the other path.
 
-**Agent Observability** provides visual tracing of agent reasoning. Every tool call, every model invocation, every memory read gets a trace entry. You can walk through what happened step-by-step — which matters when an agent made four tool calls and returned the wrong answer.
+[HOST] Developer-built agents are created in ADK, deployed on Vertex AI Agent Engine, managed through Agent Platform. They can surface inside Gemini Enterprise app as well — but they originate in code, not in configuration. The developer controls the tool set, the routing logic, the deployment configuration.
 
-**Agent Optimizer** closes the loop: it clusters observed failures and suggests system instruction refinements. It is not autonomous (it suggests, not applies), but it reduces the manual work of reading failure logs to write better prompts.
+[GUEST] And the reason this distinction matters operationally is ownership. Who monitors, who debugs, who pays the bill — that answer is completely different depending on which type of agent you're dealing with.
 
----
+[HOST] That's right. Workforce agents are consumed; developer-built agents are shipped. Mixing up those responsibilities is a real source of production incidents on multi-team platforms. Someone gets paged at two in the morning and they have no idea who owns the thing that's failing.
 
-## What GEAP is not
+[GUEST] Now, before we get to the hands-on exercise — the chapter has a capability map that I think is worth walking through, because it directly informs what you're about to draw in the exercise.
 
-The four pillars are comprehensive enough that it is easy to assume GEAP is everything. Three things it is not:
+[HOST] Right. So there are four enterprise capabilities the chapter maps to specific components. First: enterprise data access. That lives in ADK tools plus Gemini Enterprise connectors. Permissions are enforced at the tool layer. Each specialist agent only accesses its authorized data source.
 
-**It is not model-agnostic in practice.** GEAP supports 200+ models including Claude and open models. But the tightest integrations — Memory Bank, Agent Runtime telemetry, Agent Optimizer — are designed around Gemini. If you route all your traffic through Claude on GEAP, you are using GCP infrastructure with Anthropic's model, which works, but you lose some platform-level features that assume Gemini's specific capabilities.
-
-**It is not open-source.** The ADK is open-source (Apache 2.0). The runtime, Memory Bank, Agent Gateway, and Govern features are fully proprietary GCP services. If you need to run your agent stack on-premises or on another cloud, you can use ADK locally, but you cannot replicate the platform layer.
-
-**It is not Dialogflow CX rebranded.** Dialogflow CX was a flow-based, deterministic dialogue manager. GEAP's agents reason with LLMs and make probabilistic decisions. Existing Dialogflow CX flows can be migrated, but the mental model is fundamentally different. If you build a GEAP agent expecting it to follow a defined script reliably, you will be surprised.
-
-<Callout type="warning">
-**Lock-in surface area**: Using Agent Runtime, Memory Bank, and Agent Registry together creates deep GCP lock-in. Your agent logic is in ADK (portable), but your state, tool registry, and identity system are GCP-proprietary. Plan for this before you commit. [[gemini-enterprise-agents/04-comparing-to-claude-agent-sdk-and-cloudflare-agents]] compares exit paths across GEAP, Claude Agent SDK, and Cloudflare Agents.
-</Callout>
-
----
-
-## How the components connect
-
-Here is the component map for a typical customer-support agent on GEAP. Read this as a data-flow diagram, left to right:
-
-```
-User request
-    │
-    ▼
-Agent Gateway  ◄── Model Armor (prompt injection filter)
-    │
-    ▼
-Agent Runtime  ── resolves Agent Identity (cryptographic ID)
-    │
-    ├── loads Memory Bank profile (cross-session context)
-    │
-    ├── loads Session state (current conversation)
-    │
-    ▼
- Agent (ADK)
-    │
-    ├── Tool call A (via Agent Registry, approved tool)
-    ├── Tool call B
-    │
-    ▼
-Agent Observability  ── traces every step
-    │
-    ▼
-Response → User
-    │
-    ▼
-Agent Evaluation  ── scores response, stores metric
-    │
-    ▼
-Agent Optimizer  ── clusters failures, suggests instruction updates
-```
-
-Every box in this diagram is a managed GCP service. The only code you write is the Agent itself and the tool implementations. That is the core value proposition — and the core lock-in.
-
-<KnowledgeCheck
-  questions={[
-    {
-      question: "Which GEAP pillar contains Memory Bank and Agent Sessions?",
-      answers: [
-        "Build",
-        "Scale",
-        "Govern",
-        "Optimize"
-      ],
-      correct: 1,
-      explanation: "Memory Bank and Agent Sessions are Scale features — they exist to make agents production-grade by providing state continuity across restarts and long-term memory across session boundaries."
-    },
-    {
-      question: "An engineering team at a fintech company needs to ensure every tool call an agent makes is tied to a named, auditable identity for compliance reasons. Which GEAP feature addresses this?",
-      answers: [
-        "Agent Registry",
-        "Agent Simulation",
-        "Agent Identity",
-        "Agent Optimizer"
-      ],
-      correct: 2,
-      explanation: "Agent Identity assigns a unique cryptographic ID to every deployed agent. All actions — tool calls, memory reads, API calls — are associated with that ID, creating the auditable trail compliance requires."
-    },
-    {
-      question: "Which statement about GEAP's model access is most accurate?",
-      answers: [
-        "GEAP only supports Gemini models",
-        "GEAP supports 200+ models including Claude, but tightest platform integrations are Gemini-optimised",
-        "GEAP supports all models equally with no integration differences",
-        "GEAP requires you to use Gemini as the orchestrator, with other models only as sub-agents"
-      ],
-      correct: 1,
-      explanation: "GEAP supports Claude and open models, but features like Agent Optimizer and some Memory Bank integrations are designed around Gemini's capabilities. You can use other models, but with reduced platform integration."
-    }
-  ]}
-/>
-
----
-
-## The contrarian view: is consolidation actually good?
-
-GEAP's consolidation narrative is compelling, but it carries a real cost: **surface area**. When Vertex AI was a collection of loosely coupled services, a team could adopt Vertex Model Garden without adopting Vertex Evaluation. Now that everything is GEAP, the conceptual overhead of the platform is always in scope.
-
-For a solo developer building a weekend project, GEAP is overkill. The four-pillar architecture is enterprise governance applied to a problem that might be solved with a single API call and a Postgres table. The marketing targets "enterprise scale" — and if your workload is not that, the platform actively gets in your way.
-
-The more honest framing: GEAP is the right platform when you need **at least two of the four pillars** in production. If you need Build + Govern (multiple agents with compliance requirements), GEAP is compelling. If you only need Build, you are paying for three pillars you do not use. We make this trade-off concrete in [[gemini-enterprise-agents/04-comparing-to-claude-agent-sdk-and-cloudflare-agents]].
-
----
-
-## Hands-on exercise
-
-**Draw the GEAP component map for your use case.**
-
-Pick a real (or plausible) agent you want to build. On paper or in a diagramming tool:
-
-1. Draw the data flow from user request to response.
-2. For each GEAP component you would use, label which pillar it belongs to.
-3. Mark any component you would *not* use and write one sentence explaining why.
-4. Identify: does your use case require two or more pillars? If not, write a note questioning whether GEAP is the right platform.
-
-**Success criteria**: A diagram with at least 4 GEAP components labelled by pillar, and a written answer to the "two pillars?" question.
-
----
-
-## What's next
-
-Chapter 2 gets hands-on: you will install ADK, define a Python function as a tool, wire it into an Agent, and add session and Memory Bank persistence. By the end you will have an agent that remembers your last session — even after a process restart.
-
-See [[gemini-enterprise-agents/02-hello-world-agent-tool-state-persistence]] to continue.
-
----
-
-## References
-
-[1] Google Cloud Blog. "Introducing Gemini Enterprise Agent Platform." 23 April 2026. https://cloud.google.com/blog/products/ai-machine-learning/introducing-gemini-enterprise-agent-platform · retrieved 2026-04-30
-
-[2] Google Agent Development Kit. Official documentation. https://adk.dev/ · retrieved 2026-04-30
-
-[3] Google Cloud. Vertex AI documentation. https://cloud.google.com/vertex-ai/docs · retrieved 2026-04-30
-
-[4] Cloudflare. Cloudflare Agents documentation. https://developers.cloudflare.com/agents/ · retrieved 2026-04-30
-
-[5] Anthropic. Building with Claude — Agents and tools. https://docs.anthropic.com/en/docs/agents-and-tools · retrieved 2026-04-30
+[GUEST] Second: agent discovery.
+
+[HOST] Agent discovery lives in A2A Agent Cards. An Agent Card is A2A's discovery document — a machine-readable JSON file that advertises a remote agent's capabilities, skills, and endpoint address. Before routing a task, the calling agent reads the target's Agent Card.
+
+[GUEST] And an important caveat here — discovery is not authorization.
+
+[HOST] Critically important. Reading an Agent Card grants no access. That gate is enforced by the tool-layer permissions and GCP IAM policies attached to the receiving agent's deployment. You can discover an agent exists; you can't necessarily talk to it.
+
+[GUEST] Third capability: task routing.
+
+[HOST] Task routing is ADK sub-agents for in-process scenarios — same deployment, shared state. A2A HTTP task lifecycle for cross-process scenarios — separate teams, separate deployments. The choice is driven by deployment boundaries.
+
+[GUEST] And fourth: audit logs.
+
+[HOST] Audit logs live in two places for a reason. Vertex AI Agent Engine execution traces tell you what happened inside a session — which tools fired, what inputs and outputs were. Agent Platform and GCP IAM policy logs tell you who was permitted to do it. Missing either half leaves a compliance gap. Enterprise compliance reviews require both: the evidence of what happened and the evidence of who authorized it.
+
+[GUEST] Alright — hands-on exercise. This is the practical test of whether you can actually map all of this.
+
+[HOST] The exercise in the chapter asks you to draw the component map for an enterprise intake assistant that triages HR, finance, and legal requests. Three specialist agents, one intake routing agent. And you need to label six specific things.
+
+[GUEST] Walk us through them.
+
+[HOST] Number one: user entry. Where does the employee submit the request? That's Gemini Enterprise app — the workforce-facing surface. Number two: agent logic. Which framework processes the intent? That's ADK — it's where the intake agent's routing logic and the specialist agents' logic are written. Number three: session state. Where is conversation context persisted between turns? That's Vertex AI Agent Engine at run-time — it provides managed session persistence.
+
+[GUEST] Number four?
+
+[HOST] Number four: cross-agent routing. How does the intake agent hand off to the HR, Finance, or Legal specialist agent? And here is where the exercise forces you to make the key architectural choice: are these agents on the same team with the same codebase? Then in-process ADK delegation. Are they owned by different teams with separate codebases and separate deployments? Then A2A routing. The answer changes the architecture entirely.
+
+[GUEST] Number five and six?
+
+[HOST] Number five: external tool calls. How do agents connect to the HRIS system, the ERP, the case management platform? That's MCP — tool connectivity. Each specialist agent connects to its authorized data source through MCP-compatible tooling. And number six: audit evidence. Where is the record of every agent action stored? Agent Engine execution traces for what happened, plus Agent Platform and GCP IAM policy logs for who authorized it. Both required.
+
+[GUEST] The success criteria in the chapter say you need all six elements labeled with the correct component, and specifically that the cross-agent routing label distinguishes between in-process ADK delegation and A2A routing.
+
+[HOST] That distinction is the whole point. If you can draw that exercise correctly, you've internalized the five-component map in a way that actually transfers to production decisions.
+
+[GUEST] So let's summarize what we've covered. Five components: Gemini Enterprise app is the workforce interface, Agent Platform is the developer control plane, Vertex AI Agent Engine is the managed runtime, ADK is the code framework you write, A2A is the cross-agent protocol for multi-team coordination, and MCP handles tool connectivity.
+
+[HOST] Four lifecycle boundaries: build-time is ADK and Agent Platform tooling, run-time is Agent Engine managing live sessions, route-time is in-process ADK or cross-process A2A, and operate-time is Agent Platform observability and evaluation — and it's continuous.
+
+[GUEST] The agent-to-agent distinction: in-process ADK sub-agents for single-team deployments, A2A for agents that cross team, codebase, or deployment boundaries.
+
+[HOST] Workforce agents versus developer-built agents: different entry points, different ownership, different incident response chains. And audit logs live in two places — execution traces in Agent Engine, policy logs in Agent Platform and GCP IAM — and you need both for enterprise compliance.
+
+[GUEST] What's next in the course?
+
+[HOST] Chapter two gets hands-on. You'll install ADK, define a Python function as a tool, wire it into an agent, and add session persistence that survives process restarts. By the end of chapter two you'll have a working agent that remembers your last session — even after the process shuts down and restarts. That's where the platform starts to click.
+
+[GUEST] Looking forward to it.
+
+[HOST] Do the exercise. Draw the component map for the intake assistant before you move on. It's six labeled elements — that's the checkpoint that tells you whether the map is actually in your head or just in the notes.
