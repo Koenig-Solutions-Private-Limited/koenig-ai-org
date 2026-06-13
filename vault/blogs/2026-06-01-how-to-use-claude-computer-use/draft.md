@@ -7,7 +7,8 @@ author: blog-author
 ticket: KOEA-7027
 vendor_tag: anthropic
 content_type: article
-status: draft-for-review
+status: g0-passed
+seo_description: "Learn how Claude Computer Use works via the API tool loop or Cowork, with a Python sandbox example and the top prompt injection risks to avoid in 2026."
 reading_time_min: 6
 primary_query: "how to use claude computer use"
 contrarian_angle: "Claude never executes actions itself — your code does. The API is a tool loop, not an agent, and conflating the two is why most computer use implementations end up insecure or brittle."
@@ -43,7 +44,7 @@ faq:
   - question: "What models support Claude computer use in 2026?"
     answer: "As of mid-2026, the `computer-use-2025-11-24` beta header supports Claude Opus 4.8, Opus 4.7, Opus 4.6, Sonnet 4.6, and Opus 4.5. A second header `computer-use-2025-01-24` covers Sonnet 4.5, Haiku 4.5, and deprecated models. The beta adds 466–499 system-prompt tokens plus 735 tool-definition tokens per request before counting screenshot images. Retrieved 2026-06-01 from platform.claude.com/docs."
 original_data: false
-last_updated: 2026-06-01
+last_updated: 2026-06-13
 hero_image:
   url: /img/blogs/2026-06-01-how-to-use-claude-computer-use/hero.png
   alt: "Claude Computer Use architecture diagram showing the tool loop between Claude API, your application code, and a sandboxed virtual machine"
@@ -184,7 +185,7 @@ B) Your application code executes actions; Claude only outputs instructions in t
 C) The computer use beta requires a separate Anthropic subscription beyond API access  
 D) Prompt injection is only a risk when browsing untrusted websites, not when processing local documents
 
-**Correct answer: B.** Claude outputs `tool_use` blocks; your code decides whether and how to execute them inside your sandbox. This is the load-bearing architectural fact for building safe computer use systems. Prompt injection (ruling out D) is equally dangerous from local documents — the PromptArmor January 2026 demo used a Word file, not a website.
+**Correct answer: B.** Claude outputs `tool_use` blocks; your code decides whether and how to execute them inside your sandbox. This is the load-bearing architectural fact for building safe computer use systems. Prompt injection (ruling out D) is equally dangerous from local documents — the PromptArmor June 2026 demo used a Word file, not a website.
 
 ---
 
