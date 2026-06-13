@@ -7,6 +7,9 @@ audio_file: vault/courses/gemini-enterprise-agents/ch01-audio.mp3
 duration_sec: 0
 word_count: 2569
 speaker: notebooklm-dual-narrator
+script_version: R2
+script_rewritten_at: 2026-06-13
+audio_status: pending-regen
 ---
 
 # Voiceover Script: Chapter 1 — Map the Platform Before You Build
