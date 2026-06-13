@@ -8,16 +8,14 @@ status: awaiting-g0
 reading_time_min: 6
 primary_query: "mcp server adoption statistics 2026"
 contrarian_angle: "Star counts measure curiosity; the real adoption signal is that OpenAI, Google, and Microsoft now co-govern MCP alongside Anthropic — competitors don't co-govern protocols they plan to replace."
-first_60_words_answer: "As of May 2026, the MCP ecosystem has 14,000+ published servers, 86,148 GitHub stars on the core repository, 97 million cumulative SDK downloads, and confirmed production integrations from Microsoft, GitHub, Stripe, Atlassian, Figma, and Cloudflare. The protocol is now governed by the Linux Foundation's AAIF with OpenAI, Google, AWS, and Microsoft as co-governors."
-positions:
-  - id: none
-    engagement: neutral
+first_60_words_answer: "As of May 2026, the MCP ecosystem has 14,000+ published servers, 86,148 GitHub stars on the core repository, 97 million monthly SDK downloads, and confirmed production integrations from Microsoft, GitHub, Stripe, Atlassian, Figma, and Cloudflare. The protocol is now governed by the Linux Foundation's AAIF with OpenAI, Google, AWS, and Microsoft as co-governors."
+positions: []
 original_data: true
 description: "GitHub stars, npm download counts, and registry data for 14,000+ MCP servers reveal which tools developers actually use in production — and why OpenAI and Google co-governing MCP is the real adoption signal."
-last_updated: 2026-05-31
+last_updated: 2026-06-13
 hero_image:
   url: /img/blogs/mcp-server-adoption-2026/hero.png
-  alt: "Bar chart showing MCP SDK download growth from 100K monthly in November 2024 to 97M cumulative by December 2025"
+  alt: "Bar chart showing MCP SDK download growth from 100K monthly in November 2024 to 97M monthly by December 2025"
 faq:
   - question: "How many MCP servers exist in 2026?"
     answer: "As of May 2026, PulseMCP lists over 14,000 published MCP servers. The official MCP Registry contains 9,652 servers by latest version and 28,959 total version records. The unofficial mcp.so directory lists 18,000+ entries. Anthropic's own December 2025 count cited 10,000+ active servers. Sources: PulseMCP (retrieved 2026-05-31), MCP Registry API snapshot (May 24, 2026)."
@@ -37,7 +35,7 @@ sources:
   - https://github.com/modelcontextprotocol/servers
   - https://www.aidesigner.ai/blog/best-mcp-servers
 whats_new:
-  - "MCP hit 86K GitHub stars, 97M cumulative downloads, and 14K+ servers by May 2026 — and its biggest competitors now co-govern it"
+  - "MCP hit 86K GitHub stars, 97M monthly SDK downloads, and 14K+ servers by May 2026 — and its biggest competitors now co-govern it"
 learning_objectives:
   - "Interpret MCP adoption metrics: what star counts, download numbers, and registry size actually signal"
   - "Identify the leading MCP servers by weekly npm downloads and GitHub stars"
@@ -46,15 +44,15 @@ learning_objectives:
 
 # MCP Server Adoption in 2026: What 86K Stars and 97M Downloads Actually Mean
 
-As of May 2026, the MCP ecosystem has 14,000+ published servers, [86,148 GitHub stars on the core repository](https://github.com/modelcontextprotocol/servers), 97 million cumulative SDK downloads, and confirmed production integrations from Microsoft, GitHub, Stripe, Atlassian, Figma, and Cloudflare. The protocol is now governed by the Linux Foundation's AAIF with OpenAI, Google, AWS, and Microsoft as co-governors — not just Anthropic.
+As of May 2026, the MCP ecosystem has 14,000+ published servers, [86,148 GitHub stars on the core repository](https://github.com/modelcontextprotocol/servers), 97 million monthly SDK downloads, and confirmed production integrations from Microsoft, GitHub, Stripe, Atlassian, Figma, and Cloudflare. The protocol is now governed by the Linux Foundation's AAIF with OpenAI, Google, AWS, and Microsoft as co-governors — not just Anthropic.
 
 Here's the part most coverage misses: the star counts and download numbers are lagging indicators. The signal that MCP has *actually won* is that its biggest competitors now co-govern it. OpenAI, Google, and Microsoft don't volunteer for protocol governance committees on things they plan to replace. That move, more than any GitHub metric, marks MCP as infrastructure.
 
-![Bar chart showing MCP SDK download growth from 100K monthly in November 2024 to 97M cumulative by December 2025, illustrating the exponential adoption trajectory of the Model Context Protocol](/img/blogs/mcp-server-adoption-2026/hero.png)
+![Bar chart showing MCP SDK download growth from 100K monthly in November 2024 to 97M monthly by December 2025, illustrating the exponential adoption trajectory of the Model Context Protocol](/img/blogs/mcp-server-adoption-2026/hero.png)
 
 ## The Growth Numbers in Full
 
-The MCP ecosystem grew from ~100 servers in November 2024 to 10,000+ by December 2025 to 14,000+ by May 2026 — that's a 140× expansion in 18 months. Monthly SDK downloads grew from 100K to 8 million by April 2025 to [97 million cumulative by December 2025](https://philippdubach.com/posts/mcp-vs-a2a-in-2026-how-the-ai-protocol-war-ends).
+The MCP ecosystem grew from ~100 servers in November 2024 to 10,000+ by December 2025 to 14,000+ by May 2026 — that's a 140× expansion in 18 months. Monthly SDK downloads grew from 100K to 8 million by April 2025 to [97 million monthly by December 2025](https://philippdubach.com/posts/mcp-vs-a2a-in-2026-how-the-ai-protocol-war-ends).
 
 | Metric | Nov 2024 | Dec 2025 | May 2026 |
 |---|---|---|---|
@@ -62,7 +60,7 @@ The MCP ecosystem grew from ~100 servers in November 2024 to 10,000+ by December
 | PulseMCP listings | — | — | 14,000+ |
 | GitHub: `mcp-server` topic repos | — | — | 15,926 |
 | modelcontextprotocol/servers stars | — | — | **86,148** |
-| SDK downloads (Python + TS, cumulative) | ~100K | 97M | — |
+| SDK downloads (Python + TS, monthly) | ~100K | 97M | — |
 | Clients available | ~10 | 300+ | — |
 
 For context: [GitHub's 2025 Octoverse report](https://philippdubach.com/posts/mcp-vs-a2a-in-2026-how-the-ai-protocol-war-ends) called out MCP hitting 37,000 stars in its first 8 months as one of the fastest star-growth trajectories for a developer protocol in recent memory. React took roughly 3 years to reach 100,000 stars; MCP's flagship repo is at 86,000+ in 18 months.
@@ -107,8 +105,6 @@ Context7 injects always-fresh documentation into coding assistant context — so
 | Cloudflare | Remote MCP server hosting |
 | Block | Production Bitcoin/Square workflows |
 | Bloomberg | Financial data MCP |
-
-[Gartner projects 75% of API gateway vendors will have MCP features by end of 2026](https://guptadeepak.com/the-complete-guide-to-model-context-protocol-mcp-enterprise-adoption-market-trends-and-implementation-strategies) — a projection that the current trajectory makes conservative rather than ambitious.
 
 ## Check the Live Numbers Yourself
 
