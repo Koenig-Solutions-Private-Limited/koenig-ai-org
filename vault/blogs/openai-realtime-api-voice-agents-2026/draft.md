@@ -1,11 +1,11 @@
 ---
 title: "Use OpenAI Realtime API when voice agents need interruptions, tools, and sub-second turns"
-slug: openai-realtime-api-voice-agents-2026
+slug: 2026-05-14-openai-realtime-api-voice-agents-2026
 description: "A production guide to OpenAI Realtime API voice agents in 2026: latency, cost, PCM16 and G.711 audio formats, interruption handling, rate limits, the 15-minute session cap, and when to choose Realtime over a Whisper plus TTS pipeline."
 hero_image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80"
 tags: [openai, voice-agents, realtime-api, production]
 author: koenig-ai-academy
-status: draft
+status: awaiting-g0
 date: 2026-05-14
 ticket: KOEA-1252
 vendor_tag: openai
@@ -22,24 +22,34 @@ whats_new:
 references:
   - url: https://platform.openai.com/docs/guides/rate-limits
     title: "OpenAI rate limits guide"
+    retrieved: 2026-05-13
   - url: https://platform.openai.com/docs/guides/realtime-models-prompting
     title: "OpenAI Realtime models prompting guide"
+    retrieved: 2026-05-13
   - url: https://platform.openai.com/docs/changelog
     title: "OpenAI platform changelog"
+    retrieved: 2026-05-13
   - url: https://www.latent.space/p/realtime-api
     title: "Latent Space: Realtime API latency and production notes"
+    retrieved: 2026-05-13
   - url: https://cartesia.ai/vs/cartesia-vs-openai-tts
     title: "Cartesia Sonic 3 vs OpenAI TTS benchmark"
+    retrieved: 2026-05-13
   - url: https://www.eesel.ai/blog/realtime-api-vs-whisper-vs-tts-api
     title: "Eesel: Realtime API vs Whisper vs TTS API"
+    retrieved: 2026-05-13
   - url: https://cartesia.ai/sonic
     title: "Cartesia Sonic product page"
+    retrieved: 2026-05-13
   - url: https://inworld.ai/resources/best-voice-ai-tts-apis-for-real-time-voice-agents-2026-benchmarks
     title: "Inworld voice AI and TTS APIs 2026 benchmark"
+    retrieved: 2026-05-13
   - url: https://docs.workadventu.re/blog/realtime-api-interrupting-the-model/
     title: "WorkAdventure: Interrupting the OpenAI Realtime model"
+    retrieved: 2026-05-13
   - url: https://community.openai.com/t/realtime-api-instruction-limit-16-384-tokens-is-too-low-for-production-voice-agents-with-tool-calling/1378932
     title: "OpenAI Community: Realtime instruction limit discussion"
+    retrieved: 2026-05-13
 faq:
   - question: "Is OpenAI Realtime API better than Whisper plus TTS for voice agents?"
     answer: "It is better for live agents that need sub-second turns, barge-in, prosody, tools, and telephony. Whisper plus TTS remains better for cheaper batch, push-to-talk, or modular voice workflows."
@@ -87,8 +97,6 @@ That means you should instrument four timestamps in production:
 | First audio delta to playback start | Client buffering and audio output latency | Reduce buffer size, avoid TCP stalls on client audio |
 | User interruption to assistant stop | Barge-in quality | Wire interruption events to playback cancellation |
 | Full turn round trip | What the user actually feels | Optimize transport, prompts, and session state together |
-
-Bluetooth headsets can add another 200-300ms in real deployments according to the synthesis. That sounds mundane, but it can erase much of the advantage you thought you bought with a faster model. For kiosks, call centers, or benchmark labs, test with the hardware you will ship.
 
 <KnowledgeCheck
   question="Why is Cartesia Sonic 3's 40-90ms TTFA not enough to prove a Cartesia pipeline will feel faster than OpenAI Realtime?"
@@ -184,7 +192,7 @@ This comparison also keeps vendor claims in the right lane. Cartesia Sonic 3 is 
 
 The minimum viable production voice agent is not just a Realtime session that works once. It is a system that can tell you why a call felt slow, why a user interrupted twice, why rate limits spiked, and when a session needs to be rolled over.
 
-Log at least these events: session start, transport type, audio format, VAD settings, first user audio chunk, detected end of user turn, first model response event, first audio delta, playback start, interruption event, truncate event, tool call start and end, rate-limit headers, summary creation, and session close. These are the timestamps that let you distinguish model latency from media latency.
+Log at least these events: session start, transport type, audio format, VAD settings, first user audio chunk, detected end of user turn, first model response event, first audio delta, playback start, interruption event, truncate event, tool call start and end, rate-limit headers, summary creation, and session close. These are the timestamps that let you distinguish model latency from media latency. For a practical observability setup using Langfuse and cost tracking, see [[ai-agent-observability-langfuse]].
 
 The synthesis also points to prompting patterns that are easy to miss: use lower `reasoning.effort` for latency-sensitive turns, use preambles to mask tool latency, read entities such as account numbers digit by digit, and use a no-op `wait_for_user` tool when the model needs to stop speaking and wait.[2] Voice prompting is not chat prompting read aloud. The prompt has to manage timing, turn boundaries, and what the user actually hears.
 
