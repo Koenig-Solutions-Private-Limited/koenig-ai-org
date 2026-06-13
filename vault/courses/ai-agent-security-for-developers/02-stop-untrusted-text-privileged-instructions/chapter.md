@@ -35,7 +35,7 @@ sources:
   - https://platform.openai.com/docs/guides/structured-outputs
   - https://docs.pydantic.dev/latest/
   - https://simonwillison.net/2023/Apr/14/worst-that-could-happen/
-  - https://atlas.mitre.org/techniques/AML.T0051
+  - https://github.com/mitre-atlas/atlas-data/blob/main/data/techniques/AML.T0051.yaml
   - https://cwe.mitre.org/data/definitions/20.html
 tags:
   - course/ai-agent-security-for-developers
@@ -700,6 +700,6 @@ Chapter 3 takes this further: it covers **credential scoping and minimal-permiss
 
 [^3]: The original academic treatment of indirect prompt injection in multi-step pipelines, including workspace poisoning scenarios: Greshake et al., "Not What You've Signed Up For," arXiv:2302.12173: https://arxiv.org/abs/2302.12173
 
-[^4]: MITRE ATLAS, "LLM Prompt Injection (AML.T0051)," Adversarial Threat Landscape for Artificial-Intelligence Systems, 2024. https://atlas.mitre.org/techniques/AML.T0051 — The f-string injection anti-pattern is a direct instantiation of this technique: untrusted text placed in the instruction context inherits instruction authority, enabling adversary-controlled goal override.
+[^4]: MITRE ATLAS, "LLM Prompt Injection (AML.T0051)," Adversarial Threat Landscape for Artificial-Intelligence Systems, 2024. https://github.com/mitre-atlas/atlas-data/blob/main/data/techniques/AML.T0051.yaml — The f-string injection anti-pattern is a direct instantiation of this technique: untrusted text placed in the instruction context inherits instruction authority, enabling adversary-controlled goal override.
 
 [^5]: MITRE, "CWE-20: Improper Input Validation," Common Weakness Enumeration, 2024. https://cwe.mitre.org/data/definitions/20.html — Retrieved content is the canonical zero-trust input class; the structural separation pattern (quoted-data + schema validation) implements the CWE-20 remediation by creating an explicit validation gate before untrusted content can influence tool dispatch.

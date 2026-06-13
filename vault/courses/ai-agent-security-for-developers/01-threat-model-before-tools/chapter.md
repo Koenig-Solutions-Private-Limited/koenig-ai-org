@@ -34,7 +34,7 @@ sources:
   - https://simonwillison.net/2023/Apr/14/worst-that-could-happen/
   - https://www.anthropic.com/research/building-effective-agents
   - https://modelcontextprotocol.io/specification/2025-03-26/server/security
-  - https://atlas.mitre.org/techniques/AML.T0051
+  - https://github.com/mitre-atlas/atlas-data/blob/main/data/techniques/AML.T0051.yaml
   - https://doi.org/10.6028/NIST.AI.100-1
   - https://cwe.mitre.org/data/definitions/20.html
 tags:
@@ -397,7 +397,7 @@ Chapter 2 — [[courses/ai-agent-security-for-developers/02-stop-untrusted-text-
 
 [^3]: The term "indirect prompt injection" was formally introduced and analyzed in: Greshake et al., "Not What You've Signed Up For: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection," arXiv:2302.12173: https://arxiv.org/abs/2302.12173
 
-[^4]: MITRE ATLAS, "LLM Prompt Injection (AML.T0051)," Adversarial Threat Landscape for Artificial-Intelligence Systems, 2024. https://atlas.mitre.org/techniques/AML.T0051 — Formal adversary-technique taxonomy for AI-specific attacks including direct and indirect prompt injection, with TTPs and mitigations mapped per technique.
+[^4]: MITRE ATLAS, "LLM Prompt Injection (AML.T0051)," Adversarial Threat Landscape for Artificial-Intelligence Systems, 2024. https://github.com/mitre-atlas/atlas-data/blob/main/data/techniques/AML.T0051.yaml — Formal adversary-technique taxonomy for AI-specific attacks including direct and indirect prompt injection, with TTPs and mitigations mapped per technique.
 
 [^5]: NIST, "Artificial Intelligence Risk Management Framework (AI RMF 1.0)," NIST AI 100-1, January 2023. https://doi.org/10.6028/NIST.AI.100-1 — Defines Govern-Map-Measure-Manage functions for AI risk; the four-layer security map in this chapter operationalises the Map function by identifying trust boundaries, asset classes, and control ownership per layer.
 

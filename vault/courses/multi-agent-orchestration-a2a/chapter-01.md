@@ -1,30 +1,45 @@
 ---
 date: 2026-05-30
 author: content-author
-ticket: KOEA-6774
+ticket: KOEA-8038
 course: multi-agent-orchestration-a2a
 chapter: 1
-chapter_title: "The Multi-Agent Mandate — Why A2A?"
+chapter_title: "Why Your Best Agents Can't Talk to Each Other — and How A2A Fixes That"
+slug: multi-agent-orchestration-a2a-chapter-01
+description: "A2A (Agent-to-Agent) solves the Agent Silo problem — the architectural barrier preventing agents across vendors and frameworks from delegating work to each other. This chapter defines the Intent Gap failure mode, contrasts Capability Discovery with Tool Selection, and introduces the four protocol pillars: Identity, Discovery, Communication, and Negotiation."
 vendor_tag: google
 content_type: article
 level: Advanced
 duration_min: 40
 reading_time_min: 10
+last_updated: 2026-06-12
+chapter_primary_query: "how do AI agents communicate across different frameworks using the A2A protocol"
 learning_objectives:
   - Define the Agent Silo problem and explain how it produces vendor lock-in and capability fragmentation
   - Distinguish Capability Discovery from Tool Selection and explain why the difference matters at scale
   - Identify the four core pillars of the A2A protocol — Identity, Discovery, Communication, Negotiation
   - Compare A2A to traditional API-based integration and name the Intent Gap failure mode
-status: awaiting-g0
+positions:
+  - mcp-as-interoperability-moat
+tags: [A2A, multi-agent, orchestration, protocol, agent-interoperability]
+status: g0-passed
 sources:
-  - https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
-  - https://a2a-protocol.org/latest/specification/
-  - https://a2a-protocol.org/latest/
-  - https://github.com/a2aproject/A2A
-  - https://agntcy.org/
-  - https://docs.agntcy.org/
-  - https://google.github.io/adk-docs/
-  - https://lfaidata.foundation/projects/agntcy/
+  - https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/ # retrieved 2026-06-12
+  - https://a2a-protocol.org/latest/specification/ # retrieved 2026-06-12
+  - https://a2a-protocol.org/latest/ # retrieved 2026-06-12
+  - https://github.com/a2aproject/A2A # retrieved 2026-06-12
+  - https://agntcy.org/ # retrieved 2026-06-12
+  - https://docs.agntcy.org/ # retrieved 2026-06-12
+  - https://google.github.io/adk-docs/ # retrieved 2026-06-12
+  - https://www.linuxfoundation.org/press/a2a-protocol-surpasses-150-organizations-lands-in-major-cloud-platforms-and-sees-enterprise-production-use-in-first-year # retrieved 2026-06-12
+  - https://cloud.google.com/blog/topics/partners/google-cloud-ai-agent-marketplace # retrieved 2026-06-12
+faq:
+  - question: "What is the Intent Gap?"
+    answer: "The Intent Gap is the mismatch between what an AI agent intends to achieve and what a traditional REST API endpoint accepts. A REST call assumes both sides pre-agree on the contract — path, method, schema. An agent wants to express an outcome ('summarise this report and flag items over $50k'), but that outcome cannot be expressed in an endpoint path. A2A closes this gap with intent-first messaging: agents send a structured Task object containing the desired outcome, constraints, and context, and the receiving agent's AgentCard declares which task types it can fulfil before delegation occurs. ([A2A Specification v1.0.0](https://a2a-protocol.org/latest/specification/))"
+  - question: "How does A2A differ from MCP?"
+    answer: "MCP (Model Context Protocol) connects an individual AI agent to tools — databases, APIs, file systems, and external data sources. A2A (Agent-to-Agent protocol) connects agents to other agents for task delegation across vendor and framework boundaries. In Google's reference architecture both protocols operate simultaneously: an orchestrator delegates work via A2A while each sub-agent uses MCP to access its own tools. MCP is the agent-to-tool layer; A2A is the agent-to-agent layer. They are explicitly designed to be complementary, not competing. ([A2A launch announcement, April 2025](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/))"
+  - question: "What is an AgentCard?"
+    answer: "An AgentCard is a JSON document published at the well-known path `/.well-known/agent.json` by every A2A-compliant agent. It serves as both a passport and a service contract: it declares the agent's provider metadata, supported capabilities (streaming, push notifications, extended card access), accepted security schemes (OAuth2, API Key, mTLS, OpenID Connect), and specific skill categories — the task types the agent will accept. Any A2A client can probe this endpoint before delegating a task, so capability mismatches are caught at negotiation time rather than after a silent downstream failure. ([A2A Specification v1.0.0](https://a2a-protocol.org/latest/specification/))"
 ---
 
 <!-- 
@@ -57,7 +72,7 @@ An Agent Silo is an agent that cannot delegate to, discover, or receive work fro
 - **Capability fragmentation**: The best document-processing agent might live on a different platform than your best reasoning agent. Without interoperability, you can't compose them.
 - **Duplication tax**: Teams rebuild capabilities from scratch rather than reuse specialized agents across organizational boundaries.
 
-Google named this crisis in their April 2025 A2A announcement: enterprises deploy agents across disconnected systems, and the result is fragmented, duplicated, and ultimately brittle AI infrastructure. ([developers.googleblog.com](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)) By 2026, 150+ organizations — including Microsoft, Salesforce, ServiceNow, and SAP — have co-signed the same diagnosis by adopting the A2A standard.
+Google named this crisis in their April 2025 A2A announcement: enterprises deploy agents across disconnected systems, and the result is fragmented, duplicated, and ultimately brittle AI infrastructure. ([developers.googleblog.com](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)) By April 2026, that founding coalition had grown to 150+ organizations — including AWS, Cisco, IBM, Microsoft, Salesforce, SAP, and ServiceNow — co-signing the same diagnosis by adopting the A2A standard. ([Linux Foundation, April 2026](https://www.linuxfoundation.org/press/a2a-protocol-surpasses-150-organizations-lands-in-major-cloud-platforms-and-sees-enterprise-production-use-in-first-year))
 
 This chapter makes the case for why the solution requires a *protocol*, not another framework.
 
@@ -74,7 +89,7 @@ The distinction is architectural. Tool Selection produces a *topology* — a fix
 
 An analogy: a phone book entry is Tool Selection (you know the number, you dial it). DNS is Capability Discovery (you know the hostname; the network resolves it to whoever currently answers that name).
 
-AGNTCY — the open multi-agent infrastructure project originally developed by Cisco, now hosted by the Linux Foundation alongside 65+ participating organizations ([LF AI & Data](https://lfaidata.foundation/projects/agntcy/)) — is built on this principle. Its Open Agent Schema Framework (OASF) lets any agent describe its capabilities in a machine-readable format, enabling other agents to find it by *what it can do*, not by a hard-coded endpoint. ([docs.agntcy.org](https://docs.agntcy.org/)) When an agent publishes an OASF-compliant schema, it becomes searchable across organizational boundaries. That's the Internet of Agents model.
+AGNTCY — the open multi-agent infrastructure project created by Cisco's Outshift team, with Cisco, Dell Technologies, Google Cloud, Oracle, and Red Hat as formative members alongside 75+ contributing organizations ([agntcy.org](https://agntcy.org/)) — is built on this principle. Its Open Agent Schema Framework (OASF) lets any agent describe its capabilities in a machine-readable format, enabling other agents to find it by *what it can do*, not by a hard-coded endpoint. ([docs.agntcy.org](https://docs.agntcy.org/)) When an agent publishes an OASF-compliant schema, it becomes searchable across organizational boundaries. That's the Internet of Agents model.
 
 <KnowledgeCheck
   question="What is the key architectural difference between Tool Selection and Capability Discovery?"
@@ -107,7 +122,7 @@ The Intent Gap produces failures that are difficult to debug:
 A2A closes this gap with **intent-first messaging**. Instead of calling an endpoint, an agent sends a `Task` — a structured object containing the desired outcome, context, and constraints. The receiving agent's `AgentCard` declares what task types it can fulfill. The sending agent queries that card *before* delegating. Mismatches are caught at negotiation time, not after silent failure. ([A2A specification v1.0.0](https://a2a-protocol.org/latest/specification/))
 
 <Callout type="hot">
-  A2A v1.0.0 shipped March 2026 and is now natively integrated into Google ADK, Cloud Run, and GKE. ([Google ADK Documentation](https://google.github.io/adk-docs/)) The Agentspace marketplace already lists 200+ A2A-compliant agents. The Intent Gap isn't a theoretical concern — organizations at Salesforce, ServiceNow, and Microsoft are paying the operational tax of traditional API integration with agents today.
+  A2A v1.0.0 shipped March 2026 and is now natively integrated into Google ADK, Cloud Run, and GKE. ([Google ADK Documentation](https://google.github.io/adk-docs/)) The Google Cloud AI Agent Marketplace lists partner-built A2A agents validated for Gemini Enterprise integration from ISVs, GSIs, and technology providers. ([Google Cloud Blog](https://cloud.google.com/blog/topics/partners/google-cloud-ai-agent-marketplace)) The Intent Gap isn't a theoretical concern — organizations at Salesforce, ServiceNow, and Microsoft are paying the operational tax of traditional API integration with agents today.
 </Callout>
 
 ---
@@ -179,7 +194,7 @@ The distinction:
 - A **framework** defines the rules for agents that have already opted into that framework.
 - A **protocol** defines how agents that know nothing about each other can still collaborate.
 
-TCP/IP didn't replace application software. It made application software from different vendors interoperable over a common network. A2A occupies exactly the same layer for agents. A CrewAI orchestrator can dispatch tasks to a LangGraph specialist via A2A. A Paperclip agent can hire a Vertex AI agent via A2A. The frameworks run on top; A2A is the network beneath them.
+TCP/IP didn't replace application software. It made application software from different vendors interoperable over a common network. A2A occupies exactly the same layer for agents. A CrewAI orchestrator can dispatch tasks to a LangGraph specialist via A2A. A Paperclip agent can hire a Vertex AI agent via A2A. The frameworks run on top; A2A is the network beneath them. For the tool-connection layer that runs *inside* each of those agents, see [[mcp-from-first-principles-to-production/01-why-mcp-exists|MCP: Why It Exists — the N×M problem A2A's complement solves]].
 
 This is the "Internet of Agents" thesis. AGNTCY states it directly: its goal is open infrastructure for "discovery, identity, messaging, and observability among AI agents from different vendors and frameworks." ([agntcy.org](https://agntcy.org/)) A2A handles message-passing; AGNTCY handles the network-layer infrastructure. Together they form the stack beneath every framework.
 
@@ -252,8 +267,10 @@ This decomposition is the mental model you'll use throughout the course. When yo
 
 [[multi-agent-orchestration-a2a/chapter-02|Chapter 2: A2A Protocol Architecture — The Message Flow]] puts the four pillars to work at the wire level. You'll implement a raw JSON-RPC Handshake and Negotiation sequence, trace every state transition in the A2A task lifecycle, and understand why JSON-RPC 2.0 outperforms REST for intent-based agent communication.
 
+[[multi-agent-orchestration-a2a/chapter-03|Chapter 3: The Internet of Agents — AGNTCY & Global Discovery]] goes deeper on cross-vendor registry infrastructure, global Agent Identity design, and the fallback patterns that keep discovery working when no central registry is available.
+
 The theory ends here. In Chapter 2, you write the wire.
 
 ---
 
-*Sources: [A2A Specification v1.0.0](https://a2a-protocol.org/latest/specification/) · [Google A2A Announcement, Apr 2025](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/) · [A2A GitHub Repository](https://github.com/a2aproject/A2A) · [AGNTCY Internet of Agents](https://agntcy.org/) · [AGNTCY Documentation](https://docs.agntcy.org/) · [Google ADK Documentation](https://google.github.io/adk-docs/) · [LF AI & Data — AGNTCY Project](https://lfaidata.foundation/projects/agntcy/)*
+*Sources: [A2A Specification v1.0.0](https://a2a-protocol.org/latest/specification/) · [Google A2A Announcement, Apr 2025](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/) · [A2A GitHub Repository](https://github.com/a2aproject/A2A) · [AGNTCY Internet of Agents](https://agntcy.org/) · [AGNTCY Documentation](https://docs.agntcy.org/) · [Google ADK Documentation](https://google.github.io/adk-docs/)*

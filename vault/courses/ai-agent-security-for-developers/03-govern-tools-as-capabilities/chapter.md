@@ -34,7 +34,7 @@ sources:
   - https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/sandbox.md
   - https://modelcontextprotocol.io/specification/2025-11-05/server/tools
   - https://owasp.org/www-project-top-10-for-large-language-model-applications/
-  - https://atlas.mitre.org/techniques/AML.T0051
+  - https://github.com/mitre-atlas/atlas-data/blob/main/data/techniques/AML.T0051.yaml
   - https://doi.org/10.6028/NIST.SP.800-53r5
   - https://cwe.mitre.org/data/definitions/272.html
 tags:
@@ -549,7 +549,7 @@ Chapter 4 moves down the stack: we will isolate the execution environment itself
 
 [^4]: OWASP, "OWASP Top 10 for LLM Applications 2025," LLM07: System Prompt Leakage / Insecure Plugin Design, 2024. https://owasp.org/www-project-top-10-for-large-language-model-applications/ — LLM07 documents the pattern of overly broad tool grants enabling injection-driven exploitation; minimising the tool list is its primary mitigation.
 
-[^5]: MITRE ATLAS, "LLM Prompt Injection (AML.T0051)," Adversarial Threat Landscape for Artificial-Intelligence Systems, 2024. https://atlas.mitre.org/techniques/AML.T0051 — Shell and code-execution tools (Class 6) are the highest-yield injection targets in the ATLAS threat model because a single successful exploitation grants the full capability surface of the host environment.
+[^5]: MITRE ATLAS, "LLM Prompt Injection (AML.T0051)," Adversarial Threat Landscape for Artificial-Intelligence Systems, 2024. https://github.com/mitre-atlas/atlas-data/blob/main/data/techniques/AML.T0051.yaml — Shell and code-execution tools (Class 6) are the highest-yield injection targets in the ATLAS threat model because a single successful exploitation grants the full capability surface of the host environment.
 
 [^6]: NIST, "Security and Privacy Controls for Information Systems and Organizations," NIST SP 800-53 Revision 5, September 2020. https://doi.org/10.6028/NIST.SP.800-53r5 — Control AC-6 (Least Privilege) and AC-6(10) (Prohibit Non-Privileged Users from Executing Privileged Functions) directly correspond to the approval-matrix tiers: silent-allow for read-only class, review-required for mutation classes, and always-blocked for shell execution.
 
