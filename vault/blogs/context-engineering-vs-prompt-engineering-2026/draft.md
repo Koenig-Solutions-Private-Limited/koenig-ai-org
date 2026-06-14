@@ -1,17 +1,23 @@
 ---
+title: "Context Engineering vs Prompt Engineering in 2026: Design the Stack First"
+slug: "context-engineering-vs-prompt-engineering-2026"
+tags: ["context-engineering", "prompt-engineering", "ai-agents", "production-ai", "llm-architecture-2026"]
 date: 2026-05-30
 author: blog-author
 ticket: KOEA-6776
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: g0-passed
 reading_time_min: 6
 primary_query: "context engineering vs prompt engineering 2026"
 contrarian_angle: "Prompt engineering isn't dead — it moved inside a bigger control system you now have to design first"
 first_60_words_answer: "Context engineering and prompt engineering are not competing techniques — context engineering is the architecture layer that contains prompt engineering. In 2026, the prompt itself is one instruction file inside a larger system of retrieval shape, memory boundaries, trust levels, and output contracts. Operators who understand this distinction build reliable agents; those who don't keep chasing phrasing instead of fixing the context stack."
+seo_description: "Context engineering subsumes prompt engineering in 2026. Design the retrieval stack, memory boundaries, and output contracts before writing prompts."
 positions:
-  - "[stance:arch-claude-agent-sdk]"
-  - "[stance:cost-fix-the-leak]"
+  - id: mcp-as-interoperability-moat
+    engagement: extends
+  - id: audit-trail-as-enterprise-gate
+    engagement: refines
 original_data: false
 last_updated: 2026-05-30
 hero_image:
@@ -132,4 +138,4 @@ D) Replacing "list" with "enumerate" in the task description
 
 Context engineering is not a rebrand. It is the acknowledgment that modern agent systems need deliberate control surfaces: instruction files that survive session churn, retrieval layers that load signal not noise, output schemas that define what valid means, and trust boundaries that decide what the model should never see. Prompt engineering lives inside that stack — but it is not the stack.
 
-**This is Part 1 of the Production Agent Engineering in 2026 series.** Part 2 covers building and running the eval harness that catches context failures before users do — covering regression suites, context-stack evals, and the tools that make them worth running.
+**This is Part 1 of the Production Agent Engineering in 2026 series.** Part 2 covers building and running the eval harness that catches context failures before users do — covering regression suites, context-stack evals, and the tools that make them worth running. For hands-on implementation of the production agent context patterns covered here, continue with [[course/production-agents-claude-agent-sdk-mcp-connector]] or [[course/claude-agent-sdk-zero-to-production]].
