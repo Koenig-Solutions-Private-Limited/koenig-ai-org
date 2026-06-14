@@ -29,7 +29,7 @@ faq:
   - question: "What tasks were used in this benchmark?"
     answer: "Three tasks: Task A — implement an Express MCP server handler with tests from a JSON spec (short scaffolding task); Task B — scaffold a JWT authentication service across multiple files; Task C — fix a TypeScript streaming memory leak in an existing Node project. All tasks used [deterministic test harnesses as described in the methodology](#methodology). Relative speed comparisons are valid; absolute times are not representative of real-world production codebases."
   - question: "Does this benchmark measure token cost or API cost?"
-    answer: "No. The benchmark harness did not capture token counts or API spend. All token_cost_usd values in the raw CSV are 'unknown'. A full cost comparison between Codex CLI and Claude Code would require instrumented token logging. At list prices, Claude Code Opus 4.7 is roughly $15/MTok input per [Anthropic's pricing page](https://www.anthropic.com/pricing) vs [OpenAI's API pricing](https://openai.com/api/pricing/) for Codex CLI's underlying model, but per-task cost depends heavily on task complexity and the number of tool calls, which we did not measure."
+    answer: "No. The benchmark harness did not capture token counts or API spend. All token_cost_usd values in the raw CSV are 'unknown'. A full cost comparison between Codex CLI and Claude Code would require instrumented token logging. At list prices, Claude Code Opus 4.7 is roughly $15/MTok input per [Anthropic's pricing page](https://claude.com/pricing) vs [OpenAI's API pricing](https://developers.openai.com/api/docs/pricing) for Codex CLI's underlying model, but per-task cost depends heavily on task complexity and the number of tool calls, which we did not measure."
   - question: "Can I reproduce this benchmark?"
     answer: "The benchmark scripts and task fixtures are in vault/research/_benchmarks/. The run-benchmark.sh harness resets task state before each trial and records start/end UTC, time-to-first-viable-diff, time-to-tests-pass, correctness, and escalation count. The raw CSV is at vault/research/_benchmarks/codex-vs-claude-code-autonomous-2026-06.csv. Note that early Codex task-A trials (rows 2–23) used an unstable harness version and are excluded from the canonical 5-trial comparison set. Both tools used [Claude Code](https://github.com/anthropics/claude-code) and [Codex CLI](https://github.com/openai/codex) official releases."
 sources:
@@ -45,9 +45,9 @@ sources:
     retrieved: 2026-06-14
   - url: https://github.com/openai/codex/releases
     retrieved: 2026-06-14
-  - url: https://www.anthropic.com/pricing
+  - url: https://claude.com/pricing
     retrieved: 2026-06-14
-  - url: https://openai.com/api/pricing/
+  - url: https://developers.openai.com/api/docs/pricing
     retrieved: 2026-06-14
 schema:
   - BlogPosting
@@ -148,7 +148,7 @@ Mean speed differences headline well, but variance is what decides whether you c
 
 ## What this benchmark does not tell you
 
-**Token cost.** The benchmark harness did not capture API token counts. All cost_usd entries in the raw data are `unknown`. At list prices, [Claude Code Opus 4.7](https://www.anthropic.com/pricing) carries a higher model cost than [Codex CLI's underlying model](https://openai.com/api/pricing/), but per-task cost is driven by token count and call count — which we did not measure.
+**Token cost.** The benchmark harness did not capture API token counts. All cost_usd entries in the raw data are `unknown`. At list prices, [Claude Code Opus 4.7](https://claude.com/pricing) carries a higher model cost than [Codex CLI's underlying model](https://developers.openai.com/api/docs/pricing), but per-task cost is driven by token count and call count — which we did not measure.
 
 **Real-world codebase scale.** Task A completed in 26–45 seconds. Real MCP server implementations are larger. Relative comparisons hold; do not extrapolate absolute completion times to production codebases.
 
