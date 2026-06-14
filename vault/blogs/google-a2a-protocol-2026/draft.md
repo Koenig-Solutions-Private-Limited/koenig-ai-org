@@ -1,5 +1,5 @@
 ---
-title: "Use Google A2A for cross-agent delegation, not as an MCP replacement"
+title: "Use Google A2A for cross-agent delegation, not as an MCP replacement (2026)"
 description: "Google A2A matters in 2026 because it standardizes durable task state, auth interruptions, and artifact exchange across agents, while MCP still handles tools and context inside each agent."
 slug: 2026-05-13-google-a2a-protocol
 date: 2026-05-13
@@ -8,11 +8,15 @@ agent_drafted_by: blog-author
 ticket: KOEA-3050
 vendor_tag: google
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 14
 primary_query: "google a2a protocol explained"
 contrarian_angle: "A2A is not winning by replacing MCP; it is winning by standardizing the state, auth, and resume layer that cross-agent systems kept rebuilding badly."
 tags: [google, a2a, agent-protocols, mcp, agntcy, gemini, multi-agent]
+positions:
+  - id: mcp-as-interoperability-moat
+    engagement: extends
+seo_description: "Google A2A v1.0 standardizes cross-agent task delegation, OAuth interruptions, and artifact exchange. 2026 guide to using A2A alongside MCP in production."
 sources:
   - https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
   - https://cloud.google.com/blog/products/ai-machine-learning/agent2agent-protocol-is-getting-an-upgrade
@@ -35,14 +39,16 @@ learning_objectives:
   - "Recognize when A2A is enough and when a broader coordination fabric like AGNTCY is the better fit."
 faq:
   - question: "Is A2A a replacement for MCP?"
-    answer: "No. MCP standardizes tool and context access inside an agent. A2A standardizes delegation between agents."
+    answer: "No. [MCP](https://modelcontextprotocol.io/) standardizes tool and context access inside a single agent's world — tools, resources, prompts, and context channels. [A2A](https://a2a-protocol.org/latest/specification/) standardizes delegation between independent agents over a shared task interface, allowing each remote agent to maintain its own permissions and internal execution chain without exposing its internals to the orchestrator."
   - question: "Why did A2A matter more in 2026 than at launch?"
-    answer: "Because v1.0 added the boring but essential pieces: transport separation, task listing, modern OAuth flows, and stronger multi-tenant support."
+    answer: "Because [v1.0.0](https://github.com/a2aproject/A2A/releases/tag/v1.0.0), released March 12, 2026, added the boring but essential production pieces: transport separation from application protocol, `tasks/list` with filtering and pagination, modern OAuth flows (Device Code and PKCE), and native gRPC multi-tenancy. Those changes make a protocol look like infrastructure rather than a demo — which is why adoption accelerated in 2026."
   - question: "Can Claude, OpenAI, and Gemini agents speak A2A if they expose compatible endpoints?"
-    answer: "Yes. A2A is vendor-neutral at the protocol layer, so the client talks to an Agent Card and task interface rather than a model-specific API shape."
+    answer: "Yes. [A2A](https://a2a-protocol.org/latest/specification/) is vendor-neutral at the protocol layer: the client resolves an Agent Card at `/.well-known/agent-card.json`, sends tasks to the declared interface, and iterates over task state or artifact updates — regardless of whether Claude, OpenAI, or Gemini powers the endpoint. The [official Python SDK](https://github.com/a2aproject/a2a-python) implements spec 1.0 with backward compatibility for 0.3 across JSON-RPC, HTTP+JSON/REST, and gRPC."
   - question: "Where does AGNTCY fit?"
-    answer: "AGNTCY sits above raw delegation and aims at a fuller internet-of-agents stack with discovery, identity, messaging, and observability, while A2A stays narrower."
-hero_image: auto:flux
+    answer: "[AGNTCY](https://agntcy.org/) sits above raw delegation and aims at a fuller internet-of-agents stack — adding discovery through OASF, cryptographically verifiable identity, SLIM messaging, and observability layers that [A2A](https://a2a-protocol.org/latest/specification/) leaves to the implementer. If A2A handles delegating a task to one known agent, AGNTCY is the layer for finding which agent to delegate to, routing across organizational boundaries, and tracking accountability across vendors."
+hero_image:
+  url: auto:flux
+  alt: "Diagram showing A2A protocol handling cross-agent task delegation while MCP manages tools and context within each agent, with task state lifecycle overlay"
 references:
   - n: 1
     title: "Announcing the Agent2Agent Protocol (A2A)"
