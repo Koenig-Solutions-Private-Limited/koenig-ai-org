@@ -6,7 +6,7 @@ author: blog-author
 ticket: KOEA-7091
 vendor_tag: openai
 content_type: article
-status: g0-passed
+status: awaiting-g0
 reading_time_min: 7
 tags: [codex-cli, claude-code, autonomous-agents, benchmark, ci-cd]
 primary_query: "codex cli vs claude code autonomous 2026 benchmark"
