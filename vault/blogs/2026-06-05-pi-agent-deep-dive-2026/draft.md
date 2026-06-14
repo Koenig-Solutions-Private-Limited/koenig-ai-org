@@ -1,14 +1,22 @@
 ---
 date: 2026-06-05
+title: "Pi Agent in 2026: The Most Token-Efficient Coding Harness — and Where It Falls Short"
 author: content-author
 ticket: KOEA-7193
 vendor_tag: pi-agent
 content_type: article
+positions:
+  - id: cli-first-workflows-for-production-teams
+    engagement: extends
+seo_description: "Pi agent: MIT-licensed coding harness with 200-token system prompt, 37+ models, and 50-99% cost reduction vs Claude Code. When Pi wins and when it falls short."
+hero_image:
+  url: auto:flux
+  alt: "Terminal comparison showing Pi agent's minimal 200-token system prompt versus Claude Code's 10,000-token prompt, with cost-per-session math overlay"
 learning_objectives:
   - Understand Pi agent's architecture and how its minimal design cuts per-task cost
   - Evaluate which workflow patterns unlock Pi's efficiency gains versus other harnesses
   - Identify the concrete failure modes that make Pi a poor fit for certain teams
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 10
 sources:
   - https://github.com/earendil-works/pi
@@ -206,7 +214,7 @@ See also the full [AI coding agents buyers guide for 2026](/blog/ai-coding-agent
 ## FAQ
 
 **Q: Is Pi actually faster than Claude Code for code tasks?**
-Raw latency depends on the model, not the harness. Pi's minimal system prompt reduces the token count sent on each call, which marginally shortens time-to-first-token. The bigger latency gain comes from session branching — recovering from a bad agent path takes seconds (fork, not restart) instead of re-running from scratch.
+Raw latency depends on the model, not the harness. [Pi's](https://github.com/earendil-works/pi) minimal system prompt reduces the token count sent on each call, which marginally shortens time-to-first-token. The bigger latency gain comes from session branching — recovering from a bad agent path takes seconds (fork, not restart) instead of re-running from scratch. [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) wins on guardrails and IDE integration; Pi wins on raw API cost and model flexibility.
 
 **Q: Can I use Pi with Claude Code's subscription models?**
 Pi's `pi-ai` Anthropic integration uses Anthropic's API directly via your own API key. It does not hook into Claude Code's subscription. Claude Pro/Max subscriptions are not accessible via the API; you need an Anthropic API key with separate billing.
@@ -215,10 +223,10 @@ Pi's `pi-ai` Anthropic integration uses Anthropic's API directly via your own AP
 Both implement compaction, but differently. Claude Code uses a proprietary summarization pass with its locked system prompt context. Pi's `/compact` command summarizes older messages while preserving recent turns, and you can trigger it manually or configure auto-compaction thresholds. The session tree lets you branch before compaction triggers, preserving full fidelity on branches you care about.
 
 **Q: What's the realistic monthly cost for a team of 5 using Pi with DeepSeek V4 Pro?**
-Rough estimate: 5 developers × 20 sessions/week × 4 weeks × 500K tokens/session = 200M tokens/month. At DeepSeek V4 Pro rates ($0.435 input + $0.87 output, blended ~$0.65/M), that's approximately **$130/month** for the full team. The same usage on Claude Opus 4.7 would run approximately **$3,000/month**. Pi's free harness doesn't change this math — the cost delta is entirely the model choice.
+Rough estimate: 5 developers × 20 sessions/week × 4 weeks × 500K tokens/session = 200M tokens/month. At [DeepSeek V4 Pro](https://www.npmjs.com/package/@mariozechner/pi-coding-agent) rates ($0.435 input + $0.87 output, blended ~$0.65/M), that's approximately **$130/month** for the full team. The same usage on Claude Opus 4.7 would run approximately **$3,000/month**. [Pi's free harness](https://github.com/earendil-works/pi) doesn't change this math — the cost delta is entirely the model choice.
 
 **Q: Is Pi safe to run in CI pipelines?**
-With explicit containerization — Docker, devcontainers, or nsjail as documented — yes. Without it, no. Pi's RPC mode (`--rpc`) supports headless invocation from CI scripts, but you must provision the sandbox separately. The project documents all three approaches in its security section.
+With explicit containerization — Docker, devcontainers, or nsjail as documented — yes. Without it, no. [Pi's](https://github.com/earendil-works/pi) RPC mode (`--rpc`) supports headless invocation from CI scripts, but you must provision the sandbox separately. The project documents all three approaches in its security section. See the [CHANGELOG](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/CHANGELOG.md) for sandboxing updates in recent releases.
 
 **Q: Does Pi support multi-agent workflows?**
 Mainline Pi does not ship sub-agents. The `oh-my-pi` community fork ([github.com/can1357/oh-my-pi](https://github.com/can1357/oh-my-pi)) adds sub-agent orchestration, and the `pi-subagents` package ([github.com/tintinweb/pi-subagents](https://github.com/tintinweb/pi-subagents)) adds parallel execution with a live widget and mid-run steering. Both are community-maintained, not official Pi.
@@ -228,4 +236,4 @@ Start with Claude Sonnet 4.6 on your Anthropic API key — it gives you a reliab
 
 ---
 
-*For a broader comparison of coding agents, see our [AI coding agents buyers guide for 2026](/blog/ai-coding-agents-production-2026-buyers-guide). Individual deep-dives: [Claude Code](/blog/ai-tool-deep-dive-claude-code) · [Codex CLI](/blog/ai-tool-deep-dive-codex-cli) · [Aider](/blog/ai-tool-deep-dive-aider).*
+*For a broader comparison of coding agents, see [[ai-coding-agents-production-2026-buyers-guide|AI coding agents buyers guide for 2026]]. Individual deep-dives: [[ai-tool-deep-dive-claude-code|Claude Code]] · [[ai-tool-deep-dive-codex-cli|Codex CLI]] · [[ai-tool-deep-dive-aider|Aider]].*
