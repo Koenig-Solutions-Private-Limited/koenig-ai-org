@@ -8,6 +8,15 @@ status: draft-for-review
 reading_time_min: 7
 primary_query: "OpenAI Realtime API voice agents production"
 contrarian_angle: "Realtime voice agents fail in production less because speech-to-speech is hard and more because teams under-budget the always-on audio loop."
+first_60_words_answer: "OpenAI Realtime API voice agents are production-ready when you treat them as live audio systems: pick the transport (WebRTC, WebSocket, or SIP), keep tools server-controlled, tune VAD, and budget cost by session length—not per-call. GPT-Realtime-2 audio costs $32/1M input tokens and $64/1M output tokens. The production risk is the persistent audio session, not the model quality."
+positions:
+  - id: audit-trail-as-enterprise-gate
+    engagement: refines
+original_data: false
+last_updated: 2026-06-14
+hero_image:
+  url: /img/blogs/openai-realtime-api-voice-agents-production/hero.png
+  alt: "Architecture diagram showing WebRTC and WebSocket transport paths from browser and server to OpenAI Realtime API, with cost-per-session budget breakdown overlay"
 sources:
   - https://developers.openai.com/api/docs/guides/realtime
   - https://developers.openai.com/api/docs/guides/voice-agents
@@ -18,6 +27,23 @@ sources:
   - https://github.com/openai/openai-realtime-console
   - https://www.cartesia.ai/sonic
   - https://huggingface.co/hexgrad/Kokoro-82M
+references:
+  - url: https://developers.openai.com/api/docs/guides/realtime
+    retrieved: "2026-06-14"
+  - url: https://developers.openai.com/api/docs/guides/voice-agents
+    retrieved: "2026-06-14"
+  - url: https://developers.openai.com/api/docs/guides/realtime-models-prompting
+    retrieved: "2026-06-14"
+  - url: https://platform.openai.com/docs/pricing
+    retrieved: "2026-06-14"
+  - url: https://github.com/openai/openai-realtime-agents
+    retrieved: "2026-06-14"
+  - url: https://github.com/openai/openai-realtime-console
+    retrieved: "2026-06-14"
+  - url: https://www.cartesia.ai/sonic
+    retrieved: "2026-06-14"
+  - url: https://huggingface.co/hexgrad/Kokoro-82M
+    retrieved: "2026-06-14"
 whats_new:
   - OpenAI Realtime voice agents should be budgeted as persistent audio sessions with tools, not as cheaper TTS wrappers around a chat app.
 learning_objectives:
@@ -101,18 +127,14 @@ The first runnable production step is not "open a microphone." It is creating a 
 OpenAI's API reference describes `POST /v1/realtime/client_secrets` as the endpoint for generating ephemeral client secrets for client-side Realtime applications, so this belongs on your backend rather than in frontend code ([Realtime client secrets](https://developers.openai.com/api/docs/guides/realtime)).
 
 <curl>
-curl https://developers.openai.com/api/docs/guides/realtime \
+curl https://api.openai.com/v1/realtime/sessions \
+  -X POST \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "session": {
-      "type": "realtime",
-      "model": "gpt-realtime-2",
-      "instructions": "You are a concise support voice agent. Confirm before account changes.",
-      "audio": {
-        "output": { "voice": "marin" }
-      }
-    }
+    "model": "gpt-realtime-2",
+    "instructions": "You are a concise support voice agent. Confirm before account changes.",
+    "voice": "marin"
   }'
 </curl>
 
