@@ -4,19 +4,23 @@ author: blog-author
 ticket: KOEA-7091
 vendor_tag: openai
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 7
 primary_query: "codex cli vs claude code autonomous 2026 benchmark"
 contrarian_angle: "Correctness is not the differentiator — both tools pass every task. The real story is 13× faster completion and dramatically tighter variance from Claude Code, which matters more for CI pipelines than model quality debates"
 first_60_words_answer: "We ran 30 autonomous-mode trials pitting Codex CLI 5.4 against Claude Code Opus 4.7 across three benchmark tasks. Claude Code completed tasks 1.6× to 13× faster with tighter variance. Both tools achieved 100% correctness and zero human escalations. Token cost data was unavailable. If autonomous speed and CI predictability matter, Claude Code wins. If open-source portability matters, Codex CLI wins."
 original_data: true
-last_updated: 2026-06-10
+positions:
+  - id: cli-first-workflows-for-production-teams
+    engagement: extends
+seo_description: "Original 30-trial benchmark: Claude Code Opus 4.7 completes autonomous tasks 1.6×–13× faster than Codex CLI 5.4. Both pass 100% of tests."
+last_updated: 2026-06-14
 hero_image:
   url: /img/blogs/2026-06-10-codex-cli-vs-claude-code-autonomous/hero.png
   alt: "Terminal split-screen showing Codex CLI and Claude Code completing an autonomous task in parallel, with timing overlays"
 faq:
   - question: "Is Codex CLI faster than Claude Code in 2026?"
-    answer: "Not in our benchmark. Claude Code Opus 4.7 completed autonomous tasks 1.6× to 13× faster than Codex CLI 5.4 across three task types (Express handler scaffolding, JWT service migration, TypeScript streaming bug fix). We ran 5 trials per tool-task combination for 30 total canonical trials. Codex CLI also showed significantly higher variance — its worst Task B run took 34 minutes compared to a 2–3 minute typical run."
+    answer: "Not in our benchmark. [Claude Code Opus 4.7](https://docs.anthropic.com/en/docs/claude-code/overview) completed autonomous tasks 1.6× to 13× faster than [Codex CLI 5.4](https://github.com/openai/codex) across three task types (Express handler scaffolding, JWT service migration, TypeScript streaming bug fix). We ran 5 trials per tool-task combination for 30 total canonical trials. Codex CLI also showed significantly higher variance — its worst Task B run took 34 minutes compared to a 2–3 minute typical run."
   - question: "Do Codex CLI and Claude Code produce correct output in autonomous mode?"
     answer: "Yes, both tools. In our 30-trial benchmark, both Codex CLI 5.4 and Claude Code Opus 4.7 passed all test harnesses in every canonical trial (5/5 per task). Neither tool requested human input or escalated during any run. The benchmark tasks started with failing tests (baseline_pass=false) and the agent was scored on bringing them to pass."
   - question: "What tasks were used in this benchmark?"
@@ -24,7 +28,7 @@ faq:
   - question: "Does this benchmark measure token cost or API cost?"
     answer: "No. The benchmark harness did not capture token counts or API spend. All token_cost_usd values in the raw CSV are 'unknown'. A full cost comparison between Codex CLI and Claude Code would require instrumented token logging. At list prices, Claude Code Opus 4.7 is roughly $15/MTok input vs Codex CLI's underlying model pricing, but per-task cost depends heavily on task complexity and the number of tool calls, which we did not measure."
   - question: "Can I reproduce this benchmark?"
-    answer: "The benchmark scripts and task fixtures are in vault/research/_benchmarks/. The run-benchmark.sh harness resets task state before each trial and records start/end UTC, time-to-first-viable-diff, time-to-tests-pass, correctness, and escalation count. The raw CSV is at vault/research/_benchmarks/codex-vs-claude-code-autonomous-2026-06.csv. Note that early Codex task-A trials (rows 2–23) used an unstable harness version and are excluded from the canonical 5-trial comparison set."
+    answer: "The benchmark scripts and task fixtures are in vault/research/_benchmarks/. The run-benchmark.sh harness resets task state before each trial and records start/end UTC, time-to-first-viable-diff, time-to-tests-pass, correctness, and escalation count. The raw CSV is at vault/research/_benchmarks/codex-vs-claude-code-autonomous-2026-06.csv. Note that early Codex task-A trials (rows 2–23) used an unstable harness version and are excluded from the canonical 5-trial comparison set. Both tools used [Claude Code](https://github.com/anthropics/claude-code) and [Codex CLI](https://github.com/openai/codex) official releases."
 sources:
   - vault/research/_benchmarks/codex-vs-claude-code-autonomous-2026-06.csv
   - vault/research/_synthesis/codex-vs-claude-code.md
@@ -50,7 +54,7 @@ learning_objectives:
 
 Everyone has an opinion about Codex CLI versus Claude Code. Most of those opinions are based on vibes, one-off experiments, or model benchmarks that measure something different from "does this agent actually finish the job?" We wanted numbers.
 
-We ran 30 canonical trials — 5 trials per tool per task, across three benchmark tasks — using Codex CLI 5.4 and Claude Code Opus 4.7 in fully autonomous mode. Both tools started with failing test suites. Both were scored on time to tests-pass and whether they passed. Neither was allowed to ask for help.
+We ran 30 canonical trials — 5 trials per tool per task, across three benchmark tasks — using [Codex CLI 5.4](https://github.com/openai/codex) and [Claude Code Opus 4.7](https://docs.anthropic.com/en/docs/claude-code/overview) in fully autonomous mode. Both tools started with failing test suites. Both were scored on time to tests-pass and whether they passed. Neither was allowed to ask for help.
 
 Here is the short version: Claude Code finishes faster. Codex CLI takes longer but gets there. Both pass every task. Neither asks a single question.
 
@@ -126,7 +130,7 @@ Mean speed differences headline well, but variance is what decides whether you c
 | Claude Code | C | ~3 | 1.4× |
 | Codex CLI | C | ~5 | 1.3× |
 
-Claude Code's max/min ratio stays below 2× on all tasks. Codex CLI's Task B max/min ratio hits 15.7× because of the outlier. For teams that need predictable CI wall-clock times, Claude Code's consistency is a material advantage even independent of mean speed.
+Claude Code's max/min ratio stays below 2× on all tasks. Codex CLI's Task B max/min ratio hits 15.7× because of the outlier. For teams that need predictable CI wall-clock times, [Claude Code's consistency](https://docs.anthropic.com/en/docs/claude-code/overview) is a material advantage even independent of mean speed.
 
 ---
 
@@ -164,6 +168,23 @@ Most teams with serious automation workloads will evaluate both. The benchmark a
 
 **Raw data**: `vault/research/_benchmarks/codex-vs-claude-code-autonomous-2026-06.csv`
 
-30 canonical trials (5 per tool-task cell). Trials ran 2026-06-04 through 2026-06-10. Tools used: Codex CLI 5.4 (OpenAI), Claude Code Opus 4.7 (Anthropic). Each trial: task reset to failing state, tool run in autonomous mode, scored on time-to-tests-pass and final correctness. Note: early Codex task-A rows (2–23 in the CSV) used an unstable harness iteration and are excluded from the canonical comparison set reported above.
+30 canonical trials (5 per tool-task cell). Trials ran 2026-06-04 through 2026-06-10. Tools used: [Codex CLI 5.4](https://github.com/openai/codex) (OpenAI), [Claude Code Opus 4.7](https://github.com/anthropics/claude-code) (Anthropic). Each trial: task reset to failing state, tool run in autonomous mode, scored on time-to-tests-pass and final correctness. Note: early Codex task-A rows (2–23 in the CSV) used an unstable harness iteration and are excluded from the canonical comparison set reported above.
 
 *Original data: this benchmark was designed and run by the Koenig AI Academy research team. All data points are first-party measurements from our test harness.*
+
+---
+
+## Knowledge Check
+
+A CI pipeline runs autonomous coding tasks nightly. In 5 trials of Task B (JWT service scaffold), Tool X had completion times of 130 s, 145 s, 152 s, 327 s, and 2,038 s. Tool Y had times of 92 s, 125 s, 125 s, 137 s, and 157 s. Both tools passed 5/5 trials. Which tool is safer for time-budget scheduling?
+
+A) Tool X — it has a lower median (145 s vs 157 s)  
+B) Tool Y — it has a lower max/min ratio (1.7× vs 15.7×) and no outlier risk  
+C) Tool X — mean completion is irrelevant; only correctness matters  
+D) Tool Y — because it is the more expensive model  
+
+*Correct answer: B. Tool Y (Claude Code) has a max/min ratio of 1.7× compared to Tool X's (Codex CLI) 15.7×. The 2,038-second outlier represents a 1-in-5 chance of a 34-minute run — a real operational risk for any pipeline with a wall-clock time budget. Low variance, not low mean or model cost, is the scheduling-relevant criterion.*
+
+---
+
+For head-to-head comparisons across more tools — including Cursor Composer — see [[2026-06-05-codex-cli-vs-claude-code-vs-cursor-2026]]. The [[ai-tool-deep-dive-codex-cli]] deep-dive covers Codex CLI's architecture and open-source model in detail. For using Claude Code effectively in production workflows, see [[2026-06-04-claude-code-opus-4-7-production-guide]].
