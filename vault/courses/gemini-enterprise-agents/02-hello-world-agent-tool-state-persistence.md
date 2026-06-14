@@ -70,7 +70,7 @@ python -c "import google.adk; print(google.adk.__version__)"
 You should see a version string beginning with `1.` (the current release is in the 1.3x series). If you see an import error, check that your Python environment matches the `python` binary you ran above.
 
 <Callout type="info">
-**Venv is strongly recommended.** ADK pulls in `google-cloud-aiplatform` and several other Google Cloud libraries. Isolating this in a virtualenv prevents version conflicts with existing projects. Run `python -m venv .venv && source .venv/bin/activate` before installing.
+**Venv is strongly recommended.** ADK pulls in `google-cloud-aiplatform` and other Google Cloud libraries; isolate it to prevent version conflicts. Run `python -m venv .venv && source .venv/bin/activate` before installing.
 </Callout>
 
 ---
@@ -139,12 +139,6 @@ def get_expense_summary() -> str:
     return "Expense summary:\n" + "\n".join(lines)
 ```
 
-Three things to notice:
-
-1. **No decorator.** There is no `@tool` magic. ADK infers the tool schema from the function signature and docstring at runtime.
-2. **Docstring quality matters.** The model reads the docstring — not the function name — to decide when to call this tool. "Use this tool when..." is the trigger phrase that shapes model behaviour.
-3. **Return strings.** Tools return strings (or JSON-serialisable values) that the model reads as tool output. Return structured data as JSON strings for complex results.
-
 ---
 
 ## Step 3: Wire the agent
@@ -182,12 +176,6 @@ Keep responses short. Do not invent expenses the user did not mention.""",
     tools=[log_expense, get_expense_summary],
 )
 ```
-
-The `instruction` field is the system prompt. It does four things here:
-- Sets the persona
-- Gives explicit rules for when to call each tool
-- Tells the model not to hallucinate data
-- Keeps output concise
 
 <Callout type="warning">
 **Instruction quality is your most important variable.** A poorly written instruction produces an agent that calls the wrong tool, invents data, or returns walls of text. Treat the instruction like production code: version it, test it, refine it when you see failures.
@@ -343,10 +331,6 @@ def get_expense_summary(session: Session) -> str:
     return "Expense summary:\n" + "\n".join(lines)
 ```
 
-Key insight: ADK injects `session` automatically when a tool function declares a `Session` parameter. You do not pass it yourself — the framework sees the type annotation and injects the current session. This is ADK's dependency injection pattern.
-
-`session.state` is a dictionary that ADK persists through the conversation. If you restart the process but resume the same session ID, `session.state` is restored.
-
 ---
 
 ## Step 6: Understanding Session vs Memory Bank
@@ -368,13 +352,7 @@ The distinction between these two concepts is the most important architectural c
 | **Who creates it** | You (via `session.state` writes) | The platform (via model distillation) |
 | **Who reads it** | Your tools, explicitly | The agent's instruction context, automatically |
 
-**Session state** is for information that matters during the current conversation: a shopping cart, an in-progress form, the user's current task context. You write to it explicitly.
-
-**Memory Bank** is for information that should survive across conversations: user preferences, past decisions, relationship context. The platform creates Memory Profiles automatically by running a model over completed sessions and distilling relevant facts. You enable it; the platform manages it.
-
-For the budget tracker, the right model is:
-- Session state: the list of expenses logged so far in this conversation
-- Memory Bank profile: "This user tends to overspend on food; last month they spent $320 on dining"
+**Session state** holds what matters in the current conversation — a cart, a form, the user's task context — and you write to it explicitly. **Memory Bank** holds what should survive across conversations — preferences, past decisions — and the platform populates it automatically by distilling completed sessions. For the budget tracker: session state holds expenses logged this session; a Memory Bank profile would capture "user consistently overspends on food."
 
 <Callout type="info">
 **Memory Bank is not available in `InMemorySessionService`.** It requires deploying to Vertex AI with a `VertexAiSessionService`. For local development, simulate long-term memory by loading a state file at session start. We show the production wiring in the capstone.
