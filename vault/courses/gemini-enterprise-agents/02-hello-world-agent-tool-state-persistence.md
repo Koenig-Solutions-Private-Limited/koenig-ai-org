@@ -6,7 +6,8 @@ prerequisites_chapters: [1]
 duration_min: 55
 reading_time_min: 55
 date: 2026-04-30
-status: draft-for-review
+status: g0-passed
+last_updated: 2026-06-14
 author: Koenig AI Academy
 agent_drafted_by: course-author
 content_type: course-chapter
@@ -374,7 +375,7 @@ session_service = VertexAiSessionService(
 )
 ```
 
-Everything else stays the same. Your tool code, your agent instruction, your tool definitions — unchanged. The `Session` object your tools receive has the same API. This is the portability promise of ADK: develop locally with in-memory services, deploy to Vertex with a one-line swap. For a broader introduction to the Vertex AI infrastructure GEAP builds on, see Vertex AI fundamentals.
+Everything else stays the same. Your tool code, your agent instruction, your tool definitions — unchanged. The `Session` object your tools receive has the same API. This is the portability promise of ADK: develop locally with in-memory services, deploy to Vertex with a one-line swap. For a broader introduction to the Vertex AI infrastructure GEAP builds on, see [[gemini-enterprise-agents/01-what-gemini-enterprise-agent-platform-is-and-isnt|the GEAP platform overview]].
 
 <RunPromptCell
   model="gemini-flash-latest"

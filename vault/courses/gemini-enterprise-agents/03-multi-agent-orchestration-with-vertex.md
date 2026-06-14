@@ -6,7 +6,8 @@ prerequisites_chapters: [1, 2]
 duration_min: 60
 reading_time_min: 60
 date: 2026-04-30
-status: draft-for-review
+status: g0-passed
+last_updated: 2026-06-14
 author: Koenig AI Academy
 agent_drafted_by: course-author
 content_type: course-chapter
@@ -29,7 +30,7 @@ sources:
 
 GEAP's agent-to-agent orchestration, available since GA on 23 April 2026, lets a coordinator delegate to specialist sub-agents — turning a fragile 20-tool monolith into a testable, independently-deployable network. A customer-support agent covering account management, billing, and technical support accumulates enough tools and instruction length to produce correlated hallucinations. The answer is **decomposition**: specialist agents with a coordinator.
 
-This chapter builds that coordinator: a two-agent research pipeline where a Planner decomposes questions and a Retriever answers each one, wired through Agent Registry and traced with Agent Observability.
+The tools and session patterns from [[gemini-enterprise-agents/02-hello-world-agent-tool-state-persistence|Chapter 2]] are the foundation: this chapter adds a coordinator layer — a two-agent research pipeline where a Planner decomposes questions and a Retriever answers each one, wired through Agent Registry and traced with Agent Observability.
 
 ## Key facts
 
@@ -45,7 +46,7 @@ This chapter builds that coordinator: a two-agent research pipeline where a Plan
 
 ## Two orchestration patterns, one choice to make
 
-Before writing code, you need to decide which pattern fits your use case. The choice has downstream consequences for debugging, cost, and reliability.
+Before writing code, you need to decide which pattern fits your use case. The choice has downstream consequences for debugging, cost, and reliability. (If you need a refresher on the platform itself, see [[gemini-enterprise-agents/01-what-gemini-enterprise-agent-platform-is-and-isnt|Chapter 1: GEAP platform overview]].)
 
 ```takeaways
 - Deterministic orchestration (via `SequentialAgent` or `ParallelAgent`) hardcodes the routing logic in code and gives predictable costs; generative orchestration lets the model decide routing at runtime, which is more flexible but produces non-deterministic costs.
