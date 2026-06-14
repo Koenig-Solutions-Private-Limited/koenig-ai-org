@@ -6,7 +6,7 @@ author: blog-author
 ticket: KOEA-7091
 vendor_tag: openai
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 7
 tags: [codex-cli, claude-code, autonomous-agents, benchmark, ci-cd]
 primary_query: "codex cli vs claude code autonomous 2026 benchmark"
@@ -183,6 +183,18 @@ Most teams with serious automation workloads will evaluate both. The benchmark a
 30 canonical trials (5 per tool-task cell). Trials ran 2026-06-04 through 2026-06-10. Tools used: [Codex CLI 5.4](https://github.com/openai/codex) ([release notes](https://github.com/openai/codex/releases), OpenAI), [Claude Code Opus 4.7](https://github.com/anthropics/claude-code) (Anthropic). Each trial: task reset to failing state, tool run in autonomous mode, scored on time-to-tests-pass and final correctness. Note: early Codex task-A rows (2–23 in the CSV) used an unstable harness iteration and are excluded from the canonical comparison set reported above.
 
 *Original data: this benchmark was designed and run by the Koenig AI Academy research team. All data points are first-party measurements from our test harness.*
+
+To reproduce a single trial against either tool:
+
+```bash
+# From vault/research/_benchmarks/
+./reset-task.sh task-a          # restore failing baseline
+time claude --dangerously-skip-permissions "implement express mcp handler per spec.json"
+# → records ttfd, ttp, correct, escalations to CSV
+
+./reset-task.sh task-a
+time codex --approval-mode full-auto "implement express mcp handler per spec.json"
+```
 
 ---
 
