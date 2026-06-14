@@ -1,6 +1,6 @@
 ---
 date: 2026-06-02
-title: "Aider in 2026: The Git-Native AI Coding CLI That Writes 72% of Its Own Code"
+title: "Aider in 2026: The Git-Native AI Coding CLI That Writes 88% of Its Own Code"
 description: "Deep-dive review of Aider — the free, open-source AI coding CLI with 41K+ GitHub stars. Covers git-atomic commits, architect mode, token efficiency, failure modes, and a head-to-head comparison with Cline."
 slug: "2026-06-02-aider-deep-dive"
 tags: ["aider", "ai-coding-cli", "git-native-ai", "architect-mode", "open-source-2026"]
@@ -11,7 +11,7 @@ content_type: article
 status: awaiting-g0
 reading_time_min: 10
 primary_query: "aider AI coding CLI review 2026"
-first_60_words_answer: "Aider is a free, open-source terminal AI coding assistant with 41K+ GitHub stars and 4.1 million installations. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026."
+first_60_words_answer: "Aider is a free, open-source terminal AI coding assistant with 41K+ GitHub stars and 6.8 million installations. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026."
 contrarian_angle: "Aider's refusal to add MCP and IDE integration is intentional discipline, not a roadmap gap — its git-atomic commit philosophy is the audit-trail pattern that Claude Code and Cline users are now copying for enterprise governance."
 positions:
   - id: cli-first-workflows-for-production-teams
@@ -57,7 +57,7 @@ sources:
 schema_jsonld:
   - "@context": "https://schema.org"
     "@type": "BlogPosting"
-    "headline": "Aider in 2026: The Git-Native AI Coding CLI That Writes 72% of Its Own Code"
+    "headline": "Aider in 2026: The Git-Native AI Coding CLI That Writes 88% of Its Own Code"
     "datePublished": "2026-06-02"
     "dateModified": "2026-06-02"
     "author":
@@ -144,9 +144,9 @@ schema_jsonld:
           "text": "No — Aider has no MCP support as of mid-2026. For MCP tool orchestration (GitHub, databases, Jira), use Cline, Claude Code, or Goose instead."
 ---
 
-# Aider in 2026: The Git-Native AI Coding CLI That Writes 72% of Its Own Code
+# Aider in 2026: The Git-Native AI Coding CLI That Writes 88% of Its Own Code
 
-Aider is a free, open-source terminal AI coding assistant with 41K+ GitHub stars and 4.1 million installations. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026.
+Aider is a free, open-source terminal AI coding assistant with 41K+ GitHub stars and 6.8 million installations. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026.
 
 The counterintuitive fact about Aider is that its spartan feature set is a product decision, not a roadmap gap. While competitors sprint toward IDE panels, MCP server orchestration, and browser automation dashboards, Aider has doubled down on one idea: every AI edit should be a git commit, every session should run on a branch, and every change should be auditable through tools developers already know. That philosophy — now over two years old — is quietly influencing how teams configure Claude Code and Cline's audit trails. Aider figured out the governance pattern first.
 
@@ -160,7 +160,7 @@ The counterintuitive fact about Aider is that its spartan feature set is a produ
 
 Every change Aider makes becomes a git commit with a generated descriptive message. There is no "apply and hope" step. You get a full diff, an automatic commit, and a standard `git revert` if something goes wrong. [Aider's GitHub release notes](https://github.com/Aider-AI/aider/releases) (retrieved June 2026) document 83+ releases hardening this pipeline, adding auto-linting and auto-test-running after every edit cycle. The practical result: an AI session leaves the same artifacts as a human code review — a diff, a commit, and a message explaining the intent.
 
-By 2026, [72% of Aider's own codebase is written by Aider](https://aider.chat) (retrieved June 2026). That number is both a marketing claim and a real signal: the tool is mature enough that its own maintainers trust it for production-grade work.
+By 2026, [88% of Aider's own codebase is written by Aider](https://aider.chat) (retrieved June 2026). That number is both a marketing claim and a real signal: the tool is mature enough that its own maintainers trust it for production-grade work.
 
 ### Model agnosticism with an independent benchmark
 
@@ -375,4 +375,4 @@ No. Aider has no MCP support as of mid-2026, by deliberate design choice. If you
 
 ## Build These Skills in the Academy
 
-The architect/editor mode workflow, `.aider.conf.yml` team configuration, and the decision framework for when Aider beats Claude Code or Cline are covered hands-on in the [[course/ai-coding-agents-production]] course. The course walks through a full multi-agent pipeline combining Aider for branch-level refactors, Claude Code for MCP-connected planning, and Cline for VS Code-first interactive work — including the governance model that ties all three together into a reviewable, auditable workflow.
+The architect/editor mode workflow, `.aider.conf.yml` team configuration, and the decision framework for when Aider beats Claude Code or Cline pair naturally with the [[production-agents-claude-agent-sdk-mcp-connector]] course — covering production multi-agent pipelines with MCP connectors, observability, and the governance patterns that make AI-generated commits reviewable at scale.
