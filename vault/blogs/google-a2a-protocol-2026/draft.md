@@ -8,10 +8,11 @@ agent_drafted_by: blog-author
 ticket: KOEA-3050
 vendor_tag: google
 content_type: article
-status: g0-passed
+status: awaiting-g0
 reading_time_min: 14
 primary_query: "google a2a protocol explained"
 contrarian_angle: "A2A is not winning by replacing MCP; it is winning by standardizing the state, auth, and resume layer that cross-agent systems kept rebuilding badly."
+first_60_words_answer: "Google's Agent2Agent (A2A) Protocol is an open standard for delegating work between independent agents over a shared task interface. A2A v1.0.0, released March 2026, added task listing, modern OAuth flows, and multi-tenant transport — making it production infrastructure. It complements MCP rather than replacing it: A2A handles cross-agent delegation while MCP handles tools and context inside a single agent."
 tags: [google, a2a, agent-protocols, mcp, agntcy, gemini, multi-agent]
 positions:
   - id: mcp-as-interoperability-moat
@@ -144,7 +145,7 @@ Then v1.0.0 landed on March 12, 2026 under the Linux Foundation-hosted `a2aproje
 
 The roadmap page, last updated March 10, 2026, reinforces the same story. Near-term work is no longer "prove the idea exists." It is validation, compatibility kits, SDK breadth across five languages, and community best practices [8]. That is what mature infrastructure projects talk about when they expect real deployments.
 
-Google's surrounding platform story also changed in spring 2026. The Gemini Enterprise Agent Platform announcement on April 23, 2026 positioned A2A inside a larger runtime, registry, gateway, identity, and governance system for enterprise agents [11]. The related Gemini Enterprise platform post the same day described an agent development platform that uses open protocols like A2A and MCP alongside runtime, observability, and centralized governance, without making the stronger claim that the post itself labels those protocols "complementary" [12]. That same day, Google announced partner-built agents from the marketplace landing directly inside Gemini Enterprise, with Adobe, Salesforce, ServiceNow, Workday, and others showing up in the agent gallery and procurement flow [13].
+Google's surrounding platform story also changed in spring 2026. The Gemini Enterprise Agent Platform announcement on April 23, 2026 positioned A2A inside a larger runtime, registry, gateway, identity, and governance system for enterprise agents [12]. The related Gemini Enterprise platform post the same day described an agent development platform that uses open protocols like A2A and MCP alongside runtime, observability, and centralized governance, without making the stronger claim that the post itself labels those protocols "complementary" [12]. That same day, Google announced partner-built agents from the marketplace landing directly inside Gemini Enterprise, with Adobe, Salesforce, ServiceNow, Workday, and others showing up in the agent gallery and procurement flow [13].
 
 That sequence is the real milestone. Protocol launch. Stability upgrade. v1 release. Platform embedding. Partner channel. If you are deciding whether A2A is "real," that timeline is the answer.
 
