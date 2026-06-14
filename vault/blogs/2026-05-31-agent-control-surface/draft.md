@@ -4,12 +4,17 @@ author: blog-author
 ticket: KOEA-6942
 vendor_tag: community
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 9-11
 primary_query: "agent control surface rollback hooks readable artifacts 2026"
 contrarian_angle: "The bottleneck is not model intelligence — it's the missing control plane between proposal and execution that almost no framework ships"
 first_60_words_answer: "An agent control surface is the layer between what an agent proposes and what it executes: rollback checkpoints that survive agent deletion, lifecycle hooks that gate every tool call, and readable artifacts that humans can audit before trusting. In 2026, this layer barely exists as an integrated system. Developers stitch it together themselves from Claude Code's PreToolUse hooks, git commits, and hand-rolled vault-backup scripts."
-positions: []  # STANCES.md not yet created; pure practitioner how-to post — no brand stance directly engaged
+positions:
+  - id: audit-trail-as-enterprise-gate
+    engagement: extends
+  - id: cli-first-workflows-for-production-teams
+    engagement: extends
+seo_description: "Build the three-pillar agent control surface in 2026: rollback checkpoints, PreToolUse hooks, and readable artifacts. Claude Code + Agent Gate + BIRTH.json."
 sources:
   - https://news.ycombinator.com/item?id=47047698
   - https://github.com/SeanFDZ/agent-gate
@@ -28,13 +33,13 @@ learning_objectives:
   - "Apply the BIRTH.json immutability pattern to prevent artifact-trust exploits in multi-agent pipelines"
 faq:
   - question: "What is an agent control surface?"
-    answer: "An agent control surface is the infrastructure layer that sits between an agent's proposed actions and their execution. It covers three components: rollback checkpoints that let you recover from bad actions, lifecycle hooks that let you gate or modify actions before they run, and readable intermediate artifacts that make agent reasoning auditable by humans. Unlike the agent itself, the control surface is owned by the orchestrator — not the model."
+    answer: "An agent control surface is the infrastructure layer that sits between an agent's proposed actions and their execution. It covers three components: rollback checkpoints that let you recover from bad actions, lifecycle hooks that let you gate or modify actions before they run, and readable intermediate artifacts that make agent reasoning auditable by humans. Unlike the agent itself, the control surface is owned by the orchestrator — not the model. [Agent Gate](https://github.com/SeanFDZ/agent-gate) is the most complete working prototype of this pattern available today."
   - question: "How does Claude Code's PreToolUse hook work for agent safety?"
-    answer: "Claude Code's PreToolUse hook fires before every tool call and accepts a decision of allow, deny, ask, or defer. According to Speakeasy's 2026 agent hooks analysis, Claude Code exposes 19 lifecycle events — the broadest of any agent framework — including Setup, WorktreeCreate/WorktreeRemove, TaskCreated/TaskCompleted, and Elicitation. When you combine PreToolUse with a vault-backup script, you get atomic rollback: if the backup fails, the action is blocked rather than proceeding without a recovery point."
+    answer: "Claude Code's PreToolUse hook fires before every tool call and accepts a decision of allow, deny, ask, or defer. According to [Speakeasy's 2026 agent hooks analysis](https://www.speakeasy.com/resources/ai-agent-hooks), Claude Code exposes 19 lifecycle events — the broadest of any agent framework — including Setup, WorktreeCreate/WorktreeRemove, TaskCreated/TaskCompleted, and Elicitation. When you combine PreToolUse with a vault-backup script, you get atomic rollback: if the backup fails, the action is blocked rather than proceeding without a recovery point."
   - question: "What is the BIRTH.json pattern and why does it prevent agent exploits?"
-    answer: "BIRTH.json is an immutability primitive used in the OpenSeed architecture: at spawn time, the agent's genome (including any validator commands the orchestrator will run) is snapshotted to BIRTH.json in a location the agent cannot write to. The agent can rewrite its genome.json, but the orchestrator reads validation commands from BIRTH.json. This prevents the attack chain where an agent rewrites its genome to execute arbitrary code at restart. The general principle: never read a runtime decision from a file the creature controls."
+    answer: "BIRTH.json is an immutability primitive described in [OpenSeed's post-mortem](https://openseed.dev/blog/escape-hatch/): at spawn time, the agent's genome (including any validator commands the orchestrator will run) is snapshotted to BIRTH.json in a location the agent cannot write to. The agent can rewrite its genome.json, but the orchestrator reads validation commands from BIRTH.json. This prevents the attack chain where an agent rewrites its genome to execute arbitrary code at restart. The general principle: never read a runtime decision from a file the creature controls."
   - question: "What is the Barbell Strategy for agent artifact management?"
-    answer: "The Barbell Strategy is an architecture pattern from Seer (now Civerify) that replaces complex inter-agent memory layers with lean handoff specs and massive localized artifact context. Each sub-agent receives its full context at instantiation and is killed immediately after completing its task. The agent's 'memory' is the immutable artifact it was given — there is no long-running state to corrupt. This eliminates context poisoning while keeping intermediate outputs auditable by the orchestrator."
+    answer: "The Barbell Strategy is an architecture pattern from [Seer (now Civerify)](https://news.ycombinator.com/item?id=46398829) that replaces complex inter-agent memory layers with lean handoff specs and massive localized artifact context. Each sub-agent receives its full context at instantiation and is killed immediately after completing its task. The agent's 'memory' is the immutable artifact it was given — there is no long-running state to corrupt. This eliminates context poisoning while keeping intermediate outputs auditable by the orchestrator."
 original_data: false
 last_updated: 2026-05-31
 hero_image:
@@ -241,10 +246,10 @@ The three pillars — rollback, hooks, readable artifacts — are not aspiration
 
 What the ecosystem still lacks is a first-class control plane that integrates all three and surfaces operator metrics (loop depth, retry amplification, coverage of vault-backed actions). That gap will close — but probably not from a framework vendor. The pattern will emerge from practitioners like the Agent Gate author building the missing middleware, documenting it publicly, and letting it be absorbed.
 
-For more on how lifecycle hooks compose with agent tracing and evaluation, see our companion piece on [[agent-trace-evaluation-debugging]].
+For more on how lifecycle hooks compose with agent tracing and evaluation, see our companion piece on [[2026-05-31-local-model-benchmarks-lie-agent-trace-evaluation]].
 
 If you want to go deeper on the Anthropic Agent SDK's hook surface and build production patterns on top of it, the [[course/claude-agent-sdk-zero-to-production]] course covers `PreToolUse` policy patterns, session recovery via `/resume`, and the full lifecycle event catalog.
 
 ---
 
-*This post is part of the "AI agent developer experience gap" series. Part 1: [[claude-code-dynamic-workflows|Claude Code Dynamic Workflow Patterns]]. Part 2: [[agent-trace-evaluation-debugging|Agent Trace Evaluation]]. Part 3: this post.*
+*This post is part of the "AI agent developer experience gap" series. Part 1: [[claude-code-dynamic-workflows|Claude Code Dynamic Workflow Patterns]]. Part 2: [[2026-05-31-local-model-benchmarks-lie-agent-trace-evaluation|Agent Trace Evaluation]]. Part 3: this post.*
