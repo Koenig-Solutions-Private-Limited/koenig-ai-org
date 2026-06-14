@@ -8,7 +8,9 @@ title: "How to build a production Claude Agent SDK app in 6 chapters"
 slug: claude-agent-sdk-zero-to-production
 total_duration_min: 360
 target_audience: "engineers + tech leads building agent products on the Claude Agent SDK in 2026"
-prerequisites: "TypeScript fluency, basic familiarity with the Anthropic API"
+prerequisites:
+  - "TypeScript fluency"
+  - "Basic familiarity with the Anthropic API"
 capstone: "Production-ready TypeScript incident-triage agent with SDK streaming, MCP tools, least-privilege permissions, resumable run artifacts, evals, HTTP/CLI entrypoints, and an operator runbook"
 tags:
   - claude-agent-sdk
