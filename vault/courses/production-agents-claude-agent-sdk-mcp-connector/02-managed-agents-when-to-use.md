@@ -12,7 +12,8 @@ faq:
     a: "Prefer the Agent SDK when you need local control, simple per-request execution, or infrastructure you already operate."
   - q: "What event tells my app the session is done?"
     a: "The session.status_idle event is the key signal that a Managed Agents task has reached an idle state."
-status: awaiting-g0
+status: g0-passed
+last_updated: 2026-06-14
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30
@@ -37,36 +38,24 @@ sources:
 
 # Managed Agents beta — when to use it, when to roll your own
 
-Claude Managed Agents is Anthropic's fully managed REST API for running Claude as an autonomous agent inside a cloud-hosted, sandboxed environment — launched in public beta on April 8, 2026, with all endpoints requiring the `managed-agents-2026-04-01` beta header.
-
-On the same day the Claude Code SDK was renamed, Anthropic shipped this hosted counterpart. Where the [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK]] runs the agent loop inside your own process, Managed Agents runs it inside Anthropic's infrastructure. Your application becomes an event producer and consumer: you send user messages, you stream back results. Anthropic handles the container, the tool execution, the session persistence, and the compute [1]. Treat pricing as something to verify against the current official quickstart before launch; the architecture decision should still be made around session lifetime, idle detection, and operational ownership [2].
-
-> **Prerequisites**: Chapter 1 (Claude Agent SDK installed and one successful `query()` call completed)
->
-> **Time**: 45 minutes
->
-> **Learning objectives**: By the end of this chapter you can create a Managed Agents session, stream its events, detect completion, and choose correctly between Managed Agents and Agent SDK for a given workload.
+Claude Managed Agents is Anthropic's hosted REST API for running Claude as an autonomous agent in a sandboxed cloud environment — launched in public beta on April 8, 2026, requiring the `managed-agents-2026-04-01` beta header. Where the [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK]] runs the agent loop in your own process, Managed Agents runs it in Anthropic's infrastructure: you send user messages, you stream results back. Anthropic handles the container, tool execution, and session persistence [1]. Verify current pricing in the official quickstart before launch [2].
 
 ## Key facts
 
-1. Claude Managed Agents launched in public beta on April 8, 2026; all API requests require the `managed-agents-2026-04-01` beta header [1].
-2. Pricing has two parts: Managed Agents runtime plus standard Claude model token costs; verify current rates in the official quickstart before launch [2].
-3. Rate limits: 300 requests per minute for create endpoints (agents, sessions, environments); 600 requests per minute for read endpoints (retrieve, list, stream) [1].
-4. The `agent_toolset_20260401` tool type enables the full built-in toolset: Bash, file operations, web search and fetch, and MCP servers [1].
-5. Two features — outcomes and multiagent — are in research preview and require separate access approval [1].
-6. Session state (event history) is persisted server-side by Anthropic, not on your filesystem [1].
+1. All API requests require the `managed-agents-2026-04-01` beta header [1].
+2. Pricing: Managed Agents runtime plus standard Claude token costs; verify current rates before launch [2].
+3. Rate limits: 300 RPM for create endpoints (agents, sessions, environments); 600 RPM for read endpoints [1].
+4. `agent_toolset_20260401` enables Bash, file ops, web search, and MCP; outcomes and multiagent are research preview requiring separate access [1].
 
 ## The four core concepts
 
-Managed Agents introduces four concepts that don't exist in the Agent SDK. You need to understand all four before writing a single line of code.
+**Agent** — saved configuration (model, system prompt, tools). Create once, reuse by `agent.id`. Think Docker image: build once, run many sessions from it.
 
-**Agent** — a saved configuration: model, system prompt, tools, MCP servers, and skills. Create it once, reference it by `agent.id` across every session you start. Think of it as a Docker image: you build it, then run containers from it.
+**Environment** — cloud container template: packages, network rules. `cloud` config with `unrestricted` or `restricted` networking.
 
-**Environment** — a cloud container template: pre-installed packages, network access rules, and mounted files. Today the only supported config type is `cloud` with `unrestricted` or `restricted` networking. The environment determines what's in the sandbox; the agent determines what thinks.
+**Session** — one running agent+environment instance per task. Not reused; start a new one when the task is done.
 
-**Session** — a running instance of an agent inside an environment. One session = one task. Sessions are not reused. When the task is done, the session goes idle and you start a new one for the next task.
-
-**Events** — the messages flowing between your application and the running session. You send `user.message` events; the agent emits `agent.message`, `agent.tool_use`, and eventually `session.status_idle` events back over SSE.
+**Events** — SSE stream: you send `user.message`; agent emits `agent.message`, `agent.tool_use`, then `session.status_idle` when done.
 
 ```takeaways
 - Managed Agents uses four primitives: Agent (saved config), Environment (sandbox template), Session (running instance per task), and Events (SSE message stream).
@@ -76,14 +65,14 @@ Managed Agents introduces four concepts that don't exist in the Agent SDK. You n
 
 ## Creating your first agent
 
-Install the Anthropic SDK (not the Agent SDK — Managed Agents uses the standard Anthropic client):
+Install the Anthropic SDK (Managed Agents uses the standard client, not the Agent SDK):
 
 ```bash
 pip install anthropic  # Python
 npm install @anthropic-ai/sdk  # TypeScript
 ```
 
-Create an agent. This is a one-time operation — save the returned `agent.id`:
+Create an agent once — save the returned `agent.id`:
 
 ```python
 from anthropic import Anthropic
@@ -136,11 +125,11 @@ environment = client.beta.environments.create(
 print(f"Environment ID: {environment.id}")  # save this too
 ```
 
-The environment is also a one-time setup. For most workloads, `unrestricted` networking is correct — your agent can fetch URLs, call APIs, and pull packages. For sensitive data processing, use `restricted` to block outbound access.
+The environment is a one-time setup. Use `unrestricted` for most workloads; `restricted` blocks outbound access for sensitive data.
 
 ## Starting a session and streaming events
 
-This is where Managed Agents gets interesting. The pattern is: open a stream, then immediately send the first user message. Events arrive in real time via SSE:
+Open the stream, then immediately send the first user message:
 
 ```python
 import asyncio
@@ -223,15 +212,9 @@ for await (const event of stream) {
 - Always close idle sessions explicitly with `client.beta.sessions.update(session.id, status="completed")` to avoid ongoing runtime cost exposure.
 ```
 
-## The lifecycle cost trap most tutorials skip
+## Session lifecycle and cost
 
-Here's the operational fact most tutorials bury: Managed Agents cost depends on session lifetime, not just the seconds when the model is actively generating. A session waiting for a user message, sleeping between tool calls, or paused after going idle but not explicitly closed can still create runtime exposure, so your app should treat `session.status_idle` as a cleanup signal and verify current billing rules in Anthropic's official quickstart [2].
-
-The operational implication:
-
-- **Short, stateless tasks** (under 5 minutes): the Agent SDK is usually simpler because the hosting process can exit immediately after the response.
-- **Long interactive sessions** (hours with gaps): runtime exposure compounds unless your app closes or idles sessions deliberately.
-- **Polling loops** ("check every 30 minutes"): never use Managed Agents for this. Use the Agent SDK with a cron job.
+Managed Agents cost depends on session lifetime, not just active generation time. A session left idle after `session.status_idle` can accrue runtime exposure — verify current billing rules in the official quickstart [2]. Never use Managed Agents for polling loops; use the Agent SDK with a cron job instead. For cost circuit breakers and audit hooks that protect production sessions, see [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|Chapter 5]].
 
 Always close idle sessions explicitly:
 
@@ -241,8 +224,6 @@ client.beta.sessions.update(session.id, status="completed")
 
 ## Decision rule: Managed Agents vs Agent SDK
 
-Apply this five-scenario decision table:
-
 | Scenario | Use |
 |---|---|
 | Long-running task (>5 min), async, need cloud sandbox | **Managed Agents** |
@@ -251,7 +232,6 @@ Apply this five-scenario decision table:
 | You're prototyping locally; no cloud infra budget yet | **Agent SDK** |
 | You need to serve many concurrent agent sessions to end users | **Managed Agents** (they handle the infrastructure) |
 
-The canonical migration path Anthropic documents is: prototype locally with the Agent SDK, then move to Managed Agents for production. But that path only makes sense if your production workload is long-running and async. If your agents run in 30-second bursts triggered by webhooks, the Agent SDK on a serverless function is cheaper and simpler.
 
 <Callout type="hot">
 Managed Agents is in public beta as of April 2026. The `managed-agents-2026-04-01` beta header is required on every request. Behaviors can be refined between releases. Two capabilities — outcomes and multiagent — are in research preview and require a separate access request at `claude.com/form/claude-managed-agents`. Do not build production features that depend on research-preview capabilities without direct Anthropic support.
@@ -265,18 +245,14 @@ Managed Agents is in public beta as of April 2026. The `managed-agents-2026-04-0
 
 ## Hands-on exercise
 
-**Ship a Managed Agents session that runs a multi-step data analysis task and streams all tool-use events to your terminal.**
+**Ship a Managed Agents session streaming a data analysis task to your terminal.**
 
-Steps:
-1. Create an agent with `model: "claude-opus-4-7"` and `tools: [{ type: "agent_toolset_20260401" }]`
-2. Create an environment with `type: "cloud"` and `networking: { type: "unrestricted" }`
-3. Create a session referencing both
-4. Send this user message: "Write a Python script that fetches the JSON from https://jsonplaceholder.typicode.com/todos (limit to 10 items), filters only completed todos, and prints each title. Run it."
-5. Stream events and print: the tool name for every `agent.tool_use` event, and the text for every `agent.message` event
+1. Create agent: `model: "claude-opus-4-7"`, `tools: [{ type: "agent_toolset_20260401" }]`
+2. Create environment: `type: "cloud"`, `networking: { type: "unrestricted" }`
+3. Create session; send: "Fetch https://jsonplaceholder.typicode.com/todos (10 items), filter completed, print titles. Run it."
+4. Print tool name per `agent.tool_use`, text per `agent.message`
 
-**Verification**: You see at least one `[Tool: bash]` line in your terminal output followed by the actual output of the Python script, ending with `[Session complete]`.
-
-**Estimated time**: 20 minutes
+**Verify**: At least one `[Tool: bash]` line, ending with `[Session complete]`. **Est. time**: 20 min
 
 <KnowledgeCheck
   question="A team is building an AI coding assistant that responds to GitHub webhook events. Each request takes 15–30 seconds. The team is choosing between Managed Agents and Agent SDK. Which is more appropriate, and why?"
@@ -297,9 +273,9 @@ Steps:
   explanation="Self-check: The event type is `session.status_idle`. When you see this event in your stream loop, break out of the loop and optionally close the session with `client.beta.sessions.update(session.id, status='completed')`. Not breaking the loop means your stream stays open and the session continues accruing runtime cost."
 />
 
-## Rate limits in practice
+## Rate limits
 
-The 300 create-requests-per-minute limit is shared across agent, environment, and session creates. **Pre-create your agents and environments once** and reuse their IDs — only the session is per-task:
+The 300 RPM create limit is shared across agent, environment, and session creates. **Pre-create agents and environments once** — only sessions are per-task:
 
 ```python
 # Create once, store these IDs
@@ -316,7 +292,6 @@ async def handle_user_request(task: str) -> str:
     # ... stream events
 ```
 
-With this pattern, you consume only session create capacity, not agent and environment creates on every request.
 
 ## What's next
 
