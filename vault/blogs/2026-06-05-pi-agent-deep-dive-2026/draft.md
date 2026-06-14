@@ -16,8 +16,23 @@ learning_objectives:
   - Understand Pi agent's architecture and how its minimal design cuts per-task cost
   - Evaluate which workflow patterns unlock Pi's efficiency gains versus other harnesses
   - Identify the concrete failure modes that make Pi a poor fit for certain teams
-status: g0-passed
+status: awaiting-g0
 reading_time_min: 10
+last_updated: 2026-06-14
+slug: 2026-06-05-pi-agent-deep-dive-2026
+tags:
+  - pi-agent
+  - coding-agents
+  - llm-cost-optimization
+primary_query: "pi agent coding harness 2026"
+first_60_words_answer: "Pi is a free, MIT-licensed terminal coding harness with a ~200-token system prompt, four core tools, and 37+ verified models across 20+ providers. It strips out licensing fees and lets you route to DeepSeek V4 Flash at $0.10/M tokens instead of Claude at $5.00/M. The price: no sandboxing, no IDE, no built-in plan mode. Right for power users who've hit the ceiling on closed harnesses."
+faq:
+  - question: "Is Pi actually faster than Claude Code for code tasks?"
+    answer: "Raw latency depends on the model, not the harness. Pi's minimal system prompt reduces token count per call, marginally shortening time-to-first-token. The bigger gain is session branching — recovering from a bad path takes seconds via fork rather than restart. [Pi](https://github.com/earendil-works/pi) wins on raw API cost and model flexibility; [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) wins on guardrails and IDE integration."
+  - question: "Can I use Pi with Claude Code's subscription models?"
+    answer: "No. Pi's pi-ai Anthropic integration uses the API directly via your own key. Claude Pro/Max subscriptions are not accessible via API — you need a separate Anthropic API key with its own billing."
+  - question: "Is Pi safe to run in CI pipelines?"
+    answer: "With explicit containerization (Docker, devcontainers, or nsjail as documented), yes. Without it, no. [Pi's RPC mode](https://github.com/earendil-works/pi) supports headless invocation from CI scripts, but you must provision the sandbox separately. See the [CHANGELOG](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/CHANGELOG.md) for sandboxing updates in recent releases."
 sources:
   - https://github.com/earendil-works/pi
   - https://github.com/earendil-works/pi/blob/main/packages/coding-agent/CHANGELOG.md
@@ -38,7 +53,7 @@ Pi is a free, MIT-licensed terminal coding harness with a ~200-token system prom
 
 ## What Pi Agent Is
 
-Pi (earendil-works/pi) is an open-source AI agent toolkit built by Mario Zechner and shipped under the MIT license. The GitHub repository has 59,400+ stars as of June 2026 and is written primarily in TypeScript (93.5%). It reached v0.78.0 in May 2026 and landed on Hacker News with 608 points at launch — a durable signal compared to the typical wrapper-repo noise.
+Pi (earendil-works/pi) is an open-source AI agent toolkit built by Mario Zechner and shipped under the MIT license. The GitHub repository has 62.4k stars as of June 2026 and is written primarily in TypeScript (93.5%). It reached v0.78.0 in May 2026 and landed on Hacker News with 608 points at launch — a durable signal compared to the typical wrapper-repo noise.
 
 The project is a monorepo with four core packages:
 
@@ -98,6 +113,8 @@ Pi v0.78.0 shipped in May 2026 ([CHANGELOG](https://github.com/earendil-works/pi
 4. **AWS Bedrock endpoint fix** — resolved a regression in regional endpoint resolution, restoring inference profile support while preserving custom VPC/proxy overrides.
 
 The pattern in recent commits is tooling polish and integration stability rather than feature bloat — named sessions, terminal hyperlinks, and a Bedrock fix are harness-layer concerns. The team is not shipping MCP or plan mode; the trajectory is tightening what exists.
+
+v0.79.3 shipped on 2026-06-13 ([CHANGELOG](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/CHANGELOG.md)), continuing this pattern with bug fixes and stability improvements in the pi-coding-agent core. No new surface-area features were introduced — consistent with the Pi team's stated philosophy of keeping the core small.
 
 The `oh-my-pi` fork ([github.com/can1357/oh-my-pi](https://github.com/can1357/oh-my-pi)) is the most active community derivative, adding hash-anchored edits, LSP integration, Python and browser tools, and sub-agent patterns on top of the core. If you need those capabilities before they land in mainline Pi, `oh-my-pi` is the place to look.
 
