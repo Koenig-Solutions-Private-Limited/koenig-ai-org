@@ -16,7 +16,7 @@ learning_objectives:
   - Understand Pi agent's architecture and how its minimal design cuts per-task cost
   - Evaluate which workflow patterns unlock Pi's efficiency gains versus other harnesses
   - Identify the concrete failure modes that make Pi a poor fit for certain teams
-status: awaiting-g0
+status: g3-passed
 reading_time_min: 10
 last_updated: 2026-06-14
 slug: 2026-06-05-pi-agent-deep-dive-2026
@@ -32,7 +32,7 @@ faq:
   - question: "Can I use Pi with Claude Code's subscription models?"
     answer: "No. [Pi's pi-ai integration](https://github.com/earendil-works/pi) connects to Anthropic's API directly via your own key and billing account. Claude Pro/Max subscriptions are session-based, tied to Claude.ai, and not accessible via the Anthropic API. To use Pi with Claude models, you must provide a separate [Anthropic API key](https://console.anthropic.com/) — you cannot reuse a Claude Pro or Claude Max subscription."
   - question: "Is Pi safe to run in CI pipelines?"
-    answer: "With explicit containerization (Docker, devcontainers, or nsjail as documented), yes. Without it, no. [Pi's RPC mode](https://github.com/earendil-works/pi) supports headless invocation from CI scripts, but you must provision the sandbox separately. See the [CHANGELOG](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/CHANGELOG.md) for sandboxing updates in recent releases."
+    answer: "With explicit containerization (Docker, devcontainers, or nsjail as documented), yes. Without it, no. [Pi's RPC mode](https://github.com/earendil-works/pi) supports headless invocation from CI scripts, but you must provision the sandbox separately. See the [CHANGELOG](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/CHANGELOG.md) for sandboxing and isolation updates in recent releases."
 sources:
   - https://github.com/earendil-works/pi
   - https://github.com/earendil-works/pi/blob/main/packages/coding-agent/CHANGELOG.md
