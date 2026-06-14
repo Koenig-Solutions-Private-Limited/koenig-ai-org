@@ -4,8 +4,8 @@ author: blog-author
 ticket: KOEA-2090
 vendor_tag: community
 content_type: article
-status: awaiting-g0
-title: "Ship fixes faster than Mythos-speed exploit chains can arrive"
+status: g0-passed
+title: "Ship fixes faster than Mythos-speed exploit chains can arrive (2026)"
 slug: "2026-05-14-sub-hour-zero-days-aisi-mythos-autonomous-cyber-developers"
 description: "AISI's Claude Mythos and GPT-5.5 cyber evaluations crossed a practical developer threshold: the bottleneck is no longer finding vulnerabilities, but safely shipping fixes before exploit chains compress to hours."
 hero_image: auto:flux
@@ -15,6 +15,10 @@ tags:
   - aisi
   - gpt-5-5
   - claude-mythos
+positions:
+  - id: benchmark-theater-vs-agent-trace-evaluation
+    engagement: extends
+seo_description: "AISI Mythos and GPT-5.5 crossed the autonomous cyber threshold. Here's how developers build remediation pipelines that ship fixes in hours, not weeks."
 reading_time_min: 11
 primary_query: "AISI Claude Mythos GPT-5.5 autonomous cyber benchmark developers"
 contrarian_angle: "The model benchmark is not the point; remediation speed is now the defensive bottleneck."
@@ -37,15 +41,15 @@ learning_objectives:
   - Explain why GPT-5.5-Cyber is the more accessible defensive tool path for most teams today.
 faq:
   - question: "What did AISI's Claude Mythos evaluation show?"
-    answer: "AISI reported that Claude Mythos Preview completed The Last Ones, a 32-step simulated corporate network attack, end to end in 3 of 10 attempts and averaged 22 of 32 steps, while the tested Claude Opus 4.6 baseline did not complete the full range."
+    answer: "[AISI](https://www.aisi.gov.uk/blog/our-evaluation-of-claude-mythos-previews-cyber-capabilities) reported that Claude Mythos Preview completed The Last Ones, a 32-step simulated corporate network attack, end to end in 3 of 10 attempts and averaged 22 of 32 steps, while the tested Claude Opus 4.6 baseline did not complete the full range."
     source: https://www.aisi.gov.uk/blog/our-evaluation-of-claude-mythos-previews-cyber-capabilities
     retrieved: 2026-05-14
   - question: "Did GPT-5.5 also complete the AISI cyber range?"
-    answer: "Yes. AISI reported that GPT-5.5 completed the same 32-step simulated corporate attack in 2 of 10 attempts, making the threshold crossing broader than one Anthropic model."
+    answer: "Yes. [AISI](https://www.aisi.gov.uk/blog/our-evaluation-of-openais-gpt-5-5-cyber-capabilities) reported that GPT-5.5 completed the same 32-step simulated corporate attack in 2 of 10 attempts, while Claude Mythos Preview completed it in 3 of 10. Before Mythos, no AI model had completed that end-to-end range — making the threshold crossing broader than one vendor."
     source: https://www.aisi.gov.uk/blog/our-evaluation-of-openais-gpt-5-5-cyber-capabilities
     retrieved: 2026-05-27
   - question: "What should developers change first after the Mythos and GPT-5.5 results?"
-    answer: "The immediate developer response is to improve safe remediation speed: assign owners for internet-facing services, drill emergency patch and rollback paths, and create constrained approval lanes for high-confidence security fixes."
+    answer: "The immediate developer response is to improve safe remediation speed: assign owners for internet-facing services, drill emergency patch and rollback paths, and create constrained approval lanes for high-confidence security fixes. [SACR](https://softwareanalyst.substack.com/p/the-cybersecurity-implications-of) recommends developer ownership, AI-assisted review in CI, and clear SLAs for internet-exposed issues."
     source: https://softwareanalyst.substack.com/p/the-cybersecurity-implications-of
     retrieved: 2026-05-14
 references:
@@ -133,9 +137,11 @@ The response is not to panic-buy security tools. The response is to make remedia
 
 The sharper framing comes from SACR: SOC excellence without secure production capability is structurally insufficient when fixes cannot be shipped safely and quickly ([SACR](https://softwareanalyst.substack.com/p/the-cybersecurity-implications-of), retrieved 2026-05-14). Developers should take that literally. Your incident response plan now needs a release-engineering plan.
 
-## Use GPT-5.5-Cyber defensively, but keep the harness constrained
+## Use GPT-5.5-Cyber defensively
 
 For teams that can access OpenAI's Trusted Access for Cyber program, GPT-5.5 with Trusted Access is the practical near-term tool to evaluate. OpenAI says Trusted Access reduces friction for verified defensive workflows, and GPT-5.5-Cyber is a more specialized access tier for authorized red teaming, penetration testing, and controlled validation ([OpenAI system card](https://deploymentsafety.openai.com/gpt-5-5/trust-based-access), retrieved 2026-05-27). Unit 42 says Palo Alto tested OpenAI's latest models through Trusted Access for Cyber alongside Anthropic's Mythos model as part of Project Glasswing ([Unit 42](https://unit42.paloaltonetworks.com/threat-bulletin/may-2026/), retrieved 2026-05-27).
+
+## Keep the harness constrained
 
 Do not wire a cyber-capable model straight into production systems. The safe developer pattern is narrow context, read-only first access, no secrets by default, explicit allowlists, logged tool calls, and separate approval for any action that changes code, infrastructure, credentials, or customer data. The aim is to accelerate triage and patch review, not to create a privileged autonomous operator with ambiguous instructions.
 
@@ -189,6 +195,20 @@ expected_output: |
 The right takeaway from AISI is specific and testable: can your team safely reduce exposure and ship fixes at the pace your detection program can now generate credible findings?
 
 If the answer is no, start with three concrete checks this week. First, pick one internet-facing service and prove that its owner can deploy and roll back a security fix on demand. Second, export your critical/high vulnerability backlog and sort by reachability, owner, fix availability, and days open. Third, run a tabletop where detection is instant but remediation is constrained by your real release process. The gap you find is the gap Mythos-style capability will pressure.
+
+## Frequently Asked Questions
+
+**What did AISI's Claude Mythos evaluation show?**
+
+[AISI](https://www.aisi.gov.uk/blog/our-evaluation-of-claude-mythos-previews-cyber-capabilities) reported that Claude Mythos Preview completed The Last Ones, a 32-step simulated corporate network attack, end to end in 3 of 10 attempts and averaged 22 of 32 steps, while the tested Claude Opus 4.6 baseline did not complete the full range.
+
+**Did GPT-5.5 also complete the AISI cyber range?**
+
+Yes. [AISI](https://www.aisi.gov.uk/blog/our-evaluation-of-openais-gpt-5-5-cyber-capabilities) reported that GPT-5.5 completed the same 32-step simulated corporate attack in 2 of 10 attempts, while Claude Mythos Preview completed it in 3 of 10. Before Mythos, no AI model had completed that end-to-end range — making the threshold crossing broader than one vendor.
+
+**What should developers change first after the Mythos and GPT-5.5 results?**
+
+The immediate developer response is to improve safe remediation speed: assign owners for internet-facing services, drill emergency patch and rollback paths, and create constrained approval lanes for high-confidence security fixes. [SACR](https://softwareanalyst.substack.com/p/the-cybersecurity-implications-of) recommends developer ownership, AI-assisted review in CI, and clear SLAs for internet-exposed issues.
 
 <KnowledgeCheck>
 question: "Why is Mythos completing TLO in 3 of 10 attempts more important than its exact CTF percentage for developers?"
