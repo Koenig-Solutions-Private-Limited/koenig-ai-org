@@ -37,9 +37,9 @@ sources:
 
 # Production: deploy + observability + cost controls
 
-The Claude Agent SDK's hook system is a lifecycle callback framework — inspired by HTTP middleware — that lets you attach Python or TypeScript functions to agent events such as `PreToolUse`, `PostToolUse`, `UserPromptSubmit`, `Stop`, and permission events. Claude Code also has settings-file shell hooks with their own event matrix. Those two surfaces run side by side, but they are not identical: Python SDK callback hooks do not support `SessionStart` or `SessionEnd`, while TypeScript SDK callbacks do [3]. This chapter turns the [[course/production-agents-claude-agent-sdk-mcp-connector/03-mcp-connector-multi-server|MCP tool layer]] and [[course/production-agents-claude-agent-sdk-mcp-connector/04-files-api-code-execution|Files API IO layer]] into deployable production behavior.
+The Claude Agent SDK's hook system is a lifecycle callback framework — inspired by HTTP middleware — that lets you attach Python or TypeScript functions to agent events such as `PreToolUse`, `PostToolUse`, `UserPromptSubmit`, `Stop`, and permission events. Python SDK callback hooks do not support `SessionStart` or `SessionEnd`; TypeScript SDK callbacks do [3].
 
-Most teams discover the need for this the hard way: an agent that works perfectly in development starts generating surprise API bills in production, or silently modifies files it shouldn't touch, or loops on a subtask for 40 minutes. The [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK]] includes a hook system specifically for these scenarios [1]. The biggest production failure mode is not model hallucination — it's cost runaway. This chapter gives you the four hooks you need before any agent goes live, and the deployment checklist that ties everything together.
+Most teams discover the need for this the hard way: an agent that works perfectly in development starts generating surprise API bills in production, or silently modifies files it shouldn't touch, or loops on a subtask for 40 minutes. The biggest production failure mode is not model hallucination — it's cost runaway. This chapter gives you the four hooks you need before any agent goes live, and the deployment checklist that ties everything together.
 
 > **Prerequisites**: Chapters 1–4
 >
@@ -458,91 +458,9 @@ Steps:
   explanation="Self-check: Set permissionMode to 'acceptEdits' (covers file read/write without prompting). Add to allowedTools: ['Read', 'Write', 'Edit', 'Glob', 'Grep'] for filesystem operations, plus 'mcp__github__list_issues' (or whichever specific GitHub tools you need — not mcp__github__* unless you genuinely need all of them). This gives the agent exactly what it needs with no bypassPermissions blast radius."
 />
 
-## Monitoring with structured logging in production
-
-Structured JSON logs let you query agent behavior with standard log tooling. Here's the complete logging setup used by the Koenig AI Academy agent pipeline:
-
-```python
-import logging
-import json
-import os
-import sys
-
-def setup_agent_logging(agent_name: str) -> logging.Logger:
-    """Configure structured JSON logging for a production agent."""
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(logging.Formatter('%(message)s'))
-    
-    logger = logging.getLogger(f"agent.{agent_name}")
-    logger.setLevel(logging.INFO)
-    logger.addHandler(handler)
-    logger.propagate = False
-    return logger
-
-def log_tool_event(logger: logging.Logger, event: str, tool_name: str,
-                   session_id: str, extra: dict = None):
-    """Emit a structured tool event."""
-    entry = {
-        "event": event,
-        "tool": tool_name,
-        "session_id": session_id,
-        "timestamp": datetime.utcnow().isoformat() + "Z",
-        "service": os.environ.get("SERVICE_NAME", "agent"),
-        "env": os.environ.get("DEPLOY_ENV", "development"),
-    }
-    if extra:
-        entry.update(extra)
-    logger.info(json.dumps(entry))
-```
-
-In Langfuse, these log entries correlate to spans on a trace timeline. In Datadog or CloudWatch Logs Insights, they're filterable with JMESPath or structured queries. In any system, they give you:
-
-- Per-session cost breakdown (how many tool calls, which tools, which files modified)
-- Error rate by tool type (which MCP servers fail most often)
-- Session duration distribution (identify runaway sessions before the circuit breaker)
-- Token efficiency (input tokens per useful tool call result)
-
-## Deploying to production environments
-
-The Agent SDK runs in your process — you can deploy it anywhere Python or Node.js runs. The key differences between deployment targets:
-
-**Lambda / Cloud Functions** (short-lived): best for agents that complete in under 15 minutes. Package the SDK and your agent code together. Set `CLAUDE_SESSIONS_DIR` to `/tmp` (ephemeral, disappears after the function cold-starts). Session resume doesn't work across invocations unless you serialize the session ID to a database.
-
-**Long-running container** (EC2, Cloud Run, K8s): best for agents with sessions that span multiple turns or that need to resume. Sessions persist on the container's disk. The risk: unbounded session file growth. Add a cron job inside the container that trims JSONL files older than 7 days.
-
-**Managed Agents** (Anthropic-hosted): as covered in [[course/production-agents-claude-agent-sdk-mcp-connector/02-managed-agents-when-to-use|Chapter 2]], the right choice for long-running async tasks where you don't want to manage the container. Event history persists server-side.
-
-For all environments:
-```bash
-# Required environment variables in production
-ANTHROPIC_API_KEY=sk-ant-...          # or use Bedrock/Vertex credentials
-CLAUDE_SESSIONS_DIR=/var/agent/sessions  # writable, with retention policy
-DEPLOY_ENV=production                   # for log filtering
-SERVICE_NAME=research-agent             # for log correlation
-```
-
-```takeaways
-- Lambda/Cloud Functions suit agents that complete in under 15 minutes; set `CLAUDE_SESSIONS_DIR` to `/tmp` since session files disappear after cold starts and cannot be resumed across invocations.
-- Long-running containers need a cron job to trim JSONL session files older than 7 days to prevent unbounded disk growth.
-- Managed Agents is the right deployment target for long-running async tasks where you don't want to manage the container — event history is persisted server-side.
-```
-
-## The contrarian production advice: log before you optimize
-
-Most teams' first instinct after deploying an agent is to optimize for cost — reduce token usage, tune the model size, add caching. The better first move is to log everything and let data drive optimization decisions.
-
-Until you have structured logs for at least 100 real sessions, you don't know:
-- Which tool is called most often (and thus where caching would help most)
-- Which prompts consume the most tokens (and thus where prompt engineering ROI is highest)
-- What your actual p99 session cost is (different from the estimate you calculated before launch)
-
-The production hook stack from this chapter gives you that data for free as a side effect of safe operations. Run for two weeks, then optimize from evidence.
-
 ## What's next
 
-You've now completed the full five-chapter arc. The capstone project ties it together: you'll build a production research agent that orchestrates GitHub + Postgres + a cloud docs MCP server, uses the Files API for document context, and runs behind the complete hook stack from this chapter. The capstone repo is described in the [[course/production-agents-claude-agent-sdk-mcp-connector/outline|course outline]].
-
-The field is moving fast. Watch the [Claude Agent SDK changelog](https://github.com/anthropics/claude-agent-sdk-typescript/blob/main/CHANGELOG.md) and the [Managed Agents release notes](https://platform.claude.com/docs/en/release-notes/overview) for breaking changes — both are updated on a rolling basis.
+The capstone project ties all five chapters together: a production research agent that orchestrates GitHub + Postgres + a cloud docs MCP server, uses the Files API for document context, and runs behind the complete hook stack. Details in the [[course/production-agents-claude-agent-sdk-mcp-connector/outline|course outline]].
 
 ## References
 

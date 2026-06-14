@@ -38,7 +38,7 @@ sources:
 
 # Files API + code execution: the complete agent IO surface
 
-The Anthropic Files API is a beta document-storage layer that allows developers to upload a file once — up to 500 MB — receive a persistent `file_id`, and reference that ID across multiple Messages requests without re-transmitting the file content each time, launched alongside the MCP connector and code execution tool in May 2025. It extends the context strategy from [[course/production-agents-claude-agent-sdk-mcp-connector/03-mcp-connector-multi-server|multi-server MCP agents]] and feeds the operational controls in [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|production deployment]].
+The Anthropic Files API is a beta document-storage layer that allows developers to upload a file once — up to 500 MB — receive a persistent `file_id`, and reference that ID across multiple Messages requests without re-transmitting the file content each time.
 
 The Files API solves a real problem. Without it, a 20-page PDF costs you full bandwidth and ingestion time on every API call that needs it. With it, you upload once and pay that cost once. But the "upload once, use many times" pitch hides a billing nuance that matters at scale: you still pay full input tokens every time you include a file in a Messages request. The savings are in bandwidth and latency, not token cost [1]. This chapter covers the complete IO surface — Files API for document persistence, code execution for computation, and the intersection of both.
 
@@ -338,88 +338,6 @@ With caching enabled, the first call to include a given `file_id` pays full inpu
 
 The cache is keyed on the exact content. If the file's content changes (you re-upload), the cache key changes and you pay full tokens again. This is expected behavior: the cache reflects the actual bytes.
 
-## Managing files at scale
-
-For production agents that ingest documents regularly, you need patterns beyond "upload once." A document ingestion pipeline typically has three stages:
-
-**Stage 1 — upload and register**:
-```python
-def ingest_document(file_path: str, metadata: dict) -> str:
-    """Upload file, return file_id. Store mapping in your DB."""
-    with open(file_path, "rb") as f:
-        mime = "application/pdf" if file_path.endswith(".pdf") else "text/plain"
-        uploaded = client.beta.files.upload(
-            file=(os.path.basename(file_path), f, mime),
-        )
-    
-    # Store in your DB: document_id → file_id mapping
-    db.insert("documents", {
-        "document_id": metadata["id"],
-        "file_id": uploaded.id,
-        "uploaded_at": datetime.utcnow().isoformat(),
-        "filename": os.path.basename(file_path),
-    })
-    return uploaded.id
-```
-
-**Stage 2 — use by ID**:
-```python
-def query_document(document_id: str, question: str) -> str:
-    """Look up file_id from DB, query without re-uploading."""
-    row = db.find("documents", {"document_id": document_id})
-    file_id = row["file_id"]
-    
-    response = client.beta.messages.create(
-        model="claude-sonnet-4-5",
-        max_tokens=1024,
-        messages=[{
-            "role": "user",
-            "content": [
-                {"type": "text", "text": question},
-                {"type": "document", "source": {"type": "file", "file_id": file_id}},
-            ],
-        }],
-        betas=["files-api-2025-04-14"],
-    )
-    return response.content[0].text
-```
-
-**Stage 3 — clean up stale files**:
-```python
-def sync_file_storage(max_age_days: int = 90):
-    """Delete Files API objects for documents removed from DB."""
-    all_files = {f.id for f in client.beta.files.list().data}
-    active_ids = set(db.select_column("documents", "file_id"))
-    
-    stale = all_files - active_ids
-    for file_id in stale:
-        client.beta.files.delete(file_id)
-    return len(stale)
-```
-
-The 100 GB per-organization limit seems generous until you have thousands of PDFs. Build the cleanup stage from day one.
-
-## What the Files API does NOT support
-
-Knowing the limits prevents surprises:
-
-- **Not available on Bedrock or Vertex AI**: If your organization uses Claude through AWS or GCP, the Files API is not available. You'll need to pass file content inline in every request.
-- **Downloaded files only from code execution / skills**: You cannot download a file you uploaded. The download endpoint works only for files that were created as outputs by the code execution tool or skills.
-- **No ZDR**: If your organization has Zero Data Retention enabled, the Files API is ineligible. Files are stored until explicitly deleted regardless of ZDR settings.
-- **Not an immutable store**: Files can be deleted by any API key in your workspace. There's no access control within a workspace.
-
-<RunPromptCell
-  model="claude-sonnet-4-5"
-  prompt="I uploaded a PDF contract using the Files API. I now want to ask three questions about it: (1) what are the payment terms, (2) what are the termination conditions, and (3) who are the parties. Walk me through the most cost-efficient way to run all three queries."
-  expectedOutput="Claude explains: upload the PDF once (free), then make three separate Messages API calls each referencing the same file_id. To minimize token cost, enable the 1-hour extended prompt caching TTL so the PDF tokens are cached after the first call — the second and third calls pay only cache read tokens (much cheaper) rather than full input tokens. Include citations: {enabled: true} to get inline references to specific clauses."
-/>
-
-```takeaways
-- The Files API is not available on Amazon Bedrock or Google Vertex AI — it is Anthropic-direct only.
-- You can download files created by code execution or skills, but not files you originally uploaded yourself.
-- Files uploaded via the Files API are ineligible for Zero Data Retention and are not access-controlled within a workspace — any API key in your organization can delete them.
-```
-
 ## Hands-on exercise
 
 **Build a document-analysis agent that uploads a PDF once and runs three analytical queries with a downloaded chart.**
@@ -462,7 +380,7 @@ Steps:
 
 ## What's next
 
-In [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|Chapter 5]] you'll harden everything built so far into production-ready agents. The focus shifts from capabilities to operations: structured logging with hooks, cost circuit breakers that stop runaway sessions, and the deployment checklist that prevents the most common production failures. Review [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|the SDK migration chapter]] if your local examples are still using old package names.
+[[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|Chapter 5]] covers production hardening: hooks, cost circuit breakers, and the deployment checklist.
 
 ## References
 

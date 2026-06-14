@@ -263,29 +263,6 @@ Managed Agents is in public beta as of April 2026. The `managed-agents-2026-04-0
 - The `managed-agents-2026-04-01` beta header is required on every request; outcomes and multiagent are in research preview and require a separate access request.
 ```
 
-## Steering a session mid-execution
-
-You can send additional user events to a running session to change direction without starting a new session:
-
-```python
-# Session is running; you want to narrow the scope
-client.beta.sessions.events.send(
-    session.id,
-    events=[{
-        "type": "user.message",
-        "content": [{"type": "text", "text": "Focus only on the top 3 products by revenue."}]
-    }]
-)
-```
-
-This is one of the most powerful Managed Agents features and the clearest difference from the Agent SDK: the agent is running remotely, and you can inject new instructions while it works. With the Agent SDK, you'd need to stop the generator and restart with a new prompt.
-
-<RunPromptCell
-  model="claude-opus-4-7"
-  prompt="Walk me through the Managed Agents session lifecycle: from agent creation through session completion. List each API call in order and what state change it produces."
-  expectedOutput="Claude describes: (1) POST /v1/agents → returns agent.id; (2) POST /v1/environments → returns environment.id; (3) POST /v1/sessions with agent + environment_id → returns session.id in status 'created'; (4) GET /v1/sessions/{id}/stream (SSE) → stream opens; (5) POST /v1/sessions/{id}/events with user.message → agent begins work, emits agent.message and agent.tool_use events; (6) session.status_idle event signals completion."
-/>
-
 ## Hands-on exercise
 
 **Ship a Managed Agents session that runs a multi-step data analysis task and streams all tool-use events to your terminal.**
@@ -320,47 +297,9 @@ Steps:
   explanation="Self-check: The event type is `session.status_idle`. When you see this event in your stream loop, break out of the loop and optionally close the session with `client.beta.sessions.update(session.id, status='completed')`. Not breaking the loop means your stream stays open and the session continues accruing runtime cost."
 />
 
-## Fetching historical event data
-
-One significant advantage of Managed Agents over the Agent SDK: event history is persisted server-side. If your stream disconnects mid-session, you don't lose the work. You can replay the full event log from the API:
-
-```python
-# Reconnect and fetch the full history of what happened
-events = client.beta.sessions.events.list(session_id)
-
-for event in events.data:
-    print(f"{event.type}: {event}")
-```
-
-This is fundamentally different from the Agent SDK's JSONL session files, which live on your local filesystem. For Managed Agents, the source of truth is Anthropic's infrastructure, which means:
-- Network partitions don't corrupt the session
-- You can inspect completed sessions retroactively (e.g., for debugging or billing audit)
-- Multiple processes can query the same session's history
-
-The trade-off is that you're locked into Anthropic's event retention policy, not your own. Keep this in mind for compliance-sensitive workloads.
-
-```takeaways
-- Managed Agents persists the full event history server-side; if your stream disconnects, you can replay the complete log via `client.beta.sessions.events.list()`.
-- Unlike Agent SDK JSONL files on the local filesystem, Managed Agents event history survives network partitions and is inspectable retroactively for debugging and billing audit.
-- For compliance-sensitive workloads, event history stored server-side means surrendering control over retention policy to Anthropic's infrastructure rather than your own data store.
-```
-
-## Multi-agent sessions (research preview)
-
-The most ambitious Managed Agents capability is multiagent: running multiple coordinated agents as a single session. As of April 2026, this is in research preview and requires a separate access request at `claude.com/form/claude-managed-agents`.
-
-The pattern is: one orchestrator agent breaks the task, one or more worker agents execute subtasks, results flow back to the orchestrator. Each agent runs in its own environment container. This is architecturally equivalent to what the [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK's subagent feature]] provides in-process, but fully hosted.
-
-If you're building workflows that require true parallelism (multiple agents running simultaneously rather than sequentially) and don't want to manage the orchestration infrastructure yourself, the multiagent research preview is worth requesting access to.
-
 ## Rate limits in practice
 
-The rate limits deserve more attention than the documentation gives them. At 300 create requests per minute for agents, environments, and sessions — shared across those three endpoints — a system that spins up one session per user request could easily hit this ceiling at modest traffic:
-
-- 300 requests / minute = 5 requests / second
-- A web app with 100 concurrent users each triggering one session: you're at 100 create RPM on session creation alone, leaving headroom for 200 agent/environment creates per minute
-
-In practice, **pre-create your agents and environments once** and reuse their IDs. The agent and environment IDs are stable — you don't need to recreate them for each session. Only the session is per-task:
+The 300 create-requests-per-minute limit is shared across agent, environment, and session creates. **Pre-create your agents and environments once** and reuse their IDs — only the session is per-task:
 
 ```python
 # Create once, store these IDs
@@ -377,11 +316,11 @@ async def handle_user_request(task: str) -> str:
     # ... stream events
 ```
 
-With this pattern, you're only consuming session create capacity (300 RPM total, mostly sessions if agents and environments are already created), not burning agent and environment creates on every request.
+With this pattern, you consume only session create capacity, not agent and environment creates on every request.
 
 ## What's next
 
-In [[course/production-agents-claude-agent-sdk-mcp-connector/03-mcp-connector-multi-server|Chapter 3]] you'll connect external tools to your agent via the Model Context Protocol. MCP is what turns a general-purpose Claude into a specialized agent that can query your database, interact with GitHub, and call internal APIs — all without you writing custom tool implementations. The connector has three transport modes, and choosing the wrong one for a given server is the most common setup mistake.
+[[course/production-agents-claude-agent-sdk-mcp-connector/03-mcp-connector-multi-server|Chapter 3]] covers MCP tool servers — three transport modes and the permission grants that make them work.
 
 ## References
 

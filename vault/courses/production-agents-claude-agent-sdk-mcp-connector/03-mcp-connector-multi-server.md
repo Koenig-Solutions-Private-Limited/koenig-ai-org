@@ -37,9 +37,7 @@ sources:
 
 # MCP connector: orchestrating multi-server agents
 
-The Model Context Protocol (MCP) connector in the Claude Agent SDK is a built-in mechanism for attaching external tool servers — databases, APIs, browsers, and code execution environments — to an agent at runtime, using a standard open protocol that Anthropic co-developed with the broader AI ecosystem in 2024. It builds on the [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK migration]] and prepares the tool layer used later by [[course/production-agents-claude-agent-sdk-mcp-connector/04-files-api-code-execution|Files API workflows]] and [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|production controls]].
-
-When Anthropic shipped the [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK]] rename in April 2026, the MCP connector shipped with it as a first-class feature rather than a configuration hack. The connector supports three transport modes — stdio for local process servers, HTTP for stateless remote APIs, and SSE for streaming remote servers — and handles connection management, tool discovery, and error signaling automatically [1]. As of April 2026, the public MCP server registry lists hundreds of community servers for databases, SaaS tools, and developer infrastructure, though quality varies considerably.
+The Model Context Protocol (MCP) connector in the Claude Agent SDK is a built-in mechanism for attaching external tool servers — databases, APIs, browsers, and code execution environments — to an agent at runtime. The connector supports three transport modes — stdio for local process servers, HTTP for stateless remote APIs, and SSE for streaming remote servers — and handles connection management, tool discovery, and error signaling automatically [1]. As of April 2026, the public MCP server registry lists hundreds of community servers for databases, SaaS tools, and developer infrastructure, though quality varies considerably.
 
 > **Prerequisites**: Chapter 1 (Agent SDK installed, one successful `query()` call)
 >
@@ -354,47 +352,6 @@ For projects where the same servers are always needed, put them in `.mcp.json` a
 
 The `${VAR}` syntax expands environment variables at load time. This keeps credentials out of your code while making the MCP config declarative and version-controllable.
 
----
-
-## The "SMB Workflow" Pattern (May 2026 Update)
-
-As of May 2026, Anthropic has packaged several enterprise-grade connectors specifically for Small Business (SMB) workflows. These are available as a toggle in **Claude Cowork** and can be orchestrated via the Agent SDK.
-
-The "SMB Stack" typically includes:
-- **Financial**: QuickBooks, PayPal
-- **CRM/Growth**: HubSpot
-- **Creative/Docs**: Canva, DocuSign, Google Workspace, Microsoft 365
-
-The power of the Agent SDK is **coordination**. A single `query()` can reconcile PayPal settlements against a QuickBooks ledger and then trigger a HubSpot "deal won" update.
-
-### Example: Automated Payment Reconciliation
-
-```python
-# NOTE: The URLs below are illustrative placeholders. Claude Cowork connectors are
-# product-layer integrations, not public Agent SDK HTTP endpoints. Replace these with
-# the actual MCP endpoint URLs provided by each connector service.
-options = ClaudeAgentOptions(
-    mcp_servers={
-        "quickbooks": {"type": "http", "url": "https://your-quickbooks-mcp.example.com/mcp"},
-        "paypal": {"type": "http", "url": "https://your-paypal-mcp.example.com/mcp"},
-        "hubspot": {"type": "http", "url": "https://your-hubspot-mcp.example.com/mcp"},
-    },
-    allowed_tools=["mcp__quickbooks__*", "mcp__paypal__*", "mcp__hubspot__*"]
-)
-
-prompt = "Find all PayPal transactions from yesterday, match them to QuickBooks invoices, and update the associated HubSpot deal to 'Closed Won'."
-```
-
-<Callout type="hot">
-**The "Human-in-the-Loop" requirement.** SMB workflows often involve financial transfers or legal signatures. Never set `permissionMode: "bypassPermissions"` for these agents. Always use `default` or `acceptEdits` (with explicit MCP grants) to ensure the user approves the final reconciliation or signature call.
-</Callout>
-
-<RunPromptCell
-  model="claude-sonnet-4-6"
-  prompt="I've configured an MCP server named 'github' with the @modelcontextprotocol/server-github package. What is the full tool name I should put in allowedTools to allow only the list_issues tool from this server?"
-  expectedOutput="The correct value is `mcp__github__list_issues`. Claude explains the naming pattern: prefix `mcp__`, then the server name as it appears in the mcpServers key, then `__`, then the tool name. A wildcard to allow all GitHub tools would be `mcp__github__*`."
-/>
-
 ## Tool search for large tool sets
 
 When you configure many MCP servers simultaneously, their tool definitions can fill a significant portion of the context window. The SDK's tool search feature addresses this: it withholds tool definitions from context and loads only the ones Claude needs for each turn, based on a vector similarity search over the tool names and descriptions.
@@ -406,33 +363,6 @@ Tool search is enabled by default. You can verify it's active by checking whethe
 - Without tool search, a system with 200 MCP tools sends every definition to Claude on every turn, consuming large amounts of context window before any work begins.
 - Project-level `.mcp.json` files keep MCP config declarative and version-controllable; use `${VAR}` syntax for environment variable expansion.
 ```
-
-## OAuth2 authentication
-
-For servers that require OAuth 2.1, the SDK doesn't handle the OAuth flow — that's your application's job. After you complete the flow and receive an access token, pass it as a header:
-
-```python
-access_token = await your_oauth_flow()  # your app handles PKCE/redirect
-
-options = ClaudeAgentOptions(
-    mcp_servers={
-        "oauth-service": {
-            "type": "http",
-            "url": "https://your-service.com/mcp",
-            "headers": {"Authorization": f"Bearer {access_token}"},
-        }
-    },
-    allowed_tools=["mcp__oauth-service__*"],
-)
-```
-
-Refresh token handling is also your responsibility. Wire token refresh into your session initialization code, not into the agent loop.
-
-<RunPromptCell
-  model="claude-sonnet-4-6"
-  prompt="I see this in my init message: `{'name': 'postgres', 'status': 'failed', 'error': 'connection timeout'}`. What are the three most likely causes and how do I debug each one?"
-  expectedOutput="Claude explains: (1) npx not installed or @modelcontextprotocol/server-postgres package missing — fix: run `npx @modelcontextprotocol/server-postgres --version` manually; (2) DATABASE_URL env var not set or malformed — fix: echo the variable and test with psql; (3) server process takes >60s to start (large package install, slow network) — fix: pre-install the package globally with `npm install -g @modelcontextprotocol/server-postgres` to eliminate startup time."
-/>
 
 ## Hands-on exercise
 
@@ -479,7 +409,7 @@ Task prompt:
 
 ## What's next
 
-In [[course/production-agents-claude-agent-sdk-mcp-connector/04-files-api-code-execution|Chapter 4]] you'll complete the agent's IO surface with the Files API and code execution tool. The Files API lets you upload a document once and reference it across multiple Messages calls — but the billing model is counterintuitive. The code execution tool gives your agent a Python sandbox for computation and chart generation, and the output files feed directly back into the Files API for download. Together they form the document and data layer that most production agents need.
+[[course/production-agents-claude-agent-sdk-mcp-connector/04-files-api-code-execution|Chapter 4]] covers the Files API and code execution tool — upload documents once, reference by `file_id`, generate and download chart output.
 
 ## References
 
