@@ -4,15 +4,15 @@ author: blog-author
 ticket: KOEA-6873
 vendor_tag: community
 content_type: article
-status: g0-ready
+status: g0-passed
 reading_time_min: 6-8
 primary_query: "codex claude cursor gemini cli handoff workflow"
 contrarian_angle: "The workflow harness is the moat — the community already named the four primitives that separate a winner from a pretty chat box: plan mode, rollback coupling, approval switching, and message injection."
 first_60_words_answer: "To hand off context between Codex CLI, Claude Code, Cursor, and Gemini CLI in 2026, you need a file-based workflow harness — not a model switch. Shared markdown memory files, per-agent inbox/outbox folders, and a typed message protocol let all four CLIs read the same project state without rebuilding context from scratch on every switch."
 positions:
-  - id: stance:tools-codex-cli-default-headless
+  - id: cli-first-workflows-for-production-teams
     engagement: extends
-  - id: stance:tools-cursor-composer-ide-only
+  - id: benchmark-theater-vs-agent-trace-evaluation
     engagement: refines
 faq:
   - question: "How do I hand off context from Claude Code to Codex CLI without losing project state?"
@@ -43,6 +43,7 @@ learning_objectives:
   - "Configure a shared markdown memory layer readable by Codex, Claude Code, Cursor, and Gemini without a server or daemon."
   - "Use OACP's typed inbox/outbox protocol to pass structured task handoffs between agent runtimes."
 description: "Sharing context between Codex, Claude Code, Cursor, and Gemini CLI in 2026 needs a file-based workflow harness — not a model switch. Here's how to build one."
+seo_description: "Hand off context between Codex, Claude Code, Cursor, and Gemini CLI with a shared workflow harness. Plan mode, rollback, approvals, message injection."
 ---
 
 # The workflow harness is the moat: cross-CLI context persistence with Codex, Claude Code, Cursor, and Gemini in 2026
