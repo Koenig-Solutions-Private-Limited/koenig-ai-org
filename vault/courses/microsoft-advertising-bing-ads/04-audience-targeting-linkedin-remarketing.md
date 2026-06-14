@@ -2,7 +2,7 @@
 chapter_num: 4
 course_slug: microsoft-advertising-bing-ads
 title: "Audience Targeting: In-Market Segments, LinkedIn Profile Targeting & Remarketing"
-status: awaiting-g0
+status: g0-passed
 duration_min: 10
 vendor_tag: microsoft-advertising
 learning_objectives:
@@ -52,8 +52,8 @@ quiz:
     options:
       - "Check Tag Status in Microsoft Advertising; it updates hourly as Active or Inactive"
       - "Open UET Tag Helper in Edge or Chrome; a green badge with count ≥ 1 confirms firing"
-      - "Submit a support request asking Microsoft Advertising to confirm tag data receipt"
-      - "Use the Diagnostics panel to trigger a manual conversion tag fire test"
+      - "Submit a support request and wait for Microsoft Advertising to confirm tag data receipt"
+      - "Use the Diagnostics panel to trigger a manual conversion tag fire test event"
     correct_idx: 1
     explanation: "UET Tag Helper provides real-time in-browser validation. In-platform Tag Status only updates after 24 hours of customer activity data."
     section_anchor: "installing-and-verifying-the-uet-tag"
