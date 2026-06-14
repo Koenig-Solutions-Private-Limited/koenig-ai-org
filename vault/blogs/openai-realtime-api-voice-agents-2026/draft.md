@@ -6,6 +6,8 @@ hero_image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=f
 tags: [openai, voice-agents, realtime-api, production]
 author: koenig-ai-academy
 status: awaiting-g0
+last_updated: 2026-06-14
+original_data: false
 date: 2026-05-14
 ticket: KOEA-1252
 vendor_tag: openai
