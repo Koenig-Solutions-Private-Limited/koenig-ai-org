@@ -11,27 +11,24 @@ contrarian_angle: "Replit Agent, Bolt, and v0 are not competing tools — they t
 first_60_words_answer: "Replit Agent, Bolt, and v0 are the dominant browser-based AI app builders in 2026. All three turn natural language into runnable code without local setup. Replit Agent shines for full-stack prototyping with one-click deploy; Bolt excels at instant full-stack apps in a sandboxed browser environment; v0 is the best-in-class UI component generator for the Vercel ecosystem. Choose by job-to-be-done, not by hype."
 original_data: false
 positions:
-  - id: browser-first-development-tradeoffs
+  - id: cli-first-workflows-for-production-teams
     engagement: refines
-  - id: vibe-coding-maintenance-cliff
-    engagement: defends
-  - id: no-code-vs-ai-coding-distinction
-    engagement: refines
-last_updated: 2026-06-02
+seo_description: "Replit Agent vs Bolt vs v0: pick by job-to-be-done in 2026. Full-stack deploy, rapid iteration, or component generation — know when each breaks."
+last_updated: 2026-06-14
 hero_image:
   url: /img/blogs/ai-tool-deep-dive-replit-bolt-v0/hero.png
   alt: "Side-by-side screenshot of Replit Agent, Bolt.new, and v0 generating the same to-do app in different browser interfaces"
 faq:
   - question: "Is Replit Agent free to use in 2026?"
-    answer: "Replit Agent is included in the Replit Core plan at $25/month, which gives you a fixed monthly AI request budget. The free tier supports basic Replit IDE use but significantly limits Agent requests. Compute for running your deployed apps is billed separately. For serious prototyping, Core is effectively required."
+    answer: "Replit Agent is included in the [Replit Core plan](https://replit.com/pricing) at $25/month, which gives you a fixed monthly AI request budget. The free tier supports basic Replit IDE use but significantly limits Agent requests. Compute for running your deployed apps is billed separately. For serious prototyping, Core is effectively required."
   - question: "Can Bolt.new deploy to production?"
-    answer: "Bolt builds apps inside a WebContainer (Node.js running in your browser) and can export the code as a zip or push to GitHub. Direct one-click production deployment targets Netlify from Bolt. It does not manage backend infrastructure — once you need a database or server process, you'll export the code and host it yourself."
+    answer: "Bolt builds apps inside a [WebContainer](https://blog.stackblitz.com/posts/bolt-webcontainers) (Node.js running in your browser) and can export the code as a zip or push to GitHub. Direct one-click production deployment targets Netlify from Bolt. It does not manage backend infrastructure — once you need a database or server process, you'll export the code and host it yourself."
   - question: "What is v0 best at compared to Replit Agent and Bolt?"
     answer: "v0 is purpose-built for UI and React/Next.js component generation. It excels at taking a design description or screenshot and producing clean, styled component code that drops into an existing codebase. Replit Agent and Bolt build full apps from scratch; v0 builds components you integrate. If you already have a Vercel/Next.js project and want AI-generated UI, v0 is the right tool."
   - question: "Which tool is best for non-developer founders building a prototype?"
     answer: "Replit Agent is the strongest choice for non-developers: it handles the full stack including database, authentication, and deployment in a single interface. The Replit URL you get is instantly shareable with no DNS or hosting configuration. Bolt requires more technical scaffolding decisions; v0 requires you to have an existing project structure to drop components into."
   - question: "How do Replit Agent, Bolt, and v0 compare to Devin?"
-    answer: "Devin (Cognition Labs) targets senior-engineer-level autonomous tasks on your existing codebase — debugging production issues, implementing multi-file features, managing pull requests. Replit Agent, Bolt, and v0 target greenfield prototyping with minimal context. Devin costs $500/month and assumes you already have a production system. The browser-based tools cost $0–$25/month and are optimized for the first 10% of a product, not the last 90%."
+    answer: "[Devin](https://cognition.ai/devin) (Cognition Labs) targets senior-engineer-level autonomous tasks on your existing codebase — debugging production issues, implementing multi-file features, managing pull requests. Replit Agent, Bolt, and v0 target greenfield prototyping with minimal context. Devin costs $500/month and assumes you already have a production system. The browser-based tools cost $0–$25/month and are optimized for the first 10% of a product, not the last 90%."
 sources:
   - https://replit.com/ai
   - https://bolt.new
@@ -42,7 +39,6 @@ sources:
   - https://vercel.com/blog/v0-design-engineering
   - https://www.builder.io/blog/v0-vs-bolt-vs-replit
   - https://www.indiehackers.com/post/replit-agent-review-2026
-  - https://twitter.com/levelsio/status/replit-agent-24hrs
 whats_new:
   - "All three tools are converging on the same interface — browser-based, natural language input, instant preview — but their deployment stories, maintenance postures, and target users remain fundamentally different"
 learning_objectives:
@@ -77,7 +73,7 @@ The Agent handles state. It remembers the structure it built in previous turns, 
 
 Bolt runs Node.js inside a WebContainer — a WASM-based runtime that executes in your browser tab. No server process, no cloud instance, no cold start. You open bolt.new, describe a React + Express app, and it spins up inside your browser in seconds. The dev server, file system, and npm registry all run locally in the WebContainer.
 
-The practical upside: iteration speed is unmatched. Bolt apps start running before Replit Agent has finished scaffolding. For prototyping UI interactions and data flows — where you need to try 10 variations in an hour — Bolt's in-browser execution eliminates the round-trip to a remote container. StackBlitz's WebContainers also power [major AI SDK demos](/blog/2026-04-30-vercel-ai-sdk-6-vs-claude-agent-sdk), proving the technology in a production documentation context.
+The practical upside: iteration speed is unmatched. Bolt apps start running before Replit Agent has finished scaffolding. For prototyping UI interactions and data flows — where you need to try 10 variations in an hour — Bolt's in-browser execution eliminates the round-trip to a remote container. StackBlitz's WebContainers also power [[2026-04-30-vercel-ai-sdk-6-vs-claude-agent-sdk|major AI SDK demos]], proving the technology in a production documentation context.
 
 ### 3. v0: Component-level UI generation that drops into real codebases
 
@@ -227,4 +223,4 @@ D) Devin — because it's the most capable AI coding agent available
 
 ---
 
-For the complete tool-selection matrix — including when to move from these builders to Cline, Cursor, or Devin — see the [AI coding agents production buyers' guide](/blog/ai-coding-agents-production-2026-buyers-guide). The [[course/ai-coding-agents-production-2026]] course includes a hands-on module where you build the same prototype in all three browser-based tools and compare the output quality, code maintainability, and deployment story side by side.
+For the complete tool-selection matrix — including when to move from these builders to Cline, Cursor, or Devin — see the [AI coding agents production buyers' guide](/blog/ai-coding-agents-production-2026-buyers-guide). The [[course/ai-coding-agents-production-2026]] course includes a hands-on module where you build the same prototype in all three browser-based tools and compare the output quality, code maintainability, and deployment story side by side. For the CLI-tool tier that takes over when browser builders hit their ceiling, see [[codex-cli-vs-cursor-composer-2]].
