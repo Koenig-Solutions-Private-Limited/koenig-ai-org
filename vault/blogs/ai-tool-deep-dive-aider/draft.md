@@ -11,7 +11,7 @@ content_type: article
 status: g3-passed
 reading_time_min: 10
 primary_query: "aider AI coding CLI review 2026"
-first_60_words_answer: "Aider is a free, open-source terminal AI coding assistant with 41K+ GitHub stars and 6.8 million installations. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026."
+first_60_words_answer: "Aider is a free, open-source terminal AI coding assistant with 41K+ GitHub stars and 4.1M+ installations. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026."
 contrarian_angle: "Aider's refusal to add MCP and IDE integration is intentional discipline, not a roadmap gap — its git-atomic commit philosophy is the audit-trail pattern that Claude Code and Cline users are now copying for enterprise governance."
 positions:
   - id: cli-first-workflows-for-production-teams
@@ -147,7 +147,7 @@ schema_jsonld:
 
 # Aider in 2026: The Git-Native AI Coding CLI That Writes 88% of Its Own Code
 
-Aider is a free, open-source terminal AI coding assistant with 41K+ GitHub stars and 6.8 million installations. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026.
+Aider is a free, open-source terminal AI coding assistant with 41K+ GitHub stars and 4.1M+ installations. It turns every AI edit into a git commit, supports 75+ LLM providers, and costs nothing beyond your API bill. For teams that live in the terminal and want a clean, reviewable git history with no vendor lock-in, it is the most battle-tested CLI pair-programmer in 2026.
 
 The counterintuitive fact about Aider is that its spartan feature set is a product decision, not a roadmap gap. While competitors sprint toward IDE panels, MCP server orchestration, and browser automation dashboards, Aider has doubled down on one idea: every AI edit should be a git commit, every session should run on a branch, and every change should be auditable through tools developers already know. That philosophy — now over two years old — is quietly influencing how teams configure Claude Code and Cline's audit trails. Aider figured out the governance pattern first.
 
@@ -285,7 +285,7 @@ aider --model claude-sonnet-4-6 --test-cmd "pytest tests/" --auto-test
   Write tests for each strategy.
 ```
 
-**Expected output:** Aider writes the refactor, runs `pytest`, auto-fixes failures, and commits when tests pass. On a well-tested codebase, this loop resolves 80–90% of test failures without human intervention. The commit message describes each change; the diff is reviewable via `git log -p`.
+**Expected output:** Aider writes the refactor, runs `pytest`, auto-fixes failures, and commits when tests pass. On a well-tested codebase, this loop resolves most test failures without human intervention. The commit message describes each change; the diff is reviewable via `git log -p`.
 
 ### Workflow 2: Architect mode for a constrained new feature
 
