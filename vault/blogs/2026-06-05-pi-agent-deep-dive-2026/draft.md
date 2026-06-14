@@ -30,7 +30,7 @@ faq:
   - question: "Is Pi actually faster than Claude Code for code tasks?"
     answer: "Raw latency depends on the model, not the harness. Pi's minimal system prompt reduces token count per call, marginally shortening time-to-first-token. The bigger gain is session branching — recovering from a bad path takes seconds via fork rather than restart. [Pi](https://github.com/earendil-works/pi) wins on raw API cost and model flexibility; [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) wins on guardrails and IDE integration."
   - question: "Can I use Pi with Claude Code's subscription models?"
-    answer: "No. Pi's pi-ai Anthropic integration uses the API directly via your own key. Claude Pro/Max subscriptions are not accessible via API — you need a separate Anthropic API key with its own billing."
+    answer: "No. [Pi's pi-ai integration](https://github.com/earendil-works/pi) connects to Anthropic's API directly via your own key and billing account. Claude Pro/Max subscriptions are session-based, tied to Claude.ai, and not accessible via the Anthropic API. To use Pi with Claude models, you must provide a separate [Anthropic API key](https://console.anthropic.com/) — you cannot reuse a Claude Pro or Claude Max subscription."
   - question: "Is Pi safe to run in CI pipelines?"
     answer: "With explicit containerization (Docker, devcontainers, or nsjail as documented), yes. Without it, no. [Pi's RPC mode](https://github.com/earendil-works/pi) supports headless invocation from CI scripts, but you must provision the sandbox separately. See the [CHANGELOG](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/CHANGELOG.md) for sandboxing updates in recent releases."
 sources:
