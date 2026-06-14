@@ -4,19 +4,22 @@ author: blog-author
 ticket: KOEA-6990
 vendor_tag: anthropic
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 7
 primary_query: "claude prompt caching cost savings 2026"
 contrarian_angle: "Most teams enable caching and see 5–15% savings; the gap to Anthropic's internal 90% hit-rate standard isn't a feature flag — it's a structural refactor, and a silent March 2026 TTL change quietly reversed gains for bursty workloads"
 first_60_words_answer: "Claude prompt caching cuts input token costs by 60–90% for teams that structure their prompts correctly. Cache reads on Sonnet 4.6 cost $0.30/MTok versus $3.00/MTok standard — a 90% reduction per read. In 2026 the key variable is whether your hit rate clears 60%; below that threshold, the cache write premium means caching is costing you money, not saving it."
-positions: []
+positions:
+  - id: audit-trail-as-enterprise-gate
+    engagement: extends
+seo_description: "Claude prompt caching cuts costs 60-90% on input tokens — but only above 60% hit rate. A 2026 TTL regression added $949 in excess cost for one team."
 faq:
   - question: "How much does Claude prompt caching actually save in 2026?"
-    answer: "Production benchmarks from three independent teams show 59–90% input token cost reductions for optimized workloads. AI Magicx measured 65% average savings across three workloads (simple system prompt: 90%, RAG context: 80%, multi-turn research assistant: 60%). The caveat: teams with cache hit rates below 60% pay more with caching enabled than without, because the 1.25× cache write premium is not amortized across enough reads. [Source: aimagicx.com, 2026-05-31]"
+    answer: "Production benchmarks from three independent teams show 59–90% input token cost reductions for optimized workloads. [AI Magicx measured 65% average savings](https://www.aimagicx.com/blog/prompt-caching-claude-api-cost-optimization-2026) across three workloads (simple system prompt: 90%, RAG context: 80%, multi-turn research assistant: 60%). The caveat: teams with cache hit rates below 60% pay more with caching enabled than without, because the 1.25× cache write premium is not amortized across enough reads."
   - question: "What is the minimum token count for Claude prompt caching to activate?"
-    answer: "Sonnet 4.6 and Opus 4.6 require a minimum cacheable prefix of 1,024 tokens. Claude Haiku requires 2,048 tokens. Below these thresholds the API silently ignores the cache_control directive — you see no error, no cache_creation_input_tokens in the response, and no savings. Always verify by checking cache_read_input_tokens in the API response after the second call. [Source: Anthropic API docs, dev.to/thegdsks, 2026-05-31]"
+    answer: "Sonnet 4.6 and Opus 4.6 require a minimum cacheable prefix of 1,024 tokens. Claude Haiku requires 2,048 tokens. Below these thresholds the API silently ignores the cache_control directive — you see no error, no cache_creation_input_tokens in the response, and no savings. Always verify by checking cache_read_input_tokens in the API response after the second call. [Source: Anthropic API docs via dev.to/thegdsks practical guide](https://dev.to/thegdsks/prompt-caching-with-the-claude-api-a-practical-guide-14ce)"
   - question: "What happened to Claude's prompt cache TTL in March 2026?"
-    answer: "Anthropic silently changed the default prompt cache TTL from 1 hour to 5 minutes around March 6, 2026. This was not announced in release notes. A developer analyzing 119,866 API calls (Jan–Apr 2026) documented $949.08 in excess cost — 17.1% waste — directly attributable to the TTL change. The fix is to explicitly set ttl: 1h in your cache_control object rather than relying on the default. [Source: github.com/anthropics/claude-code/issues/46829, 2026-05-31]"
+    answer: "Anthropic silently changed the default prompt cache TTL from 1 hour to 5 minutes around March 6, 2026. This was not announced in release notes. A developer analyzing 119,866 API calls (Jan–Apr 2026) [documented $949.08 in excess cost](https://github.com/anthropics/claude-code/issues/46829?timeline_page=1) — 17.1% waste — directly attributable to the TTL change. The fix is to explicitly set ttl: 1h in your cache_control object rather than relying on the default."
 original_data: true
 description: "Production benchmarks from four teams show 59–90% input token cost reductions with prompt caching, but only when cache hit rates clear 60%. A silent March 2026 TTL change reversed gains for bursty workloads."
 last_updated: 2026-05-31
