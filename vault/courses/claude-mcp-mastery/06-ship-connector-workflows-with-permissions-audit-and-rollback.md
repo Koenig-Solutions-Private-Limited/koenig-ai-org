@@ -9,10 +9,13 @@ chapter_num: 6
 title: "Ship connector workflows with permissions, audit, and rollback"
 slug: 06-ship-connector-workflows-with-permissions-audit-and-rollback
 description: "Before enabling Claude creative connectors for a team, define per-tool permission boundaries, add approval gates for destructive and licensed actions, build a cross-tool rollback plan, and decide when a local connector session is sufficient versus when a gateway is required."
-status: awaiting-g0
+status: g1-passed
 last_updated: 2026-06-14
 reading_time_min: 9
-positions: []
+positions:
+  - mcp-as-interoperability-moat
+  - audit-trail-as-enterprise-gate
+first_60_words_answer: "Before you enable any creative connector for a team, production readiness requires four things: per-tool permission boundaries, approval gates for destructive and licensed actions, a cross-tool rollback plan, and a clear decision about where the connector runs. This chapter converts Anthropic's intended boundedness into enforceable structure you can ship."
 chapter_primary_query: "What permissions, approval gates, and rollback steps do I need before shipping Claude creative connectors in production?"
 tags:
   - mcp
@@ -28,12 +31,12 @@ learning_objectives:
   - "Create a rollback plan using file copies, version control, and manual review"
   - "Decide when a connector workflow should stay local, move behind a gateway, or be rejected"
 whats_new:
-  - "Anthropic's Claude for Creative Work launch (2026-04-28) introduced nine MCP-based connectors for creative tools — Blender, Adobe Creative Cloud, Ableton, Autodesk Fusion, SketchUp, Resolume, Affinity by Canva, and Splice — creating a new production-deployment surface that requires explicit permission and rollback planning before team use."
+  - "Anthropic's Claude for Creative Work launch (2026-04-28) introduced nine MCP-based connectors for creative tools — Ableton, Adobe Creative Cloud, Affinity by Canva, Autodesk Fusion, Blender, Resolume Arena, Resolume Wire, SketchUp, and Splice — creating a new production-deployment surface that requires explicit permission and rollback planning before team use."
 faq:
   - question: "What is least-privilege access in the context of a Claude connector?"
     answer: "Least-privilege means the connector is granted only the tool operations the workflow actually needs. A Blender connector session that reads object properties does not need write permission to the scene graph. A documentation-grounded Ableton session does not need access to audio export tools. The [MCP specification](https://modelcontextprotocol.io/specification/2025-06-18/server/tools) defines tools as named, callable operations with explicit input schemas — you control which tools are visible to Claude by what the server exposes. Start with the smallest set that lets the workflow complete, then expand on demonstrated need."
   - question: "When does a connector action need a human approval gate?"
-    answer: "Any action that is (a) irreversible, (b) involves licensed third-party assets, or (c) produces an artifact that leaves your local environment. Irreversible examples: overwriting a source Blender scene, deleting a layer in Photoshop, bouncing an Ableton set to a new audio file. Licensed examples: exporting a composite that includes a Splice sample, resizing a licensed stock image for a new context. External examples: uploading a render to an Adobe CC library, pushing a file to a client delivery server. For each of these, the workflow must stop and require explicit human confirmation before proceeding. A prompt that says 'continue?' is not a gate — a gate requires a named human to review specific output before the action runs."
+    answer: "Any action that is (a) irreversible, (b) involves licensed third-party assets, or (c) produces an artifact that leaves your local environment. Irreversible examples: overwriting a source Blender scene, deleting a layer in Photoshop, bouncing an Ableton set to a new audio file. Licensed examples: exporting a composite that includes a Splice sample, resizing a licensed stock image for a new context. External examples: uploading a render to an Adobe CC library, pushing a file to a client delivery server. For each of these, the workflow must stop and require explicit human confirmation before proceeding. The [MCP specification](https://modelcontextprotocol.io/specification/2025-06-18/server/tools) addresses this directly under Security Considerations: servers should obtain explicit user approval before executing operations with real-world consequences. A prompt that says 'continue?' is not a gate — a gate requires a named human to review specific output before the action runs."
   - question: "When should a connector workflow use a gateway instead of a local connection?"
     answer: "Use a gateway when more than one person will run the workflow, when the connector needs shared credentials that must not be stored per-user, or when the studio needs a centralized audit trail across sessions. The [MCP specification](https://modelcontextprotocol.io/specification/2025-06-18/server/tools) supports both local servers (stdio transport, communicates in-process) and remote servers (HTTP with Server-Sent Events). A single-user session on a personal machine typically runs local; a shared team workflow that touches licensed libraries or client deliverables needs a gateway with per-user authentication, rate limiting, and log export."
 related_courses:
@@ -51,9 +54,9 @@ sources:
 
 # Ship connector workflows with permissions, audit, and rollback
 
-The chapters before this one covered each creative connector in isolation — Blender's Python layer, Adobe CC's non-destructive edit surface, Ableton's documentation grounding, and the cross-tool handoff patterns that connect them all.[^ch05] This chapter closes the loop: before you enable any of these for a team, you need a production-ready posture. That posture has four components: permission boundaries, approval gates, a rollback plan, and a clear decision about where the connector runs.
+Before you enable any creative connector for a team, production readiness requires four things: per-tool permission boundaries, approval gates for destructive and licensed actions, a cross-tool rollback plan, and a clear decision about where the connector runs.[^anthropic] This chapter converts Anthropic's intended boundedness into enforceable structure you can ship.
 
-Anthropic positions the creative connector launch as enabling bounded assistance — learning tools, writing scripts and plugins, bridging formats, and reducing repetitive production work.[^anthropic] Bounded is the operative word. An unbounded connector session with write access to a client's production assets, no approval gates, and no rollback plan is not a creative assistant — it is a liability. The checklist in this chapter converts the intended boundedness into enforceable structure.
+The nine connectors in the creative launch — Ableton, Adobe Creative Cloud, Affinity by Canva, Autodesk Fusion, Blender, Resolume Arena, Resolume Wire, SketchUp, and Splice — each bring a distinct permission surface.[^connectors] What they share is the same failure mode: a connector session with write access to production assets, no approval gates, and no rollback plan is not a creative assistant — it is a liability.[^ch05]
 
 For the MCP concepts that underpin permissions and transport architecture, see `[[courses/mcp-from-first-principles-to-production/04-oauth-dpop-auth]]` and `[[courses/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability]]`.
 
@@ -65,13 +68,15 @@ The MCP specification defines tools as named, callable operations with typed inp
 
 | Connector | Read (safe to start with) | Write (require justification) | Reject by default |
 |---|---|---|---|
-| Blender | Scene object data, material names, render settings | Python script execution, file export | External package installs, system calls |
-| Adobe CC | Layer names, color profiles, document metadata | Layer edits, adjustment layers, file export | Direct publish to CDN or external storage |
 | Ableton | Documentation lookup, Live version query | — (connector is documentation-only) | Audio session edits, Live set export |
+| Adobe CC | Layer names, color profiles, document metadata | Layer edits, adjustment layers, file export | Direct publish to CDN or external storage |
+| Affinity by Canva | Artboard/layer structure, document metadata | Batch image adjustments, layer renaming | Direct publish to Canva CDN or external storage |
 | Autodesk Fusion | Document unit settings, design parameters | Parametric edits via Document Settings | File upload, external CAD library downloads |
+| Blender | Scene object data, material names, render settings | Python script execution, file export | External package installs, system calls |
+| Resolume Arena | Clip metadata read | Layer and blend mode edits on staging copies | Live performance folder writes |
+| Resolume Wire | Effect chain inspection | Effect parameter edits on non-live patches | Live performance patch writes |
 | SketchUp | Scene geometry read, material list | Geometry export to OBJ/DXF | Model publish to 3D Warehouse |
 | Splice | License metadata lookup | — | Sample file transfer to third parties |
-| Resolume | Clip metadata read | Layer and blend mode edits on staging copies | Live performance folder writes |
 
 Start each new connector session at the left column of this table. Grant write access only when the workflow requires it, and document the reason. If you cannot name a specific step in the workflow that needs the permission, do not grant it.
 
