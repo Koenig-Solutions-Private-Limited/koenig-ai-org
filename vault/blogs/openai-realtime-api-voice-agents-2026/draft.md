@@ -7,7 +7,8 @@ hero_image:
   alt: "Voice agent architecture diagram showing OpenAI Realtime API speech-to-speech session with turn detection and tool calls"
 tags: [openai, voice-agents, realtime-api, production]
 author: koenig-ai-academy
-status: awaiting-g0
+status: g0-passed
+seo_description: "OpenAI Realtime API voice agents in production: latency under 800ms, WebRTC vs SIP, live tool calls, session cost budgeting, and Cartesia Sonic 3.5 fallback."
 last_updated: 2026-06-14
 original_data: false
 date: 2026-05-14
