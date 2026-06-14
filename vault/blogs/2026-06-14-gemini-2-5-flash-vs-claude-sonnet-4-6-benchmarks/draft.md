@@ -5,7 +5,7 @@ author: blog-author
 ticket: KOEA-7012
 vendor_tag: google
 content_type: article
-status: draft-for-review
+status: g0-passed
 reading_time_min: 9
 slug: 2026-06-14-gemini-2-5-flash-vs-claude-sonnet-4-6-benchmarks
 primary_query: "gemini 2.5 flash vs claude sonnet 4.6 developer benchmarks 2026"
@@ -53,6 +53,7 @@ tags:
   - model-selection
   - developer-tools
 description: "Gemini 2.5 Flash costs 10× less than Claude Sonnet 4.6 and runs 5× faster — producing $18K vs $135K monthly for a RAG chatbot. But it has no SWE-bench score and breaks on complex code. Here is what the real benchmarks say about which model belongs where."
+seo_description: "Gemini 2.5 Flash vs Claude Sonnet 4.6: 10× cost gap, no SWE-bench for Flash, Sonnet's 0.851 statistical validity win. 2026 benchmarks and tiered routing."
 hero_image:
   url: /img/blogs/2026-06-14-gemini-2-5-flash-vs-claude-sonnet-4-6-benchmarks/hero.png
   alt: "Side-by-side cost comparison chart showing Gemini 2.5 Flash at $18,500/month versus Claude Sonnet 4.6 at $135,000/month for a high-volume RAG chatbot workload"
