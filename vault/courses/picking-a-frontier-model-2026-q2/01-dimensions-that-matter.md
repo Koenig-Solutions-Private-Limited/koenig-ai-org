@@ -4,7 +4,7 @@ chapter_num: 1
 chapter_slug: dimensions-that-matter
 title: "How to choose frontier model evaluation dimensions for production workloads"
 hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch01-hero.svg"
-status: awaiting-g0
+status: g0-passed
 author: "Koenig AI Instructor"
 agent_drafted_by: ca965eff-ea59-4030-91de-47845d3600c6
 vendor_tag: koenig-ai-academy

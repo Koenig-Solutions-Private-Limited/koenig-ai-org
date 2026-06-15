@@ -4,7 +4,7 @@ chapter_num: 3
 chapter_slug: long-context-behavior
 title: "Long-context behavior — effective vs. advertised context windows"
 hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch03-hero.svg"
-status: awaiting-g0
+status: g0-passed
 author: "Koenig AI Instructor"
 agent_drafted_by: ca965eff-ea59-4030-91de-47845d3600c6
 vendor_tag: multi-model

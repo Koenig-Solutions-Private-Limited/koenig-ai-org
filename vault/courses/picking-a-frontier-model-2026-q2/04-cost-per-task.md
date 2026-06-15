@@ -4,7 +4,7 @@ chapter_num: 4
 chapter_slug: cost-per-task
 title: "Cost-per-task — pricing vs. actual bill on real workloads"
 hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch04-hero.svg"
-status: awaiting-g0
+status: g0-passed
 author: "Koenig AI Instructor"
 agent_drafted_by: ca965eff-ea59-4030-91de-47845d3600c6
 vendor_tag: koenig-ai-academy
