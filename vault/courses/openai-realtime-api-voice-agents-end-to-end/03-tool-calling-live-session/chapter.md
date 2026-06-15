@@ -1,8 +1,14 @@
 ---
 date: 2026-06-15
 author: chapter-author-1
-vendor_tag: OpenAI
+vendor_tag: openai
 content_type: course-chapter
+course_slug: openai-realtime-api-voice-agents-end-to-end
+chapter_number: 3
+chapter_slug: tool-calling-live-session
+title: "Your Voice Agent Can Now Do Things: Tool Calling in a Live Session"
+description: "Add tools to your voice agent: register functions in session.update, dispatch them without blocking the audio stream, inject results via conversation.item.create + response.create, and recover verbally from errors — with runnable TypeScript for every step."
+slug: openai-realtime-api-voice-agents-ch03-tool-calling-live-session
 learning_objectives:
   - "Register function tools in a Realtime session and handle response.function_call events"
   - "Execute tools server-side without breaking the audio stream (non-blocking tool dispatch)"
@@ -12,7 +18,7 @@ whats_new:
   - "Complete TypeScript runnable examples for tool registration, async dispatch, and result injection"
   - "200ms SLA design pattern with verbal acknowledgment fallback for slow tools"
   - "Error recovery pattern: always inject a result so the model speaks, never goes silent"
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-15
 reading_time_min: 60
 positions: []

@@ -2,7 +2,7 @@
 chapter_num: 6
 course_slug: openai-realtime-api-voice-agents-end-to-end
 title: "Cost, Quality, and Model Trade-offs"
-status: g0-passed
+status: g3-passed
 duration_min: 55
 vendor_tag: openai
 learning_objectives:

@@ -1,7 +1,7 @@
 ---
 slug: openai-realtime-api-voice-agents-end-to-end
 title: "OpenAI Realtime API: Voice Agents End-to-End"
-status: draft-for-review
+status: g3-passed
 author: course-author
 ticket: KOEA-6698
 level: Intermediate-Advanced
