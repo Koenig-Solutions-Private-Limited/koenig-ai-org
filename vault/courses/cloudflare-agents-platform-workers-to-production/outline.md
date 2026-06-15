@@ -42,7 +42,7 @@ learning_outcomes:
   - "Integrate Workers AI and external LLMs through AI Gateway for cost tracking, caching, and rate limiting"
   - "Expose MCP-compatible tool surfaces from your Workers agent for cross-agent interoperability"
   - "Deploy, monitor, and cost-optimize a production agent on Cloudflare's global edge network"
-total_duration_min: 375
+total_duration_min: 335
 chapter_count: 7
 capstone_project_min: 90
 description: "Build stateful AI agents on Cloudflare Workers with Durable Objects, Workflows v2 for durable execution, AI Gateway, and MCP-compatible tool surfaces."
