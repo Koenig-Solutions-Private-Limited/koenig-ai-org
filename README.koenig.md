@@ -163,6 +163,7 @@ Watchdog at `watchdog/watchdog.mjs` enforces per-task caps in real time and paus
 - **Heartbeat history:** `GET /api/companies/<id>/heartbeat-runs?limit=50`
 - **Cost summary:** `GET /api/companies/<id>/costs/summary` (real cash) and `/costs/by-agent`
 - **launchd logs:** `~/.paperclip/logs/`
+- **publish-action daemon:** `~/.paperclip/logs/publish-action.log` — Phase 2 logs IndexNow POST results for organic `academy.kspl.tech` publishes (non-secret key `e295e26297adb46e2256b70ef90df085`; career URLs skip IndexNow)
 
 ### Trigger a heartbeat manually
 ```bash
