@@ -2,7 +2,7 @@
 chapter_num: 7
 course_slug: cloudflare-agents-platform-workers-to-production
 title: "Production Operations: Observability, Cost, and Hardening for Cloudflare Agents (2026)"
-status: draft
+status: awaiting-g0
 author: course-author
 ticket: KOEA-6699
 learning_objectives:
