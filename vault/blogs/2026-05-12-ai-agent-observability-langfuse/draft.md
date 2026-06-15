@@ -1,5 +1,5 @@
 ---
-title: "Run Langfuse as the observability backend for mixed agent stacks"
+title: "Run Langfuse as the observability backend for mixed agent stacks (2026)"
 slug: 2026-05-12-ai-agent-observability-langfuse
 description: "Set up Langfuse for production AI agent observability with the six-container self-hosted stack, OTLP export from coding agents, cost tracking, and a clear view of when Langfuse beats LangSmith, Helicone, or Arize."
 date: 2026-05-12
@@ -84,6 +84,10 @@ references:
     retrieved: 2026-05-12
 whats_new:
   - "Langfuse's real production edge is one OTLP backend for mixed agent stacks, not a second observability dashboard"
+last_updated: 2026-05-30
+positions:
+  - id: trace-ids-for-agent-observability
+    engagement: defends
 learning_objectives:
   - Decide when Langfuse belongs in a production agent stack and when it just creates duplicate observability overhead
   - Configure the six-container Langfuse stack, OTLP export, metadata propagation, and cost tracking with production-safe defaults
