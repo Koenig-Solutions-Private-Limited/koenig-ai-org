@@ -2,10 +2,12 @@
 course: multi-agent-orchestration-a2a
 chapter_num: 2
 chapter_title: "A2A Protocol Architecture — The Message Flow (2026)"
+slug: multi-agent-orchestration-a2a-chapter-02
+description: "Trace every field in an A2A message envelope, implement the four-step JSON-RPC 2.0 handshake from scratch, and design a Capability Schema that makes your agent discoverable by intent rather than by URL."
 author: course-author
 ticket: KOEA-6950
 date: 2026-05-31
-status: draft-for-review
+status: g0-passed
 level: Advanced
 duration_min: 45
 reading_time_min: 12
@@ -17,23 +19,21 @@ learning_objectives:
   - Explain why JSON-RPC 2.0 outperforms REST for intent-based agent flows and name the three failure modes REST introduces
   - Design a custom Capability Schema for a domain-specific agent using the A2A skills and parts model
 positions:
-  - id: stance:open-standards-over-vendor-lock-in
-    engagement: defends
-  - id: stance:rest-not-enough-for-agents
-    engagement: challenges
+  - mcp-as-interoperability-moat
+tags: [A2A, JSON-RPC, multi-agent, protocol, message-flow, agent-card]
 chapter_primary_query: "A2A protocol message flow wire format JSON-RPC 2.0"
 first_60_words_answer: "A2A messages are JSON-RPC 2.0 envelopes sent over HTTPS. Every message carries a role (ROLE_USER or ROLE_AGENT), a contextId that persists across the full agent session, a parts array holding the actual payload (text, file, data, or image), and optional metadata. The agent-to-agent handshake begins with an AgentCard probe at /.well-known/agent.json, followed by a sendMessage or sendStreamingMessage call."
 faq:
   - question: "What wire format does the A2A protocol use?"
-    answer: "A2A uses JSON-RPC 2.0 over HTTPS as its transport. Each RPC call is a JSON object with jsonrpc: '2.0', a method name (e.g. sendMessage, getTask, cancelTask), a params object, and an id. Server-Sent Events (SSE) extend the same HTTP connection for streaming responses. An optional gRPC transport is defined in the spec for high-throughput scenarios."
+    answer: "A2A uses JSON-RPC 2.0 over HTTPS as its transport. Each RPC call is a JSON object with jsonrpc: '2.0', a method name (e.g. sendMessage, getTask, cancelTask), a params object, and an id. Server-Sent Events (SSE) extend the same HTTP connection for streaming responses. An optional gRPC transport is defined in the spec for high-throughput scenarios. ([A2A Specification v1.0.0](https://a2a-protocol.org/latest/specification/))"
   - question: "What is the A2A Handshake and Negotiation phase?"
-    answer: "Before delegating a task, a client agent fetches the server agent's AgentCard at /.well-known/agent.json to read its declared capabilities, skills, and auth requirements; validates protocol version compatibility using the A2A-Version header; checks extension support via A2A-Extensions; and authenticates using the declared scheme. Only after this four-step sequence does the client send a sendMessage payload."
+    answer: "Before delegating a task, a client agent fetches the server agent's AgentCard at /.well-known/agent.json to read its declared capabilities, skills, and auth requirements; validates protocol version compatibility using the A2A-Version header; checks extension support via A2A-Extensions; and authenticates using the declared scheme. Only after this four-step sequence does the client send a sendMessage payload. ([A2A Specification v1.0.0](https://a2a-protocol.org/latest/specification/))"
   - question: "What is a contextId in A2A and why does it matter?"
-    answer: "A contextId is a UUID that identifies a logical conversation or workflow session across multiple agent turns and agent boundaries. All messages belonging to the same task chain share the same contextId, letting any agent in the chain resume a failed workflow from the last checkpoint without re-running prior agents."
+    answer: "A contextId is a UUID that identifies a logical conversation or workflow session across multiple agent turns and agent boundaries. All messages belonging to the same task chain share the same contextId, letting any agent in the chain resume a failed workflow from the last checkpoint without re-running prior agents. ([A2A Specification v1.0.0](https://a2a-protocol.org/latest/specification/))"
   - question: "Why does A2A use JSON-RPC instead of REST?"
-    answer: "REST assumes the client knows which resource to manipulate at design time. Agents operate at runtime with intent — 'produce this outcome.' JSON-RPC lets the caller express a method name that maps to an outcome rather than a resource path, eliminating the Intent Gap: REST routes must be designed in advance; JSON-RPC methods accept arbitrarily rich intent descriptions in their params."
+    answer: "REST assumes the client knows which resource to manipulate at design time. Agents operate at runtime with intent — 'produce this outcome.' JSON-RPC lets the caller express a method name that maps to an outcome rather than a resource path, eliminating the Intent Gap: REST routes must be designed in advance; JSON-RPC methods accept arbitrarily rich intent descriptions in their params. ([JSON-RPC 2.0 Specification](https://www.jsonrpc.org/specification); [A2A Specification v1.0.0](https://a2a-protocol.org/latest/specification/))"
   - question: "What is a Capability Schema (Skill) in A2A?"
-    answer: "A Skill is a JSON object inside the AgentCard that declares one task type the agent can fulfill. Each skill includes an id, name, description, optional inputModes and outputModes (text, image, audio), and tags for discovery. A narrow specialist agent publishes one precise skill; a generalist publishes several. The schema is what a discovery registry indexes to match capability queries."
+    answer: "A Skill is a JSON object inside the AgentCard that declares one task type the agent can fulfill. Each skill includes an id, name, description, optional inputModes and outputModes (text, image, audio), and tags for discovery. A narrow specialist agent publishes one precise skill; a generalist publishes several. The schema is what a discovery registry indexes to match capability queries. ([A2A Specification v1.0.0](https://a2a-protocol.org/latest/specification/))"
 inline_assets:
   - type: diagram
     path: ./img/ch02-message-envelope.png
@@ -41,15 +41,15 @@ inline_assets:
   - type: diagram
     path: ./img/ch02-handshake-sequence.png
     alt: "A2A Handshake sequence diagram: Client Agent sends GET request to /.well-known/agent.json (AgentCard fetch), receives AgentCard JSON response; Client validates A2A-Version header compatibility and checks A2A-Extensions; Client authenticates per AgentCard security scheme (OAuth2 shown); Client sends sendMessage JSON-RPC POST, Server responds with SendMessageResponse containing Task in SUBMITTED state; Server internal processing transitions Task to WORKING then COMPLETED; Client calls getTask to poll status."
-last_updated: 2026-05-31
+last_updated: 2026-06-15
 sources:
-  - https://a2a-protocol.org/latest/specification/
-  - https://a2a-protocol.org/latest/topics/agent-discovery/
-  - https://github.com/a2aproject/A2A
-  - https://www.jsonrpc.org/specification
-  - https://a2a-protocol.org/latest/topics/streaming/
-  - https://a2a-protocol.org/latest/topics/push-notifications/
-  - https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
+  - https://a2a-protocol.org/latest/specification/ # retrieved 2026-06-15
+  - https://a2a-protocol.org/latest/topics/agent-discovery/ # retrieved 2026-06-15
+  - https://github.com/a2aproject/A2A # retrieved 2026-06-15
+  - https://www.jsonrpc.org/specification # retrieved 2026-06-15
+  - https://a2a-protocol.org/latest/topics/streaming-and-async/ # retrieved 2026-06-15
+  - https://a2a-protocol.org/latest/topics/push-notifications/ # retrieved 2026-06-15
+  - https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/ # retrieved 2026-06-15
 ---
 
 # A2A Protocol Architecture — The Message Flow (2026)
@@ -58,9 +58,9 @@ sources:
 
 ---
 
-A2A messages are JSON-RPC 2.0 envelopes sent over HTTPS. Every message carries a `role` (`ROLE_USER` or `ROLE_AGENT`), a `contextId` that persists across the full agent session, a `parts` array holding the actual payload (text, file, data, or image), and optional metadata. The agent-to-agent handshake begins with an AgentCard probe at `/.well-known/agent.json`, followed by a `sendMessage` or `sendStreamingMessage` call.
+A2A messages are [[glossary/json-rpc|JSON-RPC 2.0]] envelopes sent over HTTPS. Every message carries a `role` (`ROLE_USER` or `ROLE_AGENT`), a `contextId` that persists across the full agent session, a `parts` array holding the actual payload (text, file, data, or image), and optional metadata. The agent-to-agent handshake begins with an [[glossary/agent-card|AgentCard]] probe at `/.well-known/agent.json`, followed by a `sendMessage` or `sendStreamingMessage` call.
 
-Chapter 1 made the case for *why* the A2A protocol exists. This chapter is where theory hits wire. You'll trace every field in an A2A message, implement the four-step handshake sequence from a blank screen, and design a Capability Schema that makes your agent discoverable by intent rather than by URL.
+[[multi-agent-orchestration-a2a/chapter-01|Chapter 1]] made the case for *why* the A2A protocol exists. This chapter is where theory hits wire. You'll trace every field in an A2A message, implement the four-step handshake sequence from a blank screen, and design a Capability Schema that makes your agent discoverable by intent rather than by URL.
 
 ---
 
@@ -129,7 +129,7 @@ Or an error object:
 }
 ```
 
-And that's the entire protocol. No headers encoding semantics, no path routing, no verb interpretation. The `method` string is the entire routing mechanism; the `params` object is the entire payload specification. This simplicity is its power: the A2A spec defines exactly six methods, and those six methods cover every pattern agents need — synchronous, streaming, push-notification, polling, cancellation.
+And that's the entire protocol. No headers encoding semantics, no path routing, no verb interpretation. The `method` string is the entire routing mechanism; the `params` object is the entire payload specification. This simplicity is its power: the A2A spec defines six core operations that cover every pattern agents need — synchronous, streaming, push-notification, polling, cancellation (the full spec defines ≥11 methods, including `listTasks`, `subscribeToTask`, and additional push-management variants).
 
 | A2A Method | Purpose | Response Mode |
 |---|---|---|
@@ -140,7 +140,7 @@ And that's the entire protocol. No headers encoding semantics, no path routing, 
 | `setTaskPushNotificationConfig` | Register a webhook for task state updates | Synchronous |
 | `getTaskPushNotificationConfig` | Retrieve the registered webhook config | Synchronous |
 
-Every agent-to-agent interaction in a multi-agent system is a composition of these six methods. The wire stays simple even when the system grows complex.
+Every agent-to-agent interaction in a multi-agent system is a composition of these core operations. The wire stays simple even when the system grows complex.
 
 ---
 
@@ -175,14 +175,14 @@ These two headers are the entire wire-level negotiation surface. Everything else
     "message": { ... },
     "configuration": {
       "acceptedOutputModes": ["text"],
-      "blocking": false
+      "returnImmediately": true
     }
   },
   "id": "req-7f8a3c"
 }
 ```
 
-The `configuration` object is optional but powerful. `acceptedOutputModes` tells the server what Part types the client can consume (text, image, audio, file, data). `blocking` controls whether the call should wait for the task to complete (`true`) or return a `SUBMITTED` Task immediately (`false`) — this is the `Request/Response vs. Fire-and-Forget` control knob.
+The `configuration` object is optional but powerful. `acceptedOutputModes` tells the server what Part types the client can consume (text, image, audio, file, data). `returnImmediately` controls whether the call should return immediately with a `SUBMITTED` Task (`true` = fire-and-forget) or wait until the task reaches a terminal state (`false` = blocking) — this is the `Request/Response vs. Fire-and-Forget` control knob.
 
 ### Layer 3: The Message Object
 
@@ -253,7 +253,7 @@ Write the complete, valid JSON for a sendMessage JSON-RPC 2.0 call with:
 - params.message.contextId: a different placeholder UUID
 - params.message.parts: one TextPart with the instruction "Analyze the sentiment of the attached earnings call transcript. Return a JSON array where each item has: quote (string), sentiment_score (float -1.0 to 1.0), and category (enum: positive, negative, neutral)." and one FilePart where file.name is "q3-2026-earnings.txt", file.mimeType is "text/plain", and file.bytes is the string "BASE64_ENCODED_TRANSCRIPT"
 - params.configuration.acceptedOutputModes: ["text", "data"]
-- params.configuration.blocking: false
+- params.configuration.returnImmediately: true
 
 Format the JSON cleanly with proper indentation.`}
   expectedOutput={`{
@@ -282,7 +282,7 @@ Format the JSON cleanly with proper indentation.`}
     },
     "configuration": {
       "acceptedOutputModes": ["text", "data"],
-      "blocking": false
+      "returnImmediately": true
     }
   }
 }`}
@@ -360,7 +360,7 @@ In the HTTP request, the client declares its own version:
 A2A-Version: 1.0
 ```
 
-The server validates this on receipt and returns a `VersionNotSupportedError` (JSON-RPC error code `-32003`) if the version is incompatible.
+The server validates this on receipt and returns a `VersionNotSupportedError` if the version is incompatible.
 
 ### Step 3: Extension Negotiation
 
@@ -572,11 +572,11 @@ A2A supports three distinct interaction patterns. Understanding which to use is 
 
 ### Pattern 1: Blocking Request/Response
 
-Set `configuration.blocking: true` in `sendMessage`. The HTTP connection stays open until the task reaches a terminal state (`COMPLETED`, `FAILED`, `CANCELED`). The response body contains the final Task object with all output Parts.
+Set `configuration.returnImmediately: false` in `sendMessage`. The HTTP connection stays open until the task reaches a terminal state (`COMPLETED`, `FAILED`, `CANCELED`). The response body contains the final Task object with all output Parts.
 
 ```json
 "configuration": {
-  "blocking": true,
+  "returnImmediately": false,
   "acceptedOutputModes": ["data"]
 }
 ```
@@ -585,7 +585,7 @@ Set `configuration.blocking: true` in `sendMessage`. The HTTP connection stays o
 
 ### Pattern 2: Fire-and-Forget with Polling
 
-Set `configuration.blocking: false`. The server immediately returns a `Task` object in `SUBMITTED` state. The client stores the `taskId` and polls with `getTask` until the task reaches a terminal state.
+Set `configuration.returnImmediately: true`. The server immediately returns a `Task` object in `SUBMITTED` state. The client stores the `taskId` and polls with `getTask` until the task reaches a terminal state.
 
 ```json
 // sendMessage response (immediate)
@@ -614,16 +614,16 @@ Set `configuration.blocking: false`. The server immediately returns a `Task` obj
 Use `sendStreamingMessage` instead of `sendMessage`. The server responds with a `text/event-stream` content type and emits Server-Sent Events as the task progresses:
 
 ```
-event: task_status_updated
+event: TaskStatusUpdateEvent
 data: {"taskId": "task-def456", "status": {"state": "WORKING"}}
 
-event: message_chunk
+event: TaskArtifactUpdateEvent
 data: {"messageId": "msg-789", "parts": [{"kind": "text", "text": "Based on the Q3 transcript, "}]}
 
-event: message_chunk
+event: TaskArtifactUpdateEvent
 data: {"messageId": "msg-789", "parts": [{"kind": "text", "text": "revenue grew 12% year-over-year..."}]}
 
-event: task_status_updated
+event: TaskStatusUpdateEvent
 data: {"taskId": "task-def456", "status": {"state": "COMPLETED"}}
 ```
 
@@ -659,7 +659,7 @@ Write the complete JSON-RPC `sendMessage` payload. Include:
 - `jsonrpc`, `method`, `id`
 - `params.message.role`, `messageId` (placeholder UUID), `contextId` (placeholder UUID)
 - `params.message.parts`: one TextPart with the instruction: "Analyze the following contract for price spike risk and single-source dependency risk. Return a JSON array of risk findings, each with: clause (string), risk_type (string), severity (critical|high|medium|low), and remediation (string)." and one TextPart with the contract body: "VENDOR AGREEMENT §3.2: All steel components sourced exclusively from Acme Steel Corp. Pricing subject to quarterly revision without cap. Penalty for early termination: 18% of remaining contract value."
-- `params.configuration.blocking: false`
+- `params.configuration.returnImmediately: true`
 - `params.configuration.acceptedOutputModes: ["data"]`
 
 ---
@@ -722,7 +722,7 @@ Fill in the state machine table as you complete each message:
 | `taskId` | UUID assigned by the server when a `sendMessage` creates a new task |
 | Handshake | Four-step pre-task sequence: AgentCard fetch → version validation → extension negotiation → authentication |
 | Skill (Capability Schema) | JSON object in AgentCard declaring one task type the agent can fulfill |
-| `blocking` | `sendMessage` config flag; `true` = wait for completion; `false` = return `SUBMITTED` immediately |
+| `returnImmediately` | `sendMessage` config flag; `true` = return `SUBMITTED` immediately (fire-and-forget); `false` = wait for task completion (blocking) |
 | Fire-and-Forget | Non-blocking `sendMessage` + subsequent `getTask` polling |
 | SSE Streaming | `sendStreamingMessage` → `text/event-stream` response with incremental task events |
 
@@ -736,4 +736,4 @@ You now know what agents say to each other. In Chapter 3, you'll learn how they 
 
 ---
 
-*Sources: [A2A Specification v1.0.0](https://a2a-protocol.org/latest/specification/) · [JSON-RPC 2.0 Specification](https://www.jsonrpc.org/specification) · [A2A GitHub Repository](https://github.com/a2aproject/A2A) · [A2A Agent Discovery](https://a2a-protocol.org/latest/topics/agent-discovery/) · [A2A Streaming](https://a2a-protocol.org/latest/topics/streaming/) · [Google A2A Announcement, Apr 2025](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)*
+*Sources: [A2A Specification v1.0.0](https://a2a-protocol.org/latest/specification/) · [JSON-RPC 2.0 Specification](https://www.jsonrpc.org/specification) · [A2A GitHub Repository](https://github.com/a2aproject/A2A) · [A2A Agent Discovery](https://a2a-protocol.org/latest/topics/agent-discovery/) · [A2A Streaming and Async](https://a2a-protocol.org/latest/topics/streaming-and-async/) · [Google A2A Announcement, Apr 2025](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)*
