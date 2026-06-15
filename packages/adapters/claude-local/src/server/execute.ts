@@ -51,6 +51,32 @@ import { prepareClaudePromptBundle } from "./prompt-cache.js";
 
 const __moduleDir = path.dirname(fileURLToPath(import.meta.url));
 
+export const CLAUDE_INVOKE_HEARTBEAT_INTERVAL_MS = 10 * 60 * 1000;
+
+export function startClaudeInvokeHeartbeat(
+  onLog: (stream: "stdout" | "stderr", chunk: string) => Promise<void>,
+): () => void {
+  let stopped = false;
+  let heartbeatLogChain = Promise.resolve();
+  const interval = setInterval(() => {
+    if (stopped) return;
+    const line =
+      JSON.stringify({
+        event: "heartbeat",
+        ts: new Date().toISOString(),
+        adapter: "claude_local",
+      }) + "\n";
+    heartbeatLogChain = heartbeatLogChain
+      .then(() => (stopped ? undefined : onLog("stdout", line)))
+      .catch(() => {});
+  }, CLAUDE_INVOKE_HEARTBEAT_INTERVAL_MS);
+
+  return () => {
+    stopped = true;
+    clearInterval(interval);
+  };
+}
+
 interface ClaudeExecutionInput {
   runId: string;
   agent: AdapterExecutionContext["agent"];
@@ -559,23 +585,28 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
       });
     }
 
-    const proc = await runAdapterExecutionTargetProcess(runId, executionTarget, command, args, {
-      cwd,
-      env,
-      stdin: prompt,
-      timeoutSec,
-      graceSec,
-      onSpawn,
-      onLog,
-      terminalResultCleanup: {
-        graceMs: terminalResultCleanupGraceMs,
-        hasTerminalResult: ({ stdout }) => parseClaudeStreamJson(stdout).resultJson !== null,
-      },
-    });
+    const stopInvokeHeartbeat = startClaudeInvokeHeartbeat(onLog);
+    try {
+      const proc = await runAdapterExecutionTargetProcess(runId, executionTarget, command, args, {
+        cwd,
+        env,
+        stdin: prompt,
+        timeoutSec,
+        graceSec,
+        onSpawn,
+        onLog,
+        terminalResultCleanup: {
+          graceMs: terminalResultCleanupGraceMs,
+          hasTerminalResult: ({ stdout }) => parseClaudeStreamJson(stdout).resultJson !== null,
+        },
+      });
 
-    const parsedStream = parseClaudeStreamJson(proc.stdout);
-    const parsed = parsedStream.resultJson ?? parseJson(proc.stdout);
-    return { proc, parsedStream, parsed };
+      const parsedStream = parseClaudeStreamJson(proc.stdout);
+      const parsed = parsedStream.resultJson ?? parseJson(proc.stdout);
+      return { proc, parsedStream, parsed };
+    } finally {
+      stopInvokeHeartbeat();
+    }
   };
 
   const toAdapterResult = (
