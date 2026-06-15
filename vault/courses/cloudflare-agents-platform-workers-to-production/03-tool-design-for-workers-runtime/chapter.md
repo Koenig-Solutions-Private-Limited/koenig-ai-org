@@ -2,7 +2,7 @@
 chapter_num: 3
 course_slug: cloudflare-agents-platform-workers-to-production
 title: "Designing Tools for the Cloudflare Workers Runtime (2026)"
-status: awaiting-g0
+status: g0-passed
 author: course-author
 ticket: KOEA-6699
 learning_objectives:
@@ -25,11 +25,11 @@ faq:
   - question: "How do you add tools to a Cloudflare Workers agent?"
     answer: "Define methods on your `Agent` subclass decorated with `@tool()` from `@cloudflare/agents`. Each method receives typed arguments derived from the JSON schema you provide to the decorator. The SDK maps the LLM's tool-call output to the correct method and executes it with the parsed arguments. Workers bindings (D1, R2, KV, Queue) are available via `this.env` inside the method. ([Agents tool use](https://developers.cloudflare.com/agents/api-reference/tool-use/))"
   - question: "What is the difference between using D1 and KV as agent tools?"
-    answer: "D1 is Cloudflare's managed SQLite database for relational, strongly-consistent data — ideal for structured records you need to query, join, or aggregate across users. KV is a globally distributed key-value store with eventual consistency — ideal for read-heavy, low-latency lookups where you can tolerate stale data by up to 60 seconds. Use D1 for case records, user profiles, and inventory. Use KV for feature flags, configuration, and cached read-through data."
+    answer: "D1 is Cloudflare's managed SQLite database for relational, strongly-consistent data — ideal for structured records you need to query, join, or aggregate across users. KV is a globally distributed key-value store with eventual consistency — ideal for read-heavy, low-latency lookups where you can tolerate stale data by up to 60 seconds. Use D1 for case records, user profiles, and inventory. Use KV for feature flags, configuration, and cached read-through data. ([D1 docs](https://developers.cloudflare.com/d1/)) ([KV docs](https://developers.cloudflare.com/kv/))"
   - question: "How do you prevent an agent from calling bindings it should not access?"
-    answer: "Declare only the bindings your agent legitimately needs in wrangler.toml and pass only the required subset to the agent class via a typed `Env` interface. Do not include sensitive bindings (like Hyperdrive database connections or secrets) in the same env object accessible to the agent's tool methods. At the Workers level, bindings are isolated by worker — a Worker cannot access another Worker's bindings."
+    answer: "Declare only the bindings your agent legitimately needs in wrangler.toml and pass only the required subset to the agent class via a typed `Env` interface. Do not include sensitive bindings (like Hyperdrive database connections or secrets) in the same env object accessible to the agent's tool methods. At the Workers level, bindings are isolated by worker — a Worker cannot access another Worker's bindings. ([Workers bindings](https://developers.cloudflare.com/workers/runtime-apis/bindings/))"
   - question: "Can a Cloudflare Workers agent call external APIs as tools?"
-    answer: "Yes. Any `fetch()` call inside a tool method reaches the public internet. Wrap external API calls in tool methods that handle authentication (using a secret from `env`), error handling, and response normalization. The advantage over HTTP-based tool frameworks is that secrets stay in the Workers runtime environment — they are never sent to the LLM or exposed in tool schemas."
+    answer: "Yes. Any `fetch()` call inside a tool method reaches the public internet. Wrap external API calls in tool methods that handle authentication (using a secret from `env`), error handling, and response normalization. The advantage over HTTP-based tool frameworks is that secrets stay in the Workers runtime environment — they are never sent to the LLM or exposed in tool schemas. ([Agents tool use](https://developers.cloudflare.com/agents/api-reference/tool-use/))"
 howto_schema:
   name: "Add D1, R2, and Queue tools to a Cloudflare Workers agent"
   steps:

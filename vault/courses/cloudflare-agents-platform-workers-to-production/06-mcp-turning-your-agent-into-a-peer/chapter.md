@@ -2,7 +2,7 @@
 chapter_num: 6
 course_slug: cloudflare-agents-platform-workers-to-production
 title: "MCP: Turning Your Cloudflare Workers Agent into a Peer (2026)"
-status: awaiting-g0
+status: g0-passed
 author: course-author
 ticket: KOEA-6699
 learning_objectives:
@@ -25,11 +25,11 @@ faq:
   - question: "What is MCP and why does it matter for Cloudflare agents?"
     answer: "The Model Context Protocol (MCP) is an open standard for exposing tools and resources from any server to any LLM client. For Cloudflare agents, MCP means your agent's tools (D1 queries, R2 lookups, Queue dispatches) are callable from Claude Desktop, Cursor, other agents, or any MCP-compatible client — without building a separate API. The agent becomes a peer in a multi-agent network, not just a chat endpoint. ([MCP spec](https://spec.modelcontextprotocol.io/))"
   - question: "How does McpAgent differ from a regular Cloudflare Workers Agent?"
-    answer: "`McpAgent` extends `Agent` and adds MCP protocol handling: tool listing (`tools/list`), tool execution (`tools/call`), and resource listing (`resources/list`). Methods decorated with `@tool` are automatically exposed via the MCP protocol. `McpAgent` also handles the Streamable HTTP transport that modern MCP clients expect, including Server-Sent Events for streaming responses."
+    answer: "`McpAgent` extends `Agent` and adds MCP protocol handling: tool listing (`tools/list`), tool execution (`tools/call`), and resource listing (`resources/list`). Methods decorated with `@tool` are automatically exposed via the MCP protocol. `McpAgent` also handles the Streamable HTTP transport that modern MCP clients expect, including Server-Sent Events for streaming responses. ([Cloudflare Agents MCP](https://developers.cloudflare.com/agents/api-reference/mcp/))"
   - question: "How do you secure an MCP endpoint on Cloudflare Workers?"
-    answer: "Use Cloudflare Access to protect the `/mcp` route. Add an Access policy that requires a service token (for machine-to-machine clients) or a user identity (for human-operated clients like Claude Desktop). The Access middleware runs at the Cloudflare edge before the request reaches your Worker — unauthenticated requests receive a 401 without ever touching your agent code."
+    answer: "Use Cloudflare Access to protect the `/mcp` route. Add an Access policy that requires a service token (for machine-to-machine clients) or a user identity (for human-operated clients like Claude Desktop). The Access middleware runs at the Cloudflare edge before the request reaches your Worker — unauthenticated requests receive a 401 without ever touching your agent code. ([Cloudflare Access](https://developers.cloudflare.com/cloudflare-one/applications/configure-apps/))"
   - question: "Can an MCP server on Workers handle multiple concurrent MCP clients?"
-    answer: "Yes. Each MCP client connection is routed to a Durable Object instance (because `McpAgent` extends `Agent`, which extends `DurableObject`). Multiple clients connecting with different session IDs get their own isolated DO instances. Cloudflare's routing handles the fan-out transparently."
+    answer: "Yes. Each MCP client connection is routed to a Durable Object instance (because `McpAgent` extends `Agent`, which extends `DurableObject`). Multiple clients connecting with different session IDs get their own isolated DO instances. Cloudflare's routing handles the fan-out transparently. ([Cloudflare Agents MCP](https://developers.cloudflare.com/agents/api-reference/mcp/))"
 howto_schema:
   name: "Expose a Cloudflare Workers agent as an MCP server with Cloudflare Access auth"
   steps:

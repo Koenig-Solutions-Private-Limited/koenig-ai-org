@@ -2,7 +2,7 @@
 chapter_num: 4
 course_slug: cloudflare-agents-platform-workers-to-production
 title: "Durable Workflows: Cloudflare Agents That Survive Failures (2026)"
-status: awaiting-g0
+status: g0-passed
 author: course-author
 ticket: KOEA-6699
 learning_objectives:
@@ -12,7 +12,6 @@ learning_objectives:
   - "Handle the INPUT_REQUIRED state for long-running research tasks"
 prerequisites_chapters:
   - "03-tool-design-for-workers-runtime"
-  - "04-durable-workflows-agents-that-survive-failures"
 duration_min: 55
 level: Intermediate-Advanced
 positions:
@@ -26,11 +25,11 @@ faq:
   - question: "What are Cloudflare Workflows and how do they work with agents?"
     answer: "Cloudflare Workflows v2 are a durable, serverless execution engine for multi-step logic. Each `step.do()` call is an atomic, checkpointed unit — its output is persisted before execution and the Workflow resumes from the last successful step on failure. For AI agents, Workflows replace ad-hoc retry middleware with a platform-level guarantee: a multi-tool agent chain is resumable by default. ([Cloudflare Workflows](https://developers.cloudflare.com/workflows/))"
   - question: "What is the difference between a Cloudflare Workflow and a Durable Object?"
-    answer: "A Durable Object provides per-instance state and handles real-time connections (WebSockets, HTTP). A Workflow executes a deterministic sequence of steps to completion. In a production agent architecture, the Durable Object is the 'always-on' session manager, and a Workflow is spawned when the agent needs to execute a long-running, multi-step task that must survive failures. They are complementary — the DO can spawn Workflows and receive their results."
+    answer: "A Durable Object provides per-instance state and handles real-time connections (WebSockets, HTTP). A Workflow executes a deterministic sequence of steps to completion. In a production agent architecture, the Durable Object is the 'always-on' session manager, and a Workflow is spawned when the agent needs to execute a long-running, multi-step task that must survive failures. They are complementary — the DO can spawn Workflows and receive their results. ([Cloudflare Workflows](https://developers.cloudflare.com/workflows/))"
   - question: "How do you implement human-in-the-loop with Cloudflare Workflows?"
     answer: "Use `step.waitForEvent()` to pause the Workflow pending an external event. The Workflow enters a waiting state (no compute consumed), and a separate Worker or webhook handler calls `workflow.sendEvent({ type: 'approval', approved: true })` when the human acts. The Workflow resumes from the waiting step with the event payload. Waiting duration can be up to 30 days. ([Workflow events](https://developers.cloudflare.com/workflows/build/events-and-callbacks/))"
   - question: "What happens to a Cloudflare Workflow if my Worker restarts?"
-    answer: "Nothing — the Workflow continues. Workflows are independent of the Worker that spawned them. They run on Cloudflare's infrastructure, not in your Worker's V8 isolate. If your Worker redeploys mid-Workflow, the Workflow resumes its current step from the last checkpoint using the new Worker code. Steps that completed before the redeploy are not re-executed."
+    answer: "Nothing — the Workflow continues. Workflows are independent of the Worker that spawned them. They run on Cloudflare's infrastructure, not in your Worker's V8 isolate. If your Worker redeploys mid-Workflow, the Workflow resumes its current step from the last checkpoint using the new Worker code. Steps that completed before the redeploy are not re-executed. ([Cloudflare Workflows](https://developers.cloudflare.com/workflows/))"
 howto_schema:
   name: "Convert a multi-step agent task into a durable Cloudflare Workflow"
   steps:

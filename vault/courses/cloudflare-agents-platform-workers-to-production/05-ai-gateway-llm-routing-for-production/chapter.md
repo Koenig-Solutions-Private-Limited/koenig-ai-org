@@ -2,7 +2,7 @@
 chapter_num: 5
 course_slug: cloudflare-agents-platform-workers-to-production
 title: "AI Gateway: LLM Routing for Production Cloudflare Agents (2026)"
-status: awaiting-g0
+status: g0-passed
 author: course-author
 ticket: KOEA-6699
 learning_objectives:
@@ -20,16 +20,16 @@ positions:
   - id: semantic-caching-for-agent-cost-control
     engagement: defends
 chapter_primary_query: "How does Cloudflare AI Gateway work for production LLM routing in 2026?"
-first_60_words_answer: "Cloudflare AI Gateway is a reverse proxy that sits between your Workers agent and any LLM provider. Route your Workers AI and OpenAI calls through a single gateway URL to get unified token logging, semantic caching (matching similar queries — not just exact ones), per-model rate limits, and automatic fallback routing. AI Gateway has processed 241 billion tokens and adds less than 1ms of overhead on the hot path."
+first_60_words_answer: "Cloudflare AI Gateway is a reverse proxy that sits between your Workers agent and any LLM provider. Route your Workers AI and OpenAI calls through a single gateway URL to get unified token logging, semantic caching (matching similar queries — not just exact ones), per-model rate limits, and automatic fallback routing — adding less than 1ms of overhead on the hot path."
 faq:
   - question: "What is Cloudflare AI Gateway?"
     answer: "Cloudflare AI Gateway is a managed reverse proxy for LLM API calls. You replace your model provider's base URL with a gateway URL (e.g., `https://gateway.ai.cloudflare.com/v1/{account}/{gateway}/openai`) and gain unified logging, semantic caching, rate limiting, and model fallback — without changing your client library. It's free for up to 100,000 requests per day and available to all Cloudflare accounts. ([AI Gateway docs](https://developers.cloudflare.com/ai-gateway/))"
   - question: "How does AI Gateway semantic caching work?"
-    answer: "Semantic caching uses a vector embedding of the incoming prompt to find cached responses from semantically similar previous queries — not just exact text matches. If a user asks 'What is your refund policy?' and another user asked 'Can I get a refund?' within the cache TTL, the second query may hit the cache and return the prior response without calling the LLM. Cache hit rates of 20–40% are typical for support agents with repetitive query patterns."
+    answer: "Semantic caching uses a vector embedding of the incoming prompt to find cached responses from semantically similar previous queries — not just exact text matches. If a user asks 'What is your refund policy?' and another user asked 'Can I get a refund?' within the cache TTL, the second query may hit the cache and return the prior response without calling the LLM. Cache hit rates of 20–40% are typical for support agents with repetitive query patterns. ([AI Gateway caching](https://developers.cloudflare.com/ai-gateway/configuration/caching/))"
   - question: "How do you add AI Gateway to an existing Workers agent without changing model logic?"
-    answer: "Replace the base URL in your AI client initialization. For Workers AI: use the `gateway` option in `env.AI.run()` with a `gatewayId` parameter. For OpenAI SDK: set `baseURL` to `https://gateway.ai.cloudflare.com/v1/{account}/{gateway}/openai`. Your model calls, streaming logic, and response parsing stay the same — only the network path changes."
+    answer: "Replace the base URL in your AI client initialization. For Workers AI: use the `gateway` option in `env.AI.run()` with a `gatewayId` parameter. For OpenAI SDK: set `baseURL` to `https://gateway.ai.cloudflare.com/v1/{account}/{gateway}/openai`. Your model calls, streaming logic, and response parsing stay the same — only the network path changes. ([AI Gateway Workers AI](https://developers.cloudflare.com/ai-gateway/providers/workersai/))"
   - question: "Can AI Gateway route to multiple model providers?"
-    answer: "Yes. A single AI Gateway instance can proxy calls to Workers AI, OpenAI, Anthropic, Hugging Face, Azure OpenAI, and other providers. You configure per-provider routes within one gateway. This lets you implement a fallback chain: call Sonnet 4.5 via Anthropic first, fall back to GPT-4o via OpenAI if Anthropic returns a 5xx, and fall back to Workers AI Llama as a last resort — all through one gateway configuration."
+    answer: "Yes. A single AI Gateway instance can proxy calls to Workers AI, OpenAI, Anthropic, Hugging Face, Azure OpenAI, and other providers. You configure per-provider routes within one gateway. This lets you implement a fallback chain: call Sonnet 4.5 via Anthropic first, fall back to GPT-4o via OpenAI if Anthropic returns a 5xx, and fall back to Workers AI Llama as a last resort — all through one gateway configuration. ([AI Gateway fallbacks](https://developers.cloudflare.com/ai-gateway/configuration/fallbacks/))"
 howto_schema:
   name: "Add Cloudflare AI Gateway to a Workers agent for production LLM routing"
   steps:
@@ -71,7 +71,7 @@ tags:
 
 # AI Gateway: LLM Routing for Production Cloudflare Agents (2026)
 
-Cloudflare AI Gateway is a reverse proxy that sits between your Workers agent and any LLM provider. Route your Workers AI and OpenAI calls through a single gateway URL to get unified token logging, semantic caching (matching similar queries — not just exact ones), per-model rate limits, and automatic fallback routing. AI Gateway has processed 241 billion tokens and adds less than 1ms of overhead on the hot path.
+Cloudflare AI Gateway is a reverse proxy that sits between your Workers agent and any LLM provider. Route your Workers AI and OpenAI calls through a single gateway URL to get unified token logging, semantic caching (matching similar queries — not just exact ones), per-model rate limits, and automatic fallback routing. The gateway adds less than 1ms of overhead on the hot path.
 
 This chapter wires AI Gateway into the Chapter 4 case agent: routing all LLM calls through the gateway, enabling semantic caching, configuring a fallback model, and using the analytics dashboard to identify cost reduction opportunities.
 

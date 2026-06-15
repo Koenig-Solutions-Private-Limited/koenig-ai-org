@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: cloudflare-agents-platform-workers-to-production
 title: "What the Cloudflare Agents Platform Actually Is — and Isn't (2026)"
-status: awaiting-g0
+status: g0-passed
 author: course-author
 ticket: KOEA-6699
 learning_objectives:
@@ -28,7 +28,7 @@ faq:
   - question: "How is Cloudflare Workers different from AWS Lambda for AI agents?"
     answer: "Lambda is regional, starts in 1–100ms from cold, and has no built-in persistent state — you need DynamoDB, ElastiCache, or RDS for agent memory. Cloudflare Workers run in 330+ PoPs globally, reach active hibernation state in milliseconds (not seconds), and co-locate SQLite state via Durable Objects in the same V8 isolate. For agents that need sub-100ms wake times and zero-latency state reads, Workers wins. ([Workers vs Lambda](https://developers.cloudflare.com/workers/platform/pricing/))"
   - question: "What is Durable Object hibernation and why does it matter for agents?"
-    answer: "Durable Object hibernation is Cloudflare's cost optimization that evicts a DO instance from memory when there are no active connections. The instance wakes on the next incoming request and restores its SQLite state from durable storage. Hibernation matters for agents because it means you pay only for active compute time — a dormant agent session costs nothing — while the agent's full state remains available on the next request."
+    answer: "Durable Object hibernation is Cloudflare's cost optimization that evicts a DO instance from memory when there are no active connections. The instance wakes on the next incoming request and restores its SQLite state from durable storage. Hibernation matters for agents because it means you pay only for active compute time — a dormant agent session costs nothing — while the agent's full state remains available on the next request. ([Durable Objects](https://developers.cloudflare.com/durable-objects/))"
 howto_schema:
   name: "Deploy your first Cloudflare Workers agent with the Agents SDK"
   steps:
@@ -57,7 +57,6 @@ sources:
   - https://developers.cloudflare.com/workflows/
   - https://developers.cloudflare.com/ai-gateway/
   - https://developers.cloudflare.com/workers-ai/
-  - https://blog.cloudflare.com/agents/
 tags:
   - cloudflare
   - workers
@@ -117,7 +116,7 @@ AI Gateway is Cloudflare's reverse proxy for LLM APIs. It sits between your Work
 - **Rate limiting**: per-model and per-user token budgets enforced at the gateway, before the request reaches the model
 - **Fallback routing**: configure a primary model and a fallback — if the primary errors, the request routes to the fallback automatically
 
-At scale, AI Gateway has processed 241 billion tokens. For production agents, routing all LLM calls through AI Gateway is not optional — it's the only way to get cost visibility and reliability without building your own proxy.
+For production agents, routing all LLM calls through AI Gateway is not optional — it's the only way to get cost visibility and reliability without building your own proxy. ([AI Gateway](https://developers.cloudflare.com/ai-gateway/))
 
 ---
 
