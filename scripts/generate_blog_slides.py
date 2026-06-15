@@ -102,12 +102,18 @@ def extract_sections(body: str):
             is_mcq_option = bool(re.match(r'^[A-D]\)\s', cleaned))
             is_question_stem = bool(re.match(r'Question\s+\d+', cleaned))
             max_len = 220 if is_question_stem else (200 if is_mcq_option else 120)
-            if (cleaned
-                    and len(cleaned) > 15
-                    and len(cleaned) <= max_len
-                    and not cleaned.startswith("|")
-                    and not cleaned.startswith("![")):
+            if not cleaned or cleaned.startswith("|") or cleaned.startswith("!["):
+                continue
+            if len(cleaned) > 15 and len(cleaned) <= max_len:
                 bullets.append(cleaned)
+            elif len(cleaned) > max_len and not is_mcq_option and not is_question_stem:
+                # Prose paragraph — split on sentence boundaries and take short sentences
+                for sentence in re.split(r'(?<=[.!?])\s+', cleaned):
+                    s = sentence.strip()
+                    if 15 < len(s) <= 120:
+                        bullets.append(s)
+                        if len(bullets) >= 5:
+                            break
 
     if current_title is not None:
         sections.append((current_title, bullets[:5]))
