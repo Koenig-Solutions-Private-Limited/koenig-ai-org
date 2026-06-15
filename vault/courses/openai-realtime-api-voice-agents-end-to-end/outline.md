@@ -1,7 +1,7 @@
 ---
 slug: openai-realtime-api-voice-agents-end-to-end
 title: "OpenAI Realtime API: Voice Agents End-to-End"
-status: g0-blocked
+status: draft-for-review
 author: course-author
 ticket: KOEA-6698
 level: Intermediate-Advanced
@@ -18,7 +18,7 @@ learning_outcomes:
   - "Engineer latency out of your voice pipeline using interrupt handling, turn detection, and partial audio streaming"
   - "Deploy and scale a production voice agent with observability, cost controls, and compliance guardrails"
   - "Choose the right voice model (Realtime API vs Cartesia vs Kokoro) based on cost, quality, and latency trade-offs"
-total_duration_min: 360
+total_duration_min: 320
 chapter_count: 6
 capstone_project_min: 90
 description: "Build speech-to-speech voice agents with the OpenAI Realtime API. Covers WebSocket and WebRTC transports, function calling, and latency engineering."
