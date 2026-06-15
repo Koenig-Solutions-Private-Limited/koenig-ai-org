@@ -15,7 +15,7 @@ learning_objectives:
   - "Choose WebRTC vs WebSocket transport based on use-case requirements"
   - "Build a minimal Hello World voice session and measure round-trip latency end-to-end"
 whats_new: "Covers gpt-realtime-2 (released May 2026, GPT-5-class reasoning) and its predecessor gpt-realtime (GA August 2025), WebRTC GA endpoint, and current audio token pricing as of June 2026"
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-15
 reading_time_min: 10
 duration_min: 35
@@ -155,19 +155,19 @@ _Free response — model answer:_ WebRTC. UDP-based congestion control drops lat
 
 ## Hello World: Your First Voice Session
 
-Before any architecture, you need a working session. The script below connects to the Realtime API over WebSocket, streams a 3-second audio clip, and timestamps the first `response.audio.delta` event. That timestamp is your baseline RTT — you will optimize it in Chapter 4.
+Before any architecture, you need a working session. The script below connects to the Realtime API over WebSocket, streams a 3-second audio clip, and timestamps the first `response.output_audio.delta` event. That timestamp is your baseline RTT — you will optimize it in Chapter 4.
 
 **Prerequisites:**
 - OpenAI API key with Realtime API access (check [platform.openai.com](https://platform.openai.com) — Realtime is in the API dashboard)
-- Python 3.10+ with `websockets` installed (`pip install websockets`)
-- A 3-second mono 24 kHz PCM16 audio clip saved as `hello.pcm` (raw bytes, no WAV header)
+- Python 3.10+ with `websockets` installed (`pip install 'websockets>=12.0'`) — `additional_headers` requires v12+
+- A 3-second mono 24 kHz PCM16 audio clip saved as `hello.pcm` (raw bytes, no WAV header). Generate with: `ffmpeg -i any_audio.wav -f s16le -ar 24000 -ac 1 hello.pcm`
 
 <RunPromptCell>
 ```python
 # hello_realtime.py
-import asyncio, json, time, base64, websockets
+import asyncio, json, os, time, base64, websockets
 
-API_KEY = "sk-..."       # replace with your key
+API_KEY = os.environ["OPENAI_API_KEY"]  # never hardcode keys; add `import os` at top
 MODEL   = "gpt-realtime-2"
 WS_URL  = f"wss://api.openai.com/v1/realtime?model={MODEL}"
 
@@ -208,7 +208,7 @@ async def main():
         # 4. Wait for the first audio delta — that is the TTFA
         async for raw in ws:
             event = json.loads(raw)
-            if event["type"] == "response.audio.delta":
+            if event["type"] == "response.output_audio.delta":
                 t1 = time.monotonic()
                 print(f"[{t1:.3f}] First audio delta received")
                 print(f"Time to first audio: {(t1 - t0) * 1000:.0f} ms")
@@ -242,8 +242,8 @@ Every Realtime API session goes through the same lifecycle. Knowing this prevent
 3. **`session.update`** — You configure the session before any audio: voice, VAD sensitivity, system instructions, tool definitions.
 4. **`input_audio_buffer.append`** — Stream audio chunks continuously.
 5. **Turn commit** — Either `input_audio_buffer.commit` (manual mode) or the server's VAD fires automatically.
-6. **`response.create`** — Model starts generating. First `response.audio.delta` arrives in ~500 ms.
-7. **`response.audio.delta` stream** — Base64-encoded PCM chunks. Decode and queue for playback.
+6. **`response.create`** — Model starts generating. First `response.output_audio.delta` arrives in ~500 ms.
+7. **`response.output_audio.delta` stream** — Base64-encoded PCM chunks. Decode and queue for playback.
 8. **`response.done`** — Model finished its turn. Session stays open — continue the conversation.
 9. **Close** — Either party closes the WebSocket. Maximum session duration: 60 minutes. [(OpenAI, "Realtime conversations guide")](https://developers.openai.com/api/docs/guides/realtime-conversations) (retrieved 2026-06-15)
 
@@ -268,10 +268,10 @@ response.output_item.added
 conversation.item.created
 response.content_part.added
 response.audio_transcript.delta
-response.audio.delta        ← first audio here, ~500 ms after response.create
-response.audio.delta
+response.output_audio.delta        ← first audio here, ~500 ms after response.create
+response.output_audio.delta
 …
-response.audio.done
+response.output_audio.done
 response.done
 ```
 </RunPromptCell>
