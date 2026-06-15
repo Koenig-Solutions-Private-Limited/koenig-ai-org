@@ -2,7 +2,7 @@
 chapter_num: 7
 course_slug: cursor-composer-2
 title: "Advanced Prompting, MCP & Multi-Repo Workflows"
-status: g0-passed
+status: g3-passed
 duration_min: 60
 vendor_tag: Cursor
 learning_objectives:

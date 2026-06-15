@@ -21,7 +21,7 @@ whats_new:
   - "Durable reconnect protocol with Postgres-backed conversation history"
   - "PII redaction pipeline for transcript compliance"
   - "Per-session token budgets with graceful budget-exhaustion handling"
-status: g3-passed
+status: g4-approved
 description: "Deploy a voice agent to production: nginx sticky-session config, Postgres-backed reconnect protocol with item-type filtering, PII redaction pipeline, audit log schema, and per-session token budget enforcement."
 last_updated: 2026-06-15
 reading_time_min: 18

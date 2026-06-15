@@ -2,7 +2,7 @@
 chapter_num: 6
 course_slug: openai-realtime-api-voice-agents-end-to-end
 title: "Cost, Quality, and Model Trade-offs"
-status: g3-passed
+status: g0-passed
 duration_min: 55
 vendor_tag: openai
 learning_objectives:
@@ -189,6 +189,8 @@ Deploy either model on any GPU instance: Vast.ai, Lambda Labs, or HuggingFace In
 <Callout type="hot">
 Kokoro and Chatterbox do not support real-time streaming audio output — they generate a complete audio file before returning. Do not use them in live interactive sessions where the user is waiting for a response. Use them only for batch or async workloads where audio is pre-rendered, or for outbound calls where no user interruption is expected.
 </Callout>
+
+<KnowledgeCheck question="What is the key technical limitation of both Kokoro and Chatterbox that makes them unsuitable for live interactive voice sessions?" options={["They require proprietary licenses that restrict commercial deployment", "They do not support real-time streaming output — the full audio clip is generated before any bytes are returned to the client", "Their synthesis speed is below 1× real time, making even short phrases impractically slow on GPU hardware", "They cannot be deployed on GPU instances and are restricted to CPU-only inference"]} correctIdx={1} explanation="Both Kokoro and Chatterbox complete the full audio render before returning any data. Even on an A10G GPU, the buffer-fill delay means a user in a live conversation waits for the entire clip before playback begins. For async pre-rendering — notifications, IVR prompts stored before playback — that round-trip is irrelevant and the cost savings dominate." />
 
 ## Cartesia: Managed Streaming TTS for Production Pipelines
 

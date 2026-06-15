@@ -40,11 +40,12 @@ notebooklm_source_focus:
   - "LinkedIn profile optimization for global readiness and shift-flexibility signals"
   - "candidate profile differentiation strategies for global IT training sales roles"
 word_budget: { min: 800, max: 1200 }
+word_count: 1437
 quiz:
   - question: "Which LinkedIn headline correctly signals international shift-flexibility to a recruiter?"
     options:
       - "Senior Sales Professional | IT Training | 7 Years of Strong Client Experience"
-      - "IT Training Sales | APAC & EMEA Coverage | Async-First Pipeline | 6 Yrs Closing Deals"
+      - "IT Training Sales | APAC & EMEA Coverage | Async-First Pipeline | 6 Yrs Closing Certification Deals"
       - "Global Sales Expert | Multilingual Communicator | International Work Experience Gained Abroad"
       - "Account Manager | Remote-Friendly | Comfortable Working Flexible Hours Across Time Zones"
     correct_idx: 1
@@ -101,7 +102,7 @@ The shift adds four verifiable signals: IST window with SGT equivalent, tool nam
 
 **Resume experience bullets:** [LinkedIn Advice recommends](https://www.linkedin.com/advice/3/how-can-you-demonstrate-your-ability-work-different-gbuac) a "Global Collaboration" structure for each bullet: action verb + tool or method + market or region + quantified outcome. "Managed portfolio of 15 enterprise clients, exceeded annual targets by 22%" names no market and no async method. Rewritten: "Managed 15-account APAC/EMEA portfolio across Singapore, Australia, and the UK—maintaining <4h first-response SLA via Slack scheduled-send and Loom video updates, achieving 94% renewal rate."
 
-<KnowledgeCheck question="Which LinkedIn headline correctly signals international shift-flexibility?" options={["Senior Sales Professional | IT Training | 7 Years of Strong Client Experience", "IT Training Sales | APAC & EMEA Coverage | Async-First Pipeline | 6 Yrs Closing Deals", "Global Sales Expert | Multilingual Communicator | International Work Exposure Gained", "Account Manager | Remote-Friendly | Willing to Work Flexible Hours on Request"]} correctIdx={1} explanation="Option B embeds region tags (APAC, EMEA), signals the working methodology (Async-First), and quantifies experience — three signals recruiters screen for. The other options use unverifiable generic phrases." />
+<KnowledgeCheck question="Which LinkedIn headline correctly signals international shift-flexibility?" options={["Senior Sales Professional | IT Training | 7 Years of Strong Client Experience", "IT Training Sales | APAC & EMEA Coverage | Async-First Pipeline | 6 Yrs Closing Certification Deals", "Global Sales Expert | Multilingual Communicator | International Work Exposure Gained", "Account Manager | Remote-Friendly | Willing to Work Flexible Hours on Request"]} correctIdx={1} explanation="Option B embeds region tags (APAC, EMEA), signals the working methodology (Async-First), and quantifies experience — three signals recruiters screen for. The other options use unverifiable generic phrases." />
 
 ## Building Your STAR Answer
 
@@ -129,7 +130,7 @@ Structure it in five sections:
 
 **1. Regions I Cover** — list target markets with timezone abbreviation: Singapore (SGT), Australia (AEST), UK (BST).
 
-**2. Overlap Hours Table** — two columns minimum: client core business hours in local time, and your IST shift window. Add a third column for calculated real-time overlap. Singapore 9 AM–6 PM SGT = 8:00 AM–4:00 PM IST shift, producing roughly five hours of real-time overlap (10:30 AM–3:30 PM IST).
+**2. Overlap Hours Table** — two columns minimum: client core business hours in local time, and your IST shift window. Add a third column for calculated real-time overlap. Singapore 9 AM–6 PM SGT = 8:00 AM–4:00 PM IST shift, producing roughly 7.5 hours of real-time overlap (8:00 AM–3:30 PM IST).
 
 **3. Async Tool Stack** — one row per tool with the exact use case.
 

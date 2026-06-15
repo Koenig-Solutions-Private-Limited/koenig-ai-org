@@ -1,0 +1,1 @@
+/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/vault/courses/outbound-prospecting-new-logo-acquisition-b2b/03-crafting-signal-triggered-outreach-sequences/chapter.md

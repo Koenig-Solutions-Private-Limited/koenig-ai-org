@@ -6,7 +6,7 @@ content_type: course-chapter
 course_slug: openai-realtime-api-voice-agents-end-to-end
 chapter_num: 4
 title: "Latency Engineering: Making Voice Feel Fast"
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-15
 reading_time_min: 50
 learning_objectives:

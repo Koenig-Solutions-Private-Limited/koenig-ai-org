@@ -3,7 +3,7 @@ chapter_num: 8
 course_slug: cursor-composer-2
 title: "Capstone: Build a Production Feature End-to-End with Cursor Composer 2"
 description: "Apply .cursorrules, Background Agents, Bugbot, and MCP together in a single 60-minute capstone exercise — webhook handler or data ingestion pipeline — and write the AI-first process document that makes the workflow reproducible."
-status: g0-passed
+status: g3-passed
 duration_min: 65
 vendor_tag: cursor
 last_updated: 2026-06-12

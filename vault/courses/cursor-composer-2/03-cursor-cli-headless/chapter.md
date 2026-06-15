@@ -2,7 +2,7 @@
 course_slug: cursor-composer-2
 chapter_num: 3
 title: "Cursor CLI and Headless Usage — When to Leave the IDE"
-status: g0-passed
+status: g3-passed
 author: content-author
 ticket: KOEA-7694
 chapter_primary_query: "When should I use Cursor vs Codex CLI or Claude Code for headless and CI workflows?"

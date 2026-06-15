@@ -87,6 +87,8 @@ quiz:
     section_anchor: activity-vs-outcome-metrics-your-weekly-baseline
 ---
 
+Knowing which buying signals matter — and acting on them before your competitor does — is what separates systematic new-logo pipelines from spray-and-pray prospecting.
+
 ## The Four Trigger Events That Open Buying Windows
 
 A cold prospect has no pressing reason to talk to you. A triggered prospect does. The difference is a dateable change at their organization — a hire, a headcount spike, a compliance deadline — that opened a buying window where your conversation is welcomed instead of deleted.

@@ -12,8 +12,8 @@ learning_objectives:
   - "Handle the Realtime API event schema: input_audio_buffer.*, response.*, conversation.item.*"
   - "Implement server-side VAD (Voice Activity Detection) and turn detection to handle barge-in"
   - "Manage session configuration: voice selection, turn detection sensitivity, max response tokens"
-whats_new: "Covers gpt-realtime-2 (GA August 2025) WebSocket transport, server_vad turn detection, and the PTT-vs-VAD production trade-off as of June 2026"
-status: draft-for-review
+whats_new: "Covers gpt-realtime-2 (released May 2026) WebSocket transport, server_vad turn detection, and the PTT-vs-VAD production trade-off as of June 2026"
+status: g3-passed
 last_updated: 2026-06-15
 reading_time_min: 15
 duration_min: 55
@@ -157,7 +157,7 @@ asyncio.run(main())
 
 **To run:** `pip install websockets pyaudio` then `python continuous_voice.py`. Speak into your microphone — the agent responds in the alloy voice after VAD detects your turn ending. Press Ctrl-C to stop.
 
-`gpt-realtime-2` reached general availability in August 2025 [(OpenAI, "Introducing gpt-realtime", openai.com, 2025-08-28)](https://openai.com/index/introducing-gpt-realtime) and is the recommended model identifier for all new Realtime API sessions — for rate limits and tier details see the model spec [(OpenAI, "GPT-Realtime-2 Model", developers.openai.com, retrieved 2026-06-15)](https://developers.openai.com/api/docs/models/gpt-realtime-2). [(OpenAI, "Realtime Sessions", developers.openai.com, retrieved 2026-06-15)](https://developers.openai.com/api/reference/resources/realtime/sessions)
+`gpt-realtime-2` was released May 7, 2026 [(OpenAI, "Advancing voice intelligence with new models in the API", openai.com, retrieved 2026-06-15)](https://openai.com/index/advancing-voice-intelligence-with-new-models-in-the-api) and is the recommended model identifier for all new Realtime API sessions; its predecessor `gpt-realtime` reached GA on August 28, 2025 [(OpenAI, "Introducing gpt-realtime", openai.com, 2025-08-28)](https://openai.com/index/introducing-gpt-realtime). For rate limits and tier details see the model spec [(OpenAI, "GPT-Realtime-2 Model", developers.openai.com, retrieved 2026-06-15)](https://developers.openai.com/api/docs/models/gpt-realtime-2). [(OpenAI, "Realtime Sessions", developers.openai.com, retrieved 2026-06-15)](https://developers.openai.com/api/reference/resources/realtime/sessions)
 </RunPromptCell>
 
 ---
@@ -370,4 +370,4 @@ async def ptt_loop(ws, stop: asyncio.Event):
 
 You have a working continuous voice agent with VAD-based turn detection, barge-in cancellation, session configuration management, and PTT fallback. The next challenge is making that agent genuinely useful: calling external tools mid-conversation without introducing dead air in the audio stream.
 
-[[03-tool-calling-live-voice-session]] shows how to register function tools in a Realtime session, dispatch them non-blockingly, and inject results back into the audio flow within 500 ms. For the broader non-blocking tool dispatch mental model that applies across voice and text stacks, see [[claude-tool-use-from-zero]] before continuing.
+[[03-tool-calling-live-session]] shows how to register function tools in a Realtime session, dispatch them non-blockingly, and inject results back into the audio flow within 500 ms. For the broader non-blocking tool dispatch mental model that applies across voice and text stacks, see [[claude-tool-use-from-zero]] before continuing.

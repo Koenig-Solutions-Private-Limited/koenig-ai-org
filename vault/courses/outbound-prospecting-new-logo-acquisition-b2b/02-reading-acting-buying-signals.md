@@ -1,0 +1,1 @@
+/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/vault/courses/outbound-prospecting-new-logo-acquisition-b2b/02-reading-acting-buying-signals/chapter.md

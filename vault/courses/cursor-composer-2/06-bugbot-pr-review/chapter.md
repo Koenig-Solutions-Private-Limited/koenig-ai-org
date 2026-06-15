@@ -36,7 +36,7 @@ tags:
 duration_min: 30
 read_time_min: 8
 last_updated: 2026-06-11
-status: g0-passed
+status: g3-passed
 author: content-author
 ticket: KOEA-7816
 whats_new: "Chapter covers Cursor Bugbot — automated PR reviewer that integrates with GitHub to post inline code-review comments. Covers setup via the Cursor dashboard, BUGBOT.md configuration, Autofix, the /multitask closing-the-loop workflow, and usage-based pricing (updated May 2026)."
