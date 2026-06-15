@@ -8,7 +8,8 @@ author: blog-author
 ticket: KOEA-8591
 vendor_tag: google
 content_type: article
-status: draft-for-review
+status: g0-passed
+seo_description: "Gemini Spark is Google AI Ultra's 24/7 agent at $99.99/month — US-only beta, Workspace-bounded, with real privacy tradeoffs to evaluate."
 reading_time_min: 6
 primary_query: "gemini spark review 2026"
 contrarian_angle: "Google halved the Ultra price the day before I/O launch to sell a beta product — you are paying $100/month to help stress-test an agent where most features already exist in free Gemini"
