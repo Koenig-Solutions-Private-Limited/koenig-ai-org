@@ -5,7 +5,7 @@ chapter_title: "The Internet of Agents — AGNTCY & Global Discovery (2026)"
 author: course-author
 ticket: KOEA-6946
 date: 2026-05-31
-status: draft-for-review
+status: g0-passed
 level: Advanced
 duration_min: 50
 reading_time_min: 12
@@ -18,26 +18,29 @@ learning_objectives:
   - Design a globally unique Agent Identity (AID) and explain the trust implications of centralized versus decentralized identity
   - Describe the Registry-less Discovery fallback pattern using p2p gossip and explain when each discovery mode should be preferred
 positions:
-  - id: stance:open-standards-over-vendor-lock-in
+  - id: mcp-as-interoperability-moat
     engagement: defends
-  - id: stance:decentralized-agent-infrastructure
+  - id: audit-trail-as-enterprise-gate
     engagement: defends
+slug: multi-agent-orchestration-a2a-ch03
+description: "Learn how AGNTCY's Internet of Agents infrastructure enables cross-vendor agent discovery, global registry queries, OASF capability indexing, and p2p gossip fallback for resilient multi-agent systems."
+tags: [AGNTCY, A2A, agent-discovery, OASF, multi-agent, Internet-of-Agents]
 chapter_primary_query: "how to discover agents using AGNTCY and A2A protocol"
 first_60_words_answer: "AGNTCY is the Linux Foundation-hosted open infrastructure for the Internet of Agents. To discover agents, you publish an OASF-compliant schema to an Agent Directory Service and query it by capability — not by hard-coded endpoint. Every A2A-compliant agent also exposes a /.well-known/agent-card.json that any client can probe. Together, these two mechanisms make cross-vendor agent discovery deterministic rather than manual."
 faq:
   - question: "What is AGNTCY and why does it matter for multi-agent systems?"
-    answer: "AGNTCY is a Linux Foundation open-source initiative that provides the infrastructure layer — discovery, identity, messaging, and observability — that lets AI agents from different vendors and frameworks find and collaborate with each other without bilateral integration agreements."
+    answer: "AGNTCY is a Linux Foundation open-source initiative that provides the infrastructure layer — discovery, identity, messaging, and observability — that lets AI agents from different vendors and frameworks find and collaborate with each other without bilateral integration agreements. ([AGNTCY.org](https://agntcy.org/))"
   - question: "How does A2A agent discovery work in practice?"
-    answer: "Every A2A-compliant agent publishes an AgentCard at /.well-known/agent-card.json describing its capabilities, skills, and auth requirements. Clients can probe this endpoint directly (well-known URI discovery), query a curated registry that indexes many AgentCards (registry discovery), or use a hardcoded endpoint (direct config) for tightly coupled systems."
+    answer: "Every A2A-compliant agent publishes an AgentCard at /.well-known/agent-card.json describing its capabilities, skills, and auth requirements. Clients can probe this endpoint directly (well-known URI discovery), query a curated registry that indexes many AgentCards (registry discovery), or use a hardcoded endpoint (direct config) for tightly coupled systems. ([A2A agent discovery spec](https://a2a-protocol.org/latest/topics/agent-discovery/))"
   - question: "What is OASF and how does it relate to agent discovery?"
-    answer: "The Open Agentic Schema Framework (OASF) is an extensible data model from AGNTCY that formalizes how agents describe their capabilities, identity, and supported protocols. OASF records can be indexed by the Agent Directory Service and queried by fuzzy capability string, enabling agents to find each other by what they can do rather than where they live."
+    answer: "The Open Agentic Schema Framework (OASF) is an extensible data model from AGNTCY that formalizes how agents describe their capabilities, identity, and supported protocols. OASF records can be indexed by the Agent Directory Service and queried by fuzzy capability string, enabling agents to find each other by what they can do rather than where they live. ([OASF docs](https://docs.agntcy.org/oasf/open-agentic-schema-framework/))"
   - question: "What happens if the central registry goes down?"
-    answer: "Production A2A networks should fall back to p2p gossip discovery using protocols like Hyperspace's GossipSub or libp2p DHT. Agents that have previously established connections share AgentCard updates peer-to-peer, so the network degrades gracefully rather than failing completely if a central directory is unavailable."
+    answer: "Production A2A networks should fall back to p2p gossip discovery using protocols like Hyperspace's GossipSub or libp2p DHT. Agents that have previously established connections share AgentCard updates peer-to-peer, so the network degrades gracefully rather than failing completely if a central directory is unavailable. ([Hyperspace Protocol](https://protocol.hyper.space/))"
 inline_assets:
   - type: diagram
     path: ./img/ch03-discovery-modes.png
     alt: "Three A2A agent discovery modes: well-known URI probe (agent exposes /.well-known/agent-card.json), curated registry query (central service indexes many AgentCards, client queries by capability), and direct config (hardcoded endpoint in client application). All three modes return the same AgentCard document."
-last_updated: 2026-05-31
+last_updated: 2026-06-15
 sources:
   - https://agntcy.org/
   - https://docs.agntcy.org/
@@ -57,7 +60,7 @@ sources:
 
 AGNTCY is the Linux Foundation-hosted open infrastructure for the Internet of Agents. To discover agents, you publish an OASF-compliant schema to an Agent Directory Service and query it by capability — not by hard-coded endpoint. Every A2A-compliant agent also exposes a `/.well-known/agent-card.json` that any client can probe. Together, these two mechanisms make cross-vendor agent discovery deterministic rather than manual.
 
-This chapter builds the discovery layer on top of the wire protocol you learned in Chapter 2. By the end, you'll be able to register an agent in a local registry, query that registry by fuzzy capability string, and implement the p2p gossip fallback that keeps your network alive when the registry goes down.
+This chapter builds the discovery layer on top of the wire protocol you learned in [[multi-agent-orchestration-a2a/chapter-02|Chapter 2]]. By the end, you'll be able to register an agent in a local registry, query that registry by fuzzy capability string, and implement the p2p gossip fallback that keeps your network alive when the registry goes down. (New to A2A? Start with [[multi-agent-orchestration-a2a/chapter-01|Chapter 1]] for the protocol foundations.)
 
 ---
 
@@ -79,7 +82,7 @@ These three constraints rule out every traditional service-discovery approach. W
 
 ## AGNTCY — The Internet of Agents Infrastructure
 
-[AGNTCY](https://agntcy.org/) launched in March 2025, founded by Outshift by Cisco, LangChain, LlamaIndex, and Galileo. By mid-2026, it operates under Linux Foundation governance with Cisco, Dell Technologies, Google Cloud, Oracle, and Red Hat as formative members — the same governance model that gave us Kubernetes and OpenTelemetry. ([Linux Foundation press release](https://www.linuxfoundation.org/press/linux-foundation-welcomes-the-agntcy-project-to-standardize-open-multi-agent-system-infrastructure-and-break-down-ai-agent-silos))
+[AGNTCY](https://agntcy.org/) launched in March 2025, founded by Outshift by Cisco, LangChain, and Galileo. By mid-2026, it operates under Linux Foundation governance with Cisco, Dell Technologies, Google Cloud, Oracle, and Red Hat as formative members — the same governance model that gave us Kubernetes and OpenTelemetry. ([Linux Foundation press release](https://www.linuxfoundation.org/press/linux-foundation-welcomes-the-agntcy-project-to-standardize-open-multi-agent-system-infrastructure-and-break-down-ai-agent-silos))
 
 The AGNTCY vision has four capabilities that map exactly to the lifecycle gaps that make multi-agent systems hard to build:
 
@@ -100,7 +103,7 @@ AGNTCY is not a product. It is an **infrastructure layer** that frameworks run o
 
 Every agent in an AGNTCY-compatible network publishes an **OASF record** — an Open Agentic Schema Framework document that describes who the agent is and what it can do. ([docs.agntcy.org/oasf](https://docs.agntcy.org/oasf/open-agentic-schema-framework/))
 
-OASF is an OCI-based extensible data model. The top-level fields describe the agent's identity and protocol support; the taxonomy of skills uses a dotted-namespace notation that enables semantic search:
+OASF is an OCSF-inspired extensible data model (Open Cybersecurity Schema Framework — not Open Container Initiative). The top-level fields describe the agent's identity and protocol support; the taxonomy of skills uses a dotted-namespace notation that enables semantic search:
 
 ```json
 {
