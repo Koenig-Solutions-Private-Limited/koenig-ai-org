@@ -4,7 +4,7 @@ chapter_num: 5
 chapter_slug: gpt-5-5-cyber-governance
 title: "Governance and specialized cyber access — TAC, Project Glasswing, and Bedrock controls"
 hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch05-hero.svg"
-status: awaiting-g0
+status: g0-passed
 author: "Koenig AI Instructor"
 agent_drafted_by: 6c31c5e6-2664-42f9-a81b-470134878a10
 vendor_tag: koenig-ai-academy
@@ -91,7 +91,7 @@ Specialized cyber access programs — OpenAI's Trusted Access for Cyber (TAC) an
 ```takeaways
 - Trusted Access for Cyber gates GPT-5.5-Cyber behind team identity verification and approved workflow scope — not just an API key upgrade.
 - Three questions are often conflated: model access eligibility, endpoint governance (direct/Enterprise/Bedrock), and agent/tool approval controls. Answering one does not answer the others.
-- AISI's pre-launch cyber evaluation shaped the TAC eligibility model: risk scales with the attacker's existing knowledge, so gating requires demonstrated defensive expertise, not just organizational affiliation.
+- AISI's pre-launch cyber evaluation found meaningful uplift for operators with existing security knowledge. This is consistent with — though not documented as the explicit basis for — TAC's requirement for demonstrated defensive expertise rather than organizational affiliation alone.
 ```
 
 ## Why governance is the seventh evaluation dimension
@@ -206,7 +206,7 @@ Glasswing also operates with an explicit assumption that the capability landscap
 ---
 
 ```takeaways
-- Project Glasswing is Anthropic's research-and-governance unit for cyber capabilities — it governs Mythos Preview access through the Cyber Verification Program, and participating teams have reciprocal research-sharing obligations.
+- Project Glasswing is Anthropic's research-and-governance unit for cyber capabilities — Mythos Preview access is currently limited to ~50 invited partners; the Cyber Verification Program is announced but not yet open for applications.
 - Mythos Preview and GPT-5.5-Cyber sit at comparable capability levels per AISI's evaluation — the governance model, not raw capability, is the differentiator.
 - TAC verification and Glasswing verification are not cross-recognized; teams wanting both access paths must apply to each separately.
 ```
@@ -216,8 +216,8 @@ Glasswing also operates with an explicit assumption that the capability landscap
 | Dimension | OpenAI TAC (GPT-5.5-Cyber) | Anthropic Glasswing (Mythos Preview) |
 |---|---|---|
 | Program framing | Commercial deployment program | Research-and-governance unit |
-| Eligibility | Organizational attestation + team vetting | Research-collaborative relationship with Anthropic |
-| Permitted scope | Explicit list in system card [^3] | Documented per approved use case at verification |
+| Eligibility | Organizational attestation + team vetting | ~50 invited partners only; no open CVP application as of Q2 2026 |
+| Permitted scope | Explicit list in system card [^3] | Announced CVP model: per-team scope; CVP not yet operationally open |
 | Reciprocal obligations | Misuse reporting + audit cooperation | Research finding sharing + misuse reporting |
 | Codex/agent surface | Yes — Codex included in TAC [^2] | Claude tool-use under approved scope |
 | Bedrock availability | Yes — GPT-5.5 on Bedrock [^7] | Anthropic direct / Bedrock Anthropic models |
@@ -261,7 +261,8 @@ resource "aws_iam_policy" "gpt55_cyber_invoke" {
       {
         Effect   = "Allow"
         Action   = ["bedrock:InvokeModel"]
-        Resource = "arn:aws:bedrock:us-east-1::foundation-model/openai.gpt-5-5-cyber"
+        # Replace with the actual model ID from https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-openai.html
+        Resource = "arn:aws:bedrock:us-east-1::foundation-model/$BEDROCK_GPT55_MODEL_ID"
         Condition = {
           StringEquals = {
             "aws:PrincipalTag/team" = "security-tac-verified"
