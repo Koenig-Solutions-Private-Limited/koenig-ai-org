@@ -3,7 +3,7 @@ slug: cloudflare-agents-platform-workers-to-production
 title: "Cloudflare Agents Platform: From Workers to Production — 2026 Tutorial"
 seo_title: "Cloudflare Agents Tutorial 2026: Build Production Workers Agents Step by Step"
 last_updated: 2026-05-30
-status: outline-draft-for-review
+status: g0-passed
 author: course-author
 ticket: KOEA-6699
 level: Intermediate-Advanced
