@@ -232,6 +232,8 @@ The right architecture depends on three variables: required latency, daily sessi
 
 Many production deployments end up hybrid: the Realtime API handles live customer-facing sessions where latency and barge-in detection are visible to the user, while Kokoro handles batch rendering of thousands of personalized audio notifications overnight. The cost of each architecture matches its use case, and the two stacks coexist without conflict. Making the decision explicit — writing the table above for your specific use case — is more durable than defaulting to the most visible option.
 
+<KnowledgeCheck question="Your product sends 50,000 personalized audio notifications per night with no live user interaction. Which architecture best minimizes cost?" options={["OpenAI Realtime API — lowest latency, simplest integration", "Whisper + GPT-4o-mini + Cartesia — managed TTS with competitive pricing", "Whisper + GPT-4o-mini + Kokoro self-hosted — lowest per-session cost at scale for async workloads", "Realtime API with a Kokoro fallback for overflow traffic"]} correctIdx={2} explanation="Async batch audio has no need for sub-second latency or barge-in detection. A self-hosted Kokoro instance on a GPU handles thousands of renders per hour at a fraction of the Realtime API audio token cost. For 50,000 nightly notifications, the cost difference is 70–80% versus the Realtime API." />
+
 ---
 
 ## Hands-On Exercise: Build a Three-Architecture Cost Comparison
@@ -255,4 +257,4 @@ Many production deployments end up hybrid: the Realtime API handles live custome
 
 ---
 
-Apply everything built across this course — sessions, tools, latency engineering, production deployment, and the cost framework from this chapter — in the [[capstone-supportvoice|Build SupportVoice — Capstone Project]].
+Apply everything built across this course — sessions, tools, latency engineering, production deployment, and the cost framework from this chapter — in the **Build SupportVoice Capstone Project** (see the course capstone overview).
