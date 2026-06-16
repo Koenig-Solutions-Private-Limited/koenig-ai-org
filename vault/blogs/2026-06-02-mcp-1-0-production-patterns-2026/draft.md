@@ -93,7 +93,7 @@ MCP solves the N×M integration problem: before it, each AI tool needed a custom
 
 The spec mandates OAuth 2.1 with PKCE for all remote servers. The [2026-07-28 RC](https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate) hardens this with RFC 9207 `iss` validation to prevent mix-up attacks — the dominant class of OAuth implementation bug in multi-server deployments.
 
-In practice: don't implement OAuth from scratch. The [MCP Authorization spec is a multi-month project](https://blog.christianposta.com/the-updated-mcp-oauth-spec-is-a-mess) if you wire Dynamic Client Registration, Authorization Server Metadata, and token chaining yourself. Delegate to an existing identity provider — Auth0, Okta, Keycloak — and wire MCP as a Resource Server. The integration is thin; the IDP handles the heavy lifting.
+In practice: don't implement OAuth from scratch. The [MCP Authorization spec is a multi-month project](https://blog.christianposta.com/the-updated-mcp-oauth-spec-is-a-mess) if you wire Dynamic Client Registration, Authorization Server Metadata, and token chaining yourself. Delegate to an existing identity provider — Auth0, Okta, Keycloak — and wire MCP as a Resource Server. The integration is thin; the IDP handles the heavy lifting. [Claude MCP Mastery](/courses/claude-mcp-mastery) walks through the full OAuth wire-up with working client and server code.
 
 For internal-only servers (STDIO or behind an internal network boundary), API keys are acceptable as a stepping-stone, but rotate them on a schedule and treat them as credentials, not config.
 
@@ -124,7 +124,7 @@ The upcoming `2026-07-28` spec eliminates protocol-level sessions. If you have s
 2. Implement the **explicit-handle pattern**: servers mint an opaque handle (e.g., `basket_id`, `task_id`) from a tool call; the model passes it as an ordinary argument in subsequent calls
 3. Update your `tools/list` response to include `ttlMs` cache hints where safe
 
-The official Python and TypeScript SDKs are expected to ship `2026-07-28` support within the [ten-week validation window](https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate) — by early August.
+The official Python and TypeScript SDKs are expected to ship `2026-07-28` support within the [ten-week validation window](https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate) — by early August. For a preview of what comes after the `2026-07-28` freeze, see [MCP 2026 Roadmap Explained](/blog/mcp-2026-roadmap-explained).
 
 ---
 
@@ -158,7 +158,7 @@ OX Security disclosed a "by design" flaw in STDIO transport: the `command` field
 
 ### 3. Tool poisoning and rug pulls
 
-Malicious tool descriptions embed adversarial instructions visible to the LLM but not to the user. Rug-pull servers pass initial review with benign tools, then serve malicious capabilities on subsequent calls. [A fake Oura ring MCP integration](https://authzed.com/blog/timeline-mcp-breaches) distributed malware before detection in February 2026. Mitigation: pin server versions and verify source hashes on every deploy; use mpak.dev's MTF score as a filter for third-party servers.
+Malicious tool descriptions embed adversarial instructions visible to the LLM but not to the user. Rug-pull servers pass initial review with benign tools, then serve malicious capabilities on subsequent calls. [A fake Oura ring MCP integration](https://authzed.com/blog/timeline-mcp-breaches) distributed malware before detection in February 2026. Mitigation: pin server versions and verify source hashes on every deploy; use mpak.dev's MTF score as a filter for third-party servers. For a hands-on treatment of supply-chain attack patterns in AI agent systems, see [AI Agent Security for Developers](/courses/ai-agent-security-for-developers).
 
 ### 4. Auth drift
 
@@ -166,7 +166,7 @@ Static API keys that were "temporary" for six months. Token rotation schedules t
 
 ### 5. Registry typosquatting
 
-[OX Security cloned `mcp-server-postgres`](https://nimblebrain.ai/mcp/mcp-security/state-of-mcp-security) as `mcp-server-postgress` (double 's') with a hidden `postinstall` payload that exfiltrated `~/.ssh/id_rsa`. 9 of 11 MCP directories published it without automated review. Pin your dependencies, run `npm audit`, and cross-check package names character by character before onboarding any registry server.
+[OX Security cloned `mcp-server-postgres`](https://nimblebrain.ai/mcp/mcp-security/state-of-mcp-security) as `mcp-server-postgress` (double 's') with a hidden `postinstall` payload that exfiltrated `~/.ssh/id_rsa`. 9 of 11 MCP directories published it without automated review. Pin your dependencies, run `npm audit`, and cross-check package names character by character before onboarding any registry server. Full registry vetting criteria are covered in [MCP Server Registry Security](/blog/mcp-server-registry-security).
 
 ---
 
@@ -296,7 +296,7 @@ The gap — 8.5% OAuth, 40+ CVEs in four months, no standardized audit trail —
 
 The servers that survive production aren't the most feature-rich ones in the registry. They're the ones with a narrow scope, pinned versions, and someone on call who knows what "auth drift" means.
 
-Ready to build MCP servers that hold up past day one? Start with [[course/mcp-from-first-principles-to-production]].
+Ready to build MCP servers that hold up past day one? Start with [MCP: From First Principles to Production](/courses/mcp-from-first-principles-to-production).
 
 ---
 
