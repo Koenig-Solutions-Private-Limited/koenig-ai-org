@@ -24,9 +24,7 @@ faq:
     answer: "A minimal solo harness has four parts: (1) a [SPEC or CLAUDE.md file](https://platform.claude.com/docs/en/release-notes/overview) that captures the task contract, not just system-prompt prose; (2) a plan-first checkpoint where the model proposes before it executes; (3) at least one automated verification step (unit test, schema check, or diff review) before any output is committed; and (4) a fallback path — what happens when the primary model call fails, is rate-limited, or returns a refusal. Anything without these four components is a prompt, not a harness."
 original_data: false
 last_updated: 2026-06-16
-hero_image:
-  url: /img/blogs/prompt-engineering-is-becoming-harness-engineering/hero.png
-  alt: "Diagram contrasting a single prompt box versus a full harness pipeline with spec, plan, execute, test, and fallback stages"
+hero_image: auto:flux
 sources:
   - https://www.reddit.com/r/PromptEngineering/comments/1t95hyf/is_prompt_engineering_actually_dead_or_are_we/
   - https://np.reddit.com/r/ClaudeAI/comments/1rozbqb/are_agents_actually_useful_for_complex_tasks/
