@@ -55,6 +55,7 @@ sources:
   - https://thehackernews.com/2026/04/anthropic-mcp-design-vulnerability.html
   - https://mcpmanager.ai/blog/most-popular-mcp-servers
   - https://philippdubach.com/posts/mcp-vs-a2a-in-2026-how-the-ai-protocol-war-ends
+seo_description: "Of 14,000+ MCP servers in 2026, only ~15 implement OAuth and are actively maintained. This guide names all 15 with transport choices, auth posture, and gotchas."
 whats_new:
   - "Of 14,000+ MCP servers in 2026, only ~15 implement OAuth and are actively maintained by vendor teams — this guide names all 15 with production gotchas included."
 learning_objectives:
@@ -352,7 +353,7 @@ Connectors (Anthropic's native integration layer, described in [vault/blogs/anth
 
 The practical distinction: if you need to read a user's Google Drive documents from Claude.ai, the Connector is simpler and requires no infrastructure. If you need that same capability to work in Claude, Cursor, and Windsurf simultaneously — or if the data source has no first-party Connector — MCP is the right layer.
 
-The cases where Connectors win: official first-party integrations where Claude.ai is your only deployment target, minimal infrastructure budget, and low latency requirements for retrieval-only tasks. MCP wins everywhere else: multi-client deployments, write operations, custom business logic in the server, and any vendor integration where you want the server to live independently of Anthropic's infrastructure.
+The cases where Connectors win: official first-party integrations where Claude.ai is your only deployment target, minimal infrastructure budget, and low latency requirements for retrieval-only tasks. MCP wins everywhere else: multi-client deployments, write operations, custom business logic in the server, and any vendor integration where you want the server to live independently of Anthropic's infrastructure. For teams building retrieval-augmented generation pipelines over MCP data sources (Supabase, Notion, filesystem), see [RAG with MCP connectors](/blog/2026-05-12-rag-with-mcp-connectors) for practical patterns that work across Claude, Cursor, and Windsurf.
 
 The [2026-07-28 stateless spec](https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate) narrows the infrastructure gap — remote MCP servers now require no sticky routing infrastructure, making them nearly as operationally simple as a webhook. The line between "connector" and "MCP server" is narrowing; MCP is winning the general-purpose integration layer.
 
@@ -439,12 +440,13 @@ For deep coverage of the broader MCP 1.0 spec changes and the registry quality g
 
 - **MCP server registry security risks**: [[vault/blogs/mcp-server-registry-security/draft.md]] — a complete threat model for the registry distribution channels
 - **Supply chain threats for AI coding agents**: [[vault/blogs/ai-coding-agent-supply-chain-threat-atlas-2026/draft.md]] — the broader supply chain atlas this post's security guidance draws from
+- **MCP 2026 roadmap**: [What's shipping in MCP across 2026](/blog/mcp-2026-roadmap-explained) — the full spec timeline covering the 2026-07-28 RC, stateless transport, and UTCP as a challenger
 - **MCP adoption by the numbers**: [[vault/blogs/2026-05-31-mcp-server-adoption-2026/draft.md]] — GitHub stars, npm downloads, geographic breakdown
 - **Cloudflare's MCP architecture**: [[vault/blogs/cloudflare-agents-week-2026-explained/draft.md]] — how Cloudflare is building on MCP at scale
 - **Anthropic's Stainless acquisition and MCP distribution**: [[vault/blogs/anthropic-stainless-mcp-distribution/draft.md]] — why Anthropic bought the company that generates MCP servers from OpenAPI specs
-- **Claude Skills vs MCP**: [[vault/blogs/2026-05-13-claude-skills-vs-mcp/draft.md]] — when to use each primitive inside Claude's own ecosystem
+- **Claude Skills vs MCP**: [When to use each primitive inside Claude's own ecosystem](/blog/2026-05-13-claude-skills-vs-mcp)
 
-To go from reading this guide to building production MCP agents, start with our course: [MCP from First Principles to Production](/learn/mcp-from-first-principles-to-production). It covers transport implementation, OAuth flows, multi-server orchestration, and the security patterns needed to run these servers safely in production environments.
+To go from reading this guide to building production MCP agents, start with our course: [MCP from First Principles to Production](/courses/mcp-from-first-principles-to-production). It covers transport implementation, OAuth flows, multi-server orchestration, and the security patterns needed to run these servers safely in production environments. If you're integrating MCP specifically within Claude workflows, [Claude MCP Mastery](/courses/claude-mcp-mastery) covers Claude-specific patterns including Skills vs MCP trade-offs and connector configuration.
 
 ---
 
