@@ -155,6 +155,17 @@ Use this decision rule:
 | Querying GitHub, Slack, CRM, or production metrics | MCP | Needs live state and authenticated actions |
 | Support triage with current customer data and house style | Hybrid | MCP fetches records; Skill controls reasoning and format |
 
+```mermaid
+flowchart TD
+    Q{"What does Claude need?"}
+    Q -->|"Repeatable workflow\nor team procedure"| S["Claude Skills\nSKILL.md + instructions\nloaded on demand"]
+    Q -->|"Live external system\nor authenticated action"| M["MCP Server\nclient-server protocol\nJSON-RPC tool calls"]
+    Q -->|"Both: recurring workflow\nwith live data"| H["Hybrid\nSkill encodes HOW\nMCP exposes WHAT"]
+    S --> SE["✓ PR review checklist\n✓ Release playbook\n✓ Support escalation policy"]
+    M --> ME["✓ GitHub issues\n✓ CRM records\n✓ Production database"]
+    H --> HE["✓ Support triage:\nMCP fetches customer data\nSkill controls reply format"]
+```
+
 Anthropic's March 24, 2026 Claude Code advanced-patterns session puts MCP beside subagents, hooks, and large-repo context strategies for teams scaling Claude Code into real engineering work ([Claude Code Advanced Patterns](https://www.anthropic.com/webinars/claude-code-advanced-patterns), retrieved 2026-05-26). In Paperclip environments, that is also where [[paperclip-create-plugin]] becomes relevant, while [[course/mcp-from-first-principles-to-production/03-tools-resources-prompts]] covers the mechanics of the live boundary.
 
 ## Avoid overbuilding the wrong layer

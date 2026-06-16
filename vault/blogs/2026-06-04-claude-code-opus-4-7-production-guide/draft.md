@@ -103,6 +103,19 @@ Requires the `task-budgets-2026-03-13` beta header. Minimum recommended: 20,000 
 
 **`/ultrareview` command** — spawns four parallel specialist agents (security, logic, performance, style) in a single pass. This is Opus 4.7's native preference for parallel specialist dispatch, made accessible as a CLI command. Before: one review agent tried to check all four domains sequentially. Now: four specialists fire in parallel and each goes deep on their domain.
 
+```mermaid
+flowchart TD
+    A["/ultrareview trigger"] --> B["Orchestrator\nOpus 4.7"]
+    B --> C["Security Agent"]
+    B --> D["Logic Agent"]
+    B --> E["Performance Agent"]
+    B --> F["Style Agent"]
+    C --> G["Aggregated Review Report\n(8–12 min, ~$1.50–2.50)"]
+    D --> G
+    E --> G
+    F --> G
+```
+
 **Vision at 3× resolution.** Images up to 2,576 px on the long edge vs ~800 px on 4.6. [Vellum's benchmark analysis](https://www.vellum.ai/blog/claude-opus-4-7-benchmarks-explained) puts visual-acuity at 98.5% vs 54.5% for Opus 4.6. Screenshot-based UI debugging and design-to-code workflows are first-class Claude Code inputs now.
 
 **Breaking API changes** that return HTTP 400 on Opus 4.7 (not on 4.6):

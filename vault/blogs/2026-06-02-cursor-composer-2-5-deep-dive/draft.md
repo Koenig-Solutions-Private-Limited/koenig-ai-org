@@ -144,6 +144,13 @@ Concretely, the benchmark deltas look like this [4]:
 | CursorBench v3.1 | 63.2% | 52.2% | 64.8% (max) / 61.6% (default) | 64.3% (xhigh) / 59.2% (default) |
 | Artificial Analysis Coding Agent Index | 62 | 48 | 66 | 65 |
 
+```mermaid
+flowchart LR
+    A["Moonshot Kimi K2.5\n(open-weight base)"] --> B["Cursor Post-Training\n85% of compute budget\n25× synthetic tasks + RL"]
+    B --> C["Composer 2.5\nCoding Agent Index: 62\n$0.07 per task"]
+    D["Composer 2\nIndex: 48"] -. "same base\ncheckpoint" .-> B
+```
+
 Composer 2.5 essentially matches Opus 4.7 on SWE-Bench Multilingual and Terminal-Bench 2.0 while losing the home benchmark to Opus 4.7's `max` mode by 1.6 points [4]. GPT-5.5 keeps a wide lead on Terminal-Bench but loses to Composer 2.5 on the Coding Agent Index because the index weights cost and latency.
 
 ```takeaways

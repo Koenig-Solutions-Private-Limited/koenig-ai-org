@@ -84,6 +84,19 @@ Claude Code can spawn parallel worker agents, each in its own git worktree, and 
 
 In our pipeline, a parent agent dispatches three simultaneous child agents: one drafts content, one fact-checks citations, one writes schema markup. Wall-clock time for a 1,200-word blog drops from 20 minutes (serial) to 8 minutes (parallel).
 
+```mermaid
+flowchart TD
+    A["Parent Agent\nOpus 4.7 orchestrator"] -->|"spawns"| B["Subagent 1\nContent Draft\nGemini Flash"]
+    A -->|"spawns"| C["Subagent 2\nCitation Check\nSonnet 4.6"]
+    A -->|"spawns"| D["Subagent 3\nSchema Markup\nHaiku 4.5"]
+    B --> E["git worktree /branch-draft"]
+    C --> F["git worktree /branch-citations"]
+    D --> G["git worktree /branch-schema"]
+    E --> H["Merge to feature branch\n8 min parallel vs 20 min serial"]
+    F --> H
+    G --> H
+```
+
 ### 2. MCP integration with the full ecosystem
 
 The [Model Context Protocol](https://modelcontextprotocol.io/introduction) is the emerging standard for connecting AI agents to external tools — GitHub, databases, file systems, Slack — without bespoke per-tool wiring. Claude Code is the reference MCP client. As of mid-2026, hundreds of published MCP servers exist, and Claude Code loads them via a simple `.claude/mcp.json` manifest.

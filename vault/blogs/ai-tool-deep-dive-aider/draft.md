@@ -153,6 +153,18 @@ The counterintuitive fact about Aider is that its spartan feature set is a produ
 
 ![Aider terminal session showing git diff of AI-generated rate limiter code alongside the polyglot leaderboard benchmark scores for GPT-5, Claude Sonnet 4.6, and DeepSeek V3](/img/blogs/ai-tool-deep-dive-aider/hero.png)
 
+```mermaid
+flowchart LR
+    A["Select files\n/add src/*.py"] --> B["Describe change\nin terminal"]
+    B --> C["Architect model\nplans approach\n(GPT-5 / Opus 4.x)"]
+    C --> D["Editor model\nwrites diffs\n(Sonnet 4.6 / DeepSeek V3)"]
+    D --> E["Auto-lint\n+ auto-test"]
+    E --> F{"Tests pass?"}
+    F -- Yes --> G["Git commit\nwith generated message\n88% of Aider written by Aider"]
+    F -- No --> C
+    G --> H["git log · review\ngit revert if needed"]
+```
+
 ---
 
 ## Aider Delivers on Five Things Better Than Any Other CLI Tool

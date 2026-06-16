@@ -9,7 +9,7 @@ slug: 2026-06-02-mcp-1-0-production-patterns-2026
 vendor: anthropic
 vendor_tag: anthropic
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 9
 primary_query: "mcp production patterns 2026"
 contrarian_angle: "The registry lists 9,652 servers — but only 8.5% implement OAuth 2.1. Production MCP is primarily an auth and context-budget problem, not a transport problem."
@@ -80,6 +80,33 @@ MCP solves the N×M integration problem: before it, each AI tool needed a custom
 | **Prompts** | Server-provided prompt templates |
 | **Tasks** *(extension, 2025-11-25+)* | Call-now, fetch-later async pattern — returns a handle, client polls |
 | **Elicitation** | Server pauses execution to request user input (OAuth flows, structured clarification) |
+
+```mermaid
+graph LR
+    subgraph Clients
+        CC["Claude"]
+        CGT["ChatGPT"]
+        GEM["Gemini"]
+        CUR["Cursor"]
+    end
+    subgraph MCP["MCP Server\n(one implementation)"]
+        TOOLS["Tools"]
+        RES["Resources"]
+        PROMPTS["Prompts"]
+    end
+    subgraph Data["Data Sources"]
+        DB["Database"]
+        FS["File System"]
+        API["Internal APIs"]
+    end
+    CC --> MCP
+    CGT --> MCP
+    GEM --> MCP
+    CUR --> MCP
+    MCP --> DB
+    MCP --> FS
+    MCP --> API
+```
 
 **Transport in 2026:** Streamable HTTP is the production standard for remote servers. The [release candidate locked May 21, 2026](https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate) eliminates the protocol-level session entirely — `Mcp-Session-Id` header gone, any request routes to any instance, `tools/list` responses are cacheable. Local process servers still use STDIO.
 

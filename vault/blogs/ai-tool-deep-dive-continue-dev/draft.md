@@ -62,6 +62,15 @@ Most coverage of Continue.dev misses the point. Reviewers benchmark its agent mo
 
 ![Continue.dev interface showing model routing configuration in VS Code with chat and autocomplete role assignments](/img/blogs/ai-tool-deep-dive-continue-dev/hero.png)
 
+```mermaid
+flowchart LR
+    F["hub.continue.dev\nteam config sync\n(secrets encrypted)"] -->|"propagates"| A["config.yaml\nversion-controlled routing"]
+    A --> B["autocomplete\nQwenCoder 2.5-7B via Ollama\n~$0/day"]
+    A --> C["chat\nClaude Sonnet 4.6\nAnthropic API"]
+    A --> D["edit\nCodestral Mistral\nMistral API"]
+    A --> E["embed / rerank\nlocal model"]
+```
+
 ---
 
 ## What Continue.dev Actually Does Well

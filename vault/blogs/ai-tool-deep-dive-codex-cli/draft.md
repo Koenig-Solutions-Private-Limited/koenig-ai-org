@@ -71,6 +71,17 @@ Most reviews of Codex CLI lead with the SWE-bench number. That is the wrong fram
 
 ![Codex CLI 5.4 terminal session showing a multi-file refactor with approval prompt and sandbox indicator in a dark terminal window](/img/blogs/ai-tool-deep-dive-codex-cli/hero.png)
 
+```mermaid
+flowchart TD
+    A["Developer command\ncodex 'add spans to src/api/'"] --> B["gpt-5.4-codex model\n192k context · RLHF-aligned\nminimal diffs + iterative retry"]
+    B --> C["Sandbox environment\nbubblewrap Linux · Apple Sandbox macOS\nnetwork OFF by default"]
+    C --> D{"Approval gate\nsuggest / auto-edit / full-auto"}
+    D -->|"Approved"| E["File edits applied\ntests run · non-zero exit on failure"]
+    D -->|"Rejected"| B
+    E --> F["requirements.toml policy\nadmin-enforced across all dev machines"]
+    F --> G["Compliance API\nSIEM · eDiscovery export"]
+```
+
 ---
 
 ## What Codex CLI 5.4 Does Well

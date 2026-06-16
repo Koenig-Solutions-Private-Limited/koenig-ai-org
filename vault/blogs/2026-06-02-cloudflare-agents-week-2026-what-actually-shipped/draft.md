@@ -10,6 +10,7 @@ primary_query: "Cloudflare Agents Week 2026 what shipped"
 contrarian_angle: "Cloudflare shipped 20+ products in a week — but scored 33% on its own readiness tool, and the DO hibernation trap will cost you $406/month before the marketing hype does"
 first_60_words_answer: "Cloudflare Agents Week 2026 (April 13–20) shipped Dynamic Workers, Sandboxes GA, Cloudflare Mesh, Project Think, Flagship, and 15+ more products. Adopt Dynamic Workers for LLM-generated code execution and Sandboxes for persistent environments now. Wait on Project Think (preview) and Voice Agents (experimental). Enable Durable Objects hibernation immediately — or face a $416/month surprise on 100 idle WebSocket agents."
 positions: none
+seo_description: "Cloudflare Agents Week 2026: Dynamic Workers and Sandboxes GA are production-ready now. Avoid the $416/month Durable Objects hibernation trap before you ship."
 last_updated: 2026-06-02
 hero_image:
   url: /img/blogs/2026-06-02-cloudflare-agents-week-2026-what-actually-shipped/hero.png
@@ -57,6 +58,16 @@ Cloudflare Agents Week (April 13–20, 2026) shipped Dynamic Workers in open bet
 The marketing copy was dense enough that Hacker News asked whether Cloudflare had run out of product names. The ironic footnote: at launch, Cloudflare itself [scored 33%](https://news.ycombinator.com/item?id=47805998) on `isitagentready.com`, the Agent Readiness tool it shipped on Friday of that same week. What separates the real launches from the announcement noise is where production deployments are already running — and six weeks later, the Claude Managed Agents integration and Figma Make on Sandboxes tell that story better than any press release.
 
 ![Cloudflare Agents Week 2026 product map showing Dynamic Workers, Sandboxes, Mesh, Project Think, and Flagship launches](/img/blogs/2026-06-02-cloudflare-agents-week-2026-what-actually-shipped/hero.png)
+
+```mermaid
+flowchart TD
+    A["AI Agent\n(Claude / GPT / Gemini)"] --> B["Cloudflare Mesh\nRBAC + private networking\n330-city edge"]
+    B --> C["Cloudflare AI Gateway\ncaching · logging · 14+ providers"]
+    C --> D["Dynamic Workers\nLLM-generated V8 isolates\nglobalOutbound credential injection\n100× faster than containers"]
+    C --> E["Sandboxes GA\npersistent environments\nFigma Make integration"]
+    D --> F["Durable Objects\nWebSocketHibernation API\n$10/mo vs $416/mo without it"]
+    E --> F
+```
 
 ## Dynamic Workers: Adopt Now
 
