@@ -110,6 +110,25 @@ Use Claude Skills when you need Claude to follow a repeatable way of working; us
 
 The missed point is that Skills and MCP are not rivals. Skills encode judgment: how your team reviews PRs, writes incident notes, or runs a release. MCP exposes access: the GitHub issue, the customer record, the database row. Production agents usually need both, but not in the same layer.
 
+```mermaid
+flowchart LR
+    subgraph Skills["Claude Skills (workflow judgment)"]
+        S1["Reusable prompt templates"]
+        S2["Step-by-step how-tos"]
+        S3["Domain knowledge"]
+    end
+    subgraph MCP["MCP (live system access)"]
+        M1["Tool calls → GitHub"]
+        M2["Tool calls → Databases"]
+        M3["Tool calls → APIs"]
+    end
+    Agent["Claude Code agent"] --> Skills
+    Agent --> MCP
+    Skills -->|"informs reasoning"| Agent
+    MCP -->|"returns live data"| Agent
+```
+<!-- alt: Diagram contrasting Claude Skills (reusable workflow templates and domain knowledge) with MCP (live tool calls to GitHub, databases, and APIs), both feeding the same Claude Code agent. -->
+
 ## Use Skills to preserve reusable workflow judgment
 
 Claude Skills are filesystem folders centered on `SKILL.md`. Anthropic describes them as specialized folders with instructions, scripts, and resources that Claude can load dynamically for specific tasks ([Introducing Agent Skills](https://www.anthropic.com/news/skills), retrieved 2026-05-13). The docs call out progressive disclosure: Claude scans metadata first, loads the full Skill when relevant, and only opens extra resources or scripts when needed ([Agent Skills overview](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview), retrieved 2026-05-13).
