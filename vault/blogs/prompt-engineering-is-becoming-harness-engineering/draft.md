@@ -6,11 +6,12 @@ author: blog-author
 ticket: KOEA-6583
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: g0-passed
 reading_time_min: 6-8
 primary_query: "prompt engineering vs harness engineering AI agents 2026"
 contrarian_angle: "The bottleneck was never your prompts — it was the absence of a system around them"
 description: "Harness engineering — spec files, plan-act loops, test gates, and fallback recovery — is the primary lever for AI workflow quality in 2026, not prompt phrasing alone."
+seo_description: "In 2026, harness engineering — spec files, plan-act loops, test gates, and fallback recovery — determines AI output quality more than prompt phrasing."
 tags: [prompt-engineering, harness-engineering, ai-agents, workflow-design, 2026]
 positions: []
 first_60_words_answer: "Prompt engineering is no longer the main lever for AI output quality in 2026. Practitioners increasingly report that harness engineering — explicit spec files, planning loops, subagent decomposition, test gates, and fallback recovery — determines delivery quality far more than prompt phrasing alone. If your AI workflows are inconsistent, the problem is almost certainly the harness, not the prompt."
