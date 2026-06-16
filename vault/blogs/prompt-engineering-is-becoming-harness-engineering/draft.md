@@ -16,7 +16,7 @@ positions: []
 first_60_words_answer: "Prompt engineering is no longer the main lever for AI output quality in 2026. Practitioners increasingly report that harness engineering — explicit spec files, planning loops, subagent decomposition, test gates, and fallback recovery — determines delivery quality far more than prompt phrasing alone. If your AI workflows are inconsistent, the problem is almost certainly the harness, not the prompt."
 faq:
   - question: "What is harness engineering in the context of AI agents?"
-    answer: "Harness engineering refers to the system design layer that wraps AI model calls — including spec/instruction files, plan-act-observe execution loops, tool and subagent orchestration, automated test gates before merge, and fallback/recovery logic. It is the repeatable infrastructure that prevents a single model failure or prompt drift from collapsing the whole workflow. See [Anthropic's multi-agent guidance](https://docs.anthropic.com/en/docs/build-with-claude/agents) and the [OpenAI Agents SDK](https://openai.github.io/openai-agents-python/) for implementation references."
+    answer: "Harness engineering refers to the system design layer that wraps AI model calls — including spec/instruction files, plan-act-observe execution loops, tool and subagent orchestration, automated test gates before merge, and fallback/recovery logic. It is the repeatable infrastructure that prevents a single model failure or prompt drift from collapsing the whole workflow. See [Anthropic's Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) and the [OpenAI Agents SDK](https://openai.github.io/openai-agents-python/) for implementation references."
   - question: "Is prompt engineering dead in 2026?"
     answer: "Not dead — table stakes. Good prompts are still necessary, but they are the entry cost, not the differentiator. Community threads on [r/PromptEngineering](https://www.reddit.com/r/PromptEngineering/comments/1t95hyf/is_prompt_engineering_actually_dead_or_are_we/) and [r/ClaudeAI](https://np.reddit.com/r/ClaudeAI/comments/1rozbqb/are_agents_actually_useful_for_complex_tasks/) document a clear shift: practitioners who started with prompt-first approaches now report that harness design (specs, loops, gates) is what actually compounds over time. Prompt tuning is maintenance; harness design is architecture."
   - question: "What are the components of a minimal AI harness for a solo builder?"
@@ -32,6 +32,7 @@ sources:
   - https://www.reddit.com/r/LocalLLaMA/comments/1swifke/switched_from_qwen36_35ba3b_to_qwen36_27b_mid/
   - https://daringfireball.net/2026/05/ai_is_technology_not_a_product
   - https://openai.github.io/openai-agents-python/
+  - https://www.anthropic.com/research/building-effective-agents
   - https://platform.claude.com/docs/en/release-notes/overview
   - https://ai.google.dev/gemini-api/docs/changelog
 whats_new:
