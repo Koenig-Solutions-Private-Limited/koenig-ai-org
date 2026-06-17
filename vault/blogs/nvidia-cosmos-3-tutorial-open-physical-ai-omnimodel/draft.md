@@ -6,7 +6,7 @@ author: blog-author
 ticket: KOEA-8796
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 6-8
 primary_query: "how to run NVIDIA Cosmos 3 open physical AI model"
 contrarian_angle: "Cosmos 3 is not a chatbot — comparing it to GPT or Claude is a fundamental category error. The right comparison class is Stable Diffusion and robotics simulators."
@@ -27,7 +27,7 @@ seo_description: "Run NVIDIA Cosmos 3 open physical AI world model with Diffuser
 original_data: false
 last_updated: 2026-06-17
 hero_image:
-  url: /img/blogs/nvidia-cosmos-3-tutorial/hero.png
+  url: /img/blogs/nvidia-cosmos-3-tutorial-open-physical-ai-omnimodel/hero.png
   alt: "NVIDIA Cosmos 3 architecture diagram showing Reasoner and Generator towers with robot arm training output"
 sources:
   - https://nvidianews.nvidia.com/news/nvidia-launches-cosmos-3-the-open-frontier-foundation-model-for-physical-ai
@@ -53,9 +53,6 @@ learning_objectives:
 NVIDIA Cosmos 3 is an open-weight physical AI world model — not a language model — released May 31, 2026. Weights for Nano (16B) and Super (64B) are [live on HuggingFace](https://huggingface.co/collections/nvidia/cosmos3) under the OpenMDW 1.1 license. The fastest run path is the Diffusers `Cosmos3OmniPipeline`. Nano requires at least 96GB VRAM (RTX PRO 6000 class or equivalent multi-GPU); Super requires H100/H200/B200 datacenter hardware.
 
 The most important thing to understand before you install anything: **Cosmos 3 is not a chatbot.** If you are expecting a smarter GPT, you are looking at the wrong model. The right mental model is Stable Diffusion meets a robotics simulator — a system that generates physically plausible video frames and robot action trajectories, not answers to questions. Treat it like that and it is genuinely powerful. Treat it like Claude and you will be disappointed.
-
-![NVIDIA Cosmos 3 architecture showing Reasoner Tower (VLM) and Generator Tower (diffusion) working in sequence to produce robot training trajectories](https://cosmos.nvidia.com/assets/cosmos3-architecture.png)
-_Architecture overview: Reasoner Tower interprets inputs; Generator Tower produces video frames and action sequences._
 
 ## What Cosmos 3 Actually Is
 
