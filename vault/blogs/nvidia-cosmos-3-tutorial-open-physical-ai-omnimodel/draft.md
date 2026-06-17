@@ -1,10 +1,12 @@
 ---
+title: "Get Started With NVIDIA Cosmos 3: The Open Physical AI World Model (2026)"
+slug: nvidia-cosmos-3-tutorial-open-physical-ai-omnimodel
 date: 2026-06-17
 author: blog-author
 ticket: KOEA-8796
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: g0-passed
 reading_time_min: 6-8
 primary_query: "how to run NVIDIA Cosmos 3 open physical AI model"
 contrarian_angle: "Cosmos 3 is not a chatbot — comparing it to GPT or Claude is a fundamental category error. The right comparison class is Stable Diffusion and robotics simulators."
@@ -21,6 +23,7 @@ faq:
     answer: "Cosmos 3 weights are released under the OpenMDW 1.1 license — open weights, but with use restrictions on certain commercial and safety-critical applications. Review the full license at the HuggingFace model card before deploying in production or commercial contexts."
   - question: "What is the difference between Cosmos 3 Nano and Super?"
     answer: "Cosmos 3 Nano (16B parameters) targets fast inference and real-time robotics applications, running on Ampere/Hopper/Blackwell GPUs with 96GB+ VRAM. Cosmos 3 Super (64B parameters) targets highest-quality generation for synthetic data pipelines and world-model research, requiring H100/H200/B200 datacenter hardware. Both are open-weight on HuggingFace."
+seo_description: "Run NVIDIA Cosmos 3 open physical AI world model with Diffusers, vLLM-Omni, or SGLang. Nano (16B) needs 96GB VRAM; Super (64B) requires H100/B200 hardware."
 original_data: false
 last_updated: 2026-06-17
 hero_image:
