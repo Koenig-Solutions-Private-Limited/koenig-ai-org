@@ -1,21 +1,21 @@
 ---
 date: 2026-06-17
-title: "Gemini CLI Dies Tomorrow: Your Complete Migration Guide to Antigravity CLI"
+title: "Gemini CLI Dies Today: Your Complete Migration Guide to Antigravity CLI"
 description: "Gemini CLI shuts down for free, AI Pro, and AI Ultra users on June 18, 2026. Here is who must migrate, what breaks, and how to verify Antigravity CLI before the deadline."
 slug: "gemini-cli-antigravity-migration-guide"
 tags: [google, gemini-cli, antigravity-cli, migration-guide, ai-agents, 2026]
 author: chief-content
-ticket: KOEA-8852
+ticket: KOEA-8842
 vendor_tag: google
 content_type: article
-status: g0-passed
+status: g3-passed
 seo_description: "Gemini CLI shuts down June 18, 2026 for free, AI Pro, and AI Ultra users. Migrate to Antigravity CLI with this checklist for plugins, MCP, and auth."
 reading_time_min: 6
 primary_query: "gemini cli antigravity cli migration guide"
 contrarian_angle: "Antigravity CLI is the practical migration path, but not a neutral upgrade: Google is moving users from an Apache 2.0 open-source CLI into a closed multi-agent surface with different trust assumptions."
-first_60_words_answer: "Gemini CLI stops serving free, AI Pro, and AI Ultra users on June 18, 2026. If you use the consumer CLI, migrate today: install Antigravity CLI, import Gemini extensions as plugins, rename MCP url/httpUrl keys to serverUrl, verify auth, and test every plugin and MCP server before tomorrow's cutoff."
+first_60_words_answer: "Gemini CLI stops serving free, AI Pro, and AI Ultra users on June 18, 2026. If you use the consumer CLI, migrate today: install Antigravity CLI, import Gemini extensions as plugins, rename MCP url/httpUrl keys to serverUrl, verify auth, and test every plugin and MCP server before end of day today."
 original_data: false
-last_updated: 2026-06-17
+last_updated: 2026-06-18
 sources:
   - https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/
   - https://developers.googleblog.com/all-the-news-from-the-google-io-2026-developer-keynote/
@@ -35,9 +35,9 @@ faq:
     answer: "No. Gemini CLI was Apache 2.0 open source; Antigravity CLI is distributed as a closed binary product as of the cited research. That changes the trust model for teams that relied on source inspection."
 ---
 
-# Gemini CLI Dies Tomorrow: Your Complete Migration Guide to Antigravity CLI
+# Gemini CLI Dies Today: Your Complete Migration Guide to Antigravity CLI
 
-Gemini CLI stops serving most consumer users tomorrow, **June 18, 2026**. If you use Gemini CLI through the free tier, Google AI Pro, or Google AI Ultra, your migration window is no longer "soon." It is today.
+Gemini CLI stops serving most consumer users **today, June 18, 2026**. If you use Gemini CLI through the free tier, Google AI Pro, or Google AI Ultra, your migration window is no longer "soon." It is today.
 
 Google's official transition post says the replacement is Antigravity CLI, exposed as the `agy` command and tied to the broader Antigravity 2.0 agent surface ([Google Developer Blog](https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/)). The practical takeaway: move your working config now, verify your plugins and MCP servers, and do not assume your old Gemini CLI setup will keep working after the cutoff.
 
@@ -161,7 +161,7 @@ The synthesis flags this as a silent failure risk: old keys may not error; the M
 
 ### 6. Verify the Migration Before You Trust It
 
-Run this list before tomorrow:
+Run this list now, before end of day:
 
 - `agy auth login` persists across terminal restarts
 - `agy plugin list` shows expected converted plugins
@@ -183,4 +183,4 @@ There is also recent security context. The Hacker News reported in April 2026 th
 
 If you are on free, AI Pro, or AI Ultra Gemini CLI, migrate today. Install `agy`, import plugins, rename MCP `url` and `httpUrl` keys to `serverUrl`, and run real verification checks before June 18.
 
-Antigravity CLI may become the stronger long-term surface because it is built around multi-agent workflows. But the last-mile migration risk is local: broken plugins, silent MCP failures, stale auth, and a changed trust model. Handle those today, and tomorrow's Gemini CLI shutdown becomes a planned cutover instead of a surprise outage.
+Antigravity CLI may become the stronger long-term surface because it is built around multi-agent workflows. But the last-mile migration risk is local: broken plugins, silent MCP failures, stale auth, and a changed trust model. Handle those today, and today's Gemini CLI shutdown becomes a planned cutover instead of a surprise outage.
