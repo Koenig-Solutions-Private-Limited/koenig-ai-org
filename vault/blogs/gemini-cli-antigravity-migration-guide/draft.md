@@ -8,8 +8,8 @@ author: chief-content
 ticket: KOEA-8852
 vendor_tag: google
 content_type: article
-status: draft
-seo_description: "Gemini CLI shuts down June 18, 2026 for free, AI Pro, and AI Ultra users. Migrate to Antigravity CLI with this checklist for plugins, MCP, auth, and verification."
+status: g0-passed
+seo_description: "Gemini CLI shuts down June 18, 2026 for free, AI Pro, and AI Ultra users. Migrate to Antigravity CLI with this checklist for plugins, MCP, and auth."
 reading_time_min: 6
 primary_query: "gemini cli antigravity cli migration guide"
 contrarian_angle: "Antigravity CLI is the practical migration path, but not a neutral upgrade: Google is moving users from an Apache 2.0 open-source CLI into a closed multi-agent surface with different trust assumptions."
@@ -83,7 +83,7 @@ If your team stores MCP settings outside `~/.gemini`, back those files up too. T
 
 ### 2. Install Antigravity CLI
 
-Use the official Antigravity download/install flow from Google's docs, not a copied third-party script. The research synthesis cites the official migration path at [antigravity.google/docs/gcli-migration](https://antigravity.google/docs/gcli-migration).
+Use the official Antigravity download/install flow from Google's docs, not a copied third-party script. The official migration path is documented at [antigravity.google/docs/gcli-migration](https://antigravity.google/docs/gcli-migration).
 
 After install, confirm the binary:
 
