@@ -51,7 +51,20 @@ Check for:
 
 Score: 5/5 if all check. Subtract 1 per missed item. <4 → BLOCK.
 
-### 4. Structure dimension (V3-1b enforced 2026-04-30)
+### 4. Structure dimension (V3-1b enforced 2026-04-30; `seo_description` gate added 2026-05-28 — KOEA-1249)
+
+#### `seo_description` Rejection Rules (BLOCK on first failing rule; cite rule number)
+
+A description is **REJECTED** if ANY of the following are true:
+
+1. **Missing/empty** — `seo_description` frontmatter key absent or empty string.
+2. **Too short** — `length < 80` characters (hard floor regardless of content).
+3. **Too long** — `length > 160` characters.
+4. **Commit-message pattern** — matches (case-insensitive at start-of-string):
+
+   ```
+   ^\s*(rev\s*\d+:|updated?\b|fixed?\b|standardized\b|bumped\b|refactored\b|chore\b|wip\b|added?\b|removed\b|merged?\b)
+   ```
 
 Check (each item is BLOCK-level if missing):
 - [ ] H1 → H2 → H3 hierarchy clean
@@ -65,6 +78,7 @@ Check (each item is BLOCK-level if missing):
 - [ ] Reading-time pill in frontmatter
 - [ ] **Author resolves to a Person or Organization in `src/lib/authors.ts`** (NOT an agent slug like `content-author`)
 - [ ] Frontmatter complete (date, author, agent_drafted_by, vendor_tag, content_type, learning_objectives, status, sources)
+- [ ] **`seo_description` passes all Rejection Rules (present · 80–160 chars · no commit-message opener)** — BLOCK on first failing rule with the rule number cited
 
 Score: 5/5 if all. Subtract 1 per missing. <4 → BLOCK.
 

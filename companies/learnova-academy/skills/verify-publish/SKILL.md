@@ -156,6 +156,36 @@ test -n "$AUTHOR" && curl -sI "$AUTHOR" | head -1
 
 Author URL must resolve to `/authors/<slug>` returning 200 + valid `Person` or `Organization` JSON-LD. **HARD BLOCK** if author is a raw agent slug like `blog-author` or returns 404.
 
+### 11. Meta-description integrity (NEW — KOEA-1249)
+
+Fetch live HTML meta description and compare to vault `seo_description`. Apply the same Rejection Rules as G0 (`content-review` Structure dimension).
+
+```bash
+URL="https://academy.kspl.tech/blog/<slug>"
+VAULT_FILE="vault/blogs/<slug>/draft.md"
+LIVE=$(curl -s "$URL" | grep -oE '<meta name="description" content="[^"]+"' | head -1 | sed -E 's/.*content="([^"]+)".*/\1/')
+VAULT=$(grep -m1 '^seo_description:' "$VAULT_FILE" | sed 's/^seo_description:[[:space:]]*//' | sed 's/^"\(.*\)"$/\1/')
+echo "live=$LIVE"
+echo "vault=$VAULT"
+```
+
+**Rejection Rules** (BLOCK on first failing rule; cite rule number):
+
+1. **Missing/empty** — vault `seo_description` absent or empty.
+2. **Too short** — live or vault length `< 80` characters.
+3. **Too long** — live or vault length `> 160` characters.
+4. **Commit-message pattern** — matches at start-of-string (case-insensitive):
+
+   ```
+   ^\s*(rev\s*\d+:|updated?\b|fixed?\b|standardized\b|bumped\b|refactored\b|chore\b|wip\b|added?\b|removed\b|merged?\b)
+   ```
+
+Also **HARD BLOCK** if normalized live meta ≠ normalized vault `seo_description` (whitespace-trim + HTML-entity decode on both sides).
+
+On any rule failure → BLOCK to `@content-author` via `@chief-content` with rule number and offending string.
+
+**Named regression fixture (PR-time smoke):** run this check against `https://academy.kspl.tech/blog/2026-04-30-anthropic-creative-connectors`. Before backfill child tickets close, expected output is `❌ G5 BLOCK · rule 2 (length=54 < 80)`. After backfill + redeploy, expected output is `✅`.
+
 ### Decide + comment (LOCKED 2026-05-01 — STRUCTURED ONLY)
 
 **First token of comment MUST be ✅ or ❌**. No "Let me look at this…" preamble. No exploratory monologue. If you cannot produce the structured template below, return action=`silent` (do not author a comment) — it is better to wait one tick and try again than to leak a half-formed thought.
@@ -169,7 +199,7 @@ Before running ANY checks, query the issue:
   Routing → @chief-content (advance through G0/G3/G4) and/or @chief-engineering (publish-action.sh dispatch).
   ```
   Then return action=`silent` for THIS heartbeat. You have NOT failed the verification; you simply skipped a non-applicable run.
-- Only proceed to checks 1-10 if the URL is live.
+- Only proceed to checks 1-11 if the URL is live.
 
 PASS:
 ```

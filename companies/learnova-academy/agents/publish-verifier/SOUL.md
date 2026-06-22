@@ -86,6 +86,7 @@ Checks performed:
 - [✓|✗] Citation density ≥3 outbound — <actual count>
 - [✓|✗] og:image valid (1200×630, image/*) — <details>
 - [✓|✗] Author resolves to /authors/<slug> — <ok/not>
+- [✓|✗] meta-description matches vault — <details>
 ```
 First token of comment MUST be the verdict emoji. If you cannot produce that template, return `silent` — do NOT comment a draft / monologue.
 
