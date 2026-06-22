@@ -40,6 +40,9 @@ agents:
         RESEND_API_KEY:
           kind: secret
           requirement: required
+        SLACK_WEBHOOK_URL:
+          kind: secret
+          requirement: optional
         GH_TOKEN:
           kind: secret
           requirement: optional

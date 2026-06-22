@@ -3,7 +3,7 @@ schema: agentcompanies/v1
 kind: skill
 slug: g4-routing
 name: G4 — Human Approval Routing
-description: CEO routes G3-passed COURSE work to Vardaan via three channels (email magic-link + Slack/Teams button + Paperclip UI queue). Blogs NEVER hit G4 — auto-publish on G3 PASS. G4 is courses-only (policy locked 2026-05-01).
+description: CEO routes G3-passed COURSE work to Vardaan via three channels (Resend email + Slack webhook + Paperclip UI queue). Blogs NEVER hit G4 — auto-publish on G3 PASS. G4 is courses-only (policy locked 2026-05-01).
 version: 0.1.0
 license: MIT
 sources: []
@@ -32,7 +32,7 @@ If a blog ticket arrives at this skill, **return immediately with a routing erro
    - This URL works on mobile + auto-expires after 7 days
    - **Never use `localhost:3010` or `localhost:3100` — breaks on mobile**
 
-3. **Route to channels in parallel** (V3: email + Paperclip; V3.1: + Slack/Discord):
+3. **Route to channels in parallel** (Paperclip UI + Resend email + Slack):
 
    **Email** (via Resend):
    ```
@@ -52,7 +52,23 @@ If a blog ticket arrives at this skill, **return immediately with a routing erro
 
    **Paperclip UI queue** — task surfaces in `/g4-queue` with the same content; one-click approve buttons (https://paperclip.kspl.tech/g4-queue when V3-9 Cloudflare Tunnel lands; ngrok in interim)
 
-   **Slack/Discord** (V3.1) — webhook with same brief + buttons
+   **Canonical helper command** (runs Resend + Slack and returns sanitized channel statuses):
+   ```bash
+   bash scripts/g4-notify.sh \
+     --issue <KOEA-id> \
+     --approval-id <paperclip-approval-id> \
+     --title "<title>" \
+     --preview-url "<mobile-preview-url>" \
+     --vault-path "<vault/path.md>" \
+     --gates "G0,G_code,G2,G3"
+   ```
+
+   - `RESEND_API_KEY` is required for CEO delivery.
+   - `SLACK_WEBHOOK_URL` is optional. If missing, CEO must obtain Chief Engineering/operator sign-off before using:
+   ```bash
+   bash scripts/g4-notify.sh ... --allow-chat-unavailable
+   ```
+   - Teams is future/unused in this repo. Do not implement Teams routing in this skill.
 
 3. **Wait for approval** — first channel to respond wins. Other channels auto-cancel after first response.
 
@@ -69,7 +85,7 @@ If a blog ticket arrives at this skill, **return immediately with a routing erro
 ## Inputs
 
 - A G3-passed COURSE ticket WITH `high_stakes: true` in description metadata. (Blogs are forbidden inputs — they auto-publish without G4. Routine course updates are forbidden inputs — only `high_stakes: true` courses route here.)
-- Vardaan's email (`vardaan97@gmail.com`) + Slack/Discord webhook (V3.1)
+- Resend API key + optional Slack webhook URL
 - Resend API key
 - Vercel preview deploy URL (mobile-safe; auto-expires 7 days)
 
@@ -77,7 +93,7 @@ If a blog ticket arrives at this skill, **return immediately with a routing erro
 
 - 1 email sent
 - 1 Paperclip queue entry
-- (Phase 3) 1 Slack/Teams message
+- 1 Slack message when webhook is configured, otherwise explicit `intentionally_unavailable` chat status after sign-off
 - Approval state captured + downstream action triggered
 
 ## Never do
