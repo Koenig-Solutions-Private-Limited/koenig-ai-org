@@ -164,6 +164,39 @@ services:
         max-size: "20m"
         max-file: "5"
 
+  watchdog:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        USER_UID: "${USER_UID:-501}"
+        USER_GID: "${USER_GID:-20}"
+    image: koenig/paperclip-server:dev
+    container_name: koenig-watchdog
+    restart: unless-stopped
+    command:
+      [
+        "/bin/bash",
+        "/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/watchdog/start-watchdog.sh",
+      ]
+    environment:
+      PAPERCLIP_HOST: "http://paperclip:3100"
+      PAPERCLIP_API_KEY: "${PAPERCLIP_API_KEY:?PAPERCLIP_API_KEY must be set}"
+      KOENIG_COMPANY_ID: "2a77f89b-33f0-4133-a20c-77ddaac5e744"
+      WATCHDOG_INTERVAL_MS: "600000"
+    env_file:
+      - ../.env.koenig
+    volumes:
+      - /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org:/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org:rw
+    depends_on:
+      paperclip:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+
   cron-driver:
     # Pokes Chief Engineering every 5 min so the agent dispatch cascade keeps flowing.
     # Replaces the launchd plist that fails under macOS Sequoia TCC, and survives Mac reboots
