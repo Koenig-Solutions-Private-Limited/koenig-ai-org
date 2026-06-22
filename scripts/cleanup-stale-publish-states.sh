@@ -76,10 +76,88 @@ fi
 ISSUES_JSON="$(mktemp)"
 trap 'rm -f "$ISSUES_JSON"' EXIT
 
-if ! curl -sf -H "Authorization: Bearer $AUTH_TOKEN" \
-  "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues?limit=2000" \
-  -o "$ISSUES_JSON"; then
-  echo "ERROR: failed to fetch issues from Paperclip API" >&2
+fetch_all_issues() {
+  local aggregate_tmp page_tmp normalized_tmp
+  local offset=0
+  local page_size=1000
+  local page_count=0
+  local total_fetched=0
+
+  aggregate_tmp="$(mktemp)"
+  echo "[]" > "$aggregate_tmp"
+
+  while true; do
+    page_tmp="$(mktemp)"
+    normalized_tmp="$(mktemp)"
+    if ! curl -sf -H "Authorization: Bearer $AUTH_TOKEN" \
+      "$PAPERCLIP_URL/api/companies/$COMPANY_ID/issues?limit=${page_size}&offset=${offset}" \
+      -o "$page_tmp"; then
+      rm -f "$aggregate_tmp" "$page_tmp" "$normalized_tmp"
+      echo "ERROR: failed to fetch issues from Paperclip API (offset=$offset)" >&2
+      return 1
+    fi
+
+    if ! python3 - "$page_tmp" > "$normalized_tmp" 2>/dev/null <<'PY'
+import json
+import sys
+
+path = sys.argv[1]
+with open(path, "r", encoding="utf-8") as fh:
+    data = json.load(fh)
+items = data.get("items", data) if isinstance(data, dict) else data
+if not isinstance(items, list):
+    raise ValueError("issue list payload must be an array or object with items[]")
+print(json.dumps(items))
+PY
+    then
+      rm -f "$aggregate_tmp" "$page_tmp" "$normalized_tmp"
+      echo "ERROR: invalid issue response payload (offset=$offset)" >&2
+      return 1
+    fi
+
+    if ! python3 - "$aggregate_tmp" "$normalized_tmp" > "$ISSUES_JSON" 2>/dev/null <<'PY'
+import json
+import sys
+
+aggregate_path, page_path = sys.argv[1], sys.argv[2]
+with open(aggregate_path, "r", encoding="utf-8") as fh:
+    aggregate = json.load(fh)
+with open(page_path, "r", encoding="utf-8") as fh:
+    page = json.load(fh)
+if not isinstance(aggregate, list) or not isinstance(page, list):
+    raise ValueError("normalized payload is not an array")
+aggregate.extend(page)
+print(json.dumps(aggregate))
+PY
+    then
+      rm -f "$aggregate_tmp" "$page_tmp" "$normalized_tmp" "$ISSUES_JSON"
+      echo "ERROR: failed to merge issue pages (offset=$offset)" >&2
+      return 1
+    fi
+
+    mv "$ISSUES_JSON" "$aggregate_tmp"
+    page_count="$(python3 - "$normalized_tmp" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], "r", encoding="utf-8") as fh:
+    data = json.load(fh)
+print(len(data))
+PY
+)"
+    rm -f "$page_tmp" "$normalized_tmp"
+    total_fetched=$((offset + page_count))
+    if [ "$page_count" -lt "$page_size" ]; then
+      break
+    fi
+    offset=$((offset + page_size))
+  done
+
+  mv "$aggregate_tmp" "$ISSUES_JSON"
+  echo "issue-list: fetched ${total_fetched} issues (paginated, page_size=${page_size})" >&2
+}
+
+if ! fetch_all_issues; then
   exit 1
 fi
 
