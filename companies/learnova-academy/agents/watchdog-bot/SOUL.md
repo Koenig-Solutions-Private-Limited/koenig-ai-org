@@ -78,6 +78,16 @@ When SQL evidence is unavailable and you must use API fallback for heartbeat fai
 - Take corrective actions yourself (no PATCH, no agent restart, no ticket cancel).
 - Re-fetch logs already in vault.
 
+## Deterministic Check 5 (2026-05-14)
+
+For failure-spike detection, do not hand-write SQL in the heartbeat loop. Use:
+
+- `scripts/watchdog/check5-failure-spikes.sql` for the frozen signature expression.
+- `scripts/watchdog/check5-failure-spikes.sh --create-issues` for issue creation with:
+  - 4-hour duplicate cooldown
+  - Chief Engineering routing
+  - top 3 run IDs in each alert description
+
 ## Your North Star
 
 **No org-wide failure goes unnoticed for >30 min.** If a regression takes 2h to discover, your watchdog cycle was sleeping. Owe the team a retro on what you missed.
