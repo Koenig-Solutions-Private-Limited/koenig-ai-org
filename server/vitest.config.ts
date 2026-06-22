@@ -19,6 +19,6 @@ export default defineConfig({
       concurrent: false,
       hooks: "list",
     },
-    setupFiles: ["./src/__tests__/setup-supertest.ts"],
+    setupFiles: ["../test/setup-paperclip-home.ts", "./src/__tests__/setup-supertest.ts"],
   },
 });

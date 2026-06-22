@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   applyPaperclipWorkspaceEnv,
@@ -12,6 +13,15 @@ import {
 } from "./server-utils.js";
 
 function isPidAlive(pid: number) {
+  if (process.platform !== "win32") {
+    try {
+      const status = readFileSync(`/proc/${pid}/status`, "utf8");
+      const state = status.match(/^State:\s+(\S+)/m)?.[1];
+      if (state === "Z") return false;
+    } catch {
+      return false;
+    }
+  }
   try {
     process.kill(pid, 0);
     return true;
