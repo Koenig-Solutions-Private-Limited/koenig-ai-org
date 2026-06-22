@@ -36,6 +36,11 @@ PROD_URL="https://academy.kspl.tech"
 # academy.koenig-solutions.com. Domain split, 2026-06-12.
 CAREER_GH_DISPATCH_REPO="Koenig-Solutions-Private-Limited/koenig-career-academy"
 CAREER_PROD_URL="https://academy.koenig-solutions.com"
+# IndexNow (organic academy only) — key is public/non-secret, served at keyLocation.
+INDEXNOW_HOST="academy.kspl.tech"
+INDEXNOW_KEY="e295e26297adb46e2256b70ef90df085"
+INDEXNOW_KEY_LOCATION="https://academy.kspl.tech/e295e26297adb46e2256b70ef90df085.txt"
+INDEXNOW_API_URL="https://api.indexnow.org/indexnow"
 LOG_DIR="${PAPERCLIP_LOG_DIR:-${HOME}/.paperclip/logs}"
 SKIPPED_SENTINEL="$LOG_DIR/publish-action.skipped"
 mkdir -p "$LOG_DIR"
@@ -94,6 +99,193 @@ published_url_for_slug() {
 }
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG"; }
+
+indexnow_should_submit_url() {
+  local url="${1:-}"
+  [[ "$url" == "https://academy.kspl.tech" || "$url" == https://academy.kspl.tech/* ]]
+}
+
+submit_indexnow_url() {
+  local url="${1:-}"
+  local curl_bin="${INDEXNOW_CURL_BIN:-curl}"
+  local payload_file response_file http_code body_excerpt
+
+  if [[ -z "$url" ]]; then
+    log "WARN: IndexNow skip — empty URL"
+    return 0
+  fi
+  if [[ "$url" == "https://academy.koenig-solutions.com" || "$url" == https://academy.koenig-solutions.com/* ]]; then
+    log "IndexNow skip: career URL ($url) — Career Compass uses separate host/key"
+    return 0
+  fi
+  if ! indexnow_should_submit_url "$url"; then
+    log "IndexNow skip: non-organic URL ($url)"
+    return 0
+  fi
+
+  payload_file="$(mktemp)"
+  response_file="$(mktemp)"
+  INDEXNOW_URL="$url" python3 -c '
+import json, os
+print(json.dumps({
+    "host": "academy.kspl.tech",
+    "key": "e295e26297adb46e2256b70ef90df085",
+    "keyLocation": "https://academy.kspl.tech/e295e26297adb46e2256b70ef90df085.txt",
+    "urlList": [os.environ["INDEXNOW_URL"]],
+}))
+' > "$payload_file"
+
+  http_code="$("$curl_bin" -sS -o "$response_file" -w '%{http_code}' \
+    -X POST "$INDEXNOW_API_URL" \
+    -H "Content-Type: application/json" \
+    --data-binary @"$payload_file" \
+    --retry 2 --retry-delay 2 --connect-timeout 10 --max-time 30 \
+    2>/dev/null || echo "000")"
+
+  body_excerpt="$(head -c 200 "$response_file" | tr '\n' ' ')"
+  case "$http_code" in
+    200|202)
+      log "IndexNow: accepted HTTP $http_code for $url${body_excerpt:+ — $body_excerpt}"
+      ;;
+    *)
+      log "WARN: IndexNow submission failed HTTP $http_code for $url${body_excerpt:+ — $body_excerpt}"
+      ;;
+  esac
+
+  rm -f "$payload_file" "$response_file"
+  return 0
+}
+
+run_indexnow_self_test() {
+  local mock_dir payload_capture http_code_file call_count_file output
+  mock_dir="$(mktemp -d)"
+  payload_capture="${mock_dir}/payload.json"
+  http_code_file="${mock_dir}/http_code"
+  call_count_file="${mock_dir}/call_count"
+  echo "0" > "$call_count_file"
+
+  cat > "${mock_dir}/curl" <<'MOCKCURL'
+#!/usr/bin/env bash
+set -euo pipefail
+count_file="${MOCK_INDEXNOW_CALL_COUNT_FILE:?}"
+payload_file="${MOCK_INDEXNOW_PAYLOAD_FILE:?}"
+http_file="${MOCK_INDEXNOW_HTTP_CODE_FILE:?}"
+count="$(cat "$count_file")"
+echo $((count + 1)) > "$count_file"
+data=""
+out_file=""
+args=("$@")
+i=0
+while [ "$i" -lt "${#args[@]}" ]; do
+  case "${args[$i]}" in
+    -o)
+      out_file="${args[$((i + 1))]}"
+      i=$((i + 2))
+      ;;
+    -d|--data|--data-raw)
+      data="${args[$((i + 1))]}"
+      i=$((i + 2))
+      ;;
+    --data-binary)
+      arg="${args[$((i + 1))]}"
+      if [[ "$arg" == @* ]]; then
+        data="$(cat "${arg#@}")"
+      else
+        data="$arg"
+      fi
+      i=$((i + 2))
+      ;;
+    *)
+      i=$((i + 1))
+      ;;
+  esac
+done
+printf '%s' "$data" > "$payload_file"
+if [[ -n "$out_file" ]]; then
+  printf '' > "$out_file"
+fi
+cat "$http_file"
+MOCKCURL
+  chmod +x "${mock_dir}/curl"
+
+  export MOCK_INDEXNOW_PAYLOAD_FILE="$payload_capture"
+  export MOCK_INDEXNOW_HTTP_CODE_FILE="$http_code_file"
+  export MOCK_INDEXNOW_CALL_COUNT_FILE="$call_count_file"
+  export INDEXNOW_CURL_BIN="${mock_dir}/curl"
+
+  assert_payload() {
+    local expected_url="$1"
+    python3 - "$payload_capture" "$expected_url" <<'PY'
+import json, sys
+with open(sys.argv[1], "r", encoding="utf-8") as fh:
+    payload = json.load(fh)
+expected_url = sys.argv[2]
+required = {
+    "host": "academy.kspl.tech",
+    "key": "e295e26297adb46e2256b70ef90df085",
+    "keyLocation": "https://academy.kspl.tech/e295e26297adb46e2256b70ef90df085.txt",
+}
+for key, value in required.items():
+    if payload.get(key) != value:
+        raise SystemExit(f"payload mismatch for {key}: {payload.get(key)!r}")
+url_list = payload.get("urlList")
+if not isinstance(url_list, list) or len(url_list) != 1 or url_list[0] != expected_url:
+    raise SystemExit(f"unexpected urlList: {url_list!r}")
+PY
+  }
+
+  echo "200" > "$http_code_file"
+  : > "$payload_capture"
+  echo "0" > "$call_count_file"
+  output="$(submit_indexnow_url "https://academy.kspl.tech/blog/self-test-slug" 2>&1)"
+  [[ "$output" == *"IndexNow: accepted HTTP 200"* ]] || {
+    echo "indexnow self-test failed: expected HTTP 200 acceptance" >&2
+    echo "$output" >&2
+    return 1
+  }
+  assert_payload "https://academy.kspl.tech/blog/self-test-slug"
+
+  echo "202" > "$http_code_file"
+  : > "$payload_capture"
+  echo "0" > "$call_count_file"
+  output="$(submit_indexnow_url "https://academy.kspl.tech/blog/self-test-slug" 2>&1)"
+  [[ "$output" == *"IndexNow: accepted HTTP 202"* ]] || {
+    echo "indexnow self-test failed: expected HTTP 202 acceptance" >&2
+    echo "$output" >&2
+    return 1
+  }
+
+  echo "400" > "$http_code_file"
+  : > "$payload_capture"
+  echo "0" > "$call_count_file"
+  output="$(submit_indexnow_url "https://academy.kspl.tech/blog/self-test-slug" 2>&1)"
+  [[ "$output" == *"WARN: IndexNow submission failed HTTP 400"* ]] || {
+    echo "indexnow self-test failed: expected HTTP 400 warning" >&2
+    echo "$output" >&2
+    return 1
+  }
+
+  echo "0" > "$call_count_file"
+  output="$(submit_indexnow_url "https://academy.koenig-solutions.com/blog/career-slug" 2>&1)"
+  [[ "$(cat "$call_count_file")" == "0" ]] || {
+    echo "indexnow self-test failed: career URL should not call IndexNow" >&2
+    return 1
+  }
+  [[ "$output" == *"IndexNow skip: career URL"* ]] || {
+    echo "indexnow self-test failed: expected career URL skip log" >&2
+    echo "$output" >&2
+    return 1
+  }
+
+  rm -rf "$mock_dir"
+  echo "indexnow self-test ok"
+  return 0
+}
+
+if [[ "${1:-}" == "--self-test-indexnow" ]]; then
+  run_indexnow_self_test
+  exit $?
+fi
 
 mark_dispatch_skipped() {
   local phase="$1"
@@ -710,6 +902,7 @@ else:
           -H "Content-Type: application/json" \
           -d "$(python3 -c "import json; print(json.dumps({'metadata':{'publish_state':'published','published_url':'$PUBLISHED_URL','published_at':'$(date -u +%Y-%m-%dT%H:%M:%SZ)'}}))")" \
           -o /dev/null
+        submit_indexnow_url "$PUBLISHED_URL"
         if [[ -n "$PV_AGENT_ID" ]]; then
           log "Phase 2: triggering publish-verifier (G5) for $ISSUE_ID"
           curl -sX POST "$PAPERCLIP_URL/api/agents/$PV_AGENT_ID/heartbeat/invoke" \

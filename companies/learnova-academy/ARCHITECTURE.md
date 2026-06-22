@@ -479,6 +479,8 @@ flip_to: blog-author (rework)
 
 **Trigger:** every 15 min during work hours UTC (`*/15 0-13 * * *`). Polls recently-published artifacts (last 24h) plus a sample of older content.
 
+**Upstream:** `publish-action.sh` Phase 2 sends a best-effort IndexNow POST for organic `academy.kspl.tech` URLs immediately after `publish_state=published` is patched (logged in `~/.paperclip/logs/publish-action.log`; key is public/non-secret). Career Compass URLs skip IndexNow.
+
 **Checks:**
 - Live HTML fetch from `academy.kspl.tech` returns 200.
 - schema.org JSON-LD parses and validates against `Course` / `FAQPage` / `HowTo` / `VideoObject` shapes.
