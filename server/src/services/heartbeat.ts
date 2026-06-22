@@ -9,6 +9,7 @@ import {
   AGENT_DEFAULT_MAX_CONCURRENT_RUNS,
   ISSUE_CONTINUATION_SUMMARY_DOCUMENT_KEY,
   isEnvironmentDriverSupportedForAdapter,
+  type HeartbeatRunStatus,
   type BillingType,
   type EnvironmentLeaseStatus,
   type ExecutionWorkspace,
@@ -640,6 +641,8 @@ const heartbeatRunListColumns = {
   nextAction: heartbeatRuns.nextAction,
   createdAt: heartbeatRuns.createdAt,
   updatedAt: heartbeatRuns.updatedAt,
+  agentName: agents.name,
+  adapterType: agents.adapterType,
 } as const;
 
 const heartbeatRunListContextColumns = {
@@ -7373,8 +7376,15 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
   }
 
   return {
-    list: async (companyId: string, agentId?: string, limit?: number) => {
+    list: async (companyId: string, agentId?: string, limit?: number, status?: HeartbeatRunStatus) => {
       const safeForLegacyEncoding = await hasUnsafeTextProjectionDatabase();
+      const conditions = [eq(heartbeatRuns.companyId, companyId)];
+      if (agentId) {
+        conditions.push(eq(heartbeatRuns.agentId, agentId));
+      }
+      if (status) {
+        conditions.push(eq(heartbeatRuns.status, status));
+      }
       const query = db
         .select(
           safeForLegacyEncoding
@@ -7390,11 +7400,8 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
               },
         )
         .from(heartbeatRuns)
-        .where(
-          agentId
-            ? and(eq(heartbeatRuns.companyId, companyId), eq(heartbeatRuns.agentId, agentId))
-            : eq(heartbeatRuns.companyId, companyId),
-        )
+        .leftJoin(agents, eq(heartbeatRuns.agentId, agents.id))
+        .where(and(...conditions))
         .orderBy(desc(heartbeatRuns.createdAt));
 
       const rows = limit ? await query.limit(limit) : await query;
