@@ -15,10 +15,11 @@
  * Idempotent: re-running overwrites R2 objects + sidecar.
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { execSync } from "node:child_process";
 
 const require = createRequire(
   "/Users/vardaankoenig/Documents/Paperclip/learnovaBeast/learnova-academy/package.json",
@@ -47,6 +48,135 @@ function loadEnv() {
     if (m) env[m[1]] = m[2].replace(/^["']|["']$/g, "").trim();
   }
   return env;
+}
+
+function hasCli(name) {
+  try {
+    execSync(`command -v ${name}`, { stdio: "pipe" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function readPngDimensions(path) {
+  const buf = readFileSync(path);
+  if (buf.length < 24 || buf.toString("ascii", 1, 4) !== "PNG") {
+    return { width: 1600, height: 900 };
+  }
+  return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+}
+
+function chapterH2Headings(courseSlug, chapterId) {
+  const mdPath = join(ROOT, "vault", "courses", courseSlug, `${chapterId}.md`);
+  if (!existsSync(mdPath)) return [];
+  const raw = readFileSync(mdPath, "utf8");
+  const body = raw.replace(/^---[\s\S]*?---\n?/, "");
+  return [...body.matchAll(/^##\s+(.+)$/gm)].map((m) => m[1].trim());
+}
+
+function mapSlideCaptions(pageCount, h2Headings) {
+  if (!pageCount || pageCount < 1) return [];
+  if (!h2Headings.length) {
+    return Array.from({ length: pageCount }, (_, i) => {
+      const label = `Slide ${i + 1}`;
+      return { caption: label, section_heading: label };
+    });
+  }
+  return Array.from({ length: pageCount }, (_, i) => {
+    const page = i + 1;
+    const idx = Math.min(
+      Math.floor((page - 1) * h2Headings.length / pageCount),
+      h2Headings.length - 1,
+    );
+    const heading = h2Headings[idx];
+    return { caption: heading, section_heading: heading };
+  });
+}
+
+function failSlideExtraction(message) {
+  console.error(`slide PNG extraction failed: ${message}`);
+  console.error("install poppler-utils (pdfinfo + pdftoppm) before uploading chapters with slide-deck.pdf");
+  process.exit(1);
+}
+
+async function extractAndUploadSlides(pdfPath, courseSlug, chapterId, prefix, publicBase) {
+  if (!hasCli("pdfinfo") || !hasCli("pdftoppm")) {
+    failSlideExtraction("pdftoppm/pdfinfo missing");
+  }
+
+  let pageCount = 0;
+  try {
+    const info = execSync(`pdfinfo "${pdfPath}"`, { encoding: "utf8" });
+    const m = info.match(/^Pages:\s+(\d+)/m);
+    pageCount = m ? Number(m[1]) : 0;
+  } catch (err) {
+    failSlideExtraction(`pdfinfo failed: ${err.message}`);
+  }
+  if (!pageCount) failSlideExtraction("pdfinfo reported zero pages");
+
+  const workDir = join(dirname(pdfPath), "slides");
+  mkdirSync(workDir, { recursive: true });
+  const ppmPrefix = join(workDir, "slide");
+  try {
+    execSync(`pdftoppm -png -r 150 "${pdfPath}" "${ppmPrefix}"`, { stdio: "pipe" });
+  } catch (err) {
+    failSlideExtraction(`pdftoppm failed: ${err.message}`);
+  }
+
+  const generated = readdirSync(workDir)
+    .filter((f) => f.endsWith(".png"))
+    .sort((a, b) => {
+      const na = Number(a.match(/-(\d+)\.png$/)?.[1] ?? 0);
+      const nb = Number(b.match(/-(\d+)\.png$/)?.[1] ?? 0);
+      return na - nb;
+    });
+
+  const captions = mapSlideCaptions(generated.length || pageCount, chapterH2Headings(courseSlug, chapterId));
+  const slides = [];
+  let totalBytes = 0;
+
+  for (let i = 0; i < generated.length; i++) {
+    const page = i + 1;
+    const fileName = `slide-${String(page).padStart(2, "0")}.png`;
+    const localPath = join(workDir, generated[i]);
+    const body = readFileSync(localPath);
+    const key = `${prefix}/slides/${fileName}`;
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: env.CLOUDFLARE_R2_BUCKET,
+        Key: key,
+        Body: body,
+        ContentType: "image/png",
+      }),
+    );
+    const { width, height } = readPngDimensions(localPath);
+    const map = captions[i] ?? { caption: `Slide ${page}`, section_heading: `Slide ${page}` };
+    slides.push({
+      page,
+      image_url: `${publicBase}/${key}`,
+      caption: map.caption,
+      section_heading: map.section_heading,
+      width,
+      height,
+    });
+    totalBytes += body.length;
+    console.log(`uploaded ${fileName} (${(body.length / 1024).toFixed(0)} KB) -> ${slides.at(-1).image_url}`);
+  }
+
+  if (!slides.length) {
+    failSlideExtraction("pdftoppm produced no PNG files");
+  }
+
+  return {
+    slides,
+    slideImagesMeta: {
+      page_count: slides.length,
+      size_bytes: totalBytes,
+      format: "png",
+      produced_via: "pdftoppm via upload-chapter-assets.mjs",
+    },
+  };
 }
 
 const ARTIFACTS = [
@@ -107,6 +237,22 @@ if (Object.keys(assets).length === 0) {
   process.exit(1);
 }
 
+let slideManifest = { slides: [], slideImagesMeta: null };
+const slideDeckPath = join(args.dir, "slide-deck.pdf");
+const hasSlideDeck = existsSync(slideDeckPath) && statSync(slideDeckPath).size > 0;
+if (hasSlideDeck) {
+  slideManifest = await extractAndUploadSlides(
+    slideDeckPath,
+    args.course,
+    args.chapter,
+    prefix,
+    publicBase,
+  );
+  if (!slideManifest.slides.length) {
+    failSlideExtraction("slide-deck.pdf present but no slides were extracted");
+  }
+}
+
 const sidecarDir = join(ROOT, "vault", "courses", args.course, args.chapter);
 mkdirSync(sidecarDir, { recursive: true });
 const sidecarPath = join(sidecarDir, "chapter-meta.json");
@@ -127,7 +273,16 @@ const sidecar = {
   ...(args.notebook ? { notebook_id: args.notebook } : {}),
   source_file: `vault/courses/${args.course}/${args.chapter}.md`,
   assets: { ...(existing.assets ?? {}), ...assets },
-  asset_metadata: { ...(existing.asset_metadata ?? {}), ...meta },
+  asset_metadata: {
+    ...(existing.asset_metadata ?? {}),
+    ...meta,
+    ...(slideManifest.slideImagesMeta ? { slide_images: slideManifest.slideImagesMeta } : {}),
+  },
+  ...(slideManifest.slides.length
+    ? { slides: slideManifest.slides }
+    : existing.slides
+      ? { slides: existing.slides }
+      : {}),
   verification: { publish_state: "ready", r2_urls_status_200: "verified at upload" },
 };
 writeFileSync(sidecarPath, JSON.stringify(sidecar, null, 2) + "\n");
