@@ -103,8 +103,16 @@ gh auth login
 # 7. Install launchd agents (24/7 ops)
 ./scripts/load-launchd-agents.sh
 
-# 8. Boot open-notebook (audio fallback)
+# 8. Boot open-notebook (Tier-2 audio fallback)
 docker compose -f observability/open-notebook/docker-compose.yml up -d
+curl -fsS http://127.0.0.1:5055/health   # expect HTTP 200
+
+# Tier-3 fallback (when open-notebook is down): OpenAI TTS script
+# Requires OPENAI_API_KEY in .env.koenig (see .env.koenig.example)
+python3 scripts/generate_course_audio.py \
+  vault/courses/<slug>/<chapter>.md \
+  vault/courses/<slug>/<chapter>-assets \
+  --output-name audio.mp3
 
 # 9. Trigger a manual research cycle to verify
 curl -X POST http://localhost:3100/api/agents/<researcher-anthropic-id>/heartbeat/invoke
