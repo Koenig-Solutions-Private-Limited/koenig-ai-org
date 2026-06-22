@@ -42,17 +42,26 @@ pnpm lint
 
 Expected: all green. Any failure → BLOCK.
 
-### 3. Browser walkthrough (if frontend)
+### 3. Browser-use preflight (if frontend)
 
-Write a Playwright script `/tmp/qa-walk.cjs` that walks through the verification checks listed in the plan's "Verification" section (see `qa-playwright-walkthrough` skill for the template).
+Before the walkthrough, confirm `browser-use` is available in the QA runtime (required gate; Playwright is not an acceptable substitute for G2):
 
 ```bash
-node /tmp/qa-walk.cjs
+export PATH=/paperclip/.local/bin:$PATH
+browser-use --help
 ```
 
-Each verification check must pass. Any failure → BLOCK with the specific check that failed.
+Must print usage text. Failure → BLOCK as runtime/env, escalate to Chief Engineering.
 
-### 4. Adjacent regression check
+### 4. Browser walkthrough (if frontend)
+
+Run `browser-use` against the local dev server for the verification checks listed in the plan's "Verification" section. Each check must pass. Any failure → BLOCK with the specific check that failed.
+
+### 4b. Course route contract
+
+`/learn/<slug>` route checks require `vault/courses/<slug>/outline.md` in the vault. If the slug appears in issue metadata but `outline.md` is absent, record **route expectation aligned / out-of-scope** on the ticket (e.g. `secure-coding` has no outline — do not BLOCK on `/learn/secure-coding` 404). Walk published slugs that have outlines when verifying deploy paths.
+
+### 5. Adjacent regression check
 
 Smoke-test untouched features:
 - Home page loads
@@ -61,7 +70,7 @@ Smoke-test untouched features:
 
 Any regression → BLOCK.
 
-### 5. Lighthouse (frontend only)
+### 6. Lighthouse (frontend only)
 
 ```bash
 lighthouse http://localhost:3010<changed-page> \
@@ -80,7 +89,7 @@ Targets:
 
 Regression >5% on any → BLOCK.
 
-### 6. Content fact-check (content tickets only)
+### 7. Content fact-check (content tickets only)
 
 Pick 3 random factual claims from the markdown. For each:
 1. Find the cited URL
@@ -89,7 +98,7 @@ Pick 3 random factual claims from the markdown. For each:
 
 Any failure → BLOCK.
 
-### 7. Decide + comment
+### 8. Decide + comment
 
 **PASS:**
 
@@ -122,7 +131,7 @@ PERFORMANCE
 → @executor: revise + re-route through @code-reviewer
 ```
 
-### 8. Flip Paperclip ticket status
+### 9. Flip Paperclip ticket status
 
 - PASS → `awaiting-g3` → @ceo
 - BLOCK → `awaiting-execution-fix` → @executor

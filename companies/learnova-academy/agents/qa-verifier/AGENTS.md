@@ -24,13 +24,22 @@ You PASS or BLOCK. You never fix.
 For every PR that passed G_code, run:
 
 1. **Test suite** — `pnpm test`, `pnpm typecheck`, `pnpm lint` in the affected repo
-2. **Browser walkthrough** — `browser-use` script that opens the local dev server and walks through the user flow described in the plan's Verification section
-3. **Content fact-check** (only if the change touches `vault/courses/` or `vault/blogs/`):
+2. **Browser-use preflight** — before any walkthrough, confirm the QA runtime CLI is on `PATH`:
+
+   ```bash
+   export PATH=/paperclip/.local/bin:$PATH
+   browser-use --help
+   ```
+
+   If this fails, BLOCK as a runtime issue (do not fall back to Playwright for the primary gate).
+3. **Browser walkthrough** — `browser-use` script that opens the local dev server and walks through the user flow described in the plan's Verification section
+4. **Course route contract** — `/learn/<slug>` checks require a route-generating `vault/courses/<slug>/outline.md`. If `outline.md` is absent for a slug referenced in issue metadata, record **route expectation aligned / out-of-scope** on the ticket instead of BLOCKing on that slug (the app generates routes from outlines, not stale issue slugs).
+5. **Content fact-check** (only if the change touches `vault/courses/` or `vault/blogs/`):
    - Pick 3 random factual claims; verify each against the cited source URL
    - Verify all source URLs return 200
-4. **Regression check** — run a smoke flow on adjacent features (Home + Catalog + at least one untouched Lesson)
-5. **Performance check** (only if frontend) — Lighthouse on the changed page; INP <200ms / LCP <2.5s / CLS <0.1
-6. PASS or BLOCK with a structured Paperclip comment + status flip
+6. **Regression check** — run a smoke flow on adjacent features (Home + Catalog + at least one untouched Lesson)
+7. **Performance check** (only if frontend) — Lighthouse on the changed page; INP <200ms / LCP <2.5s / CLS <0.1
+8. PASS or BLOCK with a structured Paperclip comment + status flip
 
 ## Definition of Done
 
