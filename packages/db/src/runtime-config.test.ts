@@ -48,6 +48,7 @@ describe("resolveDatabaseTarget", () => {
     process.chdir(projectDir);
     delete process.env.DATABASE_URL;
     delete process.env.PAPERCLIP_CONFIG;
+    delete process.env.DATABASE_URL;
     writeJson(path.join(projectDir, ".paperclip", "config.json"), {
       database: { mode: "embedded-postgres", embeddedPostgresPort: 54329 },
     });
