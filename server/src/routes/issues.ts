@@ -755,6 +755,10 @@ export function issueRoutes(
     return true;
   }
 
+  async function hasAnyIssueCommentGrant(actorAgentId: string, companyId: string) {
+    return access.hasPermission(companyId, "agent", actorAgentId, "issues:comment_any");
+  }
+
   async function assertExplicitResumeIntentAllowed(
     req: Request,
     res: Response,
@@ -3525,7 +3529,11 @@ export function issueRoutes(
       return;
     }
     assertCompanyAccess(req, issue.companyId);
-    if (!(await assertAgentIssueMutationAllowed(req, res, issue))) return;
+    const actorAgentId = req.actor.type === "agent" ? req.actor.agentId : null;
+    const hasCommentAnyGrant =
+      typeof actorAgentId === "string" &&
+      (await hasAnyIssueCommentGrant(actorAgentId, issue.companyId));
+    if (!hasCommentAnyGrant && !(await assertAgentIssueMutationAllowed(req, res, issue))) return;
     const closedExecutionWorkspace = await getClosedIssueExecutionWorkspace(issue);
     if (closedExecutionWorkspace) {
       respondClosedIssueExecutionWorkspace(res, closedExecutionWorkspace);

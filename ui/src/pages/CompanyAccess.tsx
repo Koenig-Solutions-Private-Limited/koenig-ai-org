@@ -34,6 +34,7 @@ const permissionLabels: Record<PermissionKey, string> = {
   "tasks:assign": "Assign tasks",
   "tasks:assign_scope": "Assign scoped tasks",
   "tasks:manage_active_checkouts": "Manage active task checkouts",
+  "issues:comment_any": "Comment on any company issue",
   "joins:approve": "Approve join requests",
   "environments:manage": "Manage environments",
 };
