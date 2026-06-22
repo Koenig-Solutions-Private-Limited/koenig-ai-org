@@ -70,7 +70,7 @@ Every piece of content flows through:
 | **G_code** | code-reviewer | (Engineering only) plan adherence + bugs + tests | Executor or Planner |
 | **G2** | qa-verifier | Tests pass + browser walkthrough + content fact-check | Executor (via Code Reviewer) |
 | **G3** | ceo | Strategic alignment + budget + scope creep check | Relevant chief |
-| **G4** | **Vardaan (human)** | Final approval via email magic-link OR Slack/Teams OR Paperclip UI queue | Author |
+| **G4** | **Vardaan (human)** | Final approval via Paperclip UI queue + Resend email + optional Slack webhook (Teams is future/unused) | Author |
 | **G5** | publish-verifier | Post-publish live-site validation | chief-engineering / chief-content / etc. per issue type |
 
 ## 5-minute onboarding (fresh Mac)
@@ -90,7 +90,10 @@ cd ~/Documents/Paperclip/koenig-ai-org && pnpm dev   # http://localhost:3100
 # 4. Configure secrets (one-time)
 cp .env.koenig.example .env.koenig
 # Edit .env.koenig with: TAVILY_API_KEY, XAI_API_KEY, RESEND_API_KEY, GH_TOKEN, VERCEL_TOKEN, GOOGLE_SITE_VERIFICATION
+# Optional for G4 chat notifications: SLACK_WEBHOOK_URL (canonical). TEAMS_WEBHOOK_URL stays future/unused.
 ./scripts/sync-secrets.sh
+# Explicit company sync target (same command path, with id override):
+KOENIG_COMPANY_ID=2a77f89b-33f0-4133-a20c-77ddaac5e744 ./scripts/sync-secrets.sh
 
 # 5. Import the company
 pnpm paperclipai company import companies/learnova-academy --yes
@@ -208,7 +211,7 @@ All agent narrative output lands in `vault/`. The `vault-historian` agent mainta
 5. **Obsidian is the knowledge interface.** All agent narrative output → `vault/` as markdown with frontmatter + tags + wikilinks.
 6. **Two-agent content chain.** Author → Reviewer → G3 → G4 → publish. Never single-agent publish.
 7. **Anonymous-by-default for the Academy.** Optional Convex email-OTP only.
-8. **G4 = three approval channels.** Email magic-link + Slack/Teams + Paperclip UI queue.
+8. **G4 = supported routes in this runtime.** Paperclip UI queue + Resend email + optional Slack webhook. Teams is future/unused.
 
 ## What lives where vs upstream
 

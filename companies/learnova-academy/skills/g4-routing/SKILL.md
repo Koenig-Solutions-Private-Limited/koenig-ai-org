@@ -3,7 +3,7 @@ schema: agentcompanies/v1
 kind: skill
 slug: g4-routing
 name: G4 — Human Approval Routing
-description: CEO routes G3-passed COURSE work to Vardaan via three channels (email magic-link + Slack/Teams button + Paperclip UI queue). Blogs NEVER hit G4 — auto-publish on G3 PASS. G4 is courses-only (policy locked 2026-05-01).
+description: CEO routes G3-passed COURSE work to Vardaan via Paperclip UI queue, Resend email, and optional Slack webhook. Blogs NEVER hit G4 — auto-publish on G3 PASS. G4 is courses-only (policy locked 2026-05-01).
 version: 0.1.0
 license: MIT
 sources: []
@@ -32,7 +32,21 @@ If a blog ticket arrives at this skill, **return immediately with a routing erro
    - This URL works on mobile + auto-expires after 7 days
    - **Never use `localhost:3010` or `localhost:3100` — breaks on mobile**
 
-3. **Route to channels in parallel** (V3: email + Paperclip; V3.1: + Slack/Discord):
+3. **Route notifications using the helper** (Paperclip UI + Resend + optional Slack):
+
+   ```bash
+   bash scripts/g4-notify.sh \
+     --issue "$ISSUE_ID" \
+     --approval-id "$APPROVAL_ID" \
+     --title "$TITLE" \
+     --preview-url "$PREVIEW_URL" \
+     --vault-path "$VAULT_PATH" \
+     --gates "$GATES" \
+     --validate-resend \
+     --allow-chat-unavailable
+   ```
+
+   The helper is notification-only and must not publish, mutate approval state, or print secret values.
 
    **Email** (via Resend):
    ```
@@ -52,16 +66,20 @@ If a blog ticket arrives at this skill, **return immediately with a routing erro
 
    **Paperclip UI queue** — task surfaces in `/g4-queue` with the same content; one-click approve buttons (https://paperclip.kspl.tech/g4-queue when V3-9 Cloudflare Tunnel lands; ngrok in interim)
 
-   **Slack/Discord** (V3.1) — webhook with same brief + buttons
+   **Slack webhook** (optional) — send same brief when `SLACK_WEBHOOK_URL` is configured.
 
-3. **Wait for approval** — first channel to respond wins. Other channels auto-cancel after first response.
+   **Teams webhook** — future/unused in this runtime. Do not treat Teams as an active route.
 
-4. **On APPROVE**:
+4. **Write sanitized status comment** — after each routing attempt, comment per-channel status back to the driving issue and the target G4 issue. Include route availability (`resendEmail`, `slack`, `teams`) without recipient addresses, webhook URLs, bearer tokens, approval links, or message body.
+
+5. **Wait for approval** — first channel to respond wins. Other channels auto-cancel after first response.
+
+6. **On APPROVE**:
    - Trigger publish action (course → Convex agentApi `submit-for-approval` then publish; blog → same; code → merge PR)
    - PATCH `metadata.publish_state="g4-approved"` (status stays `done`; publish-action cron detects this and deploys). (**Do NOT set status to "published" — invalid enum; returns 400.**)
    - Append to today's EOD digest
 
-5. **On REJECT**:
+7. **On REJECT**:
    - Capture Vardaan's reject comment (required field)
    - Route back to the appropriate chief based on the reject reason
    - Set status to `in_progress` + `metadata.publish_state="rejected"` (**"awaiting-revision" is not a valid enum value**)
@@ -69,7 +87,7 @@ If a blog ticket arrives at this skill, **return immediately with a routing erro
 ## Inputs
 
 - A G3-passed COURSE ticket WITH `high_stakes: true` in description metadata. (Blogs are forbidden inputs — they auto-publish without G4. Routine course updates are forbidden inputs — only `high_stakes: true` courses route here.)
-- Vardaan's email (`vardaan97@gmail.com`) + Slack/Discord webhook (V3.1)
+- Vardaan's email + optional Slack webhook
 - Resend API key
 - Vercel preview deploy URL (mobile-safe; auto-expires 7 days)
 
@@ -77,14 +95,14 @@ If a blog ticket arrives at this skill, **return immediately with a routing erro
 
 - 1 email sent
 - 1 Paperclip queue entry
-- (Phase 3) 1 Slack/Teams message
+- (optional) 1 Slack webhook message
 - Approval state captured + downstream action triggered
 
 ## Never do
 
 - Never auto-approve. Ever. G4 is the human gate — that is the whole point.
 - Never lose the reject comment — it's the corrective signal
-- Never publish before all 3 channels are dispatched (ensures redundancy)
+- Never publish from `g4-notify.sh`; publishing remains a separate approved action
 - Never publish after a reject (even a stale approve from a different channel)
 - Never include sensitive secrets/PII in the email
 

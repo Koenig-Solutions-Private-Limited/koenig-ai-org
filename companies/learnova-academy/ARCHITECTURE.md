@@ -56,7 +56,7 @@ The Academy is a **hybrid hub-and-spoke + per-stream pipeline** organization. CE
                                   │
                                   ▼
                            G4 — Vardaan
-                  (email · Slack/Teams · Paperclip UI)
+            (Paperclip UI · Resend email · optional Slack webhook)
                                   │
                                   ▼
                        publish to academy.kspl.tech
@@ -109,7 +109,7 @@ Reporting cadence:
 |---|---|---|
 | Worker → Chief | Every heartbeat (per-ticket) | Paperclip task comment + status flip |
 | Chief → CEO | EOD digest + ad-hoc escalations | Paperclip task tag |
-| CEO → Vardaan | EOD digest (email via Resend) + G4 approvals | Email + Slack/Teams + Paperclip UI |
+| CEO → Vardaan | EOD digest (email via Resend) + G4 approvals | Paperclip UI + Resend email + optional Slack webhook (Teams future/unused) |
 | Specialist → CEO | publish-verifier reports PASS in EOD digest, BLOCK same-heartbeat. vault-historian feeds weekly retro. | Paperclip task tag |
 | Manager → Worker (retro) | After every completed task | 3-line after-action review at `vault/retrospectives/<agent-slug>/<date>-<task-id>.md` |
 | Chief → CEO (weekly) | Mon 09:00 IST | 1-page weekly summary in `vault/retrospectives/_weekly/<week>.md` |
@@ -351,6 +351,8 @@ Per `.paperclip.yaml` `inputs.env:` blocks, plus Paperclip's encrypted secrets s
 | `XAI_API_KEY` | `researcher-community` (req); other researchers (opt) | Grok `x_search` for X/Twitter signal — community researcher uses heavily | Paperclip Secrets store |
 | `TAVILY_API_KEY` | All 4 researchers (req); blog-author (opt) | Free-tier web search | Paperclip Secrets store |
 | `RESEND_API_KEY` | `ceo` (req for EOD digest + G4 magic-link emails) | Email delivery | Paperclip Secrets store |
+| `SLACK_WEBHOOK_URL` | `ceo` (opt for G4 chat signal) | Optional chat notification route for G4 | Paperclip Secrets store |
+| `TEAMS_WEBHOOK_URL` | none (future/unused) | Reserved for future Teams integration; not an active route | leave unset |
 | `GH_TOKEN` | `chief-engineering` (req), `planner` (req), `executor` (req), `code-reviewer` (req); `ceo` (opt) | PR creation + review on `learnovaBeast` | Paperclip Secrets store |
 | `ACADEMY_AGENT_API_KEY` | `blog-author` (req), `course-author` (req — once Phase 1.4 lands) | Bearer token for Convex `agentApi.ts` HTTP action | Paperclip Secrets store + `learnovaBeast/.env` (must match) |
 | `CLOUDFLARE_R2_ACCESS_KEY_ID`, `CLOUDFLARE_R2_SECRET_ACCESS_KEY`, `CLOUDFLARE_R2_BUCKET`, `CLOUDFLARE_R2_ENDPOINT` | `slide-audio-producer`, `voice-producer` (Phase 1.4) | Media uploads (slides, audio) | Paperclip Secrets store |
@@ -458,16 +460,17 @@ flip_to: blog-author (rework)
 - Budget vs allotted (per-task cap not breached more than once).
 - Summary suitable for G4 email.
 
-**State flip:** PASS → queue for G4 (email + Slack/Teams + UI surfaces); BLOCK → back to chief or kill ticket.
+**State flip:** PASS → queue for G4 (Paperclip UI + Resend email + optional Slack signal); BLOCK → back to chief or kill ticket.
 
 ### G4 — Human approval
 
 **Owner:** Vardaan (the only human gate).
 
-**Three approval channels (all surfaced):**
+**Supported channels in this runtime:**
 1. **Email magic-link** via Resend — Vardaan clicks one URL, ticket flips to APPROVED.
-2. **Slack/Teams button** — same effect via webhook.
-3. **Paperclip UI queue** at http://localhost:3100 — for backlog review.
+2. **Slack webhook** (optional) — notification brief if `SLACK_WEBHOOK_URL` is configured.
+3. **Paperclip UI queue** at http://localhost:3100 — source-of-truth queue for backlog review.
+4. **Teams webhook** — future/unused; do not rely on it as an active route.
 
 **SLA target:** <24h backlog (per `COMPANY.md` goals).
 
