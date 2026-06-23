@@ -9,7 +9,7 @@ delta_tickets:
   - KOEA-9101
 vendor_tag: community
 content_type: article
-status: g3-ready
+status: g3-passed
 reading_time_min: 7
 seo_title: "Gemma 4 vs Llama 4 vs Qwen3: Best Open-Weights LLM 2026"
 seo_description: "Gemma 4 wins edge and single-GPU, Llama 4 Scout wins long-context RAG, Qwen3 wins cloud-batch. Pick the best open-weights LLM by deployment shape, not benchmarks."
