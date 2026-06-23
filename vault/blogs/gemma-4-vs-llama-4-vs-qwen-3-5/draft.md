@@ -1,17 +1,18 @@
 ---
 date: 2026-04-30
-last_updated: 2026-06-14
+last_updated: 2026-06-23
 author: blog-author
 ticket: KOE-29
 delta_tickets:
   - KOEA-345
   - KOEA-8300
+  - KOEA-9101
 vendor_tag: community
 content_type: article
 status: g3-ready
-reading_time_min: 6
-seo_title: "Gemma 4 vs Llama 4 vs Qwen3: Which Open-Weights LLM to Deploy in 2026"
-seo_description: "Choose between Gemma 4, Llama 4, and Qwen3 by deployment shape: edge/offline inference, single-GPU long context, or cloud-batch MoE economics."
+reading_time_min: 7
+seo_title: "Gemma 4 vs Llama 4 vs Qwen3: Best Open-Weights LLM 2026"
+seo_description: "Gemma 4 wins edge and single-GPU, Llama 4 Scout wins long-context RAG, Qwen3 wins cloud-batch. Pick the best open-weights LLM by deployment shape, not benchmarks."
 primary_query: "gemma 4 vs llama 4 vs qwen3 best open weights llm 2026"
 contrarian_angle: "Benchmark leaderboards are the wrong lens — deployment shape (edge, single-GPU, cloud-batch) determines the winner before you read a single accuracy number"
 first_60_words_answer: "Choose your open-weights LLM by deployment shape: Gemma 4 (26B/31B, 256K context, Apache 2.0) leads on edge and single-GPU; Llama 4 Scout (10M-token context, fits H100 INT4) wins long-context RAG; Qwen3-235B-A22B (MoE, 22B active params) wins cloud-batch economics. Benchmark rankings are the wrong starting point — hardware constraints decide the race first."
@@ -56,6 +57,7 @@ references:
     retrieved: 2026-06-14
 note_dead_source: "https://blog.google/technology/developers/gemma-4/ returned 404 — swapped to deepmind.google canonical model page (verified 200)"
 whats_new:
+  - "June 2026 update: Llama 4 community-licence tightening is now an active concern — Apache-2.0 Gemma 4 and Qwen3, plus Modified-MIT Kimi K2.6, are the licence-safe picks"
   - "Gemma 4's April 2026 launch completes the open-weights frontier: edge through cloud, all in one model family"
 learning_objectives:
   - Match the right open-weights model family to your deployment shape (edge, single-GPU, cloud-batch)
@@ -70,11 +72,13 @@ faq:
     answer: "Assemble a 10-prompt test set that covers your real task distribution — reasoning, retrieval, code, and any domain-specific formats — then score each model on consistency across the full set, not just peak performance on a single prompt type. The runnable example above uses an OpenAI-compatible endpoint so the same harness works for Gemma 4, Llama 4 Scout, and Qwen3.[^4]"
 ---
 
-# Gemma 4 vs Llama 4 vs Qwen3: Which Open-Weights LLM to Deploy in 2026
+# Gemma 4 vs Llama 4 vs Qwen3: The Best Open-Weights LLM to Deploy in 2026
 
-_Last updated: June 14, 2026_
+_Last updated: June 23, 2026_
 
 Choose your open-weights LLM by deployment shape: Gemma 4 (26B/31B, 256K context, Apache 2.0) leads on edge and single-GPU; Llama 4 Scout (10M-token context, fits H100 INT4) wins long-context RAG; Qwen3-235B-A22B (MoE, 22B active params) wins cloud-batch economics. Benchmark rankings are the wrong starting point — hardware constraints decide the race first.
+
+> **Updated June 2026:** Licensing has become the deciding factor for production teams. Meta's Llama 4 community licence is tightening, so the licence-safe picks are now Gemma 4 and Qwen3 (both Apache 2.0) plus Kimi K2.6 (Modified MIT) for coding-heavy pipelines. The deployment-shape verdicts below are unchanged.
 
 | | Gemma 4 (26B / 31B) | Llama 4 Scout | Qwen3-235B-A22B |
 |---|---|---|---|
