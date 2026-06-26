@@ -22,6 +22,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  MARKER_COMPLIANCE_INCIDENT_TITLE,
+  collectMarkerGaps,
+  formatMarkerGapReport,
+  isEngineeringAgentName,
+} from "./marker-compliance.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const STATE_DIR = path.join(__dirname, ".state");
@@ -44,6 +50,10 @@ const ALERT_EMAIL_TO = process.env.WATCHDOG_ALERT_EMAIL_TO;
 // 2026-05-01: identity of the agent whose API key the watchdog is using. The watchdog
 // must never pause itself (would deadlock — paused agents can't be resumed by themselves).
 const SELF_AGENT_ID = (process.env.WATCHDOG_SELF_AGENT_ID ?? "").trim() || null;
+const MARKER_SCAN_BLOCKED_LIMIT = Number(process.env.WATCHDOG_MARKER_BLOCKED_LIMIT ?? 50);
+const MARKER_SCAN_COMMENTS_PER_ISSUE = Number(process.env.WATCHDOG_MARKER_COMMENTS_PER_ISSUE ?? 20);
+const MARKER_SCAN_MAX_COMMENTS = Number(process.env.WATCHDOG_MARKER_MAX_COMMENTS ?? 100);
+const ACTIVE_WATCHDOG_ISSUE_STATUSES = new Set(["todo", "in_progress", "in_review", "blocked"]);
 
 async function ensureStateDir() {
   await fs.mkdir(STATE_DIR, { recursive: true });
@@ -166,6 +176,102 @@ async function pauseAgent(agentId, reason, agentName) {
     `PAUSE-FAILED agent=${agentId} name="${agentName ?? "?"}" reason="${reason}" status=${status}`,
   );
   return { mode: "failed", status };
+}
+
+async function apiGet(pathname) {
+  const res = await fetch(`${PAPERCLIP_HOST}${pathname}`, { headers: authHeaders() });
+  if (!res.ok) throw new Error(`paperclip ${pathname} → ${res.status}`);
+  return res.json();
+}
+
+async function apiPost(pathname, body) {
+  const res = await fetch(`${PAPERCLIP_HOST}${pathname}`, {
+    method: "POST",
+    headers: { "content-type": "application/json", ...authHeaders() },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`paperclip POST ${pathname} → ${res.status} ${text}`);
+  }
+  return res.json();
+}
+
+function findActiveIssueByTitle(issues, title) {
+  return (issues ?? []).find(
+    (issue) =>
+      issue.title === title &&
+      !issue.hiddenAt &&
+      ACTIVE_WATCHDOG_ISSUE_STATUSES.has(issue.status),
+  );
+}
+
+async function fetchBlockedIssues(limit = MARKER_SCAN_BLOCKED_LIMIT) {
+  const data = await apiGet(
+    `/api/companies/${COMPANY_ID}/issues?status=blocked&limit=${limit}`,
+  );
+  return Array.isArray(data) ? data : (data.issues ?? data.items ?? []);
+}
+
+async function fetchIssueComments(issueId, limit = MARKER_SCAN_COMMENTS_PER_ISSUE) {
+  const data = await apiGet(`/api/issues/${issueId}/comments?limit=${limit}&order=desc`);
+  return Array.isArray(data) ? data : (data.comments ?? data.items ?? []);
+}
+
+async function ensureMarkerComplianceIssue(gaps, agents) {
+  if (gaps.length === 0) return { created: false, updated: false };
+
+  const chief = agents.find((agent) => isEngineeringAgentName(agent.name) && agent.name?.toLowerCase() === "chief engineering");
+  const description = formatMarkerGapReport(gaps);
+  const issues = await apiGet(`/api/companies/${COMPANY_ID}/issues?limit=200&q=${encodeURIComponent(MARKER_COMPLIANCE_INCIDENT_TITLE)}`);
+  const issueList = Array.isArray(issues) ? issues : (issues.issues ?? issues.items ?? []);
+  const existing = findActiveIssueByTitle(issueList, MARKER_COMPLIANCE_INCIDENT_TITLE);
+
+  if (existing) {
+    await apiPost(`/api/issues/${existing.id}/comments`, {
+      body: `${description}\n\nUpdated: ${new Date().toISOString()}`,
+    });
+    return { created: false, updated: true, id: existing.id };
+  }
+
+  const created = await apiPost(`/api/companies/${COMPANY_ID}/issues`, {
+    title: MARKER_COMPLIANCE_INCIDENT_TITLE,
+    description,
+    priority: "medium",
+    status: "blocked",
+    assigneeAgentId: chief?.id ?? null,
+  });
+  return { created: true, updated: false, id: created.id };
+}
+
+async function checkMarkerCompliance(agents) {
+  const engineeringAgentIds = new Set(
+    agents.filter((agent) => isEngineeringAgentName(agent.name)).map((agent) => agent.id),
+  );
+  if (engineeringAgentIds.size === 0) return { gaps: [], incident: null };
+
+  const blockedIssues = await fetchBlockedIssues();
+  const candidateComments = [];
+
+  for (const issue of blockedIssues) {
+    if (candidateComments.length >= MARKER_SCAN_MAX_COMMENTS) break;
+    const comments = await fetchIssueComments(issue.id);
+    for (const comment of comments) {
+      if (candidateComments.length >= MARKER_SCAN_MAX_COMMENTS) break;
+      const authorId = comment.authorAgentId ?? comment.author_agent_id;
+      if (!authorId || !engineeringAgentIds.has(authorId)) continue;
+      candidateComments.push({
+        id: comment.id,
+        body: comment.body,
+        issueId: issue.id,
+        issueIdentifier: issue.identifier,
+      });
+    }
+  }
+
+  const gaps = collectMarkerGaps(candidateComments);
+  const incident = gaps.length > 0 ? await ensureMarkerComplianceIssue(gaps, agents) : null;
+  return { gaps, incident };
 }
 
 async function alert(msg) {
@@ -315,7 +421,12 @@ async function tick() {
   try {
     const agents = await fetchAgents();
     await Promise.all(agents.map(checkAgent));
-    console.log(new Date().toISOString(), `tick OK — checked ${agents.length} agents`);
+    const marker = await checkMarkerCompliance(agents);
+    const markerNote =
+      marker.gaps.length > 0
+        ? `; marker gaps=${marker.gaps.length}${marker.incident?.created ? " (incident created)" : marker.incident?.updated ? " (incident updated)" : ""}`
+        : "";
+    console.log(new Date().toISOString(), `tick OK — checked ${agents.length} agents${markerNote}`);
   } catch (err) {
     console.error(new Date().toISOString(), "tick error:", err.message);
     // Don't silently die; alert if Telegram is wired

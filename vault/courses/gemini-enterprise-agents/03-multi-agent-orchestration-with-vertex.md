@@ -6,7 +6,8 @@ prerequisites_chapters: [1, 2]
 duration_min: 60
 reading_time_min: 60
 date: 2026-04-30
-status: draft-for-review
+status: g0-passed
+last_updated: 2026-06-14
 author: Koenig AI Academy
 agent_drafted_by: course-author
 content_type: course-chapter
@@ -27,9 +28,9 @@ sources:
 
 # Multi-Agent Orchestration with Vertex
 
-GEAP's agent-to-agent orchestration system, available since Gemini Enterprise Agent Platform's general availability on 23 April 2026, lets a single coordinator delegate work to 2 or more specialist sub-agents — turning a fragile 20-tool monolith into a testable, independently-deployable network. Production breaks the single-agent model fast: a customer-support agent covering account management, billing, and technical support accumulates enough tools and instruction length to produce correlated hallucinations. The correct answer is **decomposition** — split the monolith into specialist agents and give them a coordinator.
+GEAP's agent-to-agent orchestration, available since GA on 23 April 2026, lets a coordinator delegate to specialist sub-agents — turning a fragile 20-tool monolith into a testable, independently-deployable network. A customer-support agent covering account management, billing, and technical support accumulates enough tools and instruction length to produce correlated hallucinations. The answer is **decomposition**: specialist agents with a coordinator.
 
-This chapter builds that coordinator. By the end you will have a two-agent research pipeline: a Planner that decomposes a question into sub-questions, and a Retriever that answers each one. You will wire them through Agent Registry so the Planner discovers the Retriever by name rather than by hardcoded import, and you will use Agent Observability to walk through a trace when the handoff breaks.
+The tools and session patterns from [[gemini-enterprise-agents/02-hello-world-agent-tool-state-persistence|Chapter 2]] are the foundation: this chapter adds a coordinator layer — a two-agent research pipeline where a Planner decomposes questions and a Retriever answers each one, wired through Agent Registry and traced with Agent Observability.
 
 ## Key facts
 
@@ -45,7 +46,13 @@ This chapter builds that coordinator. By the end you will have a two-agent resea
 
 ## Two orchestration patterns, one choice to make
 
-Before writing code, you need to decide which pattern fits your use case. The choice has downstream consequences for debugging, cost, and reliability.
+Before writing code, you need to decide which pattern fits your use case. The choice has downstream consequences for debugging, cost, and reliability. (If you need a refresher on the platform itself, see [[gemini-enterprise-agents/01-what-gemini-enterprise-agent-platform-is-and-isnt|Chapter 1: GEAP platform overview]].)
+
+```takeaways
+- Deterministic orchestration (via `SequentialAgent` or `ParallelAgent`) hardcodes the routing logic in code and gives predictable costs; generative orchestration lets the model decide routing at runtime, which is more flexible but produces non-deterministic costs.
+- Use generative orchestration when routing decisions depend on user input content you cannot enumerate at design time; use deterministic orchestration for ETL-style pipelines where step order never changes.
+- In a multi-agent system, using the most expensive model for every agent is an anti-pattern — the Supervisor/Planner warrants Gemini Pro, while Worker/Specialist agents running well-defined tasks can use Flash or Flash-Lite at roughly 13× lower cost.
+```
 
 ### Deterministic orchestration
 
@@ -69,23 +76,29 @@ parallel_lookup = ParallelAgent(
 )
 ```
 
-**When to use**: When the routing logic is stable and you want predictable costs (you know exactly which agents run). Good for ETL-style pipelines, data enrichment, and report generation.
-
-**Tradeoff**: Brittle under changing inputs. If the Planner sometimes determines that no sub-questions are needed, a rigid sequential pipeline still invokes the Retriever anyway.
+**When to use**: Fixed routing with predictable costs — ETL pipelines, data enrichment, report generation. **Tradeoff**: Brittle under variable inputs; a rigid sequential pipeline invokes sub-agents even when they're not needed.
 
 ### Generative orchestration
 
-The orchestrator is an Agent with a strong instruction and a special `transfer_to_agent` tool. The model reads the user's request and decides at runtime which sub-agent to invoke, whether to invoke multiple, and in what order.
+The orchestrator is an Agent with a `transfer_to_agent` tool; the model decides at runtime which sub-agent to invoke, whether to invoke multiple, and in what order.
 
-**When to use**: When routing decisions depend on the content of user input in ways you cannot enumerate. Good for customer support triage, intent-based routing, and dynamic workflows.
+**When to use**: When routing depends on user input content you cannot enumerate at design time — support triage, intent routing, dynamic workflows. **Tradeoff**: Non-deterministic costs, harder to test exhaustively; a weak orchestrator instruction increases jailbreak risk.
 
-**Tradeoff**: Non-deterministic costs (you do not know how many sub-agent calls occur), harder to test exhaustively, and more susceptible to jailbreak if the orchestrator instruction is weak.
-
-For this chapter we build a generative orchestration pipeline, because it showcases more GEAP-specific features. The Chapter 3 hands-on exercise includes a note on when to prefer the deterministic version.
+<Callout type="hot">
+**Model Routing: Pro vs. Flash.** In a multi-agent system, using the most expensive model for every agent is a common anti-pattern. GEAP allows per-agent model selection:
+1. **Supervisor/Planner**: Always use **Gemini 3.1 Pro**. The orchestration reasoning required to decompose tasks and synthesize results is significantly higher than task execution. Pro's ARC-AGI-2 reasoning leap reduces "looping" and hallucinated handoffs.
+2. **Worker/Specialist**: Use **Gemini 3.1 Flash or Flash-Lite** for high-volume, well-defined tasks (e.g., data extraction, sentiment analysis, simple lookup). If your evaluation pipeline shows Flash-Lite can handle the task, you drop your per-agent cost by 13×.
+</Callout>
 
 ---
 
 ## Building the sub-agent: Retriever
+
+```takeaways
+- A sub-agent is a standard ADK `Agent` instance with its own instruction, tools, and model — the same class used for any agent, just scoped to a specialist task.
+- The Retriever's instruction should constrain it to only return what it found without adding interpretation, keeping the specialization boundary clean between retrieval and synthesis.
+- In production, the `search_knowledge_base` tool replaces the canned demo responses with a vector database or search API call, while the agent wiring and instruction remain unchanged.
+```
 
 Create `research_pipeline/retriever.py`:
 
@@ -140,6 +153,12 @@ If the search returns no results, say so clearly.""",
 
 The Planner does two things: it decomposes a complex question into sub-questions, and it hands each sub-question to the Retriever using `transfer_to_agent`.
 
+```takeaways
+- `transfer_to_agent` is a built-in ADK tool that routes a message to a named sub-agent and returns that sub-agent's response into the orchestrator's context automatically.
+- Declaring `sub_agents=["retriever"]` in the orchestrator serves as both a security boundary and a documentation aid that Agent Registry uses to build the graph of agent dependencies.
+- Without an explicit "wait for result before the next transfer" rule in the Planner instruction, a generative orchestrator can fire multiple delegations simultaneously before receiving any responses.
+```
+
 Create `research_pipeline/planner.py`:
 
 ```python
@@ -169,10 +188,10 @@ Rules:
 )
 ```
 
-`transfer_to_agent` is a built-in ADK tool. When the Planner calls it with `agent_name="retriever"` and a message, ADK routes the message to the Retriever agent and returns the Retriever's response to the Planner. The Planner then continues its reasoning with that answer in context.
+`transfer_to_agent` is a built-in ADK tool: the Planner calls it with the agent name and message; ADK routes to the Retriever and returns its response into the Planner's context.
 
 <Callout type="info">
-**Why `sub_agents` matters**: Declaring `sub_agents=["retriever"]` tells ADK which agents this orchestrator is allowed to delegate to. It is both a security boundary and a documentation aid — Agent Registry uses this declaration to build the graph of agent dependencies.
+**Why `sub_agents` matters**: Declaring `sub_agents=["retriever"]` tells ADK which agents this orchestrator can delegate to — a security boundary and documentation aid that Agent Registry uses to build the dependency graph.
 </Callout>
 
 ---
@@ -258,7 +277,7 @@ To get started, install the ADK: \`pip install google-adk\`
 
 ## Step 4: Register agents in Agent Registry
 
-In local development, agent resolution is handled in-process. In production on Vertex, you register agents in Agent Registry so the platform manages discovery, versioning, and access control.
+In local development, agent resolution is handled in-process. In production on Vertex, register agents so the platform manages discovery, versioning, and access control.
 
 Register the retriever via ADK CLI (requires a deployed Agent Runtime):
 
@@ -270,7 +289,7 @@ adk agents register retriever \
   --description="Answers factual questions via knowledge base search"
 ```
 
-After registration, any other agent in the same project can call `transfer_to_agent("retriever", ...)` and ADK resolves it through Registry — no hardcoded endpoints, no shared Python modules. This is the key governance benefit: the Registry owner controls which agents are discoverable and which are retired.
+After registration, any agent in the same project can call `transfer_to_agent("retriever", ...)` and ADK resolves it through Registry — no hardcoded endpoints. The Registry owner controls which agents are discoverable and which are retired.
 
 <Callout type="warning">
 **Registry is not import control.** Agent Registry controls discovery, not execution security. A rogue agent that knows a sub-agent's name directly can still call it if it has the right IAM permissions. For true isolation, combine Registry with Agent Gateway policies that restrict which caller identities can invoke which agents.
@@ -281,6 +300,12 @@ After registration, any other agent in the same project can call `transfer_to_ag
 ## Step 5: Reading an Observability trace
 
 When the Planner hands off to the Retriever and the Retriever returns the wrong answer, how do you debug it? The Agent Observability console shows the full execution trace.
+
+```takeaways
+- Each node in the observability trace is clickable in the GCP console, letting you inspect the exact input and output of every model call and tool call in a multi-agent chain.
+- Query transformation is the most common source of sub-agent failures: the orchestrator rephrases a sub-question before handing it off, and the rephrased query fails to match knowledge base entries.
+- Agent Anomaly Detection flags infinite delegation loops — where two agents keep calling each other — automatically within 2-3 hops without requiring custom watchdog code.
+```
 
 A trace for a multi-agent call looks like this:
 
@@ -304,12 +329,12 @@ Trace: user-request-7f3a
 └─ [2.891s] planner: final response assembled
 ```
 
-Each node in the trace is clickable in the GCP console — you can inspect the exact input and output of every model call and every tool call. When a handoff fails (the Retriever returns "no results" unexpectedly), you click the `search_knowledge_base` node and see exactly what query string it received.
+Each node is clickable in the GCP console — inspect exact inputs and outputs of every model call and tool call. When a handoff fails, click the `search_knowledge_base` node to see what query it received.
 
-**Common failure patterns in traces**:
-1. **Query transformation**: The Planner rephrases the sub-question before handing it to the Retriever, and the rephrased query does not match your knowledge base. Fix: tighten the Planner instruction to pass questions verbatim.
-2. **Infinite delegation**: The Planner calls `transfer_to_agent` with the Retriever, the Retriever calls `transfer_to_agent` back to the Planner (because its instruction is too loose). Agent Anomaly Detection flags this within 2-3 hops.
-3. **Silent tool failure**: A tool returns an empty string instead of raising an exception. The model treats the empty string as a valid (if useless) result and continues. Always return explicit "no results" messages.
+**Common failure patterns**:
+1. **Query transformation**: The Planner rephrases a sub-question before handoff; the rephrased query doesn't match the knowledge base. Fix: instruct the Planner to pass questions verbatim.
+2. **Infinite delegation**: The Retriever calls `transfer_to_agent` back to the Planner due to a loose instruction. Agent Anomaly Detection flags this within 2–3 hops.
+3. **Silent tool failure**: A tool returns an empty string; the model treats it as a valid result and continues. Always return explicit "no results" messages.
 
 <RunPromptCell
   model="gemini-pro-latest"
@@ -379,7 +404,7 @@ This means:
 
 ## What's next
 
-You have now built a two-agent system on GEAP. Before going deeper into the platform, it is worth asking: is GEAP the right platform for your use case? Chapter 4 puts GEAP in an honest comparison with Claude Agent SDK and Cloudflare Agents — covering state management, deployment topology, lock-in, and the workloads each platform wins. For reference on the [[glossary/memory-bank|Memory Bank]] and session state primitives powering these agents, or for [[course/vertex-ai-fundamentals|Vertex AI fundamentals]], see the linked resources.
+You have now built a two-agent system on GEAP. Chapter 4 puts GEAP in honest comparison with Claude Agent SDK and Cloudflare Agents — covering state management, deployment topology, lock-in, and the workloads each platform wins.
 
 See [[gemini-enterprise-agent-platform-hands-on-tour/04-comparing-to-claude-agent-sdk-and-cloudflare-agents]] to continue.
 

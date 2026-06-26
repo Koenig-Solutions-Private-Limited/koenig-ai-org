@@ -3,7 +3,7 @@ course_slug: mcp-from-first-principles-to-production
 chapter_num: 3
 chapter_slug: tools-resources-prompts
 title: "Tools, Resources, Prompts — the three primitives and the decision rule"
-status: draft-for-review
+status: g3-passed
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30
@@ -65,6 +65,12 @@ references:
 
 Ask a developer to build an MCP server for their internal knowledge base. Nine out of ten will build a Tool called `search_docs` that takes a query string and returns matching documents. Fast to write. Reasonable API. Completely wrong primitive.
 
+```takeaways
+- Using a Tool for read-only data that the host could pre-load wastes an LLM inference turn and a server round-trip on every access, when a Resource would let the host inject the content before the model even asks.
+- The host can proactively surface Resources before the conversation starts; it cannot do the same for Tools — only the model initiates Tool calls.
+- Choosing the wrong primitive is not easily refactored once clients depend on it, because it changes the initiation model and the wire protocol used to access the data.
+```
+
 The knowledge base is read-only data the model should be able to *access*, not a query the model should *execute*. The correct primitive is a Resource — possibly many Resources, one per document, with a URI scheme like `docs://handbook/engineering/onboarding`. The model reads resources; the host decides which resources to surface. Conflating these means you're burning tokens on tool invocations when you could be injecting context directly, and you're losing the host's ability to pre-load commonly-needed documents before the model even asks.
 
 Understanding the three primitives at the level of their *design intent* — not just their API shape — is the difference between an MCP server that works and one that works well.
@@ -74,6 +80,12 @@ Understanding the three primitives at the level of their *design intent* — not
 ## Tools — what the model executes
 
 **One-sentence definition**: A Tool is an operation the *model* initiates that may have side effects and returns a result.
+
+```takeaways
+- Tools are the only MCP primitive where mutation is expected — creating, deleting, or triggering side effects are all Tool-exclusive operations.
+- The `description` field in `inputSchema` is a prompt that the model reads to decide when and how to call the tool; vague descriptions produce vague or incorrect tool calls.
+- Any user who can talk to the model can potentially trigger any Tool in the server's list — tool description text is not a security boundary.
+```
 
 The keyword is *may have side effects*. Tools are the only MCP primitive where mutation is expected and permitted. Creating a Jira ticket, running a SQL query, sending a Slack message, executing a shell command — all of these are Tools because they change something outside the conversation.
 
@@ -145,6 +157,12 @@ This means Tools have a different security posture than Resources: any user who 
 ## Resources — what the model reads
 
 **One-sentence definition**: A Resource is read-only data identified by a URI that either the model or the application can inject into context.
+
+```takeaways
+- Resources differ from Tools in initiation: the host application can proactively inject Resource content before the conversation starts, without any model inference turn.
+- Resource templates use RFC 6570 URI template syntax with variable placeholders (e.g. `github://{owner}/{repo}/blob/{branch}/{path}`), allowing a single template to represent an unbounded set of concrete resources without enumeration.
+- The pull-on-push subscription pattern means the server sends `notifications/resources/updated` when content changes, but never pushes large payloads — the client re-reads the resource on its own.
+```
 
 The "either the model or the application" part is why Resources exist as a separate primitive. With Tools, only the model initiates. With Resources, the *host application* can also proactively inject resource content into context without the model asking. Claude Desktop can decide to load the contents of `file:///Users/alice/project/README.md` into context before the conversation starts. The model never had to "call" anything; the host made an editorial decision about what context to provide.
 
@@ -329,6 +347,12 @@ Use a Prompt when:
 ## The decision rule
 
 Every integration requirement can be classified with three questions:
+
+```takeaways
+- The three-question test (who initiates / what does it do / who controls access policy) provides a deterministic classification for any integration requirement into Tool, Resource, or Prompt.
+- Side effects are a decisive signal: if an operation may write, create, or delete, it is always a Tool — never a Resource or Prompt regardless of the other answers.
+- A zero-argument Tool that returns stable per-session data is a Resource in disguise: it wastes inference turns on data the host could pre-load via `resources/read`.
+```
 
 **Who initiates?**
 - Model decides autonomously → **Tool**

@@ -65,6 +65,7 @@ tests/release-smoke/playwright-report/
 # Private operational layer — NOT committed (raw research, internal cost data, audit logs):
 vault/research/**/*.md
 vault/decisions/**/*.md
+!vault/decisions/**/*-plan.md
 vault/retrospectives/**/*.md
 vault/_index/**/*.md
 vault/_audit/**/*.md
@@ -92,3 +93,4 @@ observability/open-notebook/notebook_data/
 # Python virtualenvs in services/
 services/*/.venv/
 services/**/.venv/
+vault/.obsidian/

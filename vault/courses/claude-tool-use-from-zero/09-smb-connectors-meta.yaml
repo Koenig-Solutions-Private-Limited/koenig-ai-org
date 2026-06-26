@@ -1,0 +1,20 @@
+assets_generated: true
+chapter_path: vault/courses/claude-tool-use-from-zero/09-smb-connectors.md
+issue: KOEA-2414
+status: assets-generated-awaiting-qa
+author: course-author
+date: 2026-05-14
+tool: generate_course_slides.py
+duration_audio_sec: 370
+slide_count: 7
+produced_at: 2026-05-27T12:03:20Z
+notes:
+  - This chapter was added as a delta to include the May 13, 2026 "Claude for Small Business" launch.
+  - Covers QuickBooks, PayPal, HubSpot, and Canva connectors.
+  - Focuses on "Human-in-the-loop" approval gates.
+  - "2026-05-14: [SLIDES] KOEA-2543 blocked. Source chapter markdown file is missing at chapter_path; cannot generate ch09 slides without approved chapter content."
+  - "2026-05-14: Source chapter markdown restored by KOEA-2461; rerun slide generation after G0."
+  - "2026-05-14: [AUDIO] KOEA-2663 produced ch09-audio.mp3 via tier-3 fallback (generate_course_audio.py). Repeated renders converged to ~6m10s for current chapter content."
+  - "2026-05-27: [SLIDES] KOEA-5881 generated ch09-slides.pptx via scripts/generate_course_slides.py (7 slides) and passed title+CTA checks."
+unblock_owner: slide-audio-producer
+unblock_action: "Hand off to QA verifier for G0 slide usability review."

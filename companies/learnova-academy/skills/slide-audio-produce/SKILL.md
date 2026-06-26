@@ -46,20 +46,41 @@ notebooklm-py generate flashcards --notebook <id> --count <KnowledgeCheck-count>
 notebooklm-py generate briefing --notebook <id> --format pdf
 ```
 
-If any call fails with `GENERATION_FAILED` (rate limit) → retry once; if 2 failures, fall through to open-notebook.
+If any call fails with `GENERATION_FAILED` (rate limit) → retry once; if 2 failures, fall through to Tier 2.
 
-### 3. Open-notebook fallback (audio + chat only)
+### 3. Fallback ladder (Tier 2 → Tier 3)
+
+**Tier 2 — open-notebook** (self-hosted, audio + chat only; requires Docker service on `:5055`):
 
 ```bash
-curl -X POST http://localhost:5055/api/notebooks \
-  -H "Authorization: Bearer $OPEN_NOTEBOOK_API_KEY" \
-  -d '{"name": "<chapter>", "sources": ["vault/courses/<slug>/<chapter>.md"]}'
+# Health check first
+curl -fsS http://127.0.0.1:5055/health
 
-curl -X POST http://localhost:5055/api/podcasts/<notebook-id> \
-  -d '{"format": "dual-narrator", "length": "9-12min"}'
+# Boot if down:
+docker compose -f observability/open-notebook/docker-compose.yml up -d
+
+curl -X POST http://127.0.0.1:5055/api/podcasts/generate \
+  -H "Authorization: Bearer $OPEN_NOTEBOOK_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"episode_profile": "solo_expert", "episode_name": "<chapter>", "content": "<chapter markdown body>"}'
+
+# Poll job, then download:
+# GET /api/podcasts/jobs/{job_id}
+# GET /api/podcasts/episodes/{episode_id}/audio
 ```
 
-In fallback, ship audio only. Comment on ticket: "open-notebook fallback used; slides/mindmap/flashcards skipped — queued for re-run when notebooklm-py is healthy."
+**Tier 3 — OpenAI TTS script** (when open-notebook is down or lacks podcast support):
+
+```bash
+python3 scripts/generate_course_audio.py \
+  vault/courses/<slug>/<chapter>.md \
+  vault/courses/<slug>/<chapter>-assets \
+  --output-name audio.mp3
+```
+
+Requires `OPENAI_API_KEY` in env (see `.env.koenig.example`). No ElevenLabs.
+
+In any fallback run, ship audio only. Comment on ticket: "fallback used; slides/mindmap/flashcards skipped — queued for re-run when notebooklm-py is healthy."
 
 ### 4. Inspect outputs (NEVER skip)
 
@@ -93,13 +114,36 @@ assets_generated:
   - mindmap.png
   - flashcards.json
   - briefing.pdf
-tool: notebooklm-py | open-notebook
+tool: notebooklm-py | open-notebook | openai-tts
+tool_fallback_reason: "notebooklm-py rate-limited after 2 attempts; open-notebook :5055 unreachable"
 duration_audio_sec: 583
+audio_lufs: -16
 slide_count: 14
 mindmap_node_count: 6
 flashcard_count: 4
 produced_at: 2026-04-30T15:42:00Z
+notes: "Fallback audio only — Studio assets (slides/mindmap/flashcards/briefing) skipped; queue notebooklm-py re-run when healthy"
 ---
+```
+
+**Fallback metadata example** (open-notebook Tier 2):
+
+```yaml
+tool: open-notebook
+tool_fallback_reason: "notebooklm-py GENERATION_FAILED x2"
+duration_audio_sec: 579
+audio_lufs: -16
+notes: "Studio assets skipped in fallback run"
+```
+
+**Fallback metadata example** (OpenAI TTS Tier 3):
+
+```yaml
+tool: openai-tts
+tool_fallback_reason: "open-notebook health check failed on 127.0.0.1:5055"
+duration_audio_sec: 540
+audio_lufs: -16
+notes: "Studio assets skipped; shorter single-voice narration vs dual-narrator NotebookLM"
 ```
 
 ### 7. Hand off
@@ -131,7 +175,7 @@ Comment:
 - Don't use ElevenLabs.
 - Always inspect outputs — never trust the tool's "success" signal alone.
 - Always normalize audio loudness.
-- 2 notebooklm-py failures = switch to open-notebook.
+- 2 notebooklm-py failures → health-check open-notebook → else Tier-3 `generate_course_audio.py`.
 - Per-task cap $1.
 
 ## Escalation

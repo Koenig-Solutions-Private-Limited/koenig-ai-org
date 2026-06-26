@@ -2,7 +2,11 @@ import { describe, expect, it, vi } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { execute } from "@paperclipai/adapter-claude-local/server";
+import {
+  execute,
+  startClaudeInvokeHeartbeat,
+  CLAUDE_INVOKE_HEARTBEAT_INTERVAL_MS,
+} from "@paperclipai/adapter-claude-local/server";
 
 async function writeFailingClaudeCommand(
   commandPath: string,
@@ -47,6 +51,37 @@ console.log(JSON.stringify({ type: "result", session_id: "claude-session-1", res
 `;
   await fs.writeFile(commandPath, script, "utf8");
   await fs.chmod(commandPath, 0o755);
+}
+
+async function writeSlowClaudeCommand(commandPath: string): Promise<void> {
+  const script = `#!/usr/bin/env node
+const fs = require("node:fs");
+fs.readFileSync(0, "utf8");
+const releasePath = process.env.PAPERCLIP_TEST_RELEASE_PATH;
+while (!fs.existsSync(releasePath)) {}
+console.log(JSON.stringify({ type: "system", subtype: "init", session_id: "claude-session-slow", model: "claude-sonnet" }));
+console.log(JSON.stringify({ type: "assistant", session_id: "claude-session-slow", message: { content: [{ type: "text", text: "hello" }] } }));
+console.log(JSON.stringify({ type: "result", session_id: "claude-session-slow", result: "hello", usage: { input_tokens: 1, cache_read_input_tokens: 0, output_tokens: 1 } }));
+`;
+  await fs.writeFile(commandPath, script, "utf8");
+  await fs.chmod(commandPath, 0o755);
+}
+
+function parseHeartbeatLogLines(logs: string[]) {
+  return logs.flatMap((chunk) =>
+    chunk
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .flatMap((line) => {
+        try {
+          const parsed = JSON.parse(line) as { event?: string; adapter?: string };
+          return parsed.event === "heartbeat" ? [parsed] : [];
+        } catch {
+          return [];
+        }
+      }),
+  );
 }
 
 type CapturePayload = {
@@ -780,6 +815,111 @@ describe("claude execute", () => {
     } finally {
       if (previousHome === undefined) delete process.env.HOME;
       else process.env.HOME = previousHome;
+      await fs.rm(root, { recursive: true, force: true });
+    }
+  });
+
+
+  it("startClaudeInvokeHeartbeat emits adapter-tagged JSON heartbeats and cleans up", async () => {
+    const stdoutLogs: string[] = [];
+    vi.useFakeTimers({ toFake: ["setInterval"] });
+    try {
+      const stop = startClaudeInvokeHeartbeat(async (stream, chunk) => {
+        if (stream === "stdout") stdoutLogs.push(chunk);
+      });
+      await vi.advanceTimersByTimeAsync(CLAUDE_INVOKE_HEARTBEAT_INTERVAL_MS);
+      await Promise.resolve();
+
+      const heartbeats = parseHeartbeatLogLines(stdoutLogs);
+      expect(heartbeats.length).toBeGreaterThanOrEqual(1);
+      expect(heartbeats[0]).toMatchObject({
+        event: "heartbeat",
+        adapter: "claude_local",
+      });
+
+      const heartbeatCountAfterStop = parseHeartbeatLogLines(stdoutLogs).length;
+      stop();
+      await vi.advanceTimersByTimeAsync(CLAUDE_INVOKE_HEARTBEAT_INTERVAL_MS * 2);
+      await Promise.resolve();
+      expect(parseHeartbeatLogLines(stdoutLogs)).toHaveLength(heartbeatCountAfterStop);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("emits invoke heartbeat lines during long-running attempts and cleans up after completion", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-claude-execute-invoke-heartbeat-"));
+    const releasePath = path.join(root, "release.signal");
+    const { workspace, commandPath, restore } = await setupExecuteEnv(root, {
+      commandWriter: writeSlowClaudeCommand,
+    });
+    const stdoutLogs: string[] = [];
+    let processSpawned = false;
+    const realSetInterval = global.setInterval;
+
+    vi.spyOn(global, "setInterval").mockImplementation((fn, ms, ...args) => {
+      const effectiveMs = ms === 10 * 60 * 1000 ? 50 : ms;
+      return realSetInterval(fn, effectiveMs, ...args);
+    });
+
+    try {
+      const executePromise = execute({
+        runId: "run-claude-invoke-heartbeat",
+        agent: {
+          id: "agent-1",
+          companyId: "company-1",
+          name: "Claude Coder",
+          adapterType: "claude_local",
+          adapterConfig: {},
+        },
+        runtime: {
+          sessionId: null,
+          sessionParams: null,
+          sessionDisplayId: null,
+          taskKey: null,
+        },
+        config: {
+          command: commandPath,
+          cwd: workspace,
+          env: {
+            PAPERCLIP_TEST_RELEASE_PATH: releasePath,
+          },
+          promptTemplate: "Follow the paperclip heartbeat.",
+        },
+        context: {},
+        authToken: "run-jwt-token",
+        onLog: async (stream, chunk) => {
+          if (stream === "stdout") stdoutLogs.push(chunk);
+        },
+        onSpawn: async () => {
+          processSpawned = true;
+        },
+      });
+
+      await vi.waitFor(() => processSpawned, { timeout: 5_000 });
+      await new Promise((resolve) => setTimeout(resolve, 120));
+
+      const heartbeatsDuringRun = parseHeartbeatLogLines(stdoutLogs);
+      expect(heartbeatsDuringRun.length).toBeGreaterThanOrEqual(1);
+      expect(heartbeatsDuringRun[0]).toMatchObject({
+        event: "heartbeat",
+        adapter: "claude_local",
+      });
+      expect(typeof heartbeatsDuringRun[0]?.ts).toBe("string");
+
+      await fs.writeFile(releasePath, "done", "utf8");
+      const result = await executePromise;
+
+      expect(result.exitCode).toBe(0);
+      expect(result.errorMessage).toBeNull();
+      expect(result.sessionId).toBe("claude-session-slow");
+
+      const heartbeatCountAfterComplete = parseHeartbeatLogLines(stdoutLogs).length;
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      expect(parseHeartbeatLogLines(stdoutLogs)).toHaveLength(heartbeatCountAfterComplete);
+    } finally {
+      vi.restoreAllMocks();
+      restore();
       await fs.rm(root, { recursive: true, force: true });
     }
   });

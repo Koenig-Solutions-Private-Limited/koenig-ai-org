@@ -4,7 +4,7 @@ chapter_num: 2
 chapter_slug: tool-use-determinism-benchmark
 title: "Tool-use determinism — our 10×3×5 benchmark"
 hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch02-hero.svg"
-status: draft-for-review
+status: g0-passed
 author: "Koenig AI Instructor"
 agent_drafted_by: ca965eff-ea59-4030-91de-47845d3600c6
 vendor_tag: koenig-ai-academy
@@ -28,11 +28,14 @@ key_concepts:
 hands_on_exercise: "Run the benchmark script on 2 of your own prompts and record variance against the reference dataset"
 references:
   - "[^1]: Koenig AI Academy internal benchmark data, Q2 2026. /data/claude-tool-use-determinism/2026-Q2/."
-  - "[^2]: Anthropic. 'Prompt caching.' Claude API documentation. https://www.anthropic.com/news — model and caching release notes."
-  - "[^3]: OpenAI. 'Structured Outputs.' Model release notes. https://help.openai.com/en/articles/9624314-model-release-notes — GPT-5.5 strict JSON schema enforcement capabilities."
-  - "[^4]: Anthropic. 'Model temperature and sampling.' Claude model documentation. https://www.anthropic.com/news — temperature=0 behavior across API requests."
+  - "[^2]: Anthropic. 'Prompt caching.' Claude API documentation. https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching — canonical API reference for caching behavior and tokenization consistency."
+  - "[^3]: OpenAI. 'Structured Outputs.' Model release notes. https://platform.openai.com/docs/models — GPT-5.5 strict JSON schema enforcement capabilities."
+  - "[^4]: Anthropic. 'API reference: create a message.' Claude API documentation. https://docs.anthropic.com/en/api/messages — temperature parameter specification and non-determinism sources beyond sampling."
   - "[^5]: Shen, Y. et al. (2023). 'HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in HuggingFace.' https://arxiv.org/abs/2303.17580."
-  - "[^6]: Google. 'Gemini API changelog.' https://ai.google.dev/gemini-api/docs/changelog — Gemini 3.1 Pro structured output and tool-use capability notes."
+  - "[^6]: Google. 'Gemini 3.1 Pro Preview.' https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview — model capabilities, context limits, structured outputs, function calling, and custom-tools endpoint."
+  - "[^7]: Google. 'Gemini 3.1 Pro: A smarter model for your most complex tasks.' https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/ — rollout, preview status, surfaces, and ARC-AGI-2 claim."
+  - "[^8]: Liang, P. et al. (2022). 'Holistic Evaluation of Language Models (HELM).' https://arxiv.org/abs/2211.09110 — multi-scenario benchmark framework for standardized capability evaluation; referenced for taxonomy and evaluation design principles."
+  - "[^9]: Srivastava, A. et al. (2022). 'Beyond the Imitation Game: Quantifying and Extrapolating the Capabilities of Language Models (BIG-Bench).' https://arxiv.org/abs/2206.04615 — large-scale multi-task benchmark establishing principles for distinguishing model capability dimensions."
 slides: courses/picking-a-frontier-model-2026-q2/ch02-slides.pptx
 voiceover_script: courses/picking-a-frontier-model-2026-q2/voiceover-02.md
 tags:
@@ -64,6 +67,12 @@ Tool-use determinism, in the context of large language model evaluation, refers 
 - OpenAI's GPT-5.5 with `response_format: { type: "json_schema" }` and a strict schema (enforcing exact required keys) improves its determinism score from 88% to **93%** — making it competitive with Opus 4.7 when the schema is fully specified. This is the most important single finding in our dataset. [^3]
 
 ---
+
+```takeaways
+- Opus 4.7 leads on determinism at 91.4% average; GPT-5.5 averages 88.0%; Gemini 3.1 Pro averages 81.9% — but all three show nonzero structural variance even at temperature=0.
+- GPT-5.5 with strict JSON schema enforcement jumps from 88% to 93% on complex schemas — schema enforcement is a larger lever than model choice on OpenAI's platform.
+- Prompt caching marginally improves determinism on Anthropic's API: cached prompt prefixes produce slightly more stable outputs than uncached equivalents.
+```
 
 ## What determinism is (and isn't)
 
@@ -103,9 +112,15 @@ Gemini 3.1 Pro at 81.9% average determinism: a 5-step pipeline has a **37% succe
 
 ---
 
+```takeaways
+- Determinism measures structural stability — whether the output schema, key set, and nesting remain consistent run-to-run — not accuracy or character-for-character repeatability.
+- Temperature=0 reduces but does not eliminate structural variance; attention routing, batching behavior, and API load all introduce variance that temperature cannot control.
+- In a pipeline where each step has determinism d over n steps, end-to-end success probability is d^n: a 90% per-step rate becomes 59% over 5 steps.
+```
+
 ## Benchmark design: 10 prompt categories
 
-The 10 prompt categories in `/data/claude-tool-use-determinism/2026-Q2/` were selected to represent the full range of tool-use complexity seen in production agentic workloads:
+The 10 prompt categories in `/data/claude-tool-use-determinism/2026-Q2/` were selected to represent the full range of tool-use complexity seen in production agentic workloads. Unlike accuracy-focused multi-task benchmarks such as HELM [^8] and BIG-Bench [^9], which measure correctness across diverse capability dimensions, the 10×3×5 benchmark measures structural *stability* — whether the output schema remains consistent across runs, not whether the content is correct:
 
 | # | Category | Schema complexity | Typical use case |
 |---|---|---|---|
@@ -154,6 +169,8 @@ Full results are in `/data/claude-tool-use-determinism/2026-Q2/results.json`. Su
 
 4. **Category 9 (ambiguous input) is the universal weakness.** All three models show their lowest determinism here. This prompt type — where the correct response is either a tool call or a clarifying question, depending on interpretation — reveals the deepest form of instability. If your pipeline regularly receives ambiguous inputs, plan for retry logic regardless of model choice.
 
+5. **Gemini 3.1 Pro requires surface hygiene.** Google's launch post says 3.1 Pro is still a preview release while Google validates agentic workflow updates, and the Gemini API model page documents function calling, structured outputs, code execution, caching, and a separate `gemini-3.1-pro-preview-customtools` endpoint for workflows that mix bash and custom tools. It also documents text output only and no audio generation. For tool-use evals, benchmark **schema adherence** (whether the model fills every required field), not just JSON validity, and keep the model ID configurable so a preview or custom-tools endpoint can be swapped without rewriting your benchmark. [^6][^7]
+
 ### The most common failure modes
 
 Across 150 runs (10 prompts × 3 models × 5 runs), we classified each structural mismatch:
@@ -169,6 +186,12 @@ Across 150 runs (10 prompts × 3 models × 5 runs), we classified each structura
 Key omission is the dominant failure mode. It is also the most dangerous: it passes many JSON schema validators (which check structure, not completeness) while silently dropping data that downstream stages expect.
 
 ---
+
+```takeaways
+- All three models are reliable on simple schemas (categories 1–2 show near-100% determinism); the gap widens dramatically at complex nested schemas and multi-model handoffs.
+- The model gap scales with complexity: Opus 4.7's 11-point lead over Gemini at category 10 vs. a 0-point lead at category 1 means complexity is the key lever.
+- Key omission — a required field present in 4 of 5 runs but silently absent on the 5th — accounts for 54% of structural mismatches and is the most dangerous failure mode.
+```
 
 ## Running the benchmark yourself
 
@@ -240,6 +263,12 @@ The `structural_hash` function is the key: it extracts the *shape* of the JSON (
 />
 
 ---
+
+```takeaways
+- The `structural_hash` function extracts JSON key structure and types without values — two responses with different string values but identical key sets count as structurally equivalent.
+- Run each prompt at temperature=0 for 5 independent calls per model; the canonical output is the most frequent hash; determinism score is the fraction of runs matching it.
+- A determinism score below 90% warrants schema enforcement before pipeline deployment; below 70% requires additional guardrails such as constrained generation.
+```
 
 ## Interpreting your results
 
@@ -313,13 +342,18 @@ You now have empirical determinism scores for your prompts — and an understand
 
 [^1]: Koenig AI Academy internal benchmark data, Q2 2026. `/data/claude-tool-use-determinism/2026-Q2/`. Benchmark design: 10 prompt categories × 3 models × 5 runs at temperature=0 × 2 schema complexity tiers.
 
-[^2]: Anthropic. "Prompt caching." Claude API documentation. https://www.anthropic.com/news — model and caching release notes. Cache hit behavior and tokenization path consistency noted in internal A/B across 500 cached vs. uncached runs.
+[^2]: Anthropic. "Prompt caching." Claude API documentation. https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching — canonical API reference for caching behavior and tokenization consistency. Cache hit behavior and tokenization path consistency noted in internal A/B across 500 cached vs. uncached runs.
 
-[^3]: OpenAI. "Structured Outputs." Model release notes. https://help.openai.com/en/articles/9624314-model-release-notes — GPT-5.5 strict JSON schema enforcement capabilities.
+[^3]: OpenAI. "Structured Outputs." Model release notes. https://platform.openai.com/docs/models — GPT-5.5 strict JSON schema enforcement capabilities.
 
-[^4]: Anthropic. "Model temperature and sampling." Claude model documentation. https://www.anthropic.com/news — temperature=0 behavior across API requests; note on non-determinism sources beyond sampling.
+[^4]: Anthropic. "API reference: create a message." Claude API documentation. https://docs.anthropic.com/en/api/messages — temperature parameter specification and non-determinism sources at temperature=0 beyond sampling.
 
 [^5]: Shen, Y. et al. (2023). "HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in HuggingFace." https://arxiv.org/abs/2303.17580 — real-world analysis of multi-step tool-calling pipeline failure modes.
 
-[^6]: Google. "Gemini API changelog." https://ai.google.dev/gemini-api/docs/changelog — Gemini 3.1 Pro structured output and tool-use capability notes.
+[^6]: Google. "Gemini 3.1 Pro Preview." https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview — model capabilities, context limits, structured outputs, function calling, and custom-tools endpoint; retrieved 2026-05-28.
 
+[^7]: Google. "Gemini 3.1 Pro: A smarter model for your most complex tasks." https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/ — preview rollout surfaces and agentic-workflow caveat; retrieved 2026-05-28.
+
+[^8]: Liang, P. et al. (2022). "Holistic Evaluation of Language Models (HELM)." https://arxiv.org/abs/2211.09110 — multi-scenario benchmark framework for standardized capability evaluation; referenced for taxonomy and evaluation design principles.
+
+[^9]: Srivastava, A. et al. (2022). "Beyond the Imitation Game: Quantifying and Extrapolating the Capabilities of Language Models (BIG-Bench)." https://arxiv.org/abs/2206.04615 — large-scale multi-task benchmark establishing principles for distinguishing model capability dimensions.

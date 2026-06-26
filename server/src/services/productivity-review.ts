@@ -378,8 +378,10 @@ export function productivityReviewService(db: Db, deps?: { enqueueWakeup?: Enque
       ? Math.max(0, now.getTime() - activeStartedAt.getTime())
       : null;
 
+    const isRoutineExecution = sourceIssue.originKind === "routine_execution";
     const noComment = noCommentStreak >= thresholds.noCommentStreakRuns;
-    const longActive = elapsedMs !== null && elapsedMs >= thresholds.longActiveMs;
+    const longActive =
+      !isRoutineExecution && elapsedMs !== null && elapsedMs >= thresholds.longActiveMs;
     const highChurn =
       runCountLastHour >= thresholds.highChurnHourly ||
       assigneeRunCommentCountLastHour >= thresholds.highChurnHourly ||

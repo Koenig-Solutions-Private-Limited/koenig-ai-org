@@ -1,0 +1,13 @@
+{
+  "name": "task-c-streaming-leak",
+  "version": "1.0.0",
+  "description": "Benchmark Task C: streaming server with planted EventEmitter memory leak",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

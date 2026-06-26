@@ -1,0 +1,169 @@
+{
+  "course_slug": "prometheus-grafana-opentelemetry-for-sres",
+  "toc_locked": true,
+  "chapters": [
+    {
+      "num": 1,
+      "slug": "prometheus-setup-and-service-discovery",
+      "title": "Deploying Prometheus 3 and Scraping Microservice Metrics at Scale",
+      "owns": [
+        "kube-prometheus-stack Helm chart deployment and configuration",
+        "Kubernetes service discovery with kubernetes_sd_configs endpointslice role",
+        "node-exporter and kube-state-metrics Helm sub-chart setup",
+        "PromQL rate() fundamentals and counter reset handling",
+        "Recording rule syntax and promtool check rules validation",
+        "Prometheus targets UI scrape health verification"
+      ],
+      "does_not_cover": [
+        "histogram_quantile() for SLO latency percentiles (ch2 owns it)",
+        "Alertmanager routing trees and PrometheusRule CRD alert configuration (ch2 owns it)",
+        "Grafana dashboard construction and data source provisioning (ch3 owns it)",
+        "OpenTelemetry SDK instrumentation and OTel Collector pipelines (ch4 owns it)",
+        "Trace-to-metrics correlation and incident triage synthesis (ch5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "kubernetes_sd_configs endpointslice role vs. legacy endpoints role: why the default changed in chart v29+",
+        "Difference between recording rules and alerting rules in promtool",
+        "How rate() handles counter resets vs. increase()",
+        "Purpose of kube-state-metrics vs. node-exporter: what each exposes"
+      ],
+      "notebooklm_source_focus": [
+        "Prometheus 3.x release notes and kube-prometheus-stack v29+ changelog",
+        "Kubernetes service discovery endpointslice role documentation",
+        "PromQL rate() function reference, recording rules specification, and promtool docs"
+      ],
+      "dossier_path": "vault/research/courses/prometheus-grafana-opentelemetry-for-sres/01-prometheus-setup-and-service-discovery.md"
+    },
+    {
+      "num": 2,
+      "slug": "promql-slos-and-alertmanager",
+      "title": "Writing PromQL Queries and Alertmanager Rules for Payment-Path SLOs",
+      "owns": [
+        "histogram_quantile() expressions for p99 latency SLO modeling",
+        "Multi-window multi-burn-rate SLO alerting methodology",
+        "Alertmanager routing tree: receiver groups, inhibition rules, repeat_interval",
+        "PrometheusRule CRD structure and unit-test syntax",
+        "promtool test rules validation workflow",
+        "Alertmanager /api/v2/alerts endpoint diagnostics and route tracing",
+        "Payment-service reliability modeling: error rate, latency percentiles, saturation"
+      ],
+      "does_not_cover": [
+        "Basic rate() PromQL and recording rule syntax (ch1 owns it)",
+        "Grafana-managed alert rules and contact points (ch3 owns it)",
+        "Grafana Explore and trace-to-metrics correlation for live triage (ch5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "Why multi-window multi-burn-rate alerts reduce both false positives and detection lag vs. single-threshold alerts",
+        "histogram_quantile() accuracy tradeoffs: classic fixed buckets vs. Prometheus 3 native histograms",
+        "Alertmanager repeat_interval vs. group_wait vs. group_interval: semantic distinctions",
+        "How inhibition rules prevent alert storms during a full-outage incident"
+      ],
+      "notebooklm_source_focus": [
+        "Prometheus native histogram documentation (Prometheus 3.x)",
+        "Google SRE Workbook Chapter 5: Alerting on SLOs (multi-burn-rate methodology)",
+        "Alertmanager routing tree and inhibition rules configuration reference"
+      ],
+      "dossier_path": "vault/research/courses/prometheus-grafana-opentelemetry-for-sres/02-promql-slos-and-alertmanager.md"
+    },
+    {
+      "num": 3,
+      "slug": "grafana-13-dashboards-and-git-sync",
+      "title": "Building Grafana 13 Dashboards Backed by Prometheus with Git Sync and Alerting",
+      "owns": [
+        "Grafana 13 Prometheus data source provisioning via YAML (no manual UI)",
+        "Dashboard JSON model: time series, stat, gauge, table panel types",
+        "Template variables for service and environment selectors",
+        "Grafana 13 GA Git Sync: branch workflow, PR merge, dashboard update",
+        "Grafana-managed alert rules: multi-condition thresholds, contact points",
+        "Grafana alert state machine: Pending → Firing transitions"
+      ],
+      "does_not_cover": [
+        "Prometheus scrape configuration, recording rules, and promtool (ch1 owns it)",
+        "PrometheusRule CRD multi-burn-rate SLO alerts and Alertmanager (ch2 owns it)",
+        "Grafana Explore trace-to-metrics link and exemplar click-through to Jaeger (ch5 owns it)",
+        "OTel Collector Jaeger data source configuration in Grafana (ch5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "Grafana-managed alerts vs. data-source-managed alerts: architectural difference and when to use each",
+        "Git Sync merge conflict resolution for dashboard JSON: what causes conflicts and how to avoid them",
+        "Template variables vs. repeated panels: when each pattern is appropriate",
+        "Provisioning YAML vs. manual UI configuration: idempotency and GitOps implications"
+      ],
+      "notebooklm_source_focus": [
+        "Grafana 13 release notes and Git Sync GA announcement (June 2026)",
+        "Grafana dashboard provisioning documentation (datasources.yaml, dashboards.yaml)",
+        "Grafana alerting architecture: unified alerting, rule groups, contact points"
+      ],
+      "dossier_path": "vault/research/courses/prometheus-grafana-opentelemetry-for-sres/03-grafana-13-dashboards-and-git-sync.md"
+    },
+    {
+      "num": 4,
+      "slug": "opentelemetry-sdk-and-jaeger-v2",
+      "title": "Instrumenting Services with OpenTelemetry SDKs and Routing Traces through the OTel Collector to Jaeger v2",
+      "owns": [
+        "OpenTelemetry SDK auto-instrumentation and service.name resource attributes",
+        "OTel Collector pipeline: OTLP receiver, tail_sampling processor, batch processor, Jaeger OTLP exporter",
+        "Tail-based sampling policies: ERROR-status spans and slow-trace threshold (>1 s)",
+        "Jaeger v2 deployment (cr.jaegertracing.io/jaegertracing/jaeger:2.x) and native OTLP ingestion",
+        "W3C traceparent header format and cross-service context propagation",
+        "OTel Collector debug exporter for span-level diagnostics",
+        "Context propagation failure diagnosis"
+      ],
+      "does_not_cover": [
+        "Prometheus metrics scraping and service discovery (ch1 owns it)",
+        "Grafana dashboard panel construction and Git Sync (ch3 owns it)",
+        "Grafana Jaeger data source setup and trace-to-metrics linking in Explore (ch5 owns it)",
+        "SLO burn-rate alert correlation with distributed traces (ch5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "Head-based vs. tail-based sampling: when each is appropriate for high-throughput fintech workloads",
+        "Why Jaeger v2 replaced the Jaeger agent with the OTel Collector as its ingestion pipeline",
+        "OTLP gRPC vs. HTTP exporter: latency, payload, and firewall tradeoffs",
+        "How W3C traceparent propagation enables parent-child span correlation across service boundaries"
+      ],
+      "notebooklm_source_focus": [
+        "OpenTelemetry Collector tail sampling processor documentation and policy config",
+        "Jaeger v2 migration guide: removed components, new architecture, OTLP-native ingestion",
+        "OpenTelemetry SDK auto-instrumentation guides (Node.js and Python)"
+      ],
+      "dossier_path": "vault/research/courses/prometheus-grafana-opentelemetry-for-sres/04-opentelemetry-sdk-and-jaeger-v2.md"
+    },
+    {
+      "num": 5,
+      "slug": "correlating-metrics-traces-and-alerts",
+      "title": "Correlating Metrics, Traces, and Alerts to Diagnose a Degraded Payment Microservice",
+      "owns": [
+        "Prometheus exemplar scraping configuration and OpenMetrics spec",
+        "Grafana Explore trace-to-metrics link: exemplar click-through to Jaeger",
+        "Grafana Jaeger data source setup (builds on ch4's Jaeger v2 deployment)",
+        "On-call incident triage workflow: metric spike → correlated trace → slow span identification",
+        "Multi-burn-rate SLO alert with runbook URL annotation (applying ch2's methodology to a live incident)",
+        "Tail-sampling threshold tradeoff analysis and written decision record",
+        "End-to-end three-pillar observability synthesis"
+      ],
+      "does_not_cover": [
+        "Initial Prometheus deployment, scrape config, and recording rules (ch1 owns it)",
+        "Alertmanager routing trees and PrometheusRule CRD from scratch (ch2 owns it)",
+        "Grafana dashboard panel construction and Git Sync feature (ch3 owns it)",
+        "OTel Collector pipeline configuration and Jaeger v2 deployment from scratch (ch4 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "What are exemplars and why are they needed to bridge Prometheus metrics with distributed traces",
+        "Multi-burn-rate alert: 14× consumption over 1 hour vs. 1× over 30 days — what failure modes each catches",
+        "Tradeoff: raising tail-sampling slow-trace threshold from 500 ms to 1000 ms — volume reduction vs. coverage loss",
+        "Grafana Explore split view: correlating logs, traces, and metrics simultaneously"
+      ],
+      "notebooklm_source_focus": [
+        "Prometheus exemplar documentation (OpenMetrics spec, Prometheus 3.x exemplar scraping config)",
+        "Grafana Explore trace-to-metrics and exemplar documentation",
+        "Google SRE multi-burn-rate alerting: 1h/5h/30d windows methodology"
+      ],
+      "dossier_path": "vault/research/courses/prometheus-grafana-opentelemetry-for-sres/05-correlating-metrics-traces-and-alerts.md"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 ---
 course_slug: production-agents-claude-agent-sdk-mcp-connector
 title: "Production Agents with Claude Agent SDK + MCP Connector"
-status: outline-draft-for-review
+status: awaiting-g0
 author: course-author
 agent_drafted_by: course-author
 date: 2026-04-30
@@ -19,8 +19,9 @@ learning_outcomes:
   - "Wire three MCP servers (stdio + HTTP + SSE) into a single agent with proper auth and error handling"
   - "Upload, reference, and manage files with the Files API across multi-turn agent sessions"
   - "Deploy a production agent with structured logging, cost circuit breakers, and observability hooks"
-total_duration_min: 240
-chapter_count: 5
+  - "Persist working context across Claude Code, Codex CLI, Cursor, Gemini CLI, and Agent SDK handoffs"
+total_duration_min: 290
+chapter_count: 6
 capstone_project_min: 60
 related_blogs:
   - anthropic-agent-sdk-april-rebrand
@@ -66,7 +67,7 @@ There's also a contrarian thread running through each chapter: the defaults aren
   - Create an agent, environment, and session via the REST API
   - Stream SSE events and correctly detect `session.status_idle`
   - Apply the decision rule: Managed Agents vs Agent SDK for five scenario types
-- **Key concepts**: `managed-agents-2026-04-01` beta header, `agent_toolset_20260401`, SSE streaming, runtime pricing ($0.08/hr), rate limits, `session.status_idle`
+- **Key concepts**: `managed-agents-2026-04-01` beta header, `agent_toolset_20260401`, SSE streaming, runtime pricing verification, rate limits, `session.status_idle`
 - **Hands-on exercise**: Ship a Managed Agents session that runs a multi-step data analysis task and streams all tool-use events to your terminal
 
 ---
@@ -79,9 +80,10 @@ There's also a contrarian thread running through each chapter: the defaults aren
   - Configure stdio, HTTP, and SSE MCP servers in a single `query()` call
   - Scope MCP tool access with `allowedTools` wildcards and per-tool grants
   - Detect and handle server connection failures via the `system` init message
+  - Apply the "SMB Workflow" pattern: coordinating QuickBooks, PayPal, and HubSpot tools
   - Explain why `permissionMode: "acceptEdits"` is NOT sufficient for MCP tool approval
-- **Key concepts**: `mcp__<server>__<tool>` naming, `mcpServers`, transport types, `.mcp.json`, tool search, OAuth2 via headers, 60s connection timeout
-- **Hands-on exercise**: Wire a GitHub MCP server (stdio) + a Postgres MCP server (stdio) + a cloud docs server (HTTP) into one agent that pulls an issue, queries a related DB table, and writes a summary
+- **Key concepts**: `mcp__<server>__<tool>` naming, `mcpServers`, transport types, `.mcp.json`, tool search, OAuth2 via headers, 60s connection timeout, Claude SMB connectors
+- **Hands-on exercise**: Wire a QuickBooks MCP server (stdio) + a PayPal MCP server (HTTP) + a HubSpot server (HTTP) into one agent that reconciles payments and updates lead status in a single workflow.
 
 ---
 
@@ -104,12 +106,27 @@ There's also a contrarian thread running through each chapter: the defaults aren
 - **Duration**: 45 min
 - **Prerequisites**: Chapters 1–4
 - **Learning objectives**:
-  - Implement four production hooks: audit logging (PostToolUse), cost circuit breaker (Stop), session initialization (SessionStart), and prompt sanitization (UserPromptSubmit)
+  - Implement a production hook stack: audit logging (PostToolUse), cost circuit breaker (PreToolUse), prompt sanitization (UserPromptSubmit), and session lifecycle telemetry where the SDK supports it
   - Configure structured JSON logging for every tool call
   - Apply the five-step deployment checklist before taking an agent to production
   - Explain why `bypassPermissions` is dangerous and what to use instead
-- **Key concepts**: `PreToolUse`/`PostToolUse` hooks, `HookMatcher`, JSONL session state, `settingSources`, Langfuse integration, budget enforcement, permission modes
+- **Key concepts**: `PreToolUse`/`PostToolUse` hooks, Python-vs-TypeScript hook compatibility, `HookMatcher`, JSONL session state, `settingSources`, Langfuse integration, budget enforcement, permission modes
 - **Hands-on exercise**: Harden the agents from Chapters 2 and 3 with the production hook stack, add a cost cap, and verify that a simulated runaway session is terminated before it hits budget
+
+---
+
+### Chapter 6: Cross-CLI context persistence and session handoff patterns
+
+- **Duration**: 50 min
+- **Prerequisites**: Chapters 1, 3, and 5
+- **Learning objectives**:
+  - Identify the four layers of CLI context that must survive a cross-agent handoff
+  - Implement a JSONL-based context relay that works across Claude Code, Codex CLI, and Agent SDK scripts
+  - Use durable file references and session metadata to prevent branch, working-directory, and resource drift
+  - Wire an MCP server as a shared context broker for multi-agent pipelines
+  - Recognize and avoid common cross-CLI context anti-patterns
+- **Key concepts**: cross-CLI context gap, conversation distillation, tool-output checkpoints, file references, session metadata, JSONL relay, startup injection, Files API references, MCP context broker, handoff audit trail
+- **Hands-on exercise**: Build a cross-CLI context relay that hands a task from one CLI agent to another without re-briefing, then verify the receiving agent can continue from the persisted decisions, tool outputs, file references, and metadata
 
 ---
 

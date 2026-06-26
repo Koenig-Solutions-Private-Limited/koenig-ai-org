@@ -2,6 +2,7 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
+    setupFiles: ["./test/setup-paperclip-home.ts"],
     projects: [
       "packages/shared",
       "packages/db",

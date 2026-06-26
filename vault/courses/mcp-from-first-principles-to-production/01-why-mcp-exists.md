@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: mcp-from-first-principles-to-production
 title: "Why MCP exists — the design problem it actually solves"
-status: draft-for-review
+status: g3-passed
 author: course-author
 ticket: KOE-36
 learning_objectives:
@@ -52,6 +52,12 @@ Most tutorials show basic SDK examples. This chapter explains *why* the protocol
 
 Before MCP existed, every team building an LLM application faced the same structural trap.
 
+```takeaways
+- Every LLM application team independently wrote bespoke adapters for each external tool, producing N×M incompatible implementations with no shared protocol layer.
+- The N×M explosion is structurally identical to problems previously solved in compiler design (LLVM IR) and video codec support — in each case, inserting a standard protocol reduced N×M connections to N+M.
+- MCP's value proposition is that a single shared protocol turns 24 custom adapters (4 apps × 6 tools) into 10 pieces (4 clients + 6 servers).
+```
+
 Suppose you are building an AI coding assistant. Your users need the model to read GitHub repos, query Jira tickets, pull documentation from Confluence, run tests in CI, and check Datadog metrics. That's five integrations. Each integration requires: understanding the third-party API, writing an adapter that maps the API's response shape to whatever JSON structure your model prefers, handling auth (likely OAuth for each service), dealing with pagination, and managing error recovery. Each adapter is bespoke code that belongs to your application and nobody else's.
 
 Now suppose a second team is building an AI support agent. They need the same five integrations plus Salesforce and Zendesk. They repeat the work. A third team building an AI DevOps assistant needs most of the same integrations again. The result is N applications × M tools = **N×M integrations**, each implemented slightly differently, each with its own bugs, its own auth model, and its own failure modes.
@@ -69,6 +75,12 @@ The textbook fix for N×M proliferation is to insert a standard: instead of N×M
 ## Three alternatives that didn't survive contact with reality
 
 The N×M framing explains *that* a protocol was needed. It doesn't explain why MCP looks the way it does. For that, you need to understand what was rejected and why.
+
+```takeaways
+- Custom REST adapters fail for LLM tool calls because REST assumes long-lived sessions and human-in-the-loop re-authentication, while LLM tool calls are ephemeral and programmatic.
+- WebSocket hubs introduce a stateful single point of failure and require network reachability that makes local-process tools impractical.
+- OpenAPI describes what an API does but lacks semantics for streaming, capability negotiation, and structured error typing that LLMs need to reason about failures.
+```
 
 ### Alternative 1: Custom REST adapters
 **Failure mode**: REST APIs assume long-lived HTTP, human-like error handling, and stable sessions. LLM tool calls are ephemeral, parallel, and programmatic — there's no human in the loop to re-authenticate when a token expires. Bespoke adapters fail silently, and code is never reusable across applications.
@@ -90,6 +102,12 @@ The N×M framing explains *that* a protocol was needed. It doesn't explain why M
 ## The LSP lineage: a protocol that solved this before
 
 The Model Context Protocol did not invent its own design. It borrowed from a protocol that already solved the identical N×M problem in a different domain: the **Language Server Protocol (LSP)**, introduced by Microsoft in 2016.[^3]
+
+```takeaways
+- LSP solved the M-editors × N-languages explosion by separating language intelligence from editor UI, enabling any LSP client to talk to any language server via a standard JSON-RPC protocol.
+- MCP directly borrows three LSP architectural choices: JSON-RPC 2.0 over stdio, capability negotiation at handshake time, and a stateful session model.
+- The stateful session model contrasts with REST's stateless design, allowing servers to maintain context (open DB connections, cached auth tokens) between calls in a session without re-establishing it per request.
+```
 
 Before LSP, every code editor (VS Code, Vim, Emacs, Eclipse, IntelliJ) had to implement language support for every programming language — syntax highlighting, go-to-definition, autocomplete, rename refactor. The result was the same N×M explosion: M editors × N languages = M×N implementations, each with different quality and feature parity.
 
@@ -117,6 +135,12 @@ The explicit LSP comparison appears in the original MCP announcement from Anthro
 
 MCP defines a precise three-way topology that almost every tutorial glosses over. Understanding it prevents an entire class of architectural mistakes.
 
+```takeaways
+- The Host is the LLM application that starts server processes, manages sessions, and decides which tool results to inject into model context — not the server or the client.
+- The Client is internal plumbing inside the Host that manages a single server connection; a Host can maintain multiple Clients simultaneously, one per connected server.
+- The unidirectional constraint — servers only return data, never initiate actions — is what makes MCP servers safe to run as untrusted third-party processes.
+```
+
 **Host** — The LLM application. Claude.ai is a host. Cursor is a host. Your custom agent is a host. The host is responsible for: starting and stopping MCP server processes, managing user sessions, holding the LLM inference loop, and deciding which tool results to include in the model's context.
 
 **Client** — A component *inside the host* that manages a single MCP server connection. A host can maintain multiple clients simultaneously (one per MCP server). The client handles: JSON-RPC framing, capability negotiation, request multiplexing, and lifecycle management for one server. It is not user-facing; it's plumbing.
@@ -126,7 +150,7 @@ MCP defines a precise three-way topology that almost every tutorial glosses over
 The key constraint: the server does not independently trigger host actions. Information flows in one direction: the client calls the server, the server returns results, the client passes them to the host, the host injects them into the model context. While MCP's sampling capability (`sampling/createMessage`) allows servers to request that the host perform model inference on their behalf, the server has no channel to independently trigger arbitrary host actions. This unidirectional constraint is what makes MCP servers safe to run as untrusted third-party processes: a server cannot independently initiate actions against the host or against other connected services.
 
 <Callout type="warning">
-**The unidirectional constraint has teeth.** If you design an MCP server that tries to call back into the host (e.g., to trigger another tool call), you have broken the security model. The server has no channel for this — and any workaround (e.g., embedding a callback URL in a tool result) should be treated as a red flag in code review. See [[courses/mcp-from-first-principles-to-production/02-json-rpc-wire-protocol]] for how the JSON-RPC framing enforces this at the wire level.
+**The unidirectional constraint has teeth.** If you design an MCP server that tries to call back into the host (e.g., to trigger another tool call), you have broken the security model. The server has no channel for this — and any workaround (e.g., embedding a callback URL in a tool result) should be treated as a red flag in code review. See [[course/mcp-from-first-principles-to-production/02-json-rpc-over-stdio]] for how the JSON-RPC framing enforces this at the wire level.
 </Callout>
 
 <KnowledgeCheck
@@ -338,9 +362,9 @@ Structure your answer: "This is an MCP [Tool/Resource/Prompt] exposed by a serve
 ---
 
 ## What's next
-Chapter 2 covers the *how*. In [[courses/mcp-from-first-principles-to-production/02-json-rpc-wire-protocol]], you will dissect the JSON-RPC 2.0 envelope, implement the `initialize` lifecycle by hand, and build a 60-line Python server. You'll also learn the trade-offs between stdio and Streamable HTTP (HTTP+SSE).
+Chapter 2 covers the *how*. In [[course/mcp-from-first-principles-to-production/02-json-rpc-over-stdio]], you will dissect the JSON-RPC 2.0 envelope, implement the `initialize` lifecycle by hand, and build a 60-line Python server. You'll also learn the trade-offs between stdio and Streamable HTTP (HTTP+SSE).
 
-For roadmap context, [[blogs/mcp-2026-roadmap-explained]] details the OAuth 2.1 + DPoP trajectory and gateway discovery.
+For roadmap context, [[blog/mcp-2026-roadmap-explained]] details the OAuth 2.1 + DPoP trajectory and gateway discovery.
 
 ---
 

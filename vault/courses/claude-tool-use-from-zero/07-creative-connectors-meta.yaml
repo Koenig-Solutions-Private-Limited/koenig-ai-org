@@ -1,0 +1,16 @@
+chapter_path: vault/courses/claude-tool-use-from-zero/07-creative-connectors.md
+issue: KOEA-2264
+assets_generated:
+  - ch07-slides.pptx
+  - ch07-audio.mp3
+tool: generate_course_audio.py
+duration_audio_sec: 660
+slide_count: 7
+slide_file: vault/courses/claude-tool-use-from-zero/ch07-slides.pptx
+audio_file: vault/courses/claude-tool-use-from-zero/ch07-audio.mp3
+produced_at: 2026-05-14T14:24:43Z
+status: complete
+notes:
+  - Tier-3 fallback used because notebooklm-py/open-notebook were unavailable in this workspace.
+  - Audio generated from source chapter markdown; source markdown was not modified.
+  - Output normalized with ffmpeg loudnorm targeting -16 LUFS and encoded at 128 kbps.

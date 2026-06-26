@@ -164,6 +164,39 @@ services:
         max-size: "20m"
         max-file: "5"
 
+  watchdog:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        USER_UID: "${USER_UID:-501}"
+        USER_GID: "${USER_GID:-20}"
+    image: koenig/paperclip-server:dev
+    container_name: koenig-watchdog
+    restart: unless-stopped
+    command:
+      [
+        "/bin/bash",
+        "/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/watchdog/start-watchdog.sh",
+      ]
+    environment:
+      PAPERCLIP_HOST: "http://paperclip:3100"
+      PAPERCLIP_API_KEY: "${PAPERCLIP_API_KEY:?PAPERCLIP_API_KEY must be set}"
+      KOENIG_COMPANY_ID: "2a77f89b-33f0-4133-a20c-77ddaac5e744"
+      WATCHDOG_INTERVAL_MS: "600000"
+    env_file:
+      - ../.env.koenig
+    volumes:
+      - /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org:/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org:rw
+    depends_on:
+      paperclip:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"
+
   cron-driver:
     # Pokes Chief Engineering every 5 min so the agent dispatch cascade keeps flowing.
     # Replaces the launchd plist that fails under macOS Sequoia TCC, and survives Mac reboots
@@ -258,6 +291,38 @@ services:
       driver: json-file
       options:
         max-size: "5m"
+        max-file: "3"
+
+  chromium-debug:
+    # V7 Phase O — persistent CDP for QA browser-use walkthroughs.
+    # browser-use reads webSocketDebuggerUrl from /json/version; without EXTERNAL
+    # browserless advertises ws://0.0.0.0:3000 and agents fail ECONNREFUSED.
+    image: ghcr.io/browserless/chromium:latest
+    container_name: paperclip-chromium-debug
+    restart: unless-stopped
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      TOKEN: "koenig-cdp-token-2026"
+      EXTERNAL: "http://paperclip-chromium-debug:3000"
+      MAX_CONCURRENT_SESSIONS: "5"
+    ports:
+      # Host QA / operator checks use localhost:9222 (see QA Verifier AGENTS.md).
+      - "9222:3000"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS 'http://127.0.0.1:3000/json/version?token=koenig-cdp-token-2026' | grep -qv '0.0.0.0'",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
         max-file: "3"
 
 volumes:

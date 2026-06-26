@@ -1,11 +1,14 @@
 {
-  "tool": "macos-say-fallback",
-  "voice_preset": "moira",
-  "duration_sec": 185.635,
-  "lufs": -16,
-  "bitrate_kbps": 128,
-  "channels": "mono",
-  "sample_rate_hz": 48000,
-  "produced_at": "2026-04-30T16:26:00Z",
-  "notes": "Kokoro and OmniVoice installation failed; used macOS native say command with Moira voice. Loudness normalized to -16 LUFS via ffmpeg loudnorm filter."
+  "tool": "openai-tts-direct",
+  "model": "tts-1",
+  "voice": "alloy",
+  "duration_sec": 181.42,
+  "lufs": -16.09,
+  "bitrate_kbps": 160,
+  "channels": "stereo",
+  "sample_rate_hz": 44100,
+  "script_source": "vault/courses/picking-a-frontier-model-2026-q2/voiceover-04.md",
+  "audio_path": "vault/courses/picking-a-frontier-model-2026-q2/voiceover-04.mp3",
+  "produced_at": "2026-05-14T07:12:10Z",
+  "notes": "Regenerated from corrected voiceover-04.md cost narrative via OpenAI TTS tier-3 fallback because notebooklm-py, open-notebook, macOS say, and scripts/generate_course_audio.py were unavailable in this runtime. Loudness normalized with ffmpeg loudnorm to approximately -16 LUFS."
 }

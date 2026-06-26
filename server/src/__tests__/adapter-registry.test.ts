@@ -28,6 +28,7 @@ import {
   findActiveServerAdapter,
   findServerAdapter,
   listAdapterModels,
+  listServerAdapters,
   registerServerAdapter,
   requireServerAdapter,
   unregisterServerAdapter,
@@ -87,6 +88,20 @@ describe("server adapter registry", () => {
     expect(findServerAdapter("external_test")).toBeNull();
     expect(() => requireServerAdapter("external_test")).toThrow(
       "Unknown adapter type: external_test",
+    );
+  });
+
+  it("normalizes legacy cursor_local to the cursor adapter at runtime lookup", () => {
+    const cursorAdapter = requireServerAdapter("cursor");
+    expect(requireServerAdapter("cursor_local")).toBe(cursorAdapter);
+    expect(findActiveServerAdapter("cursor_local")).toBe(cursorAdapter);
+    expect(findServerAdapter("cursor_local")).toBeNull();
+    expect(listServerAdapters().filter((adapter) => adapter.type === "cursor_local")).toEqual([]);
+  });
+
+  it("fails closed on unknown adapter types via requireServerAdapter", () => {
+    expect(() => requireServerAdapter("definitely_not_an_adapter")).toThrow(
+      "Unknown adapter type: definitely_not_an_adapter",
     );
   });
 

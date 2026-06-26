@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.koenig.cmo-bridge</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-c</string>
+    <string>cd /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/services/cmo-bridge &amp;&amp; if [ ! -d .venv ]; then /usr/bin/python3 -m venv .venv &amp;&amp; .venv/bin/pip install -q -r requirements.txt; fi &amp;&amp; set -a; . /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/.env.koenig 2&gt;/dev/null; set +a; export CMO_BRIDGE_STATE_DIR=/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/services/cmo-bridge/.state; mkdir -p "$CMO_BRIDGE_STATE_DIR"; .venv/bin/uvicorn main:app --host 127.0.0.1 --port 8301</string>
+  </array>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>StandardOutPath</key>
+  <string>/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/infra/launchd/.logs/cmo-bridge.out.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/infra/launchd/.logs/cmo-bridge.err.log</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PAPERCLIP_API_URL</key>
+    <string>http://localhost:3100/api</string>
+    <key>PAPERCLIP_COMPANY_ID</key>
+    <string>2a77f89b-33f0-4133-a20c-77ddaac5e744</string>
+    <key>CMO_AGENT_ID</key>
+    <string>3b3b293d-b47d-40e2-939c-9a19894b0996</string>
+    <key>CEO_AGENT_ID</key>
+    <string>5a1e1c39-1ba7-46af-a4df-c6bbef8549e9</string>
+    <key>CMO_PROJECT_ID</key>
+    <string>39c1cb6a-3ae6-43b5-9fb7-e7a869dd8598</string>
+    <key>CMO_BRIDGE_PORT</key>
+    <string>8301</string>
+  </dict>
+</dict>
+</plist>

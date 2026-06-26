@@ -6,13 +6,14 @@ type: voiceover-script
 voice_preset: nova-warm
 target_duration_sec: 180
 word_count: 450
+status: g0-blocked
 ---
 
 # Voiceover script — Cost-per-task: Pricing vs. actual bill on real workloads
 
 **[Intro — set the trap]**
 
-You've probably seen the pricing comparison: Claude Opus is five dollars per million input tokens. GPT-5.5 is ten dollars. Gemini is two dollars. That makes Gemini four times cheaper, right?
+You've probably seen the pricing comparison: Claude Opus is five dollars per million input tokens. GPT-5.5 is ten dollars. Gemini is two dollars. That makes Gemini two-point-five times cheaper, right?
 
 Wrong.
 
@@ -28,17 +29,17 @@ Gemini 3.1 Pro, at the same three-step task, has determinism of 84 percent. That
 
 You need 1.2 runs of Opus to complete one successful task. You need 1.69 runs of Gemini.
 
-When you factor that retry amplification into the cost model, Gemini's cost advantage compresses from four times cheaper to three-point-six times cheaper. Still cheaper — but the gap is closing.
+When you factor that retry amplification into the cost model, Gemini's cost advantage compresses from two-point-three times cheaper to one-point-seven times cheaper. Still cheaper — but the gap is closing.
 
 Now stretch that to a ten-step pipeline. The retry multiplier scales exponentially: one over determinism to the power of n. A fourteen-point determinism gap — Opus at 78 percent, Gemini at 64 percent — produces a seven-point-two times difference in expected runs to success.
 
 **[The inversion]**
 
-Here's where it gets truly contrarian. At ten steps with ambiguous input, Opus costs about twelve dollars per successful task. Gemini costs about eighteen dollars.
+Here's where it gets truly contrarian. At ten steps with ambiguous input, Opus costs about four dollars per successful task. Gemini costs about twelve dollars.
 
-The model with the lowest per-token price now costs fifty percent more to actually complete the work.
+The model with the lowest per-token price now costs three times more to actually complete the work.
 
-This break-even occurs around four to five steps. If your agentic system has four or more action steps on difficult inputs — and most production coding agents do — the pricing page is actively misleading you.
+This break-even occurs around four to five steps. If your agentic system has five or more action steps on difficult inputs — and most production coding agents do — the pricing page is actively misleading you.
 
 **[The lever you can control]**
 

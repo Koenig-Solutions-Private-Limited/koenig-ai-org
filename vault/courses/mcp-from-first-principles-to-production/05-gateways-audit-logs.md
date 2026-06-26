@@ -3,7 +3,7 @@ course_slug: mcp-from-first-principles-to-production
 chapter_num: 5
 chapter_slug: gateways-audit-logs
 title: "Gateways, audit logs, and shipping to a 1,000-user team"
-status: draft-for-review
+status: g3-passed
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30
@@ -54,6 +54,12 @@ An **MCP gateway** is a reverse proxy specialized for the Model Context Protocol
 
 Most engineering teams introduce a gateway after they hit a problem — usually when security asks "who called that tool last Tuesday?" and no one has an answer. By then, the audit trail is gone, RBAC is bolted on as an afterthought, and the refactor costs a sprint.
 
+```takeaways
+- Setting up an OSS MCP gateway takes under two hours and provides server discovery, token validation, RBAC enforcement, and audit logging from day one — retrofitting these after deployment costs far more.
+- The gateway is transparent to MCP clients: it receives and forwards valid JSON-RPC frames without the client needing to know or care that a gateway is in the path.
+- Adding a gateway to an existing deployment requires no changes to server or client code — the wire protocol is unchanged.
+```
+
 The argument for gateway-first is economic, not architectural. Setting up `mcp-gateway` (the OSS option covered in this chapter) takes under two hours. It gives you server discovery, token validation, RBAC enforcement, and a JSON Lines audit stream from the first deployment. Compare that to the cost of retrofitting all of that after your server is in production and twenty other teams are calling it.
 
 The [[02-json-rpc-over-stdio|wire protocol]] you learned in Chapter 2 does not change when you add a gateway. The gateway is transparent to the MCP client: it receives valid JSON-RPC frames, forwards them upstream, and returns the upstream response. The client doesn't know or care that a gateway is in the path. That transparency is what makes the gateway-first pattern possible: you can add it to an existing deployment without touching the server or client code.
@@ -83,6 +89,12 @@ MCP Client (Claude Desktop, IDE plugin, your agent)
 ```
 
 The gateway is the single ingress point for all MCP traffic. It does four things before forwarding any request:
+
+```takeaways
+- The gateway handles four pre-forwarding steps in sequence: DPoP token validation, RBAC scope check, rate limiting, and audit log write — none of these concerns need to live inside individual server implementations.
+- The `scopes_required` map in `.well-known/mcp.json` is server-declared RBAC policy: the gateway reads it and enforces per-method and per-tool-name scope requirements without requiring custom gateway configuration per server.
+- The gateway polls `.well-known/mcp.json` on startup and on a configurable interval (typically 5 minutes), so RBAC policy updates propagate automatically when the server's discovery document changes.
+```
 
 1. **Token validation**: verify the DPoP proof JWT and access token (as you wired in [[04-oauth-dpop-auth|Chapter 4]])
 2. **RBAC enforcement**: check the token's scopes against the requested tool
@@ -192,6 +204,12 @@ The gateway will discover the upstream server's capabilities via `.well-known/mc
 
 RBAC in MCP is scope-based: the OAuth access token carries a set of scopes, and the gateway checks them against the `scopes_required` map from `.well-known/mcp.json` before forwarding the request.
 
+```takeaways
+- The two canonical MCP scopes are `tools:read` (list and call read-only tools, read resources) and `tools:admin` (all of the above plus write and destructive tools).
+- The `scopes_required` map supports per-tool granularity using the `#tool_name` suffix — a single method like `tools/call` can require different scopes for different tools.
+- Rate limits for `tools:admin` should be tighter than for `tools:read` because write operations are inherently more impactful per call — a runaway admin-scope agent causes more damage per request.
+```
+
 The two canonical scopes are:
 
 | Scope | What it allows |
@@ -242,6 +260,12 @@ This is the **least-privilege principle** applied to MCP: you grant the minimum 
 ## Structured audit logging for SOC 2
 
 A SOC 2 Type II audit requires that you can answer five questions about any system action:
+
+```takeaways
+- Audit logs must record who, what, when, with what, and what happened — MCP gateway audit entries cover all five using fields from the DPoP token and the JSON-RPC request.
+- Raw tool arguments must never appear in audit logs; hash them (SHA-256 of serialized JSON args) to enable correlation without logging PII or secrets that tool arguments frequently contain.
+- Use `user_sub` from the DPoP token as the identity field, not a header value — it is cryptographically tied to the client's private key and cannot be spoofed.
+```
 
 1. **Who** performed it (identity, non-repudiable)
 2. **What** they did (action and target)

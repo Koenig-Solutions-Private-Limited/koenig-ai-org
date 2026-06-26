@@ -3,50 +3,53 @@ course_slug: production-agents-claude-agent-sdk-mcp-connector
 chapter_num: 5
 chapter_slug: production-deploy-observability
 title: "Production: deploy + observability + cost controls"
-status: draft-for-review
+description: "Ship Claude Agent SDK workloads with hooks, structured logging, cost circuit breakers, permission controls, and deployment guardrails."
+tags: [observability, hooks, cost-control]
+faq:
+  - q: "What is the safest alternative to bypassPermissions?"
+    a: "Use explicit allowedTools grants and acceptEdits for file editing instead of disabling all permission checks."
+  - q: "When should I use PreToolUse instead of PostToolUse?"
+    a: "Use PreToolUse when you need to block a risky call before it executes; use PostToolUse for logging after execution."
+  - q: "What should every production agent log?"
+    a: "Log tool name, session ID, file or resource target, result status, and cumulative cost or token usage where available."
+status: g0-passed
+last_updated: 2026-06-14
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30
 duration_min: 45
 prerequisites_chapters: [1, 2, 3, 4]
 learning_objectives:
-  - "Implement four production hooks: audit logging (PostToolUse), cost circuit breaker (Stop), session initialization (SessionStart), and prompt sanitization (UserPromptSubmit)"
+  - "Implement a production hook stack: audit logging (PostToolUse), pre-execution cost/tool guard (PreToolUse), prompt sanitization (UserPromptSubmit), and TypeScript-only session lifecycle telemetry where available"
   - "Configure structured JSON logging for every tool call"
   - "Apply the five-step deployment checklist before taking an agent to production"
   - "Explain why bypassPermissions is dangerous and what to use instead"
 key_concepts:
-  [hooks, hooksystem, postToolUse, circuit-breaker, structured-logging, settingSources, langfuse, permissionMode]
+  [hooks, hooksystem, preToolUse, postToolUse, circuit-breaker, structured-logging, settingSources, langfuse, permissionMode]
 hands_on_exercise: "Add the production hook stack to an existing agent, add a cost cap, and verify that a simulated runaway session terminates before hitting budget"
 sources:
-  - https://code.claude.com/docs/en/agent-sdk/overview
+  - https://docs.anthropic.com/en/docs/claude-code/sdk
   - https://platform.claude.com/docs/en/managed-agents/overview
   - https://platform.claude.com/docs/en/build-with-claude/files
+  - https://code.claude.com/docs/en/agent-sdk/hooks
+  - https://code.claude.com/docs/en/agent-sdk/claude-code-features
+  - https://code.claude.com/docs/en/agent-sdk/permissions
 ---
 
 # Production: deploy + observability + cost controls
 
-The Claude Agent SDK's hook system is a lifecycle callback framework — inspired by HTTP middleware — that lets you attach arbitrary Python or TypeScript functions to key agent events (PreToolUse, PostToolUse, Stop, SessionStart, SessionEnd, UserPromptSubmit) to implement audit logging, cost enforcement, and prompt sanitization without modifying the agent's core logic.
-
-Most teams discover the need for this the hard way: an agent that works perfectly in development starts generating surprise API bills in production, or silently modifies files it shouldn't touch, or loops on a subtask for 40 minutes. The [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK]] includes a hook system specifically for these scenarios [1]. The biggest production failure mode is not model hallucination — it's cost runaway. This chapter gives you the four hooks you need before any agent goes live, and the deployment checklist that ties everything together.
-
-> **Prerequisites**: Chapters 1–4
->
-> **Time**: 45 minutes
->
-> **Learning objectives**: By the end of this chapter you have a production hook stack, structured logging, a cost circuit breaker, and a deployment checklist you can apply to any new agent.
+The Agent SDK hook system attaches Python or TypeScript callbacks to agent events: `PreToolUse`, `PostToolUse`, `UserPromptSubmit`, `Stop`, and permission events. Python SDK callbacks do not support `SessionStart` or `SessionEnd`; TypeScript callbacks add those [3]. The biggest production failure mode is cost runaway — this chapter gives you the four hooks and deployment checklist to prevent it.
 
 ## Key facts
 
-1. The Agent SDK supports seven hook event types: `PreToolUse`, `PostToolUse`, `Stop`, `SessionStart`, `SessionEnd`, `UserPromptSubmit`, and additional events loaded from `.claude/settings.json` [1].
-2. `permissionMode: "bypassPermissions"` disables ALL safety checks, including file-edit confirmations and destructive Bash command prompts — not just MCP [1].
-3. Session JSONL files are written to `~/.claude/sessions/` by default and can be redirected with the `CLAUDE_SESSIONS_DIR` environment variable [1].
-4. Setting sources load in order: global (`~/.claude/`), then project (`.claude/`), then inline options. Inline options override everything [1].
-5. The correct alternative to `bypassPermissions` for MCP is `allowedTools` wildcards; for file edits is `permissionMode: "acceptEdits"` — combine them [1].
-6. Hooks receive the full tool input and can return a modified input, an error to block the call, or an empty dict to pass through unchanged [1].
+1. Python SDK callbacks: tool, prompt, stop, compaction, permission, notification, subagent events — no `SessionStart`/`SessionEnd`; TypeScript adds session lifecycle [3].
+2. `bypassPermissions` disables ALL safety checks including file-edit prompts and destructive Bash confirmations [1].
+3. Session JSONL files: `~/.claude/sessions/` by default; redirect with `CLAUDE_SESSIONS_DIR` [1].
+4. `PreToolUse` can deny/allow before execution; `PostToolUse` runs after — use for logging, not prevention [3].
 
 ## The hook system
 
-Hooks are callback functions attached to the agent lifecycle. They run synchronously in your process before or after every tool call. The SDK provides `HookMatcher` for filtering by tool name using regex:
+Hooks are synchronous callbacks that run in your process. `HookMatcher` filters by tool name via regex:
 
 ```python
 from claude_agent_sdk import query, ClaudeAgentOptions, HookMatcher
@@ -66,9 +69,13 @@ options = ClaudeAgentOptions(
 
 The `matcher` is a Python regex. `"Edit|Write"` matches any tool whose name contains "Edit" or "Write". Use `".*"` to match everything.
 
-## Hook 1: Audit log (PostToolUse)
+```takeaways
+- Hooks are synchronous callback functions that run in your process before or after every tool call; `HookMatcher` filters by tool name using a Python regex.
+- `PreToolUse` runs before execution — use it to block risky calls before side effects occur; `PostToolUse` runs after — use it for logging and audit, not prevention.
+- Python SDK callbacks do not support `SessionStart` or `SessionEnd`; TypeScript SDK callbacks add these session lifecycle events.
+```
 
-Every file modification should be logged with a timestamp, file path, and session ID. This hook runs after every successful Edit or Write call:
+## Hook 1: Audit log (PostToolUse)
 
 ```python
 import asyncio
@@ -115,28 +122,34 @@ Sample audit output:
 {"event": "file_modified", "timestamp": "2026-04-30T10:23:44Z", "tool": "Edit", "file_path": "src/auth.py", "session_id": "sess_01XxXxxXx", "tool_use_id": "toolu_01Abc123"}
 ```
 
-## Hook 2: Cost circuit breaker (Stop)
+## Hook 2: Cost circuit breaker (PreToolUse)
 
-The `Stop` hook fires when the agent's `stop_reason` indicates it has finished — or when you want to force an early stop. Use `PreToolUse` with a token counter for a real circuit breaker:
+Use `PreToolUse` to block tool calls before filesystem or MCP side effects occur:
 
 ```python
 class CostCircuitBreaker:
-    """Track estimated token cost and abort if threshold is exceeded."""
+    """Deny the next tool call once the application-managed token cap is reached."""
     
     def __init__(self, max_input_tokens: int = 500_000):
         self.max_input_tokens = max_input_tokens
         self.total_input_tokens = 0
+
+    def update_usage(self, usage: dict) -> None:
+        # Call this from your message loop when result/usage metadata is available.
+        self.total_input_tokens = usage.get("input_tokens", self.total_input_tokens)
     
     async def check_cost(self, input_data: dict, tool_use_id: str, context: dict) -> dict:
-        # Accumulate token usage from context (populated by the SDK)
-        usage = context.get("cumulative_usage", {})
-        self.total_input_tokens = usage.get("input_tokens", self.total_input_tokens)
-        
         if self.total_input_tokens > self.max_input_tokens:
-            raise RuntimeError(
-                f"Circuit breaker triggered: {self.total_input_tokens:,} input tokens "
-                f"exceeds cap of {self.max_input_tokens:,}. Session terminated."
-            )
+            return {
+                "hookSpecificOutput": {
+                    "hookEventName": input_data["hook_event_name"],
+                    "permissionDecision": "deny",
+                    "permissionDecisionReason": (
+                        f"Circuit breaker triggered: {self.total_input_tokens:,} input tokens "
+                        f"exceeds cap of {self.max_input_tokens:,}. Tool call blocked before execution."
+                    ),
+                }
+            }
         
         return {}
 
@@ -146,54 +159,65 @@ circuit_breaker = CostCircuitBreaker(max_input_tokens=500_000)
 options = ClaudeAgentOptions(
     allowed_tools=["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
     hooks={
-        "PostToolUse": [
+        "PreToolUse": [
             HookMatcher(matcher=".*", hooks=[circuit_breaker.check_cost])
         ]
     }
 )
 ```
 
-When `circuit_breaker.check_cost` raises, the `query()` generator raises the exception to your code and the agent stops. The session JSONL is preserved, so you can inspect exactly what happened.
+When `circuit_breaker.check_cost` returns `permissionDecision: "deny"`, the current tool call is blocked before it executes and Claude receives the denial reason as feedback. The session JSONL is preserved, so you can inspect exactly what happened.
 
 <Callout type="hot">
-Do NOT raise exceptions silently inside hooks — always log before raising. When a hook exception terminates a session in production, you need the context to diagnose it. Log the full `input_data`, `tool_use_id`, and the reason for termination before re-raising.
+Do NOT block silently inside hooks. When a hook denies a tool call in production, you need the context to diagnose it. Log the full `input_data`, `tool_use_id`, and denial reason before returning `permissionDecision: "deny"`.
 </Callout>
 
-## Hook 3: Session initialization (SessionStart)
+## Hook 3: Session lifecycle telemetry
 
-Use `SessionStart` to inject session metadata into your observability system as soon as the session opens:
+`SessionStart`/`SessionEnd` are TypeScript-only SDK callbacks. In Python, emit the session-start event when the first message arrives:
 
 ```python
-async def session_start(input_data: dict, tool_use_id: str, context: dict) -> dict:
-    session_id = context.get("session_id", "unknown")
-    
-    # Emit a structured start event for Langfuse or your logging backend
+async def log_session_start_from_first_message(message, logger):
+    session_id = getattr(message, "session_id", "unknown")
     start_event = {
         "event": "session_started",
         "timestamp": datetime.utcnow().isoformat() + "Z",
         "session_id": session_id,
-        "agent_version": context.get("agent_version", "unknown"),
         "environment": os.environ.get("DEPLOY_ENV", "development"),
     }
     logger.info(json.dumps(start_event))
-    return {}
+```
 
-options = ClaudeAgentOptions(
-    hooks={
-        "SessionStart": [
-            HookMatcher(matcher=".*", hooks=[session_start])
-        ],
-        "PostToolUse": [
-            HookMatcher(matcher="Edit|Write", hooks=[audit_file_change]),
-            HookMatcher(matcher=".*", hooks=[circuit_breaker.check_cost]),
-        ]
+TypeScript for true `SessionStart` support:
+
+```typescript
+import { query } from "@anthropic-ai/claude-agent-sdk";
+
+const sessionStart = async (input, toolUseId, context) => {
+  console.log(JSON.stringify({
+    event: "session_started",
+    session_id: input.session_id,
+    cwd: input.cwd,
+    timestamp: new Date().toISOString()
+  }));
+  return {};
+};
+
+for await (const message of query({
+  prompt: "Run the production agent",
+  options: {
+    hooks: {
+      SessionStart: [{ hooks: [sessionStart] }]
     }
-)
+  }
+})) {
+  console.log(message);
+}
 ```
 
 ## Hook 4: Prompt sanitization (UserPromptSubmit)
 
-`UserPromptSubmit` fires when a user message is submitted to the agent. Use it to strip PII or dangerous patterns before they reach the model:
+Fires before the user message reaches the model — strip PII here:
 
 ```python
 import re
@@ -229,9 +253,13 @@ options = ClaudeAgentOptions(
 )
 ```
 
-## The complete production hook stack
+```takeaways
+- `UserPromptSubmit` fires before the user message reaches the model — use it to strip PII, redact phone numbers and SSNs, and prevent sensitive data from entering the model's context.
+- Always log when PII redaction occurs, including which pattern was found and the session ID, to maintain compliance audit trails.
+- The four production hooks together cover the full agent lifecycle: input sanitization, pre-execution cost control, post-execution audit logging, and session telemetry.
+```
 
-Put it all together into a factory function you can reuse across agents:
+## The complete production hook stack
 
 ```python
 def production_options(
@@ -247,21 +275,20 @@ def production_options(
         mcp_servers=mcp_servers or {},
         permission_mode=permission_mode,
         hooks={
-            "SessionStart": [
-                HookMatcher(matcher=".*", hooks=[session_start])
-            ],
             "UserPromptSubmit": [
                 HookMatcher(matcher=".*", hooks=[sanitize_prompt])
             ],
+            "PreToolUse": [
+                HookMatcher(matcher=".*", hooks=[cb.check_cost]),
+            ],
             "PostToolUse": [
                 HookMatcher(matcher="Edit|Write", hooks=[audit_file_change]),
-                HookMatcher(matcher=".*", hooks=[cb.check_cost]),
             ],
         }
     )
 ```
 
-Usage:
+Usage — apply to the MCP agent from [[course/production-agents-claude-agent-sdk-mcp-connector/03-mcp-connector-multi-server|Chapter 3]] or any agent with multiple tool calls:
 
 ```python
 # Apply to the MCP agent from Chapter 3
@@ -274,7 +301,7 @@ async for message in query(
             "postgres": postgres_config,
             "docs": docs_config,
         },
-        max_input_tokens=1_000_000,  # ~$3 on Opus 4.7
+        max_input_tokens=1_000_000,  # verify the matching token budget against current model pricing
     ),
 ):
     if hasattr(message, "result"):
@@ -283,13 +310,13 @@ async for message in query(
 
 <RunPromptCell
   model="claude-sonnet-4-6"
-  prompt="I'm running an agent with a PostToolUse hook that tracks cumulative input tokens. After 12 tool calls, cumulative_usage shows 480,000 input tokens against a cap of 500,000. The agent is about to call Edit on three more files. Walk me through what the circuit breaker will do."
-  expectedOutput="Claude explains: the circuit breaker runs after each tool call. After the first Edit (call 13), it checks cumulative input tokens — if the total has crossed 500,000 it raises RuntimeError, terminating the session immediately. If the first edit doesn't push over 500k, the second edit might. The key point: the breaker fires AFTER the tool call completes (PostToolUse), so the file edit that triggers the cap will have already been written to disk. To prevent the file write entirely, use a PreToolUse hook instead."
+  prompt="I'm running an agent with a PreToolUse hook backed by an application-managed token counter. After 12 tool calls, the counter shows 505,000 input tokens against a cap of 500,000. The agent is about to call Edit on three more files. Walk me through what the circuit breaker will do."
+  expectedOutput="Claude explains: the PreToolUse hook runs before the next Edit call executes. Because the tracked total is already over 500,000 input tokens, the hook returns permissionDecision: deny with a reason. The first pending Edit is blocked before it writes to disk, and Claude receives feedback that the budget cap was exceeded. A PostToolUse guard would be too late for the edit that triggered it."
 />
 
-## Langfuse integration for observability
+## Langfuse integration
 
-Langfuse is the recommended observability backend for Koenig AI Academy's [[company/learnova-academy|agent stack]]. Wire it into your SessionStart and PostToolUse hooks:
+For a broader look at Langfuse setup and why it fits agent workloads, see [[blogs/2026-05-12-ai-agent-observability-langfuse|AI agent observability with Langfuse 2026]]. Create the trace on first session message; add spans from `PostToolUse` hooks:
 
 ```python
 from langfuse import Langfuse
@@ -300,18 +327,20 @@ langfuse = Langfuse(
     host=os.environ.get("LANGFUSE_HOST", "http://localhost:3100"),
 )
 
-async def langfuse_session_start(input_data: dict, tool_use_id: str, context: dict) -> dict:
-    session_id = context.get("session_id", "unknown")
+traces_by_session = {}
+
+def langfuse_session_start(message):
+    session_id = getattr(message, "session_id", "unknown")
     trace = langfuse.trace(
         id=session_id,
         name="agent_session",
         metadata={"environment": os.environ.get("DEPLOY_ENV", "dev")},
     )
-    context["langfuse_trace"] = trace
-    return {}
+    traces_by_session[session_id] = trace
+    return trace
 
 async def langfuse_tool_log(input_data: dict, tool_use_id: str, context: dict) -> dict:
-    trace = context.get("langfuse_trace")
+    trace = traces_by_session.get(input_data.get("session_id"))
     if trace:
         trace.span(
             name=input_data.get("tool_name", "unknown_tool"),
@@ -323,62 +352,47 @@ async def langfuse_tool_log(input_data: dict, tool_use_id: str, context: dict) -
 
 ## The five-step deployment checklist
 
-Before any agent goes to production, verify all five:
-
 ### 1. Permissions are minimal
-
-- `allowedTools` lists only the specific tools the agent needs — no `.*` wildcards in production
-- `permissionMode` is `acceptEdits` or `default` — never `bypassPermissions`
-- MCP tools are scoped to specific tool names where possible (not `mcp__github__*` for agents that only need `list_issues`)
+- `allowedTools` names specific tools — no `.*` wildcards
+- `permissionMode`: `acceptEdits` or `default` — never `bypassPermissions`
 
 ### 2. Cost controls are wired
-
-- A `PostToolUse` circuit breaker with a tested token cap
-- A session timeout mechanism (for Managed Agents: explicit session.update to "completed")
-- Langfuse (or equivalent) traces enabled with cost annotations
+- `PreToolUse` circuit breaker with a tested token cap
+- Session timeout (Managed Agents: explicit `status="completed"`)
 
 ### 3. Audit logging is active
-
-- Every Edit and Write logged with file path + session ID + timestamp
-- Bash tool calls logged with the command (be careful with secrets in commands)
-- Logs are structured JSON, not raw print statements
+- Every Edit/Write logged: file path + session ID + timestamp
+- Structured JSON, not print statements
 
 ### 4. Secrets are out of config
-
-- No API keys in `mcpServers.env` values — use environment variable references
-- No hardcoded tokens in `headers` — use `os.environ["KEY"]` or `process.env.KEY`
-- `.mcp.json` uses `${VAR}` syntax, committed to version control
+- No API keys in `mcpServers.env` — use `os.environ["KEY"]`
+- `.mcp.json` uses `${VAR}` syntax
 
 ### 5. Session files have a retention policy
-
-- `CLAUDE_SESSIONS_DIR` points to a location with log rotation
-- JSONL files are not written to a disk that's part of user-facing data storage
-- For Managed Agents: sessions are marked `completed` when done, not left idle
+- `CLAUDE_SESSIONS_DIR` with log rotation
+- JSONL files off user-facing storage
 
 <Callout type="warn">
 `bypassPermissions` is occasionally used in CI/CD pipelines where there's no human in the loop to approve tool calls. This is understandable but risky: it disables ALL safety prompts, including protections against destructive Bash commands. The safer alternative is to list every allowed tool explicitly in `allowedTools` and use `permissionMode: "acceptEdits"` for file operations. If your CI pipeline runs code that generates new files, that combination covers the common cases without the blast radius of `bypassPermissions`.
 </Callout>
 
+```takeaways
+- Never use `bypassPermissions` in production; combine `permissionMode: "acceptEdits"` with explicit `allowedTools` grants to cover both file edits and MCP tool calls safely.
+- Production agents must pass five checks: minimal permissions, wired cost controls, active audit logging, secrets out of config, and session files with a retention policy.
+- Structured JSON logs — not print statements — enable per-session cost breakdown, error rate by tool type, and session duration distribution from day one.
+```
+
 ## Hands-on exercise
 
-**Harden an existing agent with the production hook stack and verify the circuit breaker.**
+**Add the production hook stack to an existing agent and verify the circuit breaker fires.**
 
-Setup: Use the MCP-wired agent from Chapter 3, or any agent that makes multiple tool calls.
+1. Apply `production_options()` to any multi-tool agent
+2. Set `max_input_tokens=50_000` (intentionally low)
+3. Run: "Analyze every Python file in this directory and summarize each one's purpose"
+4. Confirm circuit breaker fires: `permissionDecision: "deny"` appears before all files are processed
+5. Check logs for `file_modified` and `session_started` entries
 
-Steps:
-1. Apply the `production_options()` factory function from this chapter to your agent
-2. Set `max_input_tokens=50_000` (intentionally low to trigger the circuit breaker)
-3. Run the agent with a prompt that requires multiple tool calls: "Analyze every Python file in this directory and write a summary of each one's purpose"
-4. Observe the circuit breaker trigger — the session should terminate before completing all files
-5. Check your structured logs for the `session_started`, `file_modified`, and any `pii_redacted` entries
-
-**Verification**:
-- The session terminates before processing all files
-- The terminal output shows the `RuntimeError` message from the circuit breaker
-- At least one `{"event": "file_modified"}` log entry exists (for any Write/Edit the agent made before tripping the breaker)
-- Raising `max_input_tokens` to `2_000_000` allows the full run to complete
-
-**Estimated time**: 20 minutes
+**Verify**: Session stops mid-run; raising cap to 2M allows full completion. **Est. time**: 20 min
 
 <RunPromptCell
   model="claude-sonnet-4-6"
@@ -387,7 +401,7 @@ Steps:
 />
 
 <KnowledgeCheck
-  question="A PostToolUse hook raises an exception when cumulative tokens exceed the cap. However, your team reports that the file edit that triggered the cap was already written to disk. What hook type should you use instead to prevent the write, and why?"
+  question="A PostToolUse guard blocks the session when cumulative tokens exceed the cap. However, your team reports that the file edit that triggered the cap was already written to disk. What hook type should you use instead to prevent the write, and why?"
   options={[
     "PreToolUse — it runs before the tool executes, allowing you to block the call before any filesystem change occurs",
     "PostToolUse with a file rollback — reverse the write after detecting the breach",
@@ -395,7 +409,7 @@ Steps:
     "Stop — it intercepts the agent's stop signal before cleanup"
   ]}
   correctIdx={0}
-  explanation="PostToolUse runs after the tool has already executed — the file is already written. PreToolUse runs before execution, giving you the chance to raise an exception that blocks the tool call entirely. For a cost circuit breaker that needs to prevent writes (not just log them), move the cap check to PreToolUse. For pure logging and alerting, PostToolUse is fine."
+  explanation="PostToolUse runs after the tool has already executed — the file is already written. PreToolUse runs before execution, giving you the chance to deny the tool call before side effects occur. For a cost circuit breaker that needs to prevent writes (not just log them), move the cap check to PreToolUse. For pure logging and alerting, PostToolUse is fine."
 />
 
 <KnowledgeCheck
@@ -405,91 +419,15 @@ Steps:
   explanation="Self-check: Set permissionMode to 'acceptEdits' (covers file read/write without prompting). Add to allowedTools: ['Read', 'Write', 'Edit', 'Glob', 'Grep'] for filesystem operations, plus 'mcp__github__list_issues' (or whichever specific GitHub tools you need — not mcp__github__* unless you genuinely need all of them). This gives the agent exactly what it needs with no bypassPermissions blast radius."
 />
 
-## Monitoring with structured logging in production
-
-Structured JSON logs let you query agent behavior with standard log tooling. Here's the complete logging setup used by the Koenig AI Academy agent pipeline:
-
-```python
-import logging
-import json
-import os
-import sys
-
-def setup_agent_logging(agent_name: str) -> logging.Logger:
-    """Configure structured JSON logging for a production agent."""
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(logging.Formatter('%(message)s'))
-    
-    logger = logging.getLogger(f"agent.{agent_name}")
-    logger.setLevel(logging.INFO)
-    logger.addHandler(handler)
-    logger.propagate = False
-    return logger
-
-def log_tool_event(logger: logging.Logger, event: str, tool_name: str,
-                   session_id: str, extra: dict = None):
-    """Emit a structured tool event."""
-    entry = {
-        "event": event,
-        "tool": tool_name,
-        "session_id": session_id,
-        "timestamp": datetime.utcnow().isoformat() + "Z",
-        "service": os.environ.get("SERVICE_NAME", "agent"),
-        "env": os.environ.get("DEPLOY_ENV", "development"),
-    }
-    if extra:
-        entry.update(extra)
-    logger.info(json.dumps(entry))
-```
-
-In Langfuse, these log entries correlate to spans on a trace timeline. In Datadog or CloudWatch Logs Insights, they're filterable with JMESPath or structured queries. In any system, they give you:
-
-- Per-session cost breakdown (how many tool calls, which tools, which files modified)
-- Error rate by tool type (which MCP servers fail most often)
-- Session duration distribution (identify runaway sessions before the circuit breaker)
-- Token efficiency (input tokens per useful tool call result)
-
-## Deploying to production environments
-
-The Agent SDK runs in your process — you can deploy it anywhere Python or Node.js runs. The key differences between deployment targets:
-
-**Lambda / Cloud Functions** (short-lived): best for agents that complete in under 15 minutes. Package the SDK and your agent code together. Set `CLAUDE_SESSIONS_DIR` to `/tmp` (ephemeral, disappears after the function cold-starts). Session resume doesn't work across invocations unless you serialize the session ID to a database.
-
-**Long-running container** (EC2, Cloud Run, K8s): best for agents with sessions that span multiple turns or that need to resume. Sessions persist on the container's disk. The risk: unbounded session file growth. Add a cron job inside the container that trims JSONL files older than 7 days.
-
-**Managed Agents** (Anthropic-hosted): as covered in [[course/production-agents-claude-agent-sdk-mcp-connector/02-managed-agents-when-to-use|Chapter 2]], the right choice for long-running async tasks where you don't want to manage the container. Event history persists server-side.
-
-For all environments:
-```bash
-# Required environment variables in production
-ANTHROPIC_API_KEY=sk-ant-...          # or use Bedrock/Vertex credentials
-CLAUDE_SESSIONS_DIR=/var/agent/sessions  # writable, with retention policy
-DEPLOY_ENV=production                   # for log filtering
-SERVICE_NAME=research-agent             # for log correlation
-```
-
-## The contrarian production advice: log before you optimize
-
-Most teams' first instinct after deploying an agent is to optimize for cost — reduce token usage, tune the model size, add caching. The better first move is to log everything and let data drive optimization decisions.
-
-Until you have structured logs for at least 100 real sessions, you don't know:
-- Which tool is called most often (and thus where caching would help most)
-- Which prompts consume the most tokens (and thus where prompt engineering ROI is highest)
-- What your actual p99 session cost is (different from the estimate you calculated before launch)
-
-The production hook stack from this chapter gives you that data for free as a side effect of safe operations. Run for two weeks, then optimize from evidence.
-
 ## What's next
 
-You've now completed the full five-chapter arc. The capstone project ties it together: you'll build a production research agent that orchestrates GitHub + Postgres + a cloud docs MCP server, uses the Files API for document context, and runs behind the complete hook stack from this chapter. The capstone repo is described in the [[course/production-agents-claude-agent-sdk-mcp-connector/outline|course outline]].
-
-The field is moving fast. Watch the [Claude Agent SDK changelog](https://github.com/anthropics/claude-agent-sdk-typescript/blob/main/CHANGELOG.md) and the [Managed Agents release notes](https://platform.claude.com/docs/en/release-notes/overview) for breaking changes — both are updated on a rolling basis.
+The capstone project ties all five chapters together: a production research agent that orchestrates GitHub + Postgres + a cloud docs MCP server, uses the Files API for document context, and runs behind the complete hook stack. Details in the [[course/production-agents-claude-agent-sdk-mcp-connector/outline|course outline]].
 
 ## References
 
-[1] Claude Agent SDK Overview — https://code.claude.com/docs/en/agent-sdk/overview · retrieved 2026-04-30
+[1] Claude Agent SDK Overview — https://code.claude.com/docs/en/sdk · retrieved 2026-06-14
 [2] Claude Managed Agents Overview — https://platform.claude.com/docs/en/managed-agents/overview · retrieved 2026-04-30
-[3] Agent SDK Hooks — https://code.claude.com/docs/en/agent-sdk/hooks · retrieved 2026-04-30
+[3] Agent SDK Hooks — https://code.claude.com/docs/en/agent-sdk/hooks · retrieved 2026-05-14
 [4] Claude Agent SDK Permissions — https://code.claude.com/docs/en/agent-sdk/permissions · retrieved 2026-04-30
 [5] Files API — https://platform.claude.com/docs/en/build-with-claude/files · retrieved 2026-04-30
 [6] Langfuse Observability — https://langfuse.com · retrieved 2026-04-30

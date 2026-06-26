@@ -3,7 +3,7 @@ course_slug: mcp-from-first-principles-to-production
 chapter_num: 2
 chapter_slug: json-rpc-over-stdio
 title: "JSON-RPC over stdio — the wire protocol explained"
-status: draft-for-review
+status: g3-passed
 author: course-author
 date: 2026-04-30
 duration_min: 45
@@ -35,6 +35,12 @@ sources:
 
 Every MCP SDK — the Python `mcp` package, the TypeScript `@modelcontextprotocol/sdk`, the Rust crate — is an abstraction layer over the same wire protocol. When something goes wrong in production, the abstraction disappears and you're reading raw JSON in a log file or a debugger. If you don't know what that JSON *should* look like, you can't diagnose the problem.
 
+```takeaways
+- All MCP SDKs abstract over the same underlying wire protocol, so production debugging always reduces to reading raw JSON-RPC messages regardless of which SDK you used.
+- Understanding the wire format lets you reason about round-trip costs, structured error shapes, and what attacker-visible information is present in each request.
+- SDK fluency without wire fluency means you can configure MCP integrations but cannot diagnose failures when they occur in production.
+```
+
 More importantly: once you understand the wire format, the SDK stops being magic. Every SDK call maps to one or two JSON messages. Once you can see those messages, you can reason about performance (how many round-trips does a tool call require?), error handling (what does a structured error look like vs. a malformed request?), and security (what information is in the request that an attacker could exploit?).
 
 This chapter builds that fluency from scratch.
@@ -44,6 +50,12 @@ This chapter builds that fluency from scratch.
 ## JSON-RPC 2.0: the message envelope
 
 MCP uses **[[JSON-RPC 2.0]]**[^1] as its message format. This is not an implementation detail — it's a deliberate choice with specific consequences. Let's understand it before we look at MCP-specific message types.
+
+```takeaways
+- The `id` field in a JSON-RPC request is the correlation mechanism: it allows multiple requests to be in-flight simultaneously because each response carries back the same `id` as its request.
+- Notifications are distinguished from requests by the absence of an `id` field; the sender never expects a response, making them the mechanism for unsolicited server-to-client push events.
+- The `error` and `result` fields in a response are mutually exclusive — a valid JSON-RPC response carries exactly one of them, never both.
+```
 
 JSON-RPC 2.0 defines four message shapes:
 
@@ -137,6 +149,12 @@ MCP supports batch messages but rarely uses them in practice. Most SDK implement
 
 For local MCP servers — servers running on the same machine as the host — the MCP spec defines **[[MCP stdio transport|stdio transport]]**: the host launches the server as a subprocess and communicates via stdin (host → server) and stdout (server → host). Each message is a JSON object terminated by a single newline character (`\n`).[^2]
 
+```takeaways
+- Stdio transport uses newline-delimited JSON: the framing rule is read until `\n`, parse as JSON — no sockets, no ports, no TLS configuration required for local servers.
+- The subprocess lifecycle model means the server dies automatically when its parent closes the pipe, eliminating the need for explicit cleanup logic that long-running network servers require.
+- Stderr is strictly reserved for logs; any log output written to stdout will corrupt the JSON-RPC stream and cause parse errors in the client — the most common first-time MCP implementation mistake.
+```
+
 This is newline-delimited JSON, also called NDJSON or JSON Lines. The framing rule is brutally simple: read until `\n`, parse what you got as JSON, process it.
 
 ```
@@ -181,6 +199,12 @@ REST over HTTP is request-response only. MCP needs bidirectionality: the server 
 ## The initialize handshake: step by step
 
 Every MCP session begins with a [[MCP initialize handshake|three-message handshake]][^4]. Understanding it prevents a surprising class of bugs where a server works in isolation but fails when connected to a real host.
+
+```takeaways
+- The three-message handshake (initialize request → initialize response → notifications/initialized) must complete before any tool calls are valid; requests sent before `notifications/initialized` are a protocol violation.
+- Each side's `capabilities` object is the negotiation surface: if a server omits `{"resources": {}}` from its capabilities, the client will not attempt `resources/list` — the handshake determines the entire call surface.
+- The client sends `notifications/initialized` as a notification (no `id`) to signal readiness; the server does not respond to it, and the session becomes live immediately after.
+```
 
 ### Message 1: `initialize` (client → server)
 

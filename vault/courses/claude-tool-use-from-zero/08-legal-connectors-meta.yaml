@@ -1,0 +1,15 @@
+chapter_path: vault/courses/claude-tool-use-from-zero/08-legal-connectors.md
+issue: KOEA-4943
+assets_generated:
+  - ch08-slides.pptx
+  - ch08-audio.mp3
+tool: generate_course_slides.py
+duration_audio_sec: 1200
+slide_count: 7
+slide_file: vault/courses/claude-tool-use-from-zero/ch08-slides.pptx
+audio_file: vault/courses/claude-tool-use-from-zero/ch08-audio.mp3
+produced_at: 2026-05-26T10:49:31Z
+status: complete - slides refreshed for G0 blocker fix
+notes:
+  - Slides regenerated via python-pptx script to satisfy G0 slide checklist requirements.
+  - Source chapter markdown was not modified.

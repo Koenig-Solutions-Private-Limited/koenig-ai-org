@@ -6,7 +6,8 @@ prerequisites_chapters: [1]
 duration_min: 55
 reading_time_min: 55
 date: 2026-04-30
-status: draft-for-review
+status: g0-passed
+last_updated: 2026-06-14
 author: Koenig AI Academy
 agent_drafted_by: course-author
 content_type: course-chapter
@@ -70,7 +71,7 @@ python -c "import google.adk; print(google.adk.__version__)"
 You should see a version string beginning with `1.` (the current release is in the 1.3x series). If you see an import error, check that your Python environment matches the `python` binary you ran above.
 
 <Callout type="info">
-**Venv is strongly recommended.** ADK pulls in `google-cloud-aiplatform` and several other Google Cloud libraries. Isolating this in a virtualenv prevents version conflicts with existing projects. Run `python -m venv .venv && source .venv/bin/activate` before installing.
+**Venv is strongly recommended.** ADK pulls in `google-cloud-aiplatform` and other Google Cloud libraries; isolate it to prevent version conflicts. Run `python -m venv .venv && source .venv/bin/activate` before installing.
 </Callout>
 
 ---
@@ -78,6 +79,12 @@ You should see a version string beginning with `1.` (the current release is in t
 ## Step 2: Define your first tool
 
 In ADK, a **tool** is a Python function. The function's docstring is the tool description — the model reads it to decide when to call the function. Type annotations are the parameter schema.
+
+```takeaways
+- ADK infers the tool schema from the Python function's type annotations and docstring at runtime — no decorator or separate JSON schema file is required.
+- The docstring quality directly controls when the model calls a tool; "Use this tool when..." phrasing is the trigger phrase that shapes model behavior.
+- Tools must return strings or JSON-serialisable values because the model reads the return value as tool output; structured data should be returned as JSON strings for complex results.
+```
 
 Create `budget_tracker/tools.py`:
 
@@ -133,25 +140,30 @@ def get_expense_summary() -> str:
     return "Expense summary:\n" + "\n".join(lines)
 ```
 
-Three things to notice:
-
-1. **No decorator.** There is no `@tool` magic. ADK infers the tool schema from the function signature and docstring at runtime.
-2. **Docstring quality matters.** The model reads the docstring — not the function name — to decide when to call this tool. "Use this tool when..." is the trigger phrase that shapes model behaviour.
-3. **Return strings.** Tools return strings (or JSON-serialisable values) that the model reads as tool output. Return structured data as JSON strings for complex results.
-
 ---
 
 ## Step 3: Wire the agent
 
+```takeaways
+- The `instruction` field in the Agent constructor is the system prompt and acts as the most important variable controlling agent behavior — it should be version-controlled and tested like production code.
+- Explicit per-tool rules in the instruction (when to call, what not to do) reduce wrong-tool invocations and hallucinated data significantly compared with a vague persona prompt.
+- The `Agent` constructor requires only `name`, `model`, `description`, `instruction`, and `tools` to produce a deployable agent with automatic multi-step tool use.
+```
+
 Create `budget_tracker/agent.py`:
 
 ```python
+import os
 from google.adk import Agent
 from budget_tracker.tools import log_expense, get_expense_summary
 
+# Use a stable model ID or environment variable in production.
+# Preview model IDs like 'gemini-3.1-pro-preview' are volatile.
+MODEL_ID = os.getenv("AGENT_MODEL_ID", "gemini-flash-latest")
+
 budget_agent = Agent(
     name="budget_tracker",
-    model="gemini-flash-latest",
+    model=MODEL_ID,
     description="A personal budget tracker that logs and summarises expenses.",
     instruction="""You are a friendly budget tracker. 
 
@@ -165,12 +177,6 @@ Keep responses short. Do not invent expenses the user did not mention.""",
     tools=[log_expense, get_expense_summary],
 )
 ```
-
-The `instruction` field is the system prompt. It does four things here:
-- Sets the persona
-- Gives explicit rules for when to call each tool
-- Tells the model not to hallucinate data
-- Keeps output concise
 
 <Callout type="warning">
 **Instruction quality is your most important variable.** A poorly written instruction produces an agent that calls the wrong tool, invents data, or returns walls of text. Treat the instruction like production code: version it, test it, refine it when you see failures.
@@ -235,6 +241,12 @@ The agent correctly identifies two separate expenses from one message, calls `lo
 ## Step 5: Add session state
 
 Right now, expenses vanish when the process restarts. The `_expenses` list is in memory. Real agents need state that survives restarts. GEAP offers two layers: **Session state** (within a conversation) and **Memory Bank** (across all conversations for a user).
+
+```takeaways
+- ADK injects a `Session` object into tool functions automatically when the parameter is typed as `Session` — no manual wiring is required by the caller.
+- `session.state` is a dictionary that ADK persists through the conversation and restores if the same session ID is resumed after a process restart.
+- Switching from local `InMemorySessionService` to production `VertexAiSessionService` requires only a one-line constructor swap; all tool code and the Session API remain unchanged.
+```
 
 Let's start with Session state. Modify `agent.py`:
 
@@ -320,15 +332,17 @@ def get_expense_summary(session: Session) -> str:
     return "Expense summary:\n" + "\n".join(lines)
 ```
 
-Key insight: ADK injects `session` automatically when a tool function declares a `Session` parameter. You do not pass it yourself — the framework sees the type annotation and injects the current session. This is ADK's dependency injection pattern.
-
-`session.state` is a dictionary that ADK persists through the conversation. If you restart the process but resume the same session ID, `session.state` is restored.
-
 ---
 
 ## Step 6: Understanding Session vs Memory Bank
 
 The distinction between these two concepts is the most important architectural choice in this chapter:
+
+```takeaways
+- Session state is scoped to one conversation and holds raw data you write explicitly; Memory Bank is scoped to a user across all conversations and holds distilled "Memory Profiles" the platform generates automatically.
+- Memory Bank profiles are created by running a model over completed sessions to extract relevant facts, enabling agents to recall user preferences and history at low latency without loading full conversation transcripts.
+- Memory Bank requires deploying to Vertex AI with `VertexAiSessionService` and is not available with `InMemorySessionService` used in local development.
+```
 
 | | **Session state** | **Memory Bank** |
 |---|---|---|
@@ -339,13 +353,7 @@ The distinction between these two concepts is the most important architectural c
 | **Who creates it** | You (via `session.state` writes) | The platform (via model distillation) |
 | **Who reads it** | Your tools, explicitly | The agent's instruction context, automatically |
 
-**Session state** is for information that matters during the current conversation: a shopping cart, an in-progress form, the user's current task context. You write to it explicitly.
-
-**Memory Bank** is for information that should survive across conversations: user preferences, past decisions, relationship context. The platform creates Memory Profiles automatically by running a model over completed sessions and distilling relevant facts. You enable it; the platform manages it.
-
-For the budget tracker, the right model is:
-- Session state: the list of expenses logged so far in this conversation
-- Memory Bank profile: "This user tends to overspend on food; last month they spent $320 on dining"
+**Session state** holds what matters in the current conversation — a cart, a form, the user's task context — and you write to it explicitly. **Memory Bank** holds what should survive across conversations — preferences, past decisions — and the platform populates it automatically by distilling completed sessions. For the budget tracker: session state holds expenses logged this session; a Memory Bank profile would capture "user consistently overspends on food."
 
 <Callout type="info">
 **Memory Bank is not available in `InMemorySessionService`.** It requires deploying to Vertex AI with a `VertexAiSessionService`. For local development, simulate long-term memory by loading a state file at session start. We show the production wiring in the capstone.
@@ -367,7 +375,7 @@ session_service = VertexAiSessionService(
 )
 ```
 
-Everything else stays the same. Your tool code, your agent instruction, your tool definitions — unchanged. The `Session` object your tools receive has the same API. This is the portability promise of ADK: develop locally with in-memory services, deploy to Vertex with a one-line swap. For a broader introduction to the Vertex AI infrastructure GEAP builds on, see [[course/vertex-ai-fundamentals]].
+Everything else stays the same. Your tool code, your agent instruction, your tool definitions — unchanged. The `Session` object your tools receive has the same API. This is the portability promise of ADK: develop locally with in-memory services, deploy to Vertex with a one-line swap. For a broader introduction to the Vertex AI infrastructure GEAP builds on, see [[gemini-enterprise-agents/01-what-gemini-enterprise-agent-platform-is-and-isnt|the GEAP platform overview]].
 
 <RunPromptCell
   model="gemini-flash-latest"

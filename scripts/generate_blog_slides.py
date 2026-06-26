@@ -56,6 +56,7 @@ def parse_frontmatter(text: str):
 
 def clean_line(line: str) -> str:
     """Strip markdown syntax for display as plain bullet text."""
+    line = re.sub(r'\[\[(?:[^\]|]+\|)?([^\]]+)\]\]', r'\1', line)  # [[target]] or [[target|display]]
     line = re.sub(r'\*\*(.+?)\*\*', r'\1', line)
     line = re.sub(r'\*(.+?)\*', r'\1', line)
     line = re.sub(r'`([^`]+)`', r'\1', line)
@@ -72,26 +73,47 @@ def extract_sections(body: str):
     sections = []
     current_title = None
     bullets: list[str] = []
+    in_code_block = False
 
     for raw_line in body.splitlines():
+        # Track code fences; skip content inside them
+        if raw_line.startswith("```"):
+            in_code_block = not in_code_block
+            continue
+        if in_code_block:
+            continue
+
         if raw_line.startswith("## "):
             if current_title is not None:
                 sections.append((current_title, bullets[:5]))
             current_title = raw_line[3:].strip()
             bullets = []
         elif raw_line.startswith("### "):
-            # treat as sub-bullet header
-            sub = raw_line[4:].strip()
+            sub = clean_line(raw_line[4:].strip())
             if sub:
-                bullets.append(sub[:100])
+                bullets.append(sub)
         elif current_title is not None:
-            cleaned = clean_line(raw_line)
-            if (cleaned
-                    and len(cleaned) > 15
-                    and not cleaned.startswith("|")
-                    and not cleaned.startswith("```")
-                    and not cleaned.startswith("![")):
-                bullets.append(cleaned[:120])
+            stripped = raw_line.strip()
+            if stripped.startswith(">"):
+                continue  # skip blockquotes
+            cleaned = clean_line(stripped)
+            # MCQ options (A–D) and question stems may exceed 120 chars; raise cap selectively.
+            # Regular paragraph text and other list items stay at 120 to keep body slides clean.
+            is_mcq_option = bool(re.match(r'^[A-D]\)\s', cleaned))
+            is_question_stem = bool(re.match(r'Question\s+\d+', cleaned))
+            max_len = 220 if is_question_stem else (200 if is_mcq_option else 120)
+            if not cleaned or cleaned.startswith("|") or cleaned.startswith("!["):
+                continue
+            if len(cleaned) > 15 and len(cleaned) <= max_len:
+                bullets.append(cleaned)
+            elif len(cleaned) > max_len and not is_mcq_option and not is_question_stem:
+                # Prose paragraph — split on sentence boundaries and take short sentences
+                for sentence in re.split(r'(?<=[.!?])\s+', cleaned):
+                    s = sentence.strip()
+                    if 15 < len(s) <= 120:
+                        bullets.append(s)
+                        if len(bullets) >= 5:
+                            break
 
     if current_title is not None:
         sections.append((current_title, bullets[:5]))
@@ -159,11 +181,16 @@ def make_content_slide(prs, section_title: str, bullets: list[str]):
     rect.line.fill.background()
 
     top = Inches(1.75)
-    for bullet in bullets[:4]:
+    display = bullets[:5]
+    # Use tighter spacing when there are 5 items so all fit above the footer
+    step = Inches(0.95) if len(display) == 5 else Inches(1.15)
+    box_h = Inches(0.85) if len(display) == 5 else Inches(1.05)
+    font_size = 15 if len(display) == 5 else 17
+    for bullet in display:
         _add_text(slide, f"  {bullet}",
-                  Inches(0.8), top, Inches(11.7), Inches(1.05),
-                  size=17, color=WHITE)
-        top += Inches(1.15)
+                  Inches(0.8), top, Inches(11.7), box_h,
+                  size=font_size, color=WHITE)
+        top += step
 
     _add_footer(slide)
 

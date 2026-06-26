@@ -1,0 +1,166 @@
+{
+  "course_slug": "working-across-global-time-zones-international-sales",
+  "toc_locked": true,
+  "chapters": [
+    {
+      "num": 1,
+      "slug": "mapping-global-clock",
+      "title": "Mapping the Global Clock: Time Zone Arithmetic and Shift Structures for Client-Facing Roles",
+      "owns": [
+        "time zone identification (IST, GST, CET, EST, PST, SGT)",
+        "time zone arithmetic and overlap window calculation",
+        "shift pattern classification (morning, afternoon, split)",
+        "follow-the-sun vs rotating-shift model selection",
+        "world-clock calendar configuration for multi-region view"
+      ],
+      "does_not_cover": [
+        "daily shift schedule design and time-blocking (ch2 owns it)",
+        "async communication protocols and availability signalling (ch2 owns it)",
+        "cross-cultural communication norms by region (ch3 owns it)",
+        "CRM time-zone display widgets and scheduling tools (ch4 owns it)",
+        "interview/profile evidence of shift flexibility (ch5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "calculate overlap window for IST/EST/SGT client trio",
+        "identify correct shift pattern for a given regional portfolio",
+        "distinguish follow-the-sun from rotating-shift and select for scenario",
+        "configure world-clock calendar to show three client regions simultaneously"
+      ],
+      "notebooklm_source_focus": [
+        "commercial time zone standards (IST, GST, CET, EST, PST, SGT) and UTC offsets",
+        "overlap window calculation methodology for global account management",
+        "follow-the-sun coverage models in IT services and sales",
+        "shift pattern design for client-facing roles spanning multiple continents"
+      ],
+      "dossier_path": "vault/research/courses/working-across-global-time-zones-international-sales/01-mapping-global-clock.md"
+    },
+    {
+      "num": 2,
+      "slug": "structuring-shift-ready-workday",
+      "title": "Structuring a Shift-Ready Workday: Time Blocking, Async Protocols, and Availability Signalling",
+      "owns": [
+        "time-blocked daily schedule design covering regional shift windows",
+        "deep-work block protection within shift structures",
+        "availability notice drafting (Slack/Teams status, email footer)",
+        "async communication tool configuration for shift boundary handoff",
+        "SLA breach diagnosis and schedule adjustment recommendations"
+      ],
+      "does_not_cover": [
+        "time zone arithmetic and overlap window calculation (ch1 owns it)",
+        "cross-cultural tone and urgency framing by region (ch3 owns it)",
+        "CRM configuration and scheduling automation tools (ch4 owns it)",
+        "shift handoff log format and CRM handoff documentation (ch4 owns it)",
+        "interview evidence of shift capability (ch5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "build a time-blocked schedule covering a regional shift window with a four-hour deep-work block",
+        "draft a Slack/email availability notice for three named time zones",
+        "configure two async tools (Loom, email scheduling, Notion) for shift boundary handoff",
+        "diagnose SLA breach risks in a provided schedule scenario"
+      ],
+      "notebooklm_source_focus": [
+        "time-blocking methodologies for distributed and async work environments",
+        "async video and written handoff tools (Loom, email scheduling, Notion) for global teams",
+        "SLA management in international account management",
+        "burnout prevention strategies for shift-flexible remote workers"
+      ],
+      "dossier_path": "vault/research/courses/working-across-global-time-zones-international-sales/02-structuring-shift-ready-workday.md"
+    },
+    {
+      "num": 3,
+      "slug": "cross-cultural-client-communication",
+      "title": "Cross-Cultural Client Communication Across Time Zone Boundaries",
+      "owns": [
+        "high-context vs low-context communication styles (APAC vs US)",
+        "urgency framing adaptation by region",
+        "meeting agenda design for off-hours participants",
+        "cultural etiquette risks (public holidays, prayer times, regional working-week norms)",
+        "time-zone awareness failure pattern diagnosis in client interaction transcripts"
+      ],
+      "does_not_cover": [
+        "time zone arithmetic and overlap window calculation (ch1 owns it)",
+        "async tool setup and availability signalling (ch2 owns it)",
+        "CRM time-zone display and scheduling link configuration (ch4 owns it)",
+        "interview verbal response and profile document construction (ch5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "rewrite a client email urgency framing for APAC high-context vs US low-context audience",
+        "construct a meeting agenda template acknowledging off-hours participation",
+        "identify cultural etiquette risks for three provided client geographies",
+        "evaluate two client interaction transcripts and diagnose time-zone awareness failures"
+      ],
+      "notebooklm_source_focus": [
+        "high-context vs low-context communication models (Hofstede, Hall)",
+        "regional working-week norms and public holiday calendars (APAC, EMEA, Americas)",
+        "meeting etiquette for participants joining outside business hours",
+        "written communication adaptation for global IT training sales contexts"
+      ],
+      "dossier_path": "vault/research/courses/working-across-global-time-zones-international-sales/03-cross-cultural-client-communication.md"
+    },
+    {
+      "num": 4,
+      "slug": "tooling-global-account-coverage",
+      "title": "Tooling for Global Account Coverage: CRM World-Clock Widgets, Scheduling Tools, and Shift Handoff Logs",
+      "owns": [
+        "CRM time-zone display configuration (Salesforce and HubSpot)",
+        "scheduling link setup with shift-hour availability blocks and holiday blackouts (Calendly, Microsoft Bookings)",
+        "shift handoff log entry production for live account scenarios",
+        "world-clock/time-zone comparison tool usage for multi-region meeting proposals (World Time Buddy, timeanddate.com)"
+      ],
+      "does_not_cover": [
+        "time zone arithmetic and overlap window theory (ch1 owns it)",
+        "daily schedule design and deep-work protection (ch2 owns it)",
+        "cultural communication style adaptation (ch3 owns it)",
+        "interview verbal response and LinkedIn/resume signalling (ch5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "configure a CRM record to display account-owner time zone and next viable contact window",
+        "set up a Calendly/Bookings link restricted to shift hours with regional holiday blocks",
+        "produce a shift handoff log entry sufficient for an incoming colleague to handle an urgent query",
+        "use World Time Buddy or timeanddate.com to propose three candidate slots for a four-region stakeholder call"
+      ],
+      "notebooklm_source_focus": [
+        "Salesforce and HubSpot time-zone field configuration for global account management",
+        "Calendly and Microsoft Bookings shift-hour availability configuration",
+        "shift handoff documentation best practices in global IT sales teams",
+        "World Time Buddy and timeanddate.com Meeting Planner for multi-region scheduling"
+      ],
+      "dossier_path": "vault/research/courses/working-across-global-time-zones-international-sales/04-tooling-global-account-coverage.md"
+    },
+    {
+      "num": 5,
+      "slug": "demonstrating-shift-flexibility-interviews",
+      "title": "Demonstrating Shift Flexibility in Interviews and Candidate Profiles: Evidencing Global Readiness",
+      "owns": [
+        "LinkedIn summary and resume rewriting for international time-zone flexibility signalling",
+        "STAR-format verbal response to shift-flexibility interview question",
+        "shift-readiness profile document construction (regions, overlap hours, async tool stack, SLA commitments)",
+        "candidate profile evaluation against shift-flexibility screening criteria"
+      ],
+      "does_not_cover": [
+        "time zone arithmetic and mental mapping (ch1 owns it)",
+        "actual workday schedule design and async protocols (ch2 owns it)",
+        "cross-cultural communication style adaptation (ch3 owns it)",
+        "CRM and scheduling tool configuration (ch4 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "rewrite a LinkedIn summary bullet to signal international time-zone flexibility with a quantified example",
+        "draft a 90-second STAR-format verbal response to 'How do you manage working across multiple time zones?'",
+        "build a one-page shift-readiness profile document with regions, overlap hours, async tool stack, and SLA commitments",
+        "evaluate two candidate profiles and identify which passes the shift-flexibility screening criterion with evidence"
+      ],
+      "notebooklm_source_focus": [
+        "Account Manager job posting language for international shift-flexibility requirements in 2026",
+        "STAR format application to operational competency questions in IT sales interviews",
+        "LinkedIn profile optimization for global readiness and shift-flexibility signals",
+        "candidate profile differentiation strategies for global IT training sales roles"
+      ],
+      "dossier_path": "vault/research/courses/working-across-global-time-zones-international-sales/05-demonstrating-shift-flexibility-interviews.md"
+    }
+  ]
+}

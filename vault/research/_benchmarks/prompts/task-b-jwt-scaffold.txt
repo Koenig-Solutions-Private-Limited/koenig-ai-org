@@ -1,0 +1,12 @@
+This Express app has 5 auth endpoints that all return 501 Not Implemented. Read the TODO comments in app.js — they specify the exact requirements for each endpoint.
+
+Implement all 5 endpoints:
+- POST /auth/register — bcrypt hash, 201 with accessToken + httpOnly refreshToken cookie
+- POST /auth/login — verify bcrypt, return accessToken + set refreshToken cookie
+- POST /auth/refresh — read refreshToken cookie, rotate both tokens, return new accessToken
+- POST /auth/logout — invalidate refreshToken, clear cookie, return 204
+- GET /me — verify Bearer accessToken, return { id, email, name }
+
+Use the in-memory users Map already defined in the file. Use bcrypt (saltRounds=10) for password hashing and jsonwebtoken for tokens (accessToken: 15min expiry, refreshToken: 7-day expiry). Use a JWT_SECRET env var with fallback to 'dev-secret'.
+
+After implementation, run `npm test` to confirm all 9 tests pass.

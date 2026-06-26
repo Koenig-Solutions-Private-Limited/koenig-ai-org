@@ -1,71 +1,128 @@
 ---
-course_slug: openai-agents-sdk-mastery
-title: "OpenAI Agents SDK Mastery: Build Autonomous Agents"
+slug: openai-agents-sdk-mastery
+title: "OpenAI Agents SDK Mastery: Build Production-Ready Autonomous Systems"
 status: outline-draft-for-review
 author: course-author
 level: Builder
-target_audience: "Developers comfortable with Python who have used OpenAI APIs and want to build autonomous agentic systems."
+target_audience: "Python and TypeScript developers who want to build autonomous, multi-agent systems using the latest OpenAI SDKs and the Responses API."
+tags:
+  - OpenAI Agents SDK
+  - Agent Orchestration
+  - Production Agents
+  - Realtime API
 prerequisites:
-  - "Proficiency in Python"
-  - "Experience with OpenAI API/LLM prompting"
-  - "Basic understanding of asynchronous programming"
+  - "Proficiency in Python or TypeScript"
+  - "Basic understanding of LLM APIs (Chat Completions)"
+  - "Familiarity with asynchronous programming"
 learning_outcomes:
-  - "Architect and build autonomous, tool-calling agents"
-  - "Implement durable state and memory persistence"
-  - "Design secure human-in-the-loop workflows"
-  - "Implement observability, tracing, and evaluation"
-  - "Deploy agents to production environments"
-total_duration_min: 480  # 8 hours
+  - "Architect and deploy autonomous, multi-agent systems using the OpenAI Agents SDK"
+  - "Implement high-performance voice agents using the Realtime API"
+  - "Migrate legacy Assistants API and Custom GPT logic to the modern SDK"
+  - "Establish production-grade observability with Langfuse and OpenTelemetry"
+  - "Build an Enterprise AI Triage Bot with human-in-the-loop and specialized handoffs"
+total_duration_min: 600  # 10 hours
 chapter_count: 10
 ---
 
 # Course outline
 
-## Chapter 1: Anatomy of an Agent [60 mins]
-- Learning objectives: Define agents vs. chatbots, SDK core concepts, setup environment.
-- Concepts: Agent loops, tool definition, runtime environment.
-- Exercise: Hello world agent.
+## Chapter 1: The Agent SDK & Responses API Model
+**Duration:** 60 mins
+**Prerequisites:** None
+**Learning objectives:**
+1. Compare the legacy Chat Completions API with the new Responses API model.
+2. Configure the development environment using Codex CLI and SDK credentials.
+3. Build a "Hello World" agent using the `Agent` class and the base SDK loop.
+**Key concepts:** SDK Architecture, Responses API vs Chat Completions, Environment Setup, The Agent Loop.
+**Hands-on exercise:** Initialize a basic agent that responds to system queries using the new SDK syntax.
 
-## Chapter 2: The Agent SDK Tool-Calling Model [60 mins]
-- Learning objectives: Defining robust tools, handling structured output.
-- Concepts: Pydantic schemas, tool execution, error handling in tools.
-- Exercise: Weather agent with tool-calling.
+## Chapter 2: Tool Orchestration & Pydantic Safety
+**Duration:** 60 mins
+**Prerequisites:** Chapter 1
+**Learning objectives:**
+1. Implement type-safe tool definitions using Pydantic and TypeScript interfaces.
+2. Execute tool-calling loops with automated error recovery.
+3. Design complex tools with structured output requirements.
+**Key concepts:** Function calling, Pydantic schemas, Tool execution loops, Structured outputs.
+**Hands-on exercise:** Build a "Data Guard Agent" that retrieves and validates structured financial data.
 
-## Chapter 3: State and Persistent Memory [60 mins]
-- Learning objectives: Managing conversation state, persistence layers.
-- Concepts: Threading, checkpointing, memory stores.
-- Exercise: Stateful agent with Redis/SQL persistence.
+## Chapter 3: Stateful Handoffs & Multi-Agent Routing
+**Duration:** 60 mins
+**Prerequisites:** Chapter 2
+**Learning objectives:**
+1. Implement the Handoff pattern to transfer control between specialized agents.
+2. Build a central "Router Agent" that classifies intent and delegates tasks.
+3. Maintain conversation context across agent transfers.
+**Key concepts:** Agent handoffs, Routing patterns, Context preservation, Specialized workers.
+**Hands-on exercise:** Build a multi-agent system where a Support agent hands off technical queries to a Dev agent.
 
-## Chapter 4: Planning and Reasoning [60 mins]
-- Learning objectives: Implementing chain-of-thought, multi-step planning.
-- Concepts: Plan-and-execute agents, reflection patterns.
-- Exercise: Task-decomposition agent.
+## Chapter 4: Memory & Persistence: Migration Paths
+**Duration:** 60 mins
+**Prerequisites:** Chapter 3
+**Learning objectives:**
+1. Migrate logic from legacy Assistants API or Custom GPTs to the new Agents SDK.
+2. Implement durable persistence layers for long-running agent threads.
+3. Manage vector store interactions within the agent loop.
+**Key concepts:** Migration strategies, Thread management, External memory stores, Vector integration.
+**Hands-on exercise:** Refactor an Assistants API script into a modular Agents SDK implementation.
 
-## Chapter 5: Human-in-the-loop Workflows [60 mins]
-- Learning objectives: Pausing execution, waiting for human approval.
-- Concepts: Interruptions, human-in-the-loop API, state modification.
-- Exercise: Approval-gated agent.
+## Chapter 5: Human-in-the-Loop & State Modification
+**Duration:** 60 mins
+**Prerequisites:** Chapter 4
+**Learning objectives:**
+1. Implement execution interrupts for manual human approval.
+2. Modify the internal state of a suspended agent before resuming execution.
+3. Design UI-driven agent workflows using SDK checkpoints.
+**Key concepts:** Interruptions, Human-in-the-loop API, State modification, Checkpointing.
+**Hands-on exercise:** Build an "Approval-Gated Agent" that requires human sign-off for sensitive operations.
 
-## Chapter 6: Observability, Tracing, and Debugging [60 mins]
-- Learning objectives: Tracking execution, visualizing agents, debugging failures.
-- Concepts: OpenTelemetry, tracing agents, logging state transitions.
-- Exercise: Set up tracing for existing agent.
+## Chapter 6: Realtime Agents: Voice & Audio Mastery
+**Duration:** 60 mins
+**Prerequisites:** Chapter 1
+**Learning objectives:**
+1. Integrate the Realtime API for low-latency voice-to-voice interaction.
+2. Optimize audio streaming and VAD (Voice Activity Detection) settings.
+3. Implement function calling within a realtime audio stream.
+**Key concepts:** Realtime API, WebSocket streaming, Latency optimization, Audio tool-calling.
+**Hands-on exercise:** Build a voice-activated assistant that executes tools via audio commands.
 
-## Chapter 7: Testing and Evaluation [60 mins]
-- Learning objectives: Unit testing agents, benchmark suites.
-- Concepts: Simulation testing, evals, golden datasets.
-- Exercise: Create eval suite for tool-calling.
+## Chapter 7: Observability & Langfuse Tracing
+**Duration:** 60 mins
+**Prerequisites:** Chapter 2
+**Learning objectives:**
+1. Export agent execution traces to Langfuse for analysis.
+2. Instrument agent loops with OpenTelemetry for production monitoring.
+3. Debug complex multi-agent failures using visualization tools.
+**Key concepts:** Distributed tracing, Langfuse integration, OpenTelemetry, Debugging agent loops.
+**Hands-on exercise:** Connect an existing agent system to Langfuse and analyze a failed tool call trace.
 
-## Chapter 8: Production Deployment [60 mins]
-- Learning objectives: Scaling agents, security, cost management.
-- Concepts: API encapsulation, rate limiting, monitoring.
-- Exercise: Dockerize agent for production.
+## Chapter 8: Enterprise Guards & Production Safety
+**Duration:** 60 mins
+**Prerequisites:** Chapter 5
+**Learning objectives:**
+1. Implement "Production Guards" to prevent prompt injection and hallucinations.
+2. Configure rate limiting and cost control at the agent level.
+3. Apply enterprise safety filters to agent outputs.
+**Key concepts:** Prompt injection protection, Cost monitoring, Output filters, Rate limiting.
+**Hands-on exercise:** Implement a safety middleware that blocks unauthorized data exfiltration attempts.
 
-## Chapter 9: Advanced Patterns [60 mins]
-- Learning objectives: Multi-agent coordination, orchestration.
-- Concepts: Handoffs, routing agents.
-- Exercise: Build a multi-agent system.
+## Chapter 9: Evals & Simulation Testing
+**Duration:** 60 mins
+**Prerequisites:** Chapter 7
+**Learning objectives:**
+1. Build a simulation test suite using "Agent-on-Agent" evaluation.
+2. Create and maintain "Golden Datasets" for regression testing.
+3. Calculate performance metrics (accuracy, cost, latency) for agent chains.
+**Key concepts:** Simulation testing, LLM-as-a-judge, Golden datasets, Performance benchmarks.
+**Hands-on exercise:** Create an automated eval script that scores an agent's tool-calling accuracy.
 
-## Chapter 10: Capstone Project: Autonomous Research Assistant [60 mins]
-- Learning objectives: Synthesize all learning into a deployable application.
-- Capstone deliverable: A production-ready agent that can research topics, summarize findings, and present reports.
+## Chapter 10: Capstone Project: Enterprise AI Triage Bot
+**Duration:** 60 mins
+**Prerequisites:** Chapters 1-9
+**Learning objectives:**
+1. Design and build a production-ready agentic application.
+2. Implement a support triage system with handoffs to specialized billing, tech, and sales agents.
+3. Integrate voice (Realtime), tracing (Langfuse), and human-in-the-loop approvals.
+**Key concepts:** Full-stack agent architecture, Integrated systems, Real-world deployment.
+**Hands-on exercise:** Deploy the AI Triage Bot and verify it passes the golden eval suite.
+**Capstone deliverable:** A production-ready Triage Bot that handles support tickets, uses tools, handoffs to specialists, and requires human approval for refunds.

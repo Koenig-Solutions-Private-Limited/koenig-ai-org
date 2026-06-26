@@ -35,6 +35,21 @@ services:
       db:
         condition: service_healthy
 
+  watchdog:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    command: ["/bin/bash", "watchdog/start-watchdog.sh"]
+    environment:
+      PAPERCLIP_HOST: "http://server:3100"
+      PAPERCLIP_API_KEY: "${PAPERCLIP_API_KEY:?PAPERCLIP_API_KEY must be set}"
+      KOENIG_COMPANY_ID: "2a77f89b-33f0-4133-a20c-77ddaac5e744"
+      WATCHDOG_INTERVAL_MS: "600000"
+    depends_on:
+      server:
+        condition: service_started
+    restart: unless-stopped
+
 volumes:
   pgdata:
   paperclip-data:

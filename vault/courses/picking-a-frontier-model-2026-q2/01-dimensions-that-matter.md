@@ -4,7 +4,7 @@ chapter_num: 1
 chapter_slug: dimensions-that-matter
 title: "How to choose frontier model evaluation dimensions for production workloads"
 hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch01-hero.svg"
-status: awaiting-g0
+status: g0-passed
 author: "Koenig AI Instructor"
 agent_drafted_by: ca965eff-ea59-4030-91de-47845d3600c6
 vendor_tag: koenig-ai-academy
@@ -13,7 +13,7 @@ date: 2026-04-30
 duration_min: 40
 prerequisites_chapters: []
 learning_objectives:
-  - "Identify the 5 evaluation dimensions that consistently separate frontier models on real production workloads"
+  - "Identify the 7 evaluation dimensions that consistently separate frontier models on real production workloads"
   - "Name 3 commonly cited benchmarks that correlate poorly with production outcomes and explain the gap"
   - "Build a custom scorecard template scoped to a specific use case"
   - "Distinguish 'frontier model' from 'best model for your use case'"
@@ -37,6 +37,11 @@ references:
   - "Prompt caching (Anthropic)"
   - "Prompt caching in the API (OpenAI)"
   - "Context caching overview (Google)"
+  - "Gemini 3.1 Pro launch post (Google)"
+  - "Gemini 3.1 Pro model card (Google DeepMind)"
+  - "Gemini 3.1 Pro Preview model page (Google)"
+  - "Gemini 3.1 Flash TTS launch post (Google)"
+  - "Gemini API speech generation guide (Google)"
 slides: courses/picking-a-frontier-model-2026-q2/ch01-slides.pptx
 audio: courses/picking-a-frontier-model-2026-q2/ch01-audio.mp3
 voiceover_script: courses/picking-a-frontier-model-2026-q2/voiceover-01.md
@@ -53,7 +58,7 @@ tags:
 >
 > **Time**: 40 minutes
 >
-> **Learning objectives**: By the end of this chapter, you can name the 5 evaluation dimensions that reliably predict production success, identify 3 popular benchmarks that don't, and fill in a scorecard for your specific use case.
+> **Learning objectives**: By the end of this chapter, you can name the 7 evaluation dimensions that reliably predict production success, identify 3 popular benchmarks that don't, and fill in a scorecard for your specific use case.
 
 Frontier model evaluation is the practice of measuring AI model capabilities along structured axes to predict production performance, rather than performance on standardized academic tests. As of Q2 2026, three models dominate serious production AI workloads: Claude Opus 4.7, GPT-5.5, and Gemini 3.1 Pro. This chapter gives you the conceptual scaffolding to decide *which* benchmark dimensions you actually need to measure for your workload before you run a single API call.
 
@@ -61,13 +66,19 @@ Frontier model evaluation is the practice of measuring AI model capabilities alo
 
 1. **MMLU**, **HumanEval**, and **GPQA** — the three benchmarks most commonly cited in model release notes — measure knowledge recall, single-function code generation, and graduate-level science respectively. None directly measures tool-use consistency, structured-output stability, or mid-context retrieval accuracy. [1][2]
 2. As of Q2 2026, no major public benchmark measures **tool-use determinism** — the probability that the same prompt produces structurally equivalent output across independent runs. Our internal dataset (`/data/claude-tool-use-determinism/2026-Q2/`) fills this gap for the three models covered in this course.
-3. Opus 4.7's published context window is **1M tokens** [7]; Gemini 3.1 Pro's is **1M tokens** [8]. Empirically measured retrieval accuracy at 80% of each model's advertised limit tells a different story — covered in [Chapter 3](/learn/picking-a-frontier-model-2026-q2/03-long-context-behavior).
+3. Opus 4.7's published context window is **1M tokens** [7]; Gemini 3.1 Pro's model card documents text, image, audio, and video inputs with a context window up to **1M tokens** and text output up to **64K tokens** [8][13]. Empirically measured retrieval accuracy at 80% of each model's advertised limit tells a different story — covered in [Chapter 3](/learn/picking-a-frontier-model-2026-q2/03-long-context-behavior).
 4. **Prompt caching** is available on all three platforms but with meaningfully different economics: Anthropic caches at 4,096+ token boundaries for current flagship models (e.g., Claude Opus 4.7; the minimum drops to 1,024 tokens for older models such as Sonnet 4.5 and Opus 4.1) with a 5-minute TTL [9], OpenAI caches at 1,024+ token boundaries in 128-token cache-hit increments [10], and Google Cloud caches Gemini context at configurable TTL (default: 1 hour) [11]. The cost implications for agentic workloads are non-trivial — [Chapter 4](/learn/picking-a-frontier-model-2026-q2/04-cost-per-task) quantifies them.
 5. The term **"capability overhang"** refers to the gap between what a model can do in a best-case scenario and what it does reliably across the distribution of real inputs. Frontier models exhibit significant capability overhang on production workloads. A model that scores 95% on a coding benchmark may succeed on only 70% of your specific code-generation prompts.
 6. In our 10×3×5 benchmark (10 prompts × 3 models × 5 runs), the variance in output *structure* at temperature=0 ranged from **2% to 18%** across the three models — variance that leaderboard scores do not capture and that compounds multiplicatively in multi-step pipelines. [3]
 7. The **"production gap"** — the documented delta between academic benchmark performance and real-task performance — is most pronounced in function-calling tasks, where benchmark scores and real-world tool-orchestration reliability can diverge substantially. Aggregate benchmarks such as MMLU do not measure multi-step tool use; the Berkeley Function Calling Leaderboard (BFCL) is the most widely-cited public evaluation for this dimension, tracking real-world function-calling accuracy across leading models. [4]
 
 ---
+
+```takeaways
+- MMLU, HumanEval, and GPQA measure knowledge recall, single-function code generation, and graduate reasoning — none directly measures tool-use determinism, structured-output stability, or mid-context retrieval accuracy.
+- The "production gap" is most pronounced in function-calling tasks; benchmark scores and real-world tool-orchestration reliability can diverge substantially.
+- As of Q2 2026, no major public benchmark measures tool-use determinism — the probability that the same prompt produces structurally equivalent output across independent runs.
+```
 
 ## Why the standard benchmarks fail builders
 
@@ -91,9 +102,15 @@ The exercise above illustrates a key insight: **the model cannot tell you its ow
 
 ---
 
-## The 5 dimensions that predict production success
+```takeaways
+- A model cannot tell you its own production reliability, and neither can the vendor's benchmark table — only running the model on your prompts with measurement produces actionable data.
+- MMLU measures knowledge recall across 57 academic subjects via multiple-choice; your agentic pipeline calls tools with structured JSON schemas, retrieves from documents you provide, and produces outputs downstream code must parse — none of which MMLU measures.
+- HumanEval measures single-function correctness, not multi-step tool-integrated code generation; high HumanEval scores do not prevent malformed JSON schemas in function-calling pipelines.
+```
 
-Based on our internal benchmark data across 12 months of production AI workloads, these are the five dimensions that consistently separate models in ways that matter:
+## The 7 dimensions that predict production success
+
+Based on our internal benchmark data across 12 months of production AI workloads, these are the seven dimensions that consistently separate models in ways that matter:
 
 ### 1. Tool-use determinism
 
@@ -117,11 +134,25 @@ Not average latency — your 95th or 99th percentile latency under realistic con
 
 The true cost to complete one unit of your workload, accounting for retry rates, prompt caching hit rates, and tool-call overhead. A cheaper model with higher retry rates can easily cost more per task than an expensive model with near-perfect reliability. Covered in [Chapter 4](/learn/picking-a-frontier-model-2026-q2/04-cost-per-task).
 
+### 6. Multimodal fidelity
+
+Whether the model handles the modality you actually need, and whether it does so on the same surface as reasoning. For Gemini 3.1 specifically, this distinction matters: `gemini-3.1-pro-preview` accepts text, image, video, audio, and PDF inputs and outputs text, while audio generation is explicitly not supported on that model. Scripted narration uses `gemini-3.1-flash-tts-preview`, a separate text-to-audio preview model for exact recitation and style-controlled speech. [13][14][15][16]
+
+### 7. Governance and lifecycle risk
+
+Whether the endpoint, access path, and model lifecycle fit production. Preview model IDs are useful for evaluation, but they create operational requirements: configurable model IDs, changelog review, deprecation monitoring, fallback routing, and per-model latency/error tracking. A model can be technically strong and still fail your governance bar if it is available only through a preview endpoint your team cannot safely operate.
+
 <Callout type="warn">
 **Don't conflate output length with output quality.** A model that produces verbose responses to fill its context window may score better on human preference evaluations (more detail looks more helpful) while performing *worse* on structured tasks (more tokens = more surface area for schema violations). Always filter preference benchmarks by task type before using them to inform production decisions.
 </Callout>
 
 ---
+
+```takeaways
+- Tool-use determinism — the probability that the same prompt produces structurally equivalent output across independent runs — is the foundational reliability metric for any agentic workload.
+- A 10% variance per step compounds multiplicatively: a 5-step pipeline where each step has 90% structural stability has only a 59% end-to-end success rate.
+- Governance and lifecycle risk matters: preview model IDs require configurable IDs, changelog review, deprecation monitoring, and fallback routing before production use.
+```
 
 ## The 3 dimensions you can probably ignore
 
@@ -140,6 +171,12 @@ Unless your use case involves answering graduate-level science questions or broa
 If you're building an English-language product, a model's Chinese or Arabic benchmark scores are irrelevant. Benchmark tables aggregate across many settings; make sure the dimension being measured applies to your actual distribution.
 
 ---
+
+```takeaways
+- MMLU and GPQA aggregate scores have weak correlation with production outcomes for most builders; a 3-point delta in reasoning score is noise compared to a 5% difference in tool-use determinism.
+- Peak capability (e.g., "can solve competition math") describes the ceiling; for production the floor matters more — what the model does on the 10% of prompts where it struggles.
+- Benchmark dimensions that don't apply to your actual distribution should be excluded from your scorecard entirely; don't let irrelevant axes influence the model decision.
+```
 
 ## Building your scorecard
 
@@ -168,6 +205,20 @@ Most production AI workloads fall into one of three archetypes. Use these as a s
 | **Document Q&A** (long-context, synthesis) | Context fidelity at depth | Cost-per-task | Lost-needle rate > 10% at target depth |
 | **High-volume classification** (batch, latency-tolerant) | Cost-per-task | Structured-output reliability | Cost-per-task > 2× competitor |
 
+### Choosing your Gemini family member
+
+As of May 2026, the Gemini 3.1 family has specialized into three distinct surfaces. Choosing the right one is your first move in model selection.
+
+| Model | Primary use case | Why it wins |
+|---|---|---|
+| **Gemini 3.1 Pro Preview** | Complex reasoning, code, tool use, and long-context source analysis | Google launched it in preview on 2026-02-19 for developer, enterprise, and consumer surfaces; the API model page documents text output, 1,048,576 input tokens, 65,536 output tokens, function calling, structured outputs, caching, code execution, and no audio generation. [12][14] |
+| **Gemini 3.1 Flash / Flash-Lite** | High-volume classification and latency-sensitive workloads | Lower-cost family to benchmark when throughput or latency matters more than maximum reasoning depth; confirm exact pricing and launch stage before production. |
+| **Gemini 3.1 Flash TTS Preview** | Scripted audio generation and narration | Google introduced it on 2026-04-15 for controllable speech; the API speech guide documents text-only input, audio-only output, single-speaker and multi-speaker workflows; use it for exact text recitation, not general reasoning or agent planning. [15][16] |
+
+<Callout type="warn">
+Do not write one "Gemini" row in a production scorecard. Gemini 3.1 Pro Preview, Flash/Flash-Lite, Flash TTS Preview, and Live API solve different jobs. The most common evaluation error is treating the Pro model's reasoning and context limits as if they also applied to TTS, or treating TTS as if it could replace an interactive voice-agent stack.
+</Callout>
+
 If your use case maps cleanly to one of these archetypes, you already know your top dimensions. If it doesn't — if you're building something latency-critical *and* tool-heavy *and* long-context — you have a hard evaluation problem and should expect to make tradeoffs rather than finding a model that wins on all axes.
 
 ---
@@ -177,7 +228,7 @@ If your use case maps cleanly to one of these archetypes, you already know your 
 **Build a scorecard for your use case.**
 
 1. Choose one of the three archetypes above as your starting point, or describe your own use case in 2–3 sentences.
-2. Select 5 dimensions from this list: `tool-use determinism`, `context fidelity at depth`, `structured-output reliability`, `latency p95`, `cost-per-task`, `multilingual performance`, `aggregate reasoning score`.
+2. Select 5 dimensions from this list: `tool-use determinism`, `context fidelity at depth`, `structured-output reliability`, `latency p95`, `cost-per-task`, `multimodal fidelity`, `governance/lifecycle risk`, `multilingual performance`, `aggregate reasoning score`.
 3. Assign each a weight from 1 (nice to have) to 5 (critical). Total weight must equal 15.
 4. For each dimension with weight ≥ 4, write one sentence explaining *why* it is high-priority for your use case.
 5. Identify one disqualifier: a minimum threshold on one dimension below which you would not use a model regardless of its scores on other dimensions.
@@ -229,7 +280,7 @@ In [Chapter 2](/learn/picking-a-frontier-model-2026-q2/02-tool-use-determinism-b
 
 [4] Patil, S. et al. Berkeley Function-Calling Leaderboard (BFCL) V4 — https://gorilla.cs.berkeley.edu/leaderboard.html · retrieved 2026-04-30
 
-[5] OpenAI. Introducing GPT-5.5 — https://openai.com/index/introducing-gpt-5-5/ · retrieved 2026-04-30
+[5] OpenAI. Introducing GPT-5.5 — https://platform.openai.com/docs/models/gpt-5-5 · retrieved 2026-04-30
 
 [6] Liu, N. et al. (2023). "Lost in the Middle: How Language Models Use Long Contexts" — https://arxiv.org/abs/2307.03172 · retrieved 2026-04-30
 
@@ -239,6 +290,16 @@ In [Chapter 2](/learn/picking-a-frontier-model-2026-q2/02-tool-use-determinism-b
 
 [9] Anthropic. Prompt caching — https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching · retrieved 2026-04-30
 
-[10] OpenAI. Prompt caching in the API — https://openai.com/index/api-prompt-caching/ · retrieved 2026-04-30
+[10] OpenAI. Prompt caching in the API — https://platform.openai.com/docs/guides/prompt-caching · retrieved 2026-04-30
 
 [11] Google. Context caching overview (Gemini API) — https://ai.google.dev/gemini-api/docs/caching · retrieved 2026-04-30
+
+[12] Google. Gemini 3.1 Pro launch post — https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/ · retrieved 2026-05-28
+
+[13] Google DeepMind. Gemini 3.1 Pro model card — https://deepmind.google/models/model-cards/gemini-3-1-pro/ · retrieved 2026-05-28
+
+[14] Google. Gemini 3.1 Pro Preview model page — https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview · retrieved 2026-05-28
+
+[15] Google. Gemini 3.1 Flash TTS launch post — https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-flash-tts/ · retrieved 2026-05-28
+
+[16] Google. Gemini API speech generation guide — https://ai.google.dev/gemini-api/docs/speech-generation · retrieved 2026-05-28

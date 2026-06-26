@@ -3,7 +3,7 @@ course_slug: mcp-from-first-principles-to-production
 chapter_num: 4
 chapter_slug: oauth-dpop-auth
 title: "OAuth 2.1 + DPoP — production auth for MCP servers"
-status: draft-for-review
+status: g4-approved
 author: Koenig Solutions
 agent_drafted_by: claude-sonnet-4-6
 vendor_tag: anthropic
@@ -54,6 +54,12 @@ OAuth 2.1 and DPoP together solve the production authentication problem for HTTP
 
 The initial MCP specification shipped with a minimal auth story: for stdio servers, security came from process-level isolation (only the host that launched the process can talk to it); for HTTP servers, the spec recommended Bearer tokens but left the specifics up to implementors.
 
+```takeaways
+- The initial MCP spec left HTTP server auth unspecified, resulting in real production problems: tokens in log pipelines, tokens exfiltrated via prompt injection, and multi-tenant servers accepting tokens issued for different tenants.
+- Two SEPs on the 2026 roadmap address this gap: SEP-1932 (DPoP as mandatory token binding for remote servers) and SEP-1933 (Workload Identity Federation for machine-to-machine access).
+- For stdio servers, OAuth is not required — security comes from OS-level process isolation: only the host process that launched the subprocess can communicate with it via the pipe.
+```
+
 That gap creates real problems in HTTP deployments. Production MCP servers encounter Bearer token edge cases that the spec left unaddressed: tokens appearing in structured log pipelines, tokens exfiltrated via prompt injection into tool arguments, and multi-tenant servers accidentally accepting tokens issued for a different tenant because no standard binding validation existed.
 
 The 2026 roadmap lists two SEPs (Specification Enhancement Proposals) to address this[^1]:
@@ -67,6 +73,12 @@ This chapter covers both the current auth spec[^5] and the SEP-1932 design so yo
 ## OAuth 2.1: what changed and why it matters
 
 OAuth 2.0 (2012) was designed for a world of server-rendered web apps and mobile apps with long-lived refresh tokens. Over the years, several of its grant types were found to have exploitable weaknesses. OAuth 2.1 is the IETF working group's response: a clean slate that incorporates the security best practices that evolved over the previous decade.[^2]
+
+```takeaways
+- OAuth 2.1 makes PKCE mandatory for all authorization code grants without exception — there is no carve-out for confidential server-side clients.
+- The implicit grant is removed entirely in OAuth 2.1; any internal tool using implicit grant today must migrate to authorization code + PKCE before SEP-1932 ships.
+- Short-lived access tokens combined with refresh token rotation are an OAuth 2.1 requirement, meaning MCP clients must handle mid-session token expiry and proactive refresh.
+```
 
 The changes that directly affect MCP server implementations:
 
@@ -113,6 +125,12 @@ OAuth 2.1 tightens guidance on refresh token rotation (one-time use) and recomme
 
 Before understanding DPoP, you need to understand what's wrong with Bearer tokens in the MCP context.
 
+```takeaways
+- Bearer tokens have no binding to the client that requested them — a stolen token is immediately usable from any machine until it expires, regardless of TLS or short expiry.
+- Prompt injection is a first-class attack vector in MCP: an attacker who controls a loaded Resource can cause the model to echo the Authorization header value into a tool call response, exfiltrating the token at the application layer where TLS provides no protection.
+- Long-running agentic sessions hold access tokens for 30+ minutes, making them high-value targets compared to human-interactive browser sessions.
+```
+
 A Bearer token is exactly what the name implies: **whoever bears it wins**. The HTTP spec (RFC 6750) defines Bearer tokens with no binding between the token and the client that requested it. If an attacker steals your Bearer token — by reading it from a log, from a process's memory, from a misconfigured environment variable, or via prompt injection that causes the model to echo it in a tool call — they can use it from any machine, any location, with any client, until it expires.
 
 In traditional web app contexts, Bearer tokens are acceptable because:
@@ -135,6 +153,12 @@ DPoP addresses all three.
 ## DPoP: how token binding works
 
 DPoP (Demonstration of Proof-of-Possession, RFC 9449) adds a cryptographic binding between an access token and the client that requested it.[^3]
+
+```takeaways
+- DPoP binds each access token to a client's ephemeral public key via a `cnf.jkt` (JWK Thumbprint) claim — a stolen token is useless without the matching private key that never leaves the client.
+- Every API call requires a fresh DPoP proof JWT that includes `htm` (HTTP method), `htu` (full URL), `iat` (issuance time), and `jti` (unique ID), preventing both replay attacks and SSRF token-forwarding attacks.
+- The server must validate six properties on every request: token validity, DPoP proof signature, key binding match, method/URL match, proof freshness (within 60s), and jti uniqueness.
+```
 
 Here's the mechanism:
 
