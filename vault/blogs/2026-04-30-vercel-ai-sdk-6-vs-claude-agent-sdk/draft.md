@@ -7,8 +7,28 @@ vendor_tag: community
 content_type: article
 status: g0-passed
 reading_time_min: 6
+seo_description: "Compare Vercel AI SDK 6 and Claude Agent SDK by execution-loop ownership, tool hosting, portability, observability, and cost."
 primary_query: "vercel ai sdk 6 vs claude agent sdk which to pick"
 contrarian_angle: "Most comparisons focus on syntax parity — the actual decision is who owns the execution loop, which determines your entire cost, portability, and observability architecture."
+howto:
+  name: "How to choose between Vercel AI SDK 6 and Claude Agent SDK"
+  description: "Decide between Vercel AI SDK 6 and the Claude Agent SDK by asking one question — who owns the execution loop. Map your workload across five axes (loop ownership, tool hosting, portability, cost shape, observability), then prototype a 5-tool agent in the chosen SDK. Vercel AI SDK 6 hands you a provider-agnostic ToolLoopAgent that runs on your infrastructure; the Claude Agent SDK runs the loop and three server tools on Anthropic's managed compute. Confusing the two layers leads to the wrong choice for the wrong reasons."
+  totalTime: "PT30M"
+  steps:
+    - name: "Step 1: Identify who should own the execution loop"
+      text: "If you need to swap providers, log every loop iteration, or run inside CI/CD pipelines, your infrastructure should own the loop — pick Vercel AI SDK 6. If you want Anthropic to handle retries, tool dispatch, and reliability, pick the Claude Agent SDK."
+    - name: "Step 2: Audit your tool surface for server-tool fit"
+      text: "List the tools your agent needs. If `code_execution`, hosted `web_search`, or the MCP Connector cover most of them, the Claude Agent SDK removes infrastructure work. If you need custom sandboxes, internal APIs, or non-Anthropic providers, Vercel AI SDK 6 keeps tool hosting under your control."
+    - name: "Step 3: Score portability and provider lock-in"
+      text: "AI SDK 6 lets you swap providers by changing one string (e.g., `'anthropic/claude-sonnet-4-6'` to `'openai/gpt-4o'`) via Vercel AI Gateway. Claude server tools have no equivalent surface on other providers — switching means rebuilding capability from scratch."
+    - name: "Step 4: Run the cost math at expected volume"
+      text: "`code_execution` is $0.05/container-hour after 50 free daily hours. At high volume that can exceed a self-managed Firecracker sandbox. AI SDK 6 charges only model tokens plus your infrastructure. Model your monthly bill before assuming fewer lines of code means lower spend."
+    - name: "Step 5: Install the chosen SDK and scaffold a 5-tool agent"
+      text: "For AI SDK 6: `npm install ai @ai-sdk/anthropic`, then use `ToolLoopAgent` with `maxSteps: 20` and a `needsApproval` callback. For Claude Agent SDK: install `@anthropic-ai/claude-agent-sdk` and add `{ type: 'code_execution_20250522' }` or `{ type: 'web_search_20260209' }` to your tools array."
+    - name: "Step 6: Wire observability before shipping"
+      text: "AI SDK 6 ships `@ai-sdk/devtools` that captures every tool call, token count, and timing locally. Claude Agent SDK relies on Anthropic's console plus your own per-request logging. Enable extended prompt caching (1-hour TTL) for up to 90% cost reduction on long-context loops."
+    - name: "Step 7: Validate with a production load test before committing"
+      text: "Run the 5-tool agent at 10x expected QPS. Measure end-to-end latency, tool failure modes, retry behavior, and observed cost per task. Switch SDKs at the prototype stage is cheap; switching after the production wire-up is not."
 sources:
   - https://vercel.com/blog/ai-sdk-6
   - https://claude.com/blog/agent-capabilities-api
@@ -52,11 +72,21 @@ faq:
     answer: "For automated CI/CD or batch pipelines where loop control belongs to your infrastructure, Vercel AI SDK 6 is the better fit. For product features where Anthropic-managed reliability and simpler code matter more, the Claude Agent SDK wins."
 ---
 
-# Vercel AI SDK 6 or Claude Agent SDK: The Decision Is Who Runs the Loop
+# How to Choose Between Vercel AI SDK 6 and Claude Agent SDK in 2026
 
-Vercel AI SDK 6 is a provider-agnostic TypeScript library released December 22, 2025 that introduced `ToolLoopAgent` — a multi-step agent loop that runs entirely in your own infrastructure, across any supported LLM provider. [1] Anthropic's Agent Capabilities API, launched May 22, 2025 and now bundled as part of the Claude Agent SDK (rebranded from Claude Code SDK on April 28, 2026), ships three server tools — sandboxed code execution at $0.05/container-hour after 50 free daily hours, hosted web search, and an MCP Connector — that execute on Anthropic's managed compute, not yours. [2] By mid-2026 both are the dominant frameworks for production agent work, and the choice between them requires exactly one architectural decision.
+To choose between Vercel AI SDK 6 and the Claude Agent SDK, ask one architectural question: who should own the execution loop? Pick AI SDK 6 when your infrastructure must run the loop — for provider portability, fine-grained observability, or CI/CD batch pipelines. Pick the Claude Agent SDK when Anthropic-managed reliability, simpler code, and first-party server tools (`code_execution`, hosted `web_search`, [MCP](/blog/mcp-2026-roadmap-explained) Connector) outweigh portability. Loop ownership determines your cost, portability, and observability architecture, not syntax parity. Vercel AI SDK 6 is a provider-agnostic TypeScript library released December 22, 2025 that introduced `ToolLoopAgent` — a multi-step agent loop that runs entirely in your own infrastructure, across any supported LLM provider. [1] Anthropic's Agent Capabilities API, launched May 22, 2025 and now bundled as part of the Claude Agent SDK (rebranded from [Claude Code](/blog/cursor-3-2-vs-claude-code-workflow) SDK on April 28, 2026), ships three server tools — sandboxed code execution at $0.05/container-hour after 50 free daily hours, hosted web search, and an MCP Connector — that execute on Anthropic's managed compute, not yours. [2] By mid-2026 both are the dominant frameworks for production agent work, and the choice between them requires exactly one architectural decision.
 
-## Key facts
+## How to Read the Key Facts Before Picking an SDK
+
+```mermaid title="Vercel AI SDK 6 versus Claude Agent SDK execution loop ownership"
+flowchart TD
+    A["Choose Your Agent SDK"] --> B{"Who should own\nthe execution loop?"}
+    B -->|"Your infrastructure:\nprovider portability · CI/CD\ncustom observability"| C["Vercel AI SDK 6\nnpm install ai @ai-sdk/anthropic\nToolLoopAgent on your infra"]
+    B -->|"Anthropic-managed:\nsimpler code · server tools\nmanaged reliability"| D["Claude Agent SDK\n@anthropic-ai/claude-agent-sdk\nLoop runs on Anthropic compute"]
+    C --> E["✅ Swap providers in 1 string\n✅ Log every loop iteration\n⚠️ Own sandboxes + retry logic"]
+    D --> F["✅ code_execution $0.05/container-hr\n✅ Hosted web_search + MCP Connector\n⚠️ No cross-provider portability"]
+```
+*Alt: Decision flowchart for choosing between Vercel AI SDK 6 and the Claude Agent SDK — the axis is who owns the execution loop, your infrastructure or Anthropic's managed compute, with cost and portability tradeoffs listed for each path.*
 
 1. AI SDK 6 launched December 22, 2025 with `ToolLoopAgent`, full MCP OAuth support, DevTools middleware, and over 20 million monthly downloads across startups to Fortune 500 companies. [1]
 2. Anthropic's Agent Capabilities API shipped May 22, 2025 with three server-side tools: `code_execution`, `web_search_20260209`, and a hosted MCP Connector that requires no client-side transport code. [2]
@@ -177,7 +207,7 @@ For a deeper treatment of when Managed Agents compose well with the Files API an
 
 Start with the SDK that matches your execution model, not the one with the shorter syntax example. If you need model portability or explicit control over every loop step, `ToolLoopAgent` is the right primitive. If you need sandboxed code execution or hosted web search and you're building Claude-first, Anthropic's server tools eliminate that entire operational surface.
 
-For how MCP connectors from both SDKs interact with the 2026 transport spec and auth changes, see [[blog/mcp-2026-roadmap-explained]]. For a hands-on build covering both patterns — MCP connectors, extended caching, multi-step agent observability in production — our course [[course/production-agents-claude-agent-sdk-mcp-connector]] walks you from hello-world to a deployed, monitored agent.
+For how [MCP connectors](/blog/2026-05-12-rag-with-mcp-connectors) from both SDKs interact with the 2026 transport spec and auth changes, see [[blog/mcp-2026-roadmap-explained]]. For a hands-on build covering both patterns — MCP connectors, extended caching, multi-step agent observability in production — our course [[course/production-agents-claude-agent-sdk-mcp-connector]] walks you from hello-world to a deployed, monitored agent.
 
 ---
 
