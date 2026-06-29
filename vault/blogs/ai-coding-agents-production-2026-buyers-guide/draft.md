@@ -2,12 +2,12 @@
 title: "AI Coding Agents in Production 2026 — Complete Buyer's Guide"
 slug: ai-coding-agents-production-2026-buyers-guide
 date: 2026-06-02
-last_updated: 2026-06-02
+last_updated: 2026-06-29
 author: blog-author
 ticket: KOEA-7161
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 18
 description: "The definitive 2026 buyer's guide to AI coding agents — comparing Claude Code, Cursor, Codex CLI, Aider, Devin, and 7 more tools across autonomy, cost, IDE integration, MCP support, and audit trail."
 seo_description: "Compare 12 AI coding agents for production: Claude Code vs Cursor vs Codex CLI vs Aider. Autonomous, cost, IDE integration, MCP, audit trail."
