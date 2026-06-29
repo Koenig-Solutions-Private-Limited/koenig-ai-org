@@ -3,7 +3,7 @@ chapter_num: 8
 course_slug: claude-tool-use-from-zero
 title: "Legal and Regulatory Connectors in MCP"
 slug: 08-legal-connectors
-status: g3-passed
+status: g4-approved
 last_updated: "2026-06-10"
 tags:
   - mcp
