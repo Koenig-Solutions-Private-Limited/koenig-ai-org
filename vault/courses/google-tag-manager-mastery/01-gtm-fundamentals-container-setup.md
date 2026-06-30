@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: google-tag-manager-mastery
 title: "GTM Fundamentals: Container Setup and the Tag–Trigger–Variable Model"
-status: g0-passed
+status: g3-passed
 last_updated: "2026-06-11"
 duration_min: 18
 vendor_tag: Google Tag Manager

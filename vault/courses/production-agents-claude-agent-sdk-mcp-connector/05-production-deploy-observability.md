@@ -12,7 +12,7 @@ faq:
     a: "Use PreToolUse when you need to block a risky call before it executes; use PostToolUse for logging after execution."
   - q: "What should every production agent log?"
     a: "Log tool name, session ID, file or resource target, result status, and cumulative cost or token usage where available."
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-14
 author: vardaan-koenig
 agent_drafted_by: course-author

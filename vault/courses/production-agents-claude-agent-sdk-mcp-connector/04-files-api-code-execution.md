@@ -12,7 +12,7 @@ faq:
     a: "No. Anthropic documents downloads for files created by code execution or skills, not files you uploaded yourself."
   - q: "Which beta header does the Files API use?"
     a: "Use the files-api-2025-04-14 beta header on Files API requests."
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-14
 author: vardaan-koenig
 agent_drafted_by: course-author

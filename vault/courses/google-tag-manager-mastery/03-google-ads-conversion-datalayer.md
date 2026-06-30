@@ -2,7 +2,7 @@
 chapter_num: 3
 course_slug: google-tag-manager-mastery
 title: "Conversion Tracking: Google Ads Tags and the dataLayer"
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-11
 duration_min: 35
 vendor_tag: Google Tag Manager / Google Ads

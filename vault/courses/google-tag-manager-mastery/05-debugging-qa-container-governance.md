@@ -2,7 +2,7 @@
 chapter_num: 5
 course_slug: google-tag-manager-mastery
 title: "Debugging, QA, and Container Governance"
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-10
 duration_min: 30
 vendor_tag: Google

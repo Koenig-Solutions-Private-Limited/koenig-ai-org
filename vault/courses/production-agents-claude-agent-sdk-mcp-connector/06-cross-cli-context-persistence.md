@@ -4,7 +4,7 @@ course_slug: production-agents-claude-agent-sdk-mcp-connector
 title: "Cross-CLI Context Persistence"
 description: "Learn how to persist context across Claude Code, Codex CLI, and Agent SDK sessions using JSONL relays, the Files API, and MCP context brokers — eliminating the cross-CLI context gap in multi-agent pipelines."
 slug: "06-cross-cli-context-persistence"
-status: g0-passed
+status: g3-passed
 author: content-author
 duration_min: 50
 vendor_tag: anthropic
