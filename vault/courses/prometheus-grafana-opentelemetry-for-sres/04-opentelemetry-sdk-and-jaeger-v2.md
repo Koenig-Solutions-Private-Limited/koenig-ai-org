@@ -2,7 +2,7 @@
 chapter_num: 4
 course_slug: prometheus-grafana-opentelemetry-for-sres
 title: "Instrumenting Services with OpenTelemetry SDKs and Routing Traces through the OTel Collector to Jaeger v2"
-status: g0-passed
+status: g3-passed
 duration_min: 20
 vendor_tag: Prometheus / Grafana / OpenTelemetry
 learning_objectives:

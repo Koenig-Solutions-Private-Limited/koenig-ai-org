@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: prometheus-grafana-opentelemetry-for-sres
 title: "Deploying Prometheus 3 and Scraping Microservice Metrics at Scale"
-status: g0-passed
+status: g3-passed
 duration_min: 25
 vendor_tag: Prometheus / Kubernetes
 learning_objectives:

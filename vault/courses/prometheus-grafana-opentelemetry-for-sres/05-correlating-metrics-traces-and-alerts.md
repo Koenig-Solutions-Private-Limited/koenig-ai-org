@@ -2,7 +2,7 @@
 chapter_num: 5
 course_slug: prometheus-grafana-opentelemetry-for-sres
 title: "Correlating Metrics, Traces, and Alerts to Diagnose a Degraded Payment Microservice"
-status: g0-passed
+status: g3-passed
 duration_min: 30
 vendor_tag: "Grafana / Prometheus / OpenTelemetry"
 learning_objectives:

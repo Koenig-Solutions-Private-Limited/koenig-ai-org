@@ -4,7 +4,7 @@ chapter: 4
 course_slug: outbound-prospecting-new-logo-acquisition-b2b
 slug: 04-generating-referral-pipeline
 title: "Generating Referral Pipeline from Existing Client Networks"
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-13
 duration_min: 12
 vendor_tag: B2B Sales / Corporate Learning

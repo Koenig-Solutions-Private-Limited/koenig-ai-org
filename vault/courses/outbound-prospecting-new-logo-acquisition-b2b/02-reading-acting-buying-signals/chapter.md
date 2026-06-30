@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: outbound-prospecting-new-logo-acquisition-b2b
 title: "Reading and Acting on Buying Signals Before Your Competitor Does"
-status: g0-passed
+status: g3-passed
 duration_min: 10
 vendor_tag: B2B Sales / Corporate Learning
 learning_objectives:

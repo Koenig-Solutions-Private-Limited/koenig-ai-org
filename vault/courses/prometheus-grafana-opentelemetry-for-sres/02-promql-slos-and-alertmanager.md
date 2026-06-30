@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: prometheus-grafana-opentelemetry-for-sres
 title: "Writing PromQL Queries and Alertmanager Rules for Payment-Path SLOs"
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-12
 duration_min: 28
 vendor_tag: prometheus

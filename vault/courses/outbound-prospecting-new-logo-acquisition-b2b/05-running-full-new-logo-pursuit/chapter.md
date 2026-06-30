@@ -2,7 +2,7 @@
 chapter_num: 5
 course_slug: outbound-prospecting-new-logo-acquisition-b2b
 title: "Running a Full New-Logo Pursuit: From First Signal to First Meeting"
-status: g0-passed
+status: g3-passed
 duration_min: 15
 vendor_tag: B2B Sales / New-Logo Prospecting
 learning_objectives:

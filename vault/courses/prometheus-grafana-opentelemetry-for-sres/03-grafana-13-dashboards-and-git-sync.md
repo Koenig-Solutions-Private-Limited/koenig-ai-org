@@ -2,7 +2,7 @@
 chapter_num: 3
 course_slug: prometheus-grafana-opentelemetry-for-sres
 title: "Building Grafana 13 Dashboards Backed by Prometheus with Git Sync and Alerting"
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-12
 duration_min: 35
 vendor_tag: grafana-labs

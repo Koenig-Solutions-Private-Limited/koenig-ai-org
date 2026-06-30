@@ -4,7 +4,7 @@ chapter: 1
 course_slug: outbound-prospecting-new-logo-acquisition-b2b
 slug: 01-building-icp-target-account-list
 title: "Building an ICP and Target Account List for Corporate Learning Buyers"
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-13
 duration_min: 12
 vendor_tag: "B2B Sales / Corporate Learning"

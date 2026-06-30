@@ -2,7 +2,7 @@
 chapter_num: 3
 course_slug: outbound-prospecting-new-logo-acquisition-b2b
 title: "Crafting Signal-Triggered Outreach Sequences Across Email and LinkedIn"
-status: g0-passed
+status: g3-passed
 duration_min: 15
 vendor_tag: B2B Sales / Corporate Learning
 learning_objectives:
