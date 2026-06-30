@@ -1,7 +1,7 @@
 ---
 type: brand
 title: Koenig AI Academy — Editorial Positions (STANCES)
-last_updated: 2026-06-02
+last_updated: 2026-06-30
 owner: Chief Content
 ---
 
@@ -200,3 +200,63 @@ These are Koenig AI Academy's durable, defensible positions on contested topics 
 **Position:** We require all four input-boundary layers for production agents handling sensitive data: (1) input length caps, (2) injection pattern stripping, (3) role isolation (user input never in system prompt), and (4) guard model classification for flagged inputs. Output filtering is a supplementary control, not a primary defense.
 
 **Tags:** #security #prompt-injection #agents #cloudflare #production
+
+---
+
+## stance:ai-vendor-news-opinionated
+
+**Stance:** AI vendor announcements routinely overstate stability, GA readiness, and capability benchmarks. Koenig AI Academy does not republish vendor news — we evaluate it. Every announcement gets the "preview vs. GA" check, the "benchmark vs. production trace" check, and the "keynote vs. docs" check before it becomes a recommendation.
+
+**Why it matters:** Developers building production systems lose time and credibility when they treat vendor announcements as deployment decisions. The gap between keynote claims and actual API readiness is consistently 3–12 months. Teams that act on keynote signals without reading the docs create production incidents.
+
+**Position:** We will always flag preview/GA status, SLA availability, and breaking-change risk in any AI vendor announcement coverage. We call out keynote-vs-docs gaps explicitly. We do not use "GA" to describe any API that still carries a preview identifier in its model name or version string.
+
+**Tags:** #vendor-news #evaluation #ga-readiness #editorial
+
+---
+
+## stance:harness-over-model
+
+**Stance:** For most production AI workflows in 2026, harness quality — the spec files, plan-act loop, evaluation gates, and recovery paths around a model — determines output quality more than model selection or prompt phrasing. A well-engineered harness around a mid-tier model outperforms frontier-model ad-hoc prompting.
+
+**Why it matters:** Teams that obsess over model rankings miss the compounding returns from harness investment. Harness improvements (better spec files, tighter evaluation, explicit failure recovery) transfer across model upgrades; prompt hacks don't. The harness is the competitive moat, not the model choice.
+
+**Position:** We evaluate AI tooling through the lens of harness engineering, not prompt engineering. We recommend harness investment — evaluation frameworks, spec files, plan-act loops — before model upgrades when improving agent output quality. We flag "just use a better model" advice as premature optimization when harness quality is the unaddressed variable.
+
+**Tags:** #harness #prompt-engineering #agents #evaluation #workflow
+
+---
+
+## stance:tools-cursor-composer-ide-only
+
+**Stance:** Cursor Composer 2.x is correctly scoped as an IDE-native coding agent for developer-watched, single-session tasks. It is not a general-purpose agent runtime. Using Composer for headless, multi-step, or CI-integrated work is an architectural mismatch.
+
+**Why it matters:** The Cursor Composer UX creates the illusion of a general coding agent because it feels powerful within the IDE. But its context model, file access, and execution surface are designed for a developer watching the diff. Teams that route all coding agent work through Composer create invisible cost and quality penalties for tasks that need Claude Code or Codex CLI.
+
+**Position:** We recommend Cursor Composer as the default tool for IDE-watched, small-scope, single-developer coding tasks. We route headless automation, batch refactoring, CI integration, and long-horizon tasks explicitly to CLI-native alternatives. We flag "just use Cursor" advice as a tool-routing error when the task has headless or multi-step characteristics.
+
+**Tags:** #cursor #ide #coding-agents #tool-routing #cli
+
+---
+
+## stance:ai-credential-files-underprotected
+
+**Stance:** AI coding tool credential files — `.cursor/.mcp.json`, `.env` files with model API keys, refresh tokens stored by agent IDEs, and npm registry tokens cached by AI tooling — are systematically underprotected relative to the access they grant. A single exfiltrated credential file can enable persistent impersonation of a developer's cloud, LLM, and package registry accounts.
+
+**Why it matters:** AI coding tools dramatically expand the attack surface for credential theft. Some tools store non-expiring refresh tokens in user home directories. Others read `.env` files containing production API keys. npm's machine-bound authentication means a stolen credential gives write access to any package the victim publishes. The credential is worth more than the code.
+
+**Position:** We require explicit credential hygiene recommendations in any AI tooling review: where credentials are stored, what rotation cadence is appropriate, and whether non-expiring tokens exist. We flag any AI tool that stores non-expiring credentials without automatic rotation support as a high-risk adoption decision.
+
+**Tags:** #security #credentials #ai-tools #supply-chain #opsec
+
+---
+
+## stance:supply-chain-due-diligence-npm
+
+**Stance:** npm package due diligence is a necessary prerequisite for AI coding tool adoption, not an optional security practice. AI developer tooling has become the highest-value attack surface for supply chain attacks: npm packages for AI CLIs, adapters, and plugins are installed at high velocity by developers who trust the AI brand more than they scrutinize the package.
+
+**Why it matters:** Malicious npm packages targeting AI developer tooling exfiltrate credentials and tokens at the point of installation or during agent execution. The attack surface is larger because AI tools install more npm packages more frequently than conventional developer workflows.
+
+**Position:** We recommend verifying npm packages for all AI tooling with: (1) download count and publisher age as weak signals, (2) publisher identity verification against official vendor GitHub orgs, (3) `npm audit` before first install, and (4) `npm pack` diff review for packages with <10K weekly downloads. We flag any AI tooling tutorial that installs npm packages without publisher verification as an unsafe practice.
+
+**Tags:** #npm #supply-chain #security #ai-tools #due-diligence
