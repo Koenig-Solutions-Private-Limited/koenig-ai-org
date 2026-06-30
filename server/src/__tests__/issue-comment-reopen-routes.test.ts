@@ -13,6 +13,7 @@ const mockIssueService = vi.hoisted(() => ({
   findMentionedAgents: vi.fn(),
   listWakeableBlockedDependents: vi.fn(),
   getWakeableParentAfterChildCompletion: vi.fn(),
+  getRelationSummaries: vi.fn(),
 }));
 
 const mockAccessService = vi.hoisted(() => ({
@@ -220,6 +221,7 @@ describe.sequential("issue comment reopen routes", () => {
     mockIssueService.findMentionedAgents.mockReset();
     mockIssueService.listWakeableBlockedDependents.mockReset();
     mockIssueService.getWakeableParentAfterChildCompletion.mockReset();
+    mockIssueService.getRelationSummaries.mockReset();
     mockAccessService.canUser.mockReset();
     mockAccessService.hasPermission.mockReset();
     mockHeartbeatService.wakeup.mockReset();
@@ -286,6 +288,7 @@ describe.sequential("issue comment reopen routes", () => {
     });
     mockIssueService.listWakeableBlockedDependents.mockResolvedValue([]);
     mockIssueService.getWakeableParentAfterChildCompletion.mockResolvedValue(null);
+    mockIssueService.getRelationSummaries.mockResolvedValue({ blockedBy: [], blocks: [] });
     mockIssueService.assertCheckoutOwner.mockResolvedValue({ adoptedFromRunId: null });
     mockIssueService.checkout.mockResolvedValue({
       ...makeIssue("in_progress"),
