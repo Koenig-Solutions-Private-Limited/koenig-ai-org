@@ -8,7 +8,7 @@ author: blog-author
 ticket: KOEA-7150
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 9
 tags: [cursor, cursor-composer-2-5, ai-coding-agents, ide-agents, kimi-k2-5, post-training]
 seo_description: "Cursor Composer 2.5 review: top-3 coding agent at $0.07 per task, but 'confidently incompetent' on complex changes. When to use it in 2026."
