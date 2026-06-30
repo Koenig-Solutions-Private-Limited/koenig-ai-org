@@ -56,8 +56,11 @@ function loadEnv() {
   return env;
 }
 
-function paperclipToken() {
+function paperclipToken(env = {}) {
   if (process.env.PAPERCLIP_BOARD_TOKEN) return process.env.PAPERCLIP_BOARD_TOKEN;
+  // Read from already-loaded .env.koenig before attempting Docker fallback so
+  // the reconciler works in runtimes where Docker is unavailable.
+  if (env.PAPERCLIP_BOARD_TOKEN) return env.PAPERCLIP_BOARD_TOKEN;
   try {
     return execSync("docker exec paperclip-server sh -c 'echo $PAPERCLIP_BOARD_TOKEN'", {
       encoding: "utf8",
@@ -74,7 +77,7 @@ for (const k of ["CAREER_R2_ACCOUNT_ID", "CAREER_R2_ACCESS_KEY_ID", "CAREER_R2_S
     process.exit(2);
   }
 }
-const token = paperclipToken();
+const token = paperclipToken(env);
 if (!token) {
   console.error("reconcile: no Paperclip board token reachable");
   process.exit(2);
