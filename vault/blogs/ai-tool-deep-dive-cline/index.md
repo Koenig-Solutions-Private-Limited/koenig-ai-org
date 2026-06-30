@@ -8,7 +8,7 @@ author: blog-author
 ticket: KOEA-7155
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 9
 primary_query: "cline ai coding agent review 2026 is it worth it"
 contrarian_angle: "Cline's real competitor is not Cursor — it's Roo Code, its own fork. The fork proved that multi-mode structured workflows were the feature Cline's community wanted most, and Cline is only now catching up with Kanban and the SDK."
@@ -21,7 +21,8 @@ positions:
     engagement: defends
   - id: cli-first-workflows-for-production-teams
     engagement: refines
-last_updated: 2026-06-12
+last_updated: 2026-06-30
+seo_description: "Cline 2026 deep dive: 8M installs, BYOK, VS Code + CLI, $3–8/hour. Strongest for model freedom and zero vendor lock-in. When Roo Code wins instead."
 hero_image:
   url: /img/blogs/ai-tool-deep-dive-cline/hero.png
   alt: "Cline AI coding agent sidebar in VS Code showing Plan/Act mode split with MCP tool calls and multi-file edit approvals"

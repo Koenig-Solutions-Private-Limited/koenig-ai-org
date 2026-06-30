@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-7158
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 10
 primary_query: "goose AI agent review 2026 block open source"
 contrarian_angle: "Most reviews frame Goose as yet another Claude Code alternative. The real frame is different: Goose is the only open-source coding agent built around repeatable, version-controlled *workflows* rather than one-off sessions. Recipes are YAML-in-git that your whole team shares and commits — closer to a CI/CD primitive than a pair programmer."
@@ -17,7 +17,8 @@ positions:
     engagement: refines
   - id: byok-vs-subscription-tradeoff
     engagement: neutral
-last_updated: 2026-07-30
+last_updated: 2026-06-30
+seo_description: "Goose AI agent 2026: Block open-source, 27K stars, model-agnostic, Recipes for version-controlled workflows. Best for composable multi-agent pipelines."
 hero_image:
   url: /img/blogs/ai-tool-deep-dive-goose/hero.png
   alt: "Goose desktop app showing a Recipe YAML file being executed with parallel subagents and MCP server tool calls in the session panel"

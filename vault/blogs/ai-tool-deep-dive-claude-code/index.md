@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-7151
 vendor_tag: anthropic
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 10
 primary_query: "claude code review 2026 is it worth it"
 contrarian_angle: "Claude Code's value isn't the model — it's the harness: subagents, worktrees, and MCP plugins turn a CLI tool into a programmable multi-agent pipeline that Cursor's IDE architecture cannot replicate"
@@ -17,7 +17,8 @@ positions:
     engagement: refines
   - id: mcp-as-interoperability-moat
     engagement: defends
-last_updated: 2026-06-03
+last_updated: 2026-06-30
+seo_description: "Claude Code 2026: terminal-native, Opus 4.7, MCP ecosystem, git worktrees. Best for autonomous auditable pipeline work — and when Cursor wins."
 hero_image:
   url: /img/blogs/ai-tool-deep-dive-claude-code/hero.png
   alt: "Claude Code terminal session showing subagent task decomposition with MCP tool calls, git worktree isolation, and multi-agent coordination"

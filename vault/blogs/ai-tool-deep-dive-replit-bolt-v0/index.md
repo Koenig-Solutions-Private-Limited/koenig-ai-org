@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-7159
 vendor_tag: commercial
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 10
 primary_query: "replit agent vs bolt v0 review 2026 which ai app builder is best"
 contrarian_angle: "Replit Agent, Bolt, and v0 are not competing tools — they target completely different jobs. Treating them as interchangeable alternatives is the fastest way to hit the ceiling of each. Pick v0 for UI, Bolt for full-stack prototyping, Replit Agent for shipping to non-developers. Conflate them and you pay for all three weaknesses simultaneously."

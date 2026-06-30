@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-7157
 vendor_tag: commercial
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 10
 primary_query: "windsurf codeium review 2026 is it worth it"
 contrarian_angle: "Every Windsurf review in 2026 focuses on SWE-1.5 speed and Codemaps. None of them engage with the real question: you are now buying into Cognition's roadmap, not the founding team's — because Google took Varun Mohan and Douglas Chen. The risk is not feature parity with Cursor. It's whether Cognition can sustain the developer trust that Codeium spent five years building."
@@ -17,7 +17,8 @@ positions:
     engagement: introduces
   - id: price-value-tradeoff-ides
     engagement: refines
-last_updated: 2026-06-02
+last_updated: 2026-06-30
+seo_description: "Windsurf 2026 deep dive: $15/month agentic IDE, SWE-1.5 model, Cascade flow agent. Best-priced agentic IDE — but acquired by Cognition after founders left."
 hero_image:
   url: /img/blogs/ai-tool-deep-dive-windsurf-codeium/hero.png
   alt: "Windsurf IDE showing the Cascade panel handling a multi-file TypeScript refactor with Codemaps graph visible in sidebar"
