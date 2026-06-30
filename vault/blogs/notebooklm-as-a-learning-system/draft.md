@@ -7,6 +7,7 @@ content_type: article
 status: published
 reading_time_min: 6
 primary_query: "notebooklm for students"
+seo_description: "Use NotebookLM as a source-grounded learning system: Classroom integration, Audio Overviews, flashcards, and study guides without general-knowledge drift."
 contrarian_angle: "NotebookLM's classroom advantage isn't what it can generate — it's what it refuses to invent. Source-grounding makes it the only AI study tool teachers can actually trust."
 sources:
   - http://workspaceupdates.googleblog.com/2026/04/students-can-now-create-personal-class-notebooks-with-NotebookLM-in-Google-Classroom.html

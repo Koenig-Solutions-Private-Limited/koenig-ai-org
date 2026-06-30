@@ -13,10 +13,12 @@ whats_new:
   - GPT-5.5 model with 400K token context window in Codex (1M via API; API access announced as "coming very soon").
   - Major plugin ecosystem overhaul in Codex Desktop.
   - Native reasoning controls and multi-agent tracing.
-status: published
+status: g3-passed
+first_60_words_answer: "GPT-5.5 shifts Codex from autocomplete toward multi-step reasoning: the model simulates execution paths before writing code, holds 400K tokens of repository context, and achieves 82.7% on Terminal-Bench 2.0. The practical outcome is fewer execution-fix-execution loops on multi-file refactors. The plugin marketplace in Codex Desktop v0.125.0 extends this to CI pipelines, test runners, and API actions in a single supervised session."
 title: "GPT-5.5 in Codex — what changed and why it matters"
 slug: "2026-04-30-gpt-5-5-in-codex"
 description: "GPT-5.5, released April 23 2026, introduces native multi-step reasoning tokens, a 400K-token context window in Codex Desktop, and a major plugin ecosystem overhaul for software engineering."
+seo_description: "GPT-5.5 in Codex adds multi-step reasoning, a 400K-token Codex context window, and plugin upgrades for agentic software engineering workflows."
 reading_time_min: 7
 primary_query: "GPT-5.5 Codex features and changes"
 contrarian_angle: "The plugin ecosystem is OpenAI's real moat, not the reasoning architecture"
@@ -64,7 +66,7 @@ faq:
 
 # GPT-5.5 in Codex — what changed and why it matters
 
-GPT-5.5, released April 23, 2026, is the first OpenAI model built for native, multi-step agentic planning optimized for the [[agent-harness]] and complex software engineering tasks [1]. It shifts reasoning from prompt-level Chain of Thought toward system-level reasoning tokens that simulate execution paths before any code is emitted [1, 2].
+[GPT-5.5](/blog/gpt-5-5-vs-claude-opus-4-7-agentic-coding), released April 23, 2026, is the first OpenAI model built for native, multi-step agentic planning optimized for the [[agent-harness]] and complex software engineering tasks [1]. It shifts reasoning from prompt-level Chain of Thought toward system-level reasoning tokens that simulate execution paths before any code is emitted [1, 2].
 
 ## Key facts
 
@@ -77,7 +79,17 @@ GPT-5.5, released April 23, 2026, is the first OpenAI model built for native, mu
 
 ## Multi-Step Agentic Planning: Why it isn't just a gimmick
 
-When OpenAI announced the new reasoning capabilities for GPT-5.5 on April 23, 2026, the immediate reaction from the developer community was to compare it to existing reasoning models like Claude Opus 4.7 [2]. However, the true differentiator in GPT-5.5 is that reasoning is now a first-class citizen in the token stream. Instead of the model simply "talking to itself" in a hidden scratchpad, it uses specialized reasoning tokens to simulate execution paths before committing changes to disk [1].
+```mermaid
+xychart-beta
+    title "Benchmark Score Lift: GPT-5.4 (bar) → GPT-5.5 (line)"
+    x-axis ["Terminal-Bench 2.0", "CyberGym Security"]
+    y-axis "Score (%)" 70 --> 88
+    bar [75.1, 79.0]
+    line [82.7, 81.8]
+```
+*Alt: Bar and line chart comparing GPT-5.4 versus GPT-5.5 scores on Terminal-Bench 2.0 (75.1% → 82.7%) and CyberGym Security (79.0% → 81.8%), showing the benchmark lift from the new reasoning architecture.*
+
+When OpenAI announced the new reasoning capabilities for GPT-5.5 on April 23, 2026, the immediate reaction from the developer community was to compare it to existing reasoning models like Claude [Opus 4.7](/blog/2026-04-30-opus-4-7-long-running-coding-benchmark) [2]. However, the true differentiator in GPT-5.5 is that reasoning is now a first-class citizen in the token stream. Instead of the model simply "talking to itself" in a hidden scratchpad, it uses specialized reasoning tokens to simulate execution paths before committing changes to disk [1].
 
 This "thinking" phase is not just about producing better text; it's about predicting the outcome of tool calls. By simulating the state of the terminal or the file system before actually committing a change, GPT-5.5 can catch errors that would have traditionally required multiple execution-fix-execution loops. This is particularly visible in its 82.7% score on Terminal-Bench 2.0, a benchmark designed to break models that cannot plan across multiple steps [1, 5]. For developers, this means the difference between a model that tries to fix an error and a model that understands *why* the error occurred in the context of the entire system.
 
@@ -137,7 +149,7 @@ This manual toggle is crucial because higher reasoning depth comes with a latenc
 
 For enterprises, the launch of the latest OpenAI frontier models and Codex on Amazon Bedrock on April 28, 2026, marks the end of the "privacy vs. performance" trade-off [4]. By hosting the models and the Codex harness within their own AWS VPCs, organizations can finally leverage frontier intelligence while maintaining strict data residency and security controls. AWS describes the offering as "the latest OpenAI models" and "Codex" without naming a specific model version, but the timing and benchmarks strongly indicate GPT-5.5 is included [4]. This is a critical development for industries like finance and healthcare that have been hesitant to send sensitive codebases to public APIs.
 
-The integration with **Amazon Bedrock Managed Agents** is particularly powerful. Codex's permission profiles — which round-trip across TUI sessions, user turns, and MCP sandbox state [3] — carry over into the Bedrock environment, preventing the "trust reset" issue where an agent loses context or permissions halfway through a complex deployment. In practice, this means an agent can be granted temporary permissions to deploy to a staging environment, and those permissions will remain active as the agent iterates through the deployment pipeline, runs integration tests, and finally requests human approval for the production push.
+The integration with **Amazon Bedrock Managed Agents** is particularly powerful. Codex's permission profiles — which round-trip across TUI sessions, user turns, and [MCP](/blog/mcp-2026-roadmap-explained) sandbox state [3] — carry over into the Bedrock environment, preventing the "trust reset" issue where an agent loses context or permissions halfway through a complex deployment. In practice, this means an agent can be granted temporary permissions to deploy to a staging environment, and those permissions will remain active as the agent iterates through the deployment pipeline, runs integration tests, and finally requests human approval for the production push.
 
 ## What this means for engineering teams
 

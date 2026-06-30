@@ -6,6 +6,7 @@ vendor_tag: community
 content_type: article
 status: published
 reading_time_min: 6
+seo_description: "Cloudflare Agents Week 2026 explained: identity, compute, storage, search, and agent-ready web infrastructure behind Cloudflare's 22+ AI agent announcements."
 primary_query: "Cloudflare Agents Week 2026 announcements explained"
 contrarian_angle: "The press-release read is '20 features.' The engineering read is: Cloudflare rebuilt every layer of the cloud stack — compute, memory, storage, networking, tooling — in one week. That is a platform reorientation, not a feature drop."
 learning_objectives:

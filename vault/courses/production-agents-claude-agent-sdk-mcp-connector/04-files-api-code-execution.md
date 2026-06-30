@@ -12,7 +12,8 @@ faq:
     a: "No. Anthropic documents downloads for files created by code execution or skills, not files you uploaded yourself."
   - q: "Which beta header does the Files API use?"
     a: "Use the files-api-2025-04-14 beta header on Files API requests."
-status: awaiting-g0
+status: g3-passed
+last_updated: 2026-06-14
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30
@@ -38,29 +39,20 @@ sources:
 
 # Files API + code execution: the complete agent IO surface
 
-The Anthropic Files API is a beta document-storage layer that allows developers to upload a file once — up to 500 MB — receive a persistent `file_id`, and reference that ID across multiple Messages requests without re-transmitting the file content each time, launched alongside the MCP connector and code execution tool in May 2025. It extends the context strategy from [[course/production-agents-claude-agent-sdk-mcp-connector/03-mcp-connector-multi-server|multi-server MCP agents]] and feeds the operational controls in [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|production deployment]].
-
-The Files API solves a real problem. Without it, a 20-page PDF costs you full bandwidth and ingestion time on every API call that needs it. With it, you upload once and pay that cost once. But the "upload once, use many times" pitch hides a billing nuance that matters at scale: you still pay full input tokens every time you include a file in a Messages request. The savings are in bandwidth and latency, not token cost [1]. This chapter covers the complete IO surface — Files API for document persistence, code execution for computation, and the intersection of both.
-
-> **Prerequisites**: Chapter 1 (Anthropic API key configured)
->
-> **Time**: 45 minutes
->
-> **Learning objectives**: By the end of this chapter you can upload files, reference them by `file_id`, select the correct content block type, use the code execution tool to generate artifacts, and download output files.
+The Anthropic Files API lets you upload a file once (up to 500 MB), receive a persistent `file_id`, and reference it across multiple Messages calls without retransmitting bytes. The savings are bandwidth and latency — you still pay full input tokens each time a `file_id` appears in a Messages request [1]. This chapter covers the complete IO surface: Files API for document persistence, code execution for computation, and downloading generated artifacts.
 
 ## Key facts
 
-1. The Files API beta header is `files-api-2025-04-14` — required on every request [1].
-2. Maximum file size: 500 MB per file; total workspace storage: 100 GB per organization [1].
-3. File storage operations (upload, download, list, retrieve, delete) are **free**; file content is billed as input tokens when referenced in a Messages request [1].
-4. Code execution is billed as container runtime, currently documented at $0.05 per hour with a 5-minute minimum, in addition to normal token costs [7].
-5. Files uploaded via the Files API are **not eligible for Zero Data Retention (ZDR)** — they are retained until explicitly deleted [1].
-6. The Files API is **not available on Amazon Bedrock or Google Vertex AI** — Anthropic-direct API only [1].
-7. You can only **download** files created by skills or the code execution tool — not files you uploaded yourself [1].
+1. Beta header `files-api-2025-04-14` required on every request [1].
+2. Max file size: 500 MB; workspace storage: 500 GB per org [1].
+3. Storage operations (upload, download, list, delete) are **free**; file content is billed as input tokens on each Messages reference [1].
+4. Code execution billed as container runtime (5-min minimum) plus normal token costs; verify current rate [7].
+5. Files API: not eligible for ZDR; not available on Bedrock or Vertex AI; any workspace API key can delete any file [1].
+6. You can only **download** files created by code execution or skills — not files you uploaded [1].
 
 ## Content block types by file format
 
-The Files API supports different file types that map to different content block types in the Messages API. Getting this wrong is the most common integration mistake:
+Each file type maps to a specific content block — using the wrong one returns a 400 error:
 
 | File type | MIME type | Content block | Use case |
 |---|---|---|---|
@@ -69,7 +61,13 @@ The Files API supports different file types that map to different content block 
 | JPEG, PNG, GIF, WebP | `image/*` | `image` | Visual analysis, screenshots |
 | CSV, datasets, binaries | varies | `container_upload` | Code execution, data analysis |
 
-For file types not in this table (`.docx`, `.xlsx`, `.md`), the recommended approach is conversion: convert to plain text or PDF first, then upload.
+For `.docx`, `.xlsx`, `.md`: convert to plain text or PDF first.
+
+```takeaways
+- PDFs and plain text use the `document` content block type; images use `image`; files passed to code execution use `container_upload` — using the wrong type returns a 400 error.
+- The Files API beta header `files-api-2025-04-14` is required on every request.
+- Maximum file size is 500 MB per file; total workspace storage is 500 GB per organization.
+```
 
 ## Uploading files
 
@@ -186,31 +184,17 @@ Using an image `file_id` in a `document` block (or vice versa) returns a `400 in
 
 ## The billing reality
 
-The "upload once" pitch is accurate for bandwidth. Here's the complete billing picture:
+Storage operations are free. Every Messages call that references a `file_id` bills the file content as input tokens — 100 queries against the same PDF cost 100× the document's token price. Code execution adds container runtime cost on top. Use extended prompt caching (1-hour TTL) when querying the same document many times in one session to drop repeated calls to ~10% of full input price. For session-level cost controls and PreToolUse circuit breakers, see [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|Chapter 5]].
 
-**Free operations:**
-- `POST /v1/files` (upload)
-- `GET /v1/files` (list)
-- `GET /v1/files/{id}` (metadata)
-- `DELETE /v1/files/{id}` (delete)
-- `GET /v1/files/{id}/content` (download)
-
-**Billed as input tokens:**
-- Every time a `file_id` is included in a Messages request, the file content is counted as input tokens
-
-**Billed as compute time:**
-- Code execution: container runtime at the documented hourly rate, with the documented minimum session charge
-
-The implications for a document-heavy agent:
-- Uploading a 5 MB PDF once: free
-- Referencing that PDF in 100 Messages calls: 100× the input token cost of that document
-- The upload saves you 100 round trips of bandwidth, but you still pay tokens each time
-
-For agents that run many queries against the same document in a single session, consider using extended prompt caching (1-hour TTL) to reduce the per-call token cost after the first invocation.
+```takeaways
+- File storage operations (upload, download, list, metadata, delete) are free; file content is billed as input tokens every time a `file_id` is referenced in a Messages request.
+- The "upload once" pitch saves bandwidth and latency but not token cost — 100 queries against the same file cost 100× the document's token price.
+- Enable 1-hour extended prompt caching when running many queries against the same document in one session to reduce per-call costs to approximately 10% of full input price.
+```
 
 ## Code execution with the Files API
 
-The code execution tool gives Claude a sandboxed Python environment. You can pass files to it via `container_upload` blocks, run code, and download output files via the Files API:
+Unlike [[course/production-agents-claude-agent-sdk-mcp-connector/03-mcp-connector-multi-server|MCP tool servers in Chapter 3]] — which connect to external services — code execution runs within Anthropic's infrastructure. Pass files via `container_upload` blocks, run code, and download output files:
 
 ```python
 # Upload a dataset for code execution
@@ -293,9 +277,15 @@ def cleanup_old_files(client: Anthropic, max_age_days: int = 30):
 The Files API rate limit is approximately 100 requests per minute during the beta period. If you're bulk-uploading documents at ingestion time, add a delay between uploads or batch them during off-peak windows. Contact sales@anthropic.com for higher limits.
 </Callout>
 
+```takeaways
+- Files persist until explicitly deleted; build a retention policy from day one to avoid hitting the 500 GB per-organization storage limit.
+- A `cleanup_old_files()` function that checks `created_at` and deletes stale entries is the minimum viable retention policy for production agents.
+- The Files API rate limit during beta is approximately 100 requests per minute; batch bulk uploads during off-peak windows if you need to ingest many documents at once.
+```
+
 ## Extended prompt caching with Files API
 
-When you use the same file across many Messages calls in a short window, extended prompt caching can significantly reduce costs. The standard cache TTL is 5 minutes; an optional 1-hour TTL is available:
+Add `cache_control: {type: "ephemeral"}` to a document block to cache it. First call pays full token cost; subsequent calls within the TTL window pay ~10% of full input price:
 
 ```python
 response = client.beta.messages.create(
@@ -316,106 +306,19 @@ response = client.beta.messages.create(
 )
 ```
 
-With caching enabled, the first call to include a given `file_id` pays full input token cost. Subsequent calls within the TTL window pay cache read tokens — approximately 10% of the full input price for standard caching. For a 100-page PDF queried 50 times in one session, this can reduce document token costs by 85–90%.
-
-The cache is keyed on the exact content. If the file's content changes (you re-upload), the cache key changes and you pay full tokens again. This is expected behavior: the cache reflects the actual bytes.
-
-## Managing files at scale
-
-For production agents that ingest documents regularly, you need patterns beyond "upload once." A document ingestion pipeline typically has three stages:
-
-**Stage 1 — upload and register**:
-```python
-def ingest_document(file_path: str, metadata: dict) -> str:
-    """Upload file, return file_id. Store mapping in your DB."""
-    with open(file_path, "rb") as f:
-        mime = "application/pdf" if file_path.endswith(".pdf") else "text/plain"
-        uploaded = client.beta.files.upload(
-            file=(os.path.basename(file_path), f, mime),
-        )
-    
-    # Store in your DB: document_id → file_id mapping
-    db.insert("documents", {
-        "document_id": metadata["id"],
-        "file_id": uploaded.id,
-        "uploaded_at": datetime.utcnow().isoformat(),
-        "filename": os.path.basename(file_path),
-    })
-    return uploaded.id
-```
-
-**Stage 2 — use by ID**:
-```python
-def query_document(document_id: str, question: str) -> str:
-    """Look up file_id from DB, query without re-uploading."""
-    row = db.find("documents", {"document_id": document_id})
-    file_id = row["file_id"]
-    
-    response = client.beta.messages.create(
-        model="claude-sonnet-4-5",
-        max_tokens=1024,
-        messages=[{
-            "role": "user",
-            "content": [
-                {"type": "text", "text": question},
-                {"type": "document", "source": {"type": "file", "file_id": file_id}},
-            ],
-        }],
-        betas=["files-api-2025-04-14"],
-    )
-    return response.content[0].text
-```
-
-**Stage 3 — clean up stale files**:
-```python
-def sync_file_storage(max_age_days: int = 90):
-    """Delete Files API objects for documents removed from DB."""
-    all_files = {f.id for f in client.beta.files.list().data}
-    active_ids = set(db.select_column("documents", "file_id"))
-    
-    stale = all_files - active_ids
-    for file_id in stale:
-        client.beta.files.delete(file_id)
-    return len(stale)
-```
-
-The 100 GB per-organization limit seems generous until you have thousands of PDFs. Build the cleanup stage from day one.
-
-## What the Files API does NOT support
-
-Knowing the limits prevents surprises:
-
-- **Not available on Bedrock or Vertex AI**: If your organization uses Claude through AWS or GCP, the Files API is not available. You'll need to pass file content inline in every request.
-- **Downloaded files only from code execution / skills**: You cannot download a file you uploaded. The download endpoint works only for files that were created as outputs by the code execution tool or skills.
-- **No ZDR**: If your organization has Zero Data Retention enabled, the Files API is ineligible. Files are stored until explicitly deleted regardless of ZDR settings.
-- **Not an immutable store**: Files can be deleted by any API key in your workspace. There's no access control within a workspace.
-
-<RunPromptCell
-  model="claude-sonnet-4-5"
-  prompt="I uploaded a PDF contract using the Files API. I now want to ask three questions about it: (1) what are the payment terms, (2) what are the termination conditions, and (3) who are the parties. Walk me through the most cost-efficient way to run all three queries."
-  expectedOutput="Claude explains: upload the PDF once (free), then make three separate Messages API calls each referencing the same file_id. To minimize token cost, enable the 1-hour extended prompt caching TTL so the PDF tokens are cached after the first call — the second and third calls pay only cache read tokens (much cheaper) rather than full input tokens. Include citations: {enabled: true} to get inline references to specific clauses."
-/>
+Cache is keyed on exact content — re-uploading a changed file resets it.
 
 ## Hands-on exercise
 
-**Build a document-analysis agent that uploads a PDF once and runs three analytical queries with a downloaded chart.**
+**Upload a PDF once and run three analytical queries; bonus: download a generated chart.**
 
-Setup: Use any PDF you have — a research paper, a product manual, or a public SEC filing work well.
+1. Upload any PDF; store `file_id`
+2. Query 1: "What is the main topic? Summarize in 3 sentences."
+3. Query 2: "List all named organizations mentioned."
+4. Query 3: "What are the 5 most important statistics?" with `citations: {enabled: true}`
+5. **Bonus**: Pass Q2 org list as CSV to code execution; download output PNG
 
-Steps:
-1. Upload the PDF to the Files API, store the returned `file_id`
-2. Run Query 1: "What is the main topic of this document? Summarize in 3 sentences."
-3. Run Query 2: "List all named organizations, companies, or institutions mentioned."
-4. Run Query 3: "What are the 5 most important numbers or statistics cited?" — with `citations: {enabled: true}`
-5. After Query 3, verify all three calls used the same `file_id` (no re-upload)
-6. **Bonus**: Add a code execution call that takes the organizations from Query 2 as a CSV and creates a simple word-frequency bar chart, then download the output PNG
-
-**Verification**:
-- The `file_id` in all three Messages requests is identical
-- Query 3 response includes inline citations with page or section references
-- (Bonus) You have a PNG file on your filesystem with a chart
-
-**Estimated time**: 20 minutes (30 minutes with bonus)
+**Verify**: Same `file_id` in all 3 calls; Q3 includes inline citations. **Est. time**: 20 min (30 with bonus)
 
 <KnowledgeCheck
   question="A developer uploads a 2 MB PDF to the Files API and then uses the same file_id in 50 separate Messages API calls over one month. Which costs does she pay?"
@@ -438,7 +341,7 @@ Steps:
 
 ## What's next
 
-In [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|Chapter 5]] you'll harden everything built so far into production-ready agents. The focus shifts from capabilities to operations: structured logging with hooks, cost circuit breakers that stop runaway sessions, and the deployment checklist that prevents the most common production failures. Review [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|the SDK migration chapter]] if your local examples are still using old package names.
+[[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|Chapter 5]] covers production hardening: hooks, cost circuit breakers, and the deployment checklist.
 
 ## References
 

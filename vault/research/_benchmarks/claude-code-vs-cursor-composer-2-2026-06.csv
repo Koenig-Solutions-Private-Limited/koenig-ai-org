@@ -1,0 +1,14 @@
+tool,task,trial,start_utc,end_utc,time_to_first_viable_diff_s,time_to_tests_pass_s,token_cost_usd,correctness_pass,human_escalations,tool_edit_cycles,loc_changed,loc_minimum_needed,notes
+# tool: claude-code | cursor-composer-2
+# task: task-a-express-handler | task-b-jwt-scaffold | task-c-streaming-leak
+# trial: integer 1-10
+# start_utc / end_utc: ISO 8601 UTC
+# time_to_first_viable_diff_s: seconds from prompt send to first git diff that compiles
+# time_to_tests_pass_s: seconds from prompt send to all tests green (empty if never passes)
+# token_cost_usd: actual API cost in USD (Cursor Pro: $0.0033/min; API-key mode: actual token cost)
+# correctness_pass: true|false
+# human_escalations: integer count of times runner had to intervene
+# tool_edit_cycles: integer count of distinct edit → save → observe cycles
+# loc_changed: total lines added+deleted in final diff
+# loc_minimum_needed: reviewer estimate of minimum LOC needed (enter manually post-run)
+# notes: git hash, any anomalies, baseline_pass status

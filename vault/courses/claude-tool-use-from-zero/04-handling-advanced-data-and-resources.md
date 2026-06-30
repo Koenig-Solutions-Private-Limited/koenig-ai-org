@@ -53,6 +53,12 @@ company-config://policies/refund/en-US
 company-config://policies/refund/de-DE
 ```
 
+```takeaways
+- A stable, locale-scoped policy is better modeled as a resource URI than as a callable tool, because it is context to read rather than an action to execute.
+- Modeling read-only data as a tool makes the connector's action surface misleadingly large.
+- A server can still enforce access rules and log reads on resource fetches, so resources are not uncontrolled.
+```
+
 The URI names the thing. Claude can read it as context. Your server can still enforce access rules and log reads.
 
 ## Resource URI rules
@@ -63,6 +69,12 @@ Good resource URIs are:
 - Meaningful: a human can infer what the resource represents.
 - Scoped: the URI includes tenant, project, locale, or environment when needed.
 - Non-secret: the URI should not contain credentials or private tokens.
+
+```takeaways
+- A resource URI is an interface, not a storage location — the server maps it to a file, database row, or generated summary behind the boundary.
+- Raw file paths, signed URLs with embedded secrets, and internal database primary keys are anti-patterns for resource URIs.
+- Including tenant, locale, or environment in the URI gives the server a scoping signal without leaking implementation details.
+```
 
 Bad resource URIs include raw file paths from a developer laptop, signed URLs with secrets, or database primary keys that reveal internal implementation details.
 
@@ -119,6 +131,12 @@ The en-US refund policy allows refunds within 30 days, requires a receipt, and e
 ## Handling binary and large data
 
 Resources can represent more than text, but large or binary data needs care. If a PDF contract is 80 pages, blindly injecting it into the model context is slow, expensive, and often useless. Better patterns include:
+
+```takeaways
+- Injecting a large document wholesale into context is slow, expensive, and often counterproductive because most content is irrelevant to the query.
+- Expose metadata first, then section-level resources, then targeted extraction tools — this keeps context lean and purposeful.
+- The design goal is "Claude sees the right context with enough structure to act," not "Claude sees everything."
+```
 
 - Expose metadata first: title, type, page count, owner, updated time.
 - Expose section resources: `contract://123/section/payment-terms`.

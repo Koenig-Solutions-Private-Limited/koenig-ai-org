@@ -12,7 +12,8 @@ faq:
     a: "No. Anthropic documents that the TypeScript SDK bundles a native Claude Code binary as an optional dependency."
   - q: "Why does the rename matter for production teams?"
     a: "It separates Claude Code as an end-user product from the Agent SDK as infrastructure for custom autonomous agents."
-status: awaiting-g0
+status: g3-passed
+last_updated: 2026-06-14
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30
@@ -64,6 +65,12 @@ Most developers saw the April 2026 announcement and ran `npm install @anthropic-
 The rename matters strategically because it de-couples the SDK from Claude Code the developer product. Claude Code is a terminal app; the Claude Agent SDK is now a general-purpose platform library. By prohibiting partners from calling their products "Claude Code," Anthropic is drawing a hard line: Claude Code is the consumer app, the Agent SDK is the infrastructure you build on. If you're building a product on top of this SDK, that distinction matters for your own naming and positioning.
 
 There's also a real technical signal in the migration guide: configuration that Claude Code users may have treated as implicit now deserves an explicit audit. Your package manager can make the import rename look trivial, but stale settings, old package names, and different defaults are what usually break production agents.
+
+```takeaways
+- The npm package renamed from `@anthropic-ai/claude-code` to `@anthropic-ai/claude-agent-sdk`; the PyPI package renamed from `claude-code-sdk` to `claude-agent-sdk`.
+- The rename signals a strategic separation: Claude Code is the end-user terminal app; the Claude Agent SDK is infrastructure for custom autonomous agents.
+- Partners may no longer use the names "Claude Code" or "Claude Code Agent" in their product naming — the SDK is now a platform, not a product feature.
+```
 
 ## Installing the renamed SDK
 
@@ -180,6 +187,12 @@ The generator yields several message types. The ones you'll care about most:
   expectedOutput="The agent calls Bash with `pwd` and `ls`, then returns the directory path and a list of files. You see AssistantMessage objects containing tool_use blocks, followed by ToolResultMessage objects with the shell output, ending with a ResultMessage containing the synthesized answer."
 />
 
+```takeaways
+- `query()` is an async generator that yields `SystemMessage`, `AssistantMessage`, `ToolResultMessage`, and `ResultMessage` objects as the agent works.
+- The `ResultMessage` is the final event and contains the synthesized answer, token usage, and session ID.
+- The options type renamed from `ClaudeCodeOptions` to `ClaudeAgentOptions`; update all imports before shipping to avoid runtime errors.
+```
+
 ## Capturing and resuming sessions
 
 Session continuity is one of the most underused features of the SDK. When the `SystemMessage` with subtype `init` arrives, grab the `session_id`:
@@ -240,6 +253,12 @@ The Agent SDK ships ten built-in tools. You must declare which ones you allow ex
 | `AskUserQuestion` | Ask the user clarifying questions with multiple choice | Yes |
 
 The `Bash` tool is the one to be careful with. In a CI context with a fully sandboxed container it's fine. On a developer workstation, `Bash` can delete files, install packages, and run arbitrary code. If you don't need shell execution, don't include it.
+
+```takeaways
+- The Agent SDK ships ten built-in tools; you must declare each one explicitly in `allowed_tools` — there is no "allow all" shortcut.
+- `Bash` is the highest-risk tool: on a developer workstation it can delete files, install packages, and run arbitrary code; omit it unless shell execution is explicitly required.
+- Session JSONL files are stored under `~/.claude/sessions/` by default; in production, set `CLAUDE_SESSIONS_DIR` to a path with an appropriate retention policy.
+```
 
 ## Multi-cloud authentication
 
@@ -358,6 +377,12 @@ asyncio.run(review_and_document("./src"))
 The `Agent` tool must be in `allowedTools` for the parent to spawn subagents. Messages from within a subagent's context include a `parent_tool_use_id` field — use this to correlate subagent output back to the parent's tool call in your audit logs.
 
 Note the pattern: the parent doesn't implement the reviewer or writer logic itself. It delegates, which keeps the parent's context window focused on orchestration rather than implementation. This is the right architecture for agents with more than two or three distinct skill sets.
+
+```takeaways
+- Subagents receive focused tasks via `AgentDefinition` with their own description, prompt, and tool list — keeping the parent's context window focused on orchestration.
+- The `parent_tool_use_id` field in subagent messages correlates subagent output back to the parent tool call in audit logs.
+- The `Agent` tool must appear in the parent's `allowedTools`; omitting it silently prevents subagent spawning.
+```
 
 ## Configuration file loading order
 

@@ -1,0 +1,18 @@
+{
+  "name": "task-b-jwt-scaffold",
+  "version": "1.0.0",
+  "description": "Benchmark Task B: scaffold to add JWT auth flow",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cookie-parser": "^1.4.6"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4"
+  }
+}

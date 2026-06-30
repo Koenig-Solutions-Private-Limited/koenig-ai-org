@@ -4,7 +4,7 @@ chapter_num: 3
 chapter_slug: long-context-behavior
 title: "Long-context behavior — effective vs. advertised context windows"
 hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch03-hero.svg"
-status: draft-for-review
+status: g3-passed
 author: "Koenig AI Instructor"
 agent_drafted_by: ca965eff-ea59-4030-91de-47845d3600c6
 vendor_tag: multi-model
@@ -31,9 +31,11 @@ references:
   - "[^1]: Liu, N. F. et al. (2023). 'Lost in the Middle: How Language Models Use Long Contexts.' Transactions of the Association for Computational Linguistics, 12. https://arxiv.org/abs/2307.03172"
   - "[^2]: Anthropic. Claude Opus 4.7 model card and release notes. https://www.anthropic.com/news"
   - "[^3]: Google DeepMind. Gemini 3.1 Pro release and changelog. https://ai.google.dev/gemini-api/docs/changelog"
-  - "[^4]: OpenAI. GPT-5.5 release notes. https://help.openai.com/en/articles/9624314-model-release-notes"
+  - "[^4]: OpenAI. GPT-5.5 release notes. https://platform.openai.com/docs/models"
   - "[^5]: Hsieh, C.-Y. et al. (2024). 'RULER: What's the Real Context Size of Your Long-Context Language Models?' https://arxiv.org/abs/2404.06654"
   - "[^6]: Bai, Y. et al. (2024). 'LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks.' https://arxiv.org/abs/2412.15204"
+  - "[^7]: Lewis, P. et al. (2020). 'Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks.' NeurIPS 2020. https://arxiv.org/abs/2005.11401 — foundational RAG architecture paper; baseline for cost and accuracy comparisons between retrieval-augmented and full-context approaches."
+  - "[^8]: Kamradt, G. (2023). 'Needle In A Haystack — Pressure Testing LLMs.' https://github.com/gkamradt/LLMTest_NeedleInAHaystack — standard methodology for context window retrieval pressure testing; basis for the position-grid evaluation design used in this chapter."
 slides: courses/picking-a-frontier-model-2026-q2/ch03-slides.pptx
 audio: courses/picking-a-frontier-model-2026-q2/voiceover-03.mp3
 voiceover_script: courses/picking-a-frontier-model-2026-q2/voiceover-03.md
@@ -63,9 +65,15 @@ Long-context language model evaluation encompasses the methods used to measure h
 - Opus 4.7's 1M context window outperforms Gemini 3.1 Pro on synthesis tasks (cross-document reasoning, contradiction detection, multi-fact aggregation) — its synthesis effective limit (~500K tokens) substantially exceeds Gemini's (~300K tokens). [^2][^6]
 - GPT-5.5's 128K context is the smallest of the three, but its **middle-context performance** (50–80% depth) is the most stable — it shows less "lost in the middle" degradation than either competitor on the retrieval tasks in our dataset. [^4]
 - The practical threshold for "reliable synthesis" (multi-fact reasoning accuracy ≥ 85%) varies by task: **single-fact retrieval** is reliable to Gemini's full advertised window; **two-fact synthesis** degrades sharply above 400K tokens; **three-or-more-fact synthesis** is unreliable beyond 200K tokens on all three models. [^5][^6]
-- A well-implemented **RAG (Retrieval-Augmented Generation)** pipeline using top-k=5 with good embeddings typically outperforms full-context loading for documents above 100K tokens, at a fraction of the inference cost. Long context is not always the right answer. [^5]
+- A well-implemented **RAG (Retrieval-Augmented Generation)** pipeline using top-k=5 with good embeddings typically outperforms full-context loading for documents above 100K tokens, at a fraction of the inference cost. Long context is not always the right answer. [^5][^7]
 
 ---
+
+```takeaways
+- Gemini 3.1 Pro leads on raw needle-in-haystack retrieval up to ~600K tokens; Opus 4.7 leads on multi-fact synthesis with an effective synthesis limit of ~500K tokens versus Gemini's ~300K.
+- GPT-5.5's 128K context is the smallest advertised window but shows the most stable middle-context performance with less "lost in the middle" degradation than either competitor.
+- A well-implemented RAG pipeline with top-k=5 typically outperforms full-context loading for documents above 100K tokens at a fraction of the inference cost.
+```
 
 ## The advertised vs. effective context window
 
@@ -98,6 +106,12 @@ Here's how the three models compare on each measure (from our internal tests and
 
 ---
 
+```takeaways
+- The retrieval effective limit (90% single-fact accuracy) is typically 1.5–4× larger than the synthesis effective limit (85% multi-hop accuracy) — choose the right limit for your task type.
+- The "hot zone" (first and last ~15% of context) shows dramatically higher accuracy across all models; placing important information at the start and end works with the model's attention bias.
+- A 1M token context window means the model receives 1M tokens, not that it attends to all of them equally — treat large context windows as a retrieval tool, not working memory.
+```
+
 ## The three failure modes at scale
 
 When a model exceeds its effective context limit, failures follow recognizable patterns. Knowing them helps you detect problems before they reach production.
@@ -122,9 +136,15 @@ Detection: include a complex reasoning task in your evaluation, not just retriev
 
 ---
 
+```takeaways
+- Lost needles (retrieval miss), hallucinated synthesis (fluent but partially fabricated answer), and degraded step-by-step reasoning are the three failure modes as context depth increases.
+- Hallucinated synthesis is harder to detect than a lost needle because the output looks high quality — detection requires ground-truth verification.
+- Degraded reasoning at depth shows as shorter chain-of-thought chains; compare chain-of-thought quality at 50K vs. 200K tokens on the same task to detect this failure mode.
+```
+
 ## The needle-in-haystack evaluation
 
-The needle-in-haystack test is the standard method for measuring retrieval effective limit. The methodology:
+The needle-in-haystack test [^8] is the standard method for measuring retrieval effective limit. The methodology:
 
 1. Prepare a "haystack" — a large document padded to the target token depth (e.g., a legal corpus, a Wikipedia dump, or synthetic filler text).
 2. Insert a "needle" — a unique, specific fact that cannot be guessed from context ("The secret phrase is: banana-lighthouse-44").
@@ -148,6 +168,12 @@ A well-designed evaluation tests a grid: context size (50K / 100K / 200K / 500K)
 />
 
 ---
+
+```takeaways
+- The needle-in-haystack methodology tests a grid of context size × needle position; each cell needs ≥3 runs to average out noise and build a reliable accuracy heatmap.
+- A three-fact synthesis task is a harder and more realistic production test than single-fact retrieval — use both in your evaluation to distinguish retrieval from reasoning capability.
+- Determine your retrieval effective limit empirically on your own documents; vendor-published context window sizes describe the ceiling, not the reliable operating range.
+```
 
 ## Choosing your context strategy
 
@@ -242,10 +268,14 @@ The final question is: **what does reliable output actually cost?** In [Chapter 
 
 [^3]: Google DeepMind. "Gemini 3.1 Pro release and changelog." https://ai.google.dev/gemini-api/docs/changelog — 1M token context capability notes and multimodal context handling.
 
-[^4]: OpenAI. "GPT-5.5 release notes." https://help.openai.com/en/articles/9624314-model-release-notes — 128K context window specifications and retrieval accuracy claims.
+[^4]: OpenAI. "GPT-5.5 release notes." https://platform.openai.com/docs/models — 128K context window specifications and retrieval accuracy claims.
 
 [^5]: Hsieh, C.-Y. et al. (2024). "RULER: What's the Real Context Size of Your Long-Context Language Models?" https://arxiv.org/abs/2404.06654 — empirical methodology for measuring effective context window; multi-needle evaluation design.
 
 [^6]: Bai, Y. et al. (2024). "LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks." https://arxiv.org/abs/2412.15204 — multi-hop synthesis degradation analysis across frontier models.
+
+[^7]: Lewis, P. et al. (2020). "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks." NeurIPS 2020. https://arxiv.org/abs/2005.11401 — foundational RAG architecture paper; baseline for cost and accuracy comparisons between retrieval-augmented and full-context approaches.
+
+[^8]: Kamradt, G. (2023). "Needle In A Haystack — Pressure Testing LLMs." https://github.com/gkamradt/LLMTest_NeedleInAHaystack — standard methodology for context window retrieval pressure testing; basis for the position-grid evaluation design used in this chapter's hands-on exercise.
 
 - Koenig AI Academy internal long-context dataset: derived from `/data/claude-tool-use-determinism/2026-Q2/` extended test set.

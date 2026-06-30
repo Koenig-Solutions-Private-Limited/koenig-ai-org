@@ -3,14 +3,18 @@ issue: KOEA-2263
 assets_generated: true
 asset_files:
   - ch06-slides.pptx
-tool: python-pptx (slides) / notebooklm-py-unavailable
-duration_audio_sec: null
+  - ch06-audio.mp3
+tool: python-pptx (slides) / generate_course_audio.py (audio, OpenAI TTS alloy)
+duration_audio_sec: 477
 slide_count: 7
 slide_file: vault/courses/claude-tool-use-from-zero/ch06-slides.pptx
+audio_file: vault/courses/claude-tool-use-from-zero/ch06-audio.mp3
 produced_at: 2026-05-14T08:27:00Z
-status: source-restored - existing slides present, audio not in scope for KOEA-2461
+audio_produced_at: 2026-06-10T16:15:00Z
+status: complete
 notes:
-  - NotebookLM CLI was not available in this execution environment.
+  - NotebookLM CLI was not available in this execution environment (storage_state.json root-owned).
   - Slides were built from the chapter source only; source markdown was not modified.
   - Deck uses the required academy attribution and ends with a Try it next CTA.
   - "2026-05-14: Source chapter markdown restored by KOEA-2461."
+  - "2026-06-10: Audio generated via generate_course_audio.py (3 chunks, OpenAI TTS alloy, ~477s)."

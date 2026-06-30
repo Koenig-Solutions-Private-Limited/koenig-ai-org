@@ -1,0 +1,269 @@
+{
+  "course_slug": "google-tag-manager-mastery",
+  "toc_locked": true,
+  "chapters": [
+    {
+      "num": 1,
+      "slug": "gtm-fundamentals-container-setup",
+      "title": "GTM Fundamentals: Container Setup and the Tag–Trigger–Variable Model",
+      "owns": [
+        "GTM account and container creation",
+        "GTM snippet installation (script + noscript code snippets) on a staging page",
+        "tag-trigger-variable conceptual model and how the three components interact",
+        "built-in variables (Click URL, Page Path, Form ID): enabling and verifying in Preview Mode",
+        "All-Pages pageview tag creation and firing confirmation in GTM Tag Assistant / Preview panel",
+        "GTM Preview Mode: basic use as a visual tag-firing confirmation tool",
+        "GTM Tag Assistant introduction and container-connected workflow",
+        "naming convention (Platform – Event – Audience) applied across tags, triggers, and variables"
+      ],
+      "does_not_cover": [
+        "GA4 Configuration tag and custom event setup (ch2 owns GA4 integration)",
+        "Google Ads Conversion Tracking tag (ch3 owns conversion tags and dataLayer)",
+        "dataLayer.push() syntax and Data Layer variable type (ch3)",
+        "Meta Pixel and ad-platform remarketing pixels (ch4)",
+        "advanced Preview Mode debugging: misfiring diagnosis, undefined variables, duplicate events (ch5 owns full debugging workflow)",
+        "Consent Mode v2 implementation (ch6)",
+        "container audit, tag bloat removal, and quarterly maintenance (ch7)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "correct order of GTM snippet installation (script in <head>, noscript in <body>)",
+        "which of the three GTM components — tag, trigger, or variable — controls WHEN a tag fires",
+        "how to enable the Click URL built-in variable in GTM settings",
+        "how to verify a pageview tag fires in GTM Preview Mode / Tag Assistant",
+        "Platform–Event–Audience naming convention: correct format for a Google Ads purchase conversion tag"
+      ],
+      "notebooklm_source_focus": [
+        "Google Tag Manager setup and installation guide 2025–2026",
+        "GTM tag-trigger-variable conceptual model documentation",
+        "GTM Preview Mode and Tag Assistant usage guide",
+        "GTM built-in variables reference and configuration"
+      ],
+      "dossier_path": "vault/research/courses/google-tag-manager-mastery/01-gtm-fundamentals-container-setup.md"
+    },
+    {
+      "num": 2,
+      "slug": "ga4-integration-custom-events",
+      "title": "GA4 Integration via GTM: Configuration Tag and Custom Event Tracking",
+      "owns": [
+        "GA4 Configuration tag deployment via GTM with correct Measurement ID",
+        "GA4 pageview validation in GA4 DebugView",
+        "GA4 Event tag for form submission using a Form Submission trigger scoped to a CSS selector",
+        "scroll-depth event tracking using GTM's built-in Scroll Depth trigger",
+        "outbound-click event tracking using GTM's built-in Click – Just Links trigger with outbound condition",
+        "GA4 DebugView: cross-validating that events and parameters arrive before container version publish",
+        "GTM container version publish for GA4 events as the final step before going live"
+      ],
+      "does_not_cover": [
+        "GTM container setup, snippet installation, and naming conventions (ch1)",
+        "Google Ads Conversion Tracking tag and dataLayer.push() for purchase events (ch3)",
+        "Google Ads Remarketing tag and Meta Pixel (ch4)",
+        "advanced debugging: diagnosing misfiring GA4 events with Preview Mode (ch5 owns full debugging workflow)",
+        "Consent Mode impact on GA4 tag behavior (ch6 owns consent implementation)",
+        "GA4 event tag audit and deprecation as part of ongoing maintenance (ch7)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "where to find the GA4 Measurement ID and which GTM tag field it populates",
+        "which GTM trigger type to use for form submission scoped to a specific CSS selector",
+        "difference between the GA4 Configuration tag and a GA4 Event tag",
+        "how to confirm a custom event and its parameters appear in GA4 DebugView",
+        "built-in GTM trigger type used to track scroll depth"
+      ],
+      "notebooklm_source_focus": [
+        "GA4 Configuration tag setup via GTM documentation 2025–2026",
+        "GTM form submission trigger and CSS selector scoping guide",
+        "GA4 DebugView real-time event validation documentation",
+        "GTM built-in triggers: Scroll Depth and Click Just Links reference"
+      ],
+      "dossier_path": "vault/research/courses/google-tag-manager-mastery/02-ga4-integration-custom-events.md"
+    },
+    {
+      "num": 3,
+      "slug": "google-ads-conversion-datalayer",
+      "title": "Conversion Tracking: Google Ads Tags and the dataLayer",
+      "owns": [
+        "dataLayer.push() syntax for purchase events: structure with event name, order value, and transaction ID",
+        "GTM Data Layer variable type: configuration to read values pushed by the page",
+        "Google Ads Conversion Tracking tag: setup with dynamic revenue value, currency, and transaction ID to support tROAS bidding",
+        "Conversion Linker tag: installation, cross-domain attribution setup, and test in GTM Preview Mode",
+        "duplicate conversion detection: identifying tags firing multiple times per transaction",
+        "event deduplication logic using trigger conditions and unique transaction ID checks",
+        "Smart Bidding signal accuracy: why deduplicated, value-carrying conversions improve tROAS performance"
+      ],
+      "does_not_cover": [
+        "GTM container setup and naming conventions (ch1)",
+        "GA4 event tags and GA4 DebugView (ch2 owns GA4 integration)",
+        "Google Ads Remarketing tag (ch4 — remarketing is separate from conversion tracking)",
+        "Meta Pixel and other ad-platform pixels (ch4)",
+        "diagnosing misfiring conversion tags beyond Conversion Linker test (ch5 owns full debugging workflow)",
+        "Consent Mode impact on conversion tag firing (ch6)",
+        "conversion tag audit and removal of legacy conversion actions (ch7)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "correct dataLayer.push() structure for a purchase event with order value and transaction ID",
+        "which GTM variable type reads a value pushed to the dataLayer",
+        "why passing a unique transaction ID to the Google Ads conversion tag prevents duplicate counting",
+        "what the Conversion Linker tag does and when it is required for accurate attribution",
+        "how tROAS Smart Bidding uses the dynamic revenue value from the Google Ads conversion tag"
+      ],
+      "notebooklm_source_focus": [
+        "Google Ads Conversion Tracking via GTM with dynamic values documentation 2025–2026",
+        "GTM dataLayer variable type and dataLayer.push() reference",
+        "Google Ads Conversion Linker tag setup and cross-domain tracking guide",
+        "Smart Bidding tROAS signal quality and conversion deduplication best practices"
+      ],
+      "dossier_path": "vault/research/courses/google-tag-manager-mastery/03-google-ads-conversion-datalayer.md"
+    },
+    {
+      "num": 4,
+      "slug": "remarketing-pixels-meta-multi-platform",
+      "title": "Remarketing Pixels: Google Ads, Meta, and Multi-Platform Tag Deployment",
+      "owns": [
+        "Google Ads Remarketing tag: installation via GTM and audience membership verification in Google Ads Audience Manager",
+        "Meta Pixel deployment via GTM's community template gallery",
+        "Meta Pixel Purchase standard event: configuration with value and currency parameters",
+        "Facebook Pixel Helper validation of Meta Pixel events",
+        "Constant Variable for Pixel/Tag ID: using GTM Constant Variables for single-point credential management across the container",
+        "third ad-platform pixel deployment example (e.g., TikTok Pixel or LinkedIn Insight Tag)",
+        "dataLayer-to-standard-event mapping: aligning GTM dataLayer events to correct standard events for Google (remarketing) and Meta (Purchase, ViewContent, etc.) for cross-platform audience consistency"
+      ],
+      "does_not_cover": [
+        "Google Ads Conversion Tracking tag and purchase event dataLayer schema (ch3 owns conversion, ch4 owns remarketing only)",
+        "dataLayer.push() syntax and Data Layer variable type mechanics (ch3)",
+        "GA4 event tracking (ch2)",
+        "pre-publish QA checklist and debugging misfiring tags (ch5)",
+        "Consent Mode configuration for these pixels (ch6 owns consent implementation for all tags including pixels)",
+        "pixel audit and removal of redundant audience tags (ch7)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "how to install Meta Pixel using GTM's community template gallery (not custom HTML)",
+        "which GTM variable type to use for storing a Pixel ID that is reused across multiple tags",
+        "how to verify the Meta Pixel Purchase event fires correctly using Facebook Pixel Helper",
+        "how to verify Google Ads Remarketing tag audience membership in Audience Manager",
+        "why mapping dataLayer events to platform-specific standard events matters for audience consistency"
+      ],
+      "notebooklm_source_focus": [
+        "Meta Pixel GTM template gallery installation and standard events guide 2025–2026",
+        "Google Ads Remarketing tag via GTM and Audience Manager verification",
+        "GTM Constant Variable type for credential management best practice",
+        "TikTok Pixel GTM integration or LinkedIn Insight Tag GTM setup 2025–2026",
+        "cross-platform standard event mapping: Google vs Meta event taxonomy"
+      ],
+      "dossier_path": "vault/research/courses/google-tag-manager-mastery/04-remarketing-pixels-meta-multi-platform.md"
+    },
+    {
+      "num": 5,
+      "slug": "debugging-qa-container-governance",
+      "title": "Debugging, QA, and Container Governance",
+      "owns": [
+        "GTM Preview Mode advanced use: step-by-step diagnosis of misfiring tags, undefined variables, and duplicate events",
+        "three common tag error scenarios: tag fires on wrong trigger, variable returns undefined, duplicate event fires — reproduce and fix each",
+        "Tag Assistant diagnostic workflow alongside Preview Mode",
+        "GA4 DebugView used in conjunction with GTM Preview to cross-validate event parameters reach the GA4 property",
+        "GTM container versioning: publishing with a descriptive change log",
+        "container version rollback: restoring a prior version to simulate incident recovery",
+        "pre-publish QA checklist: naming convention, trigger scope, variable resolution, consent state"
+      ],
+      "does_not_cover": [
+        "GTM container initial setup, snippet installation, and Preview Mode basic firing confirmation (ch1 owns initial setup and first Preview Mode use)",
+        "GA4 Configuration tag and custom event deployment (ch2)",
+        "dataLayer and Google Ads conversion tag setup (ch3)",
+        "Meta Pixel and remarketing pixel installation (ch4)",
+        "Consent Mode v2 implementation and consent state configuration (ch6 — the QA checklist references consent state as a check item but implementation lives in ch6)",
+        "full container audit and tag bloat removal (ch7 owns ongoing audit; ch5 owns per-deployment QA)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "how to reproduce a 'variable returns undefined' error in GTM Preview Mode and identify its cause",
+        "which GTM event in the Preview panel indicates a trigger that should NOT have fired",
+        "how to use GA4 DebugView alongside GTM Preview to confirm event parameters are correct",
+        "steps to publish a GTM container version with a change log",
+        "how to roll back a GTM container to a previous version after a bad publish"
+      ],
+      "notebooklm_source_focus": [
+        "GTM Preview Mode advanced debugging guide 2025–2026",
+        "GTM Tag Assistant troubleshooting documentation",
+        "GTM container versioning, change log, and rollback procedures",
+        "GA4 DebugView and GTM Preview cross-validation workflow",
+        "GTM common errors: undefined variables, duplicate events, wrong trigger scope"
+      ],
+      "dossier_path": "vault/research/courses/google-tag-manager-mastery/05-debugging-qa-container-governance.md"
+    },
+    {
+      "num": 6,
+      "slug": "consent-mode-v2-privacy-tracking",
+      "title": "Consent Mode v2 and Privacy-Compliant Tracking for Performance Campaigns",
+      "owns": [
+        "Google Consent Mode v2: what it is, how it differs from v1, and why it matters for Smart Bidding signal completeness",
+        "Consent Initialization trigger: configuration and why it must fire before any other tags",
+        "default consent state setup: setting ad_storage and analytics_storage defaults via a GTM variable (denied by default pattern)",
+        "CMP consent update event: wiring a CMP's consent-granted/rejected event to dynamically update consent state in GTM",
+        "Consent Mode impact on Google Ads conversion and GA4 tags: what fires, what is blocked, and what is modelled",
+        "GTM Preview consent debug panel: verifying consent state at each tag fire event",
+        "opted-in vs opted-out tag behavior testing in Preview Mode",
+        "modelled conversions in Google Ads: confirming they appear when consent is withheld"
+      ],
+      "does_not_cover": [
+        "GTM container setup and Consent Initialization trigger firing order concept (ch1 introduces triggers generally; ch6 owns the Consent Initialization trigger specifically)",
+        "Google Ads Conversion Tracking tag and Meta Pixel tag configuration (ch3 and ch4 own those tags; ch6 owns the consent wrapper only)",
+        "choosing or integrating a specific CMP platform beyond the GTM wiring step (out of scope — legal/vendor decision)",
+        "container QA checklist (ch5 owns QA; ch6 delivers a working consent implementation that ch5's checklist then verifies)",
+        "consent compliance as part of quarterly audit checklist (ch7 references it; ch6 owns the implementation)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "why the Consent Initialization trigger must fire before all other tags in GTM",
+        "which two consent types are required by Google Consent Mode v2 for ad and analytics tags",
+        "how GTM detects when a user accepts consent via a CMP and updates the consent state",
+        "in GTM Preview's consent debug panel, what does 'ad_storage: denied' indicate about tag behavior",
+        "how modelled conversions in Google Ads preserve Smart Bidding signals when consent is withheld"
+      ],
+      "notebooklm_source_focus": [
+        "Google Consent Mode v2 implementation guide 2025–2026",
+        "GTM Consent Initialization trigger and default consent state configuration",
+        "CMP GTM integration: consent update event wiring for OneTrust, Cookiebot, and Usercentrics",
+        "Google Ads modelled conversions and Consent Mode data gaps documentation",
+        "GTM consent debug panel and opted-in vs opted-out testing workflow"
+      ],
+      "dossier_path": "vault/research/courses/google-tag-manager-mastery/06-consent-mode-v2-privacy-tracking.md"
+    },
+    {
+      "num": 7,
+      "slug": "auditing-container-maintenance",
+      "title": "GTM Auditing and Ongoing Container Maintenance for Performance Teams",
+      "owns": [
+        "full GTM container audit methodology: identifying redundant, outdated, and duplicate tags",
+        "pausing vs deleting tags: decision criteria and impact on container size",
+        "page load impact benchmarking with browser DevTools: measuring tag weight before and after cleanup",
+        "tracking plan spreadsheet: mapping each business KPI to its GTM tag, trigger, and expected dataLayer push",
+        "quarterly review process design: four checkpoints — tag relevance, trigger accuracy, variable integrity, consent compliance",
+        "campaign-cycle-aligned maintenance workflow: when to audit relative to campaign launches and seasonal peaks",
+        "documentation and handoff standards for performance teams managing GTM containers collaboratively"
+      ],
+      "does_not_cover": [
+        "initial container setup and tag creation (ch1–ch4 own implementation)",
+        "per-deployment debugging and pre-publish QA checklist (ch5 owns deployment-time QA; ch7 owns scheduled, recurring audits)",
+        "Consent Mode v2 implementation details (ch6 — ch7's quarterly checklist includes a consent compliance review but implementation lives in ch6)",
+        "adding new conversion or remarketing tags for new campaigns (ch3 and ch4 cover new tag creation; ch7 covers maintaining existing tags)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "audit signal that a tag should be paused rather than deleted immediately",
+        "how browser DevTools Network tab is used to measure GTM tag script weight on page load",
+        "columns a tracking plan spreadsheet must include to map a KPI to its GTM implementation",
+        "four checkpoints in a quarterly GTM container review",
+        "when in the campaign calendar a GTM audit should be scheduled to minimize disruption"
+      ],
+      "notebooklm_source_focus": [
+        "GTM container audit checklist and tag bloat reduction best practices 2025–2026",
+        "browser DevTools performance tab for measuring tag load impact",
+        "GTM tracking plan documentation templates and governance frameworks",
+        "GTM multi-user collaboration and container maintenance workflows for agencies and in-house teams"
+      ],
+      "dossier_path": "vault/research/courses/google-tag-manager-mastery/07-auditing-container-maintenance.md"
+    }
+  ]
+}

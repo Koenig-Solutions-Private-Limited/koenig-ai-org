@@ -28,6 +28,7 @@ SECRET_BINDINGS: dict[str, list[str]] = {
     ],
     "XAI_API_KEY": ["researcher-anthropic", "researcher-community"],
     "RESEND_API_KEY": ["ceo"],
+    "SLACK_WEBHOOK_URL": ["ceo"],
     "GH_TOKEN": [
         "ceo",
         "chief-engineering",
@@ -57,15 +58,17 @@ def parse_env_file(path: str) -> dict[str, str]:
     return out
 
 
-def http(method: str, url: str, body: dict[str, Any] | None = None) -> Any:
+def http(
+    method: str, url: str, auth_token: str | None, body: dict[str, Any] | None = None
+) -> Any:
     """Minimal JSON HTTP wrapper."""
     data = json.dumps(body).encode() if body is not None else None
-    req = urllib.request.Request(
-        url,
-        data=data,
-        method=method,
-        headers={"Content-Type": "application/json"} if body else {},
-    )
+    headers: dict[str, str] = {}
+    if body is not None:
+        headers["Content-Type"] = "application/json"
+    if auth_token:
+        headers["Authorization"] = f"Bearer {auth_token}"
+    req = urllib.request.Request(url, data=data, method=method, headers=headers)
     try:
         with urllib.request.urlopen(req) as r:
             raw = r.read()
@@ -76,25 +79,36 @@ def http(method: str, url: str, body: dict[str, Any] | None = None) -> Any:
 
 
 def get_or_create_secret(
-    paperclip_url: str, company_id: str, name: str, value: str, existing: dict[str, dict]
+    paperclip_url: str,
+    company_id: str,
+    auth_token: str | None,
+    name: str,
+    value: str,
+    existing: dict[str, dict],
 ) -> str:
     """Create the secret if missing; rotate value if already exists. Returns secret id."""
     if name in existing:
         sid = existing[name]["id"]
         # Rotate value
-        http("POST", f"{paperclip_url}/api/secrets/{sid}/rotate", {"value": value})
+        http("POST", f"{paperclip_url}/api/secrets/{sid}/rotate", auth_token, {"value": value})
         print(f"  ↻ rotated   {name}  ({sid[:8]}…)")
         return sid
 
     body = {"name": name, "value": value, "providerId": "local_encrypted"}
-    created = http("POST", f"{paperclip_url}/api/companies/{company_id}/secrets", body)
+    created = http(
+        "POST", f"{paperclip_url}/api/companies/{company_id}/secrets", auth_token, body
+    )
     sid = created["id"]
     print(f"  + created   {name}  ({sid[:8]}…)")
     return sid
 
 
 def bind_secret_to_agent(
-    paperclip_url: str, agent: dict, secret_name: str, secret_id: str
+    paperclip_url: str,
+    auth_token: str | None,
+    agent: dict,
+    secret_name: str,
+    secret_id: str,
 ) -> str:
     """Add secret_ref to agent.adapterConfig.env. Returns 'updated' | 'unchanged'."""
     cfg = (agent.get("adapterConfig") or {}).copy()
@@ -112,8 +126,31 @@ def bind_secret_to_agent(
     env[secret_name] = new_binding
     cfg["env"] = env
 
-    http("PATCH", f"{paperclip_url}/api/agents/{agent['id']}", {"adapterConfig": cfg})
+    http(
+        "PATCH",
+        f"{paperclip_url}/api/agents/{agent['id']}",
+        auth_token,
+        {"adapterConfig": cfg},
+    )
     return "updated"
+
+
+def verify_ceo_bindings(
+    paperclip_url: str, company_id: str, auth_token: str | None
+) -> int:
+    agents = http("GET", f"{paperclip_url}/api/companies/{company_id}/agents", auth_token)
+    by_slug = {a["urlKey"]: a for a in agents}
+    ceo = by_slug.get("ceo")
+    if not ceo:
+        print("ERROR: agent 'ceo' not found for binding verification", file=sys.stderr)
+        return 1
+    env = ((ceo.get("adapterConfig") or {}).get("env") or {}).copy()
+    has_resend = "RESEND_API_KEY" in env
+    has_slack = "SLACK_WEBHOOK_URL" in env
+    print("CEO env binding presence (values redacted):")
+    print(f"  RESEND_API_KEY: {'bound' if has_resend else 'missing'}")
+    print(f"  SLACK_WEBHOOK_URL: {'bound' if has_slack else 'missing_optional'}")
+    return 0 if has_resend else 1
 
 
 def main() -> int:
@@ -121,6 +158,8 @@ def main() -> int:
     ap.add_argument("--env-file", required=True)
     ap.add_argument("--paperclip-url", required=True)
     ap.add_argument("--company-id", required=True)
+    ap.add_argument("--auth-token", default=os.environ.get("PAPERCLIP_API_KEY") or os.environ.get("PAPERCLIP_BOARD_TOKEN"))
+    ap.add_argument("--verify-ceo-bindings", action="store_true")
     args = ap.parse_args()
 
     env = parse_env_file(args.env_file)
@@ -132,9 +171,13 @@ def main() -> int:
     print()
 
     # Fetch agents + existing secrets in parallel-ish (sequential, fast enough)
-    agents = http("GET", f"{args.paperclip_url}/api/companies/{args.company_id}/agents")
+    agents = http(
+        "GET",
+        f"{args.paperclip_url}/api/companies/{args.company_id}/agents",
+        args.auth_token,
+    )
     existing_secrets_list = http(
-        "GET", f"{args.paperclip_url}/api/companies/{args.company_id}/secrets"
+        "GET", f"{args.paperclip_url}/api/companies/{args.company_id}/secrets", args.auth_token
     )
     existing = {s["name"]: s for s in existing_secrets_list}
     by_slug = {a["urlKey"]: a for a in agents}
@@ -152,7 +195,7 @@ def main() -> int:
 
         print(f"→ {name}")
         secret_id = get_or_create_secret(
-            args.paperclip_url, args.company_id, name, value, existing
+            args.paperclip_url, args.company_id, args.auth_token, name, value, existing
         )
 
         updated = unchanged = missing = 0
@@ -162,7 +205,9 @@ def main() -> int:
                 print(f"  ✗ skip {slug:30s} (agent not found)")
                 missing += 1
                 continue
-            result = bind_secret_to_agent(args.paperclip_url, agent, name, secret_id)
+            result = bind_secret_to_agent(
+                args.paperclip_url, args.auth_token, agent, name, secret_id
+            )
             symbol = "✓" if result == "updated" else "·"
             print(f"  {symbol} {result:9s}  {slug}")
             if result == "updated":
@@ -184,6 +229,13 @@ def main() -> int:
     print(
         "Each agent's Config tab → Environment variables should now show the bound secret(s)."
     )
+    if args.verify_ceo_bindings:
+        print()
+        verify_code = verify_ceo_bindings(
+            args.paperclip_url, args.company_id, args.auth_token
+        )
+        if verify_code != 0:
+            return verify_code
     return 0
 
 

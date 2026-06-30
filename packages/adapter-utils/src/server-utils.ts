@@ -1,5 +1,11 @@
 import { spawn, type ChildProcess } from "node:child_process";
-import { constants as fsConstants, promises as fs, type Dirent } from "node:fs";
+import {
+  constants as fsConstants,
+  readdirSync,
+  readFileSync,
+  promises as fs,
+  type Dirent,
+} from "node:fs";
 import path from "node:path";
 import { buildSshSpawnTarget, type SshRemoteExecutionSpec } from "./ssh.js";
 import type {
@@ -54,18 +60,118 @@ function resolveProcessGroupId(child: ChildProcess) {
   return typeof child.pid === "number" && child.pid > 0 ? child.pid : null;
 }
 
+function readProcStatFields(pid: number): { ppid: number; pgrp: number } | null {
+  try {
+    const stat = readFileSync(`/proc/${pid}/stat`, "utf8");
+    const closeParen = stat.lastIndexOf(")");
+    if (closeParen < 0) return null;
+    const fields = stat.slice(closeParen + 2).trim().split(/\s+/);
+    const ppid = Number(fields[1]);
+    const pgrp = Number(fields[2]);
+    if (!Number.isInteger(ppid) || !Number.isInteger(pgrp)) return null;
+    return { ppid, pgrp };
+  } catch {
+    return null;
+  }
+}
+
+function listChildPids(parentPid: number): number[] {
+  if (process.platform === "win32" || parentPid <= 0) return [];
+  try {
+    const children: number[] = [];
+    for (const entry of readdirSync("/proc", { withFileTypes: true })) {
+      if (!entry.isDirectory() || !/^\d+$/.test(entry.name)) continue;
+      const pid = Number(entry.name);
+      if (!Number.isInteger(pid) || pid <= 0) continue;
+      const statFields = readProcStatFields(pid);
+      if (statFields?.ppid === parentPid) children.push(pid);
+    }
+    return children;
+  } catch {
+    return [];
+  }
+}
+
+function listProcessGroupMemberPids(processGroupId: number): number[] {
+  if (process.platform === "win32" || processGroupId <= 0) return [];
+  try {
+    const members: number[] = [];
+    for (const entry of readdirSync("/proc", { withFileTypes: true })) {
+      if (!entry.isDirectory() || !/^\d+$/.test(entry.name)) continue;
+      const pid = Number(entry.name);
+      if (!Number.isInteger(pid) || pid <= 0) continue;
+      const statFields = readProcStatFields(pid);
+      if (statFields?.pgrp === processGroupId) members.push(pid);
+    }
+    return members;
+  } catch {
+    return [];
+  }
+}
+
+function signalProcessSubtree(rootPid: number, signal: NodeJS.Signals) {
+  if (process.platform === "win32" || rootPid <= 0) return;
+  for (const childPid of listChildPids(rootPid)) {
+    signalProcessSubtree(childPid, signal);
+    try {
+      process.kill(childPid, signal);
+    } catch {
+      // Ignore ESRCH for already-exited descendants.
+    }
+  }
+  try {
+    process.kill(rootPid, signal);
+  } catch {
+    // Ignore ESRCH for already-exited roots.
+  }
+}
+
 function signalRunningProcess(
   running: Pick<RunningProcess, "child" | "processGroupId">,
   signal: NodeJS.Signals,
 ) {
+  const childPid = typeof running.child.pid === "number" && running.child.pid > 0
+    ? running.child.pid
+    : null;
+
+  // Kill descendants before the parent so nested spawns cannot survive via reparenting.
+  if (childPid) {
+    for (const descendantPid of listChildPids(childPid)) {
+      signalProcessSubtree(descendantPid, signal);
+      try {
+        process.kill(descendantPid, signal);
+      } catch {
+        // Ignore ESRCH for already-exited descendants.
+      }
+    }
+  }
+
   if (process.platform !== "win32" && running.processGroupId && running.processGroupId > 0) {
+    for (const memberPid of listProcessGroupMemberPids(running.processGroupId)) {
+      if (memberPid === childPid) continue;
+      try {
+        process.kill(memberPid, signal);
+      } catch {
+        // Ignore ESRCH for already-exited group members.
+      }
+    }
     try {
       process.kill(-running.processGroupId, signal);
       return;
     } catch {
-      // Fall back to the direct child signal if group signaling fails.
+      // Fall back to direct child signaling when the process group is unavailable.
     }
   }
+
+  if (childPid) {
+    try {
+      process.kill(childPid, signal);
+    } catch {
+      // Ignore ESRCH for already-exited children.
+    }
+    return;
+  }
+
   if (!running.child.killed) {
     running.child.kill(signal);
   }
@@ -1645,6 +1751,24 @@ export async function runChildProcess(
 
         child.on("close", (code: number | null, signal: NodeJS.Signals | null) => {
           if (timeout) clearTimeout(timeout);
+          const terminalCleanup = opts.terminalResultCleanup;
+          if (terminalCleanup && !terminalResultSeen) {
+            try {
+              terminalResultSeen = terminalCleanup.hasTerminalResult({ stdout, stderr });
+            } catch (err) {
+              onLogError(err, runId, "failed to inspect terminal adapter output on close");
+            }
+          }
+          const needsImmediateTerminalCleanup =
+            terminalCleanup &&
+            terminalResultSeen &&
+            !terminalCleanupStarted &&
+            !timedOut;
+          if (needsImmediateTerminalCleanup) {
+            terminalCleanupStarted = true;
+            signalRunningProcess({ child, processGroupId }, "SIGTERM");
+            signalRunningProcess({ child, processGroupId }, "SIGKILL");
+          }
           clearTerminalCleanupTimers();
           runningProcesses.delete(runId);
           void logChain.finally(() => {

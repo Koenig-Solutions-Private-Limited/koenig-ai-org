@@ -1,0 +1,179 @@
+{
+  "course_slug": "fixed-income-ldi-structured-products-for-operations-analysts",
+  "toc_locked": true,
+  "chapters": [
+    {
+      "num": 1,
+      "slug": "bond-pricing-yield-duration-convexity",
+      "title": "Bond Pricing Mechanics: Calculating Yield, Duration, and Convexity from Scratch",
+      "owns": [
+        "Fixed-rate bond cash-flow schedule construction from coupon, par, maturity, and payment frequency",
+        "Discounted cash-flow bond price calculation in Excel using spot or flat yield assumptions",
+        "Yield-to-maturity interpretation and the inverse price-yield relationship",
+        "Modified duration calculation and interpretation as approximate percentage price change for a 100 bps yield move",
+        "Convexity calculation and why duration alone misstates large rate moves",
+        "Parallel yield curve shift impact on a single bond or simple bond portfolio given duration and convexity",
+        "Bloomberg DES and YAS field mapping for yield, spread, modified duration, and convexity"
+      ],
+      "does_not_cover": [
+        "Credit spread decomposition and spread attribution drivers (ch 2 owns them)",
+        "Steepening/flattening attribution in client report line items beyond basic directional intuition (ch 2 owns it)",
+        "LDI liability duration, BPV, hedge ratio, and swap overlay mechanics (ch 3 owns them)",
+        "Structured product tranche fields, collateral types, and waterfalls (ch 4 owns them)",
+        "Integrated multi-instrument report QA and client commentary drafting (ch 5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "Discounted cash-flow price calculation for a fixed-rate bond",
+        "How yield changes affect bond price direction and magnitude",
+        "Modified duration interpretation for a 100 bps yield move",
+        "Convexity adjustment for larger rate moves",
+        "Mapping Bloomberg DES/YAS fields to economic meaning"
+      ],
+      "notebooklm_source_focus": [
+        "CFA fixed income basics: bond pricing, yield-to-maturity, duration, and convexity",
+        "Bloomberg DES and YAS page field definitions for fixed income securities",
+        "Excel fixed income DCF modeling examples for fixed-rate bonds",
+        "Institutional bond reporting examples using modified duration and convexity"
+      ],
+      "dossier_path": "vault/research/courses/fixed-income-ldi-structured-products-for-operations-analysts/01-bond-pricing-yield-duration-convexity.md"
+    },
+    {
+      "num": 2,
+      "slug": "credit-spreads-yield-curves-reporting-metrics",
+      "title": "Credit Spreads, Yield Curves, and the Reporting Metrics That Come From Them",
+      "owns": [
+        "Bond total yield decomposition into risk-free rate plus credit spread",
+        "Credit spread widening/compression drivers and their effect on bond returns",
+        "Yield curve steepening and flattening scenarios and directional portfolio impact",
+        "Rate movement versus spread movement diagnosis from a simplified attribution table",
+        "Duration contribution, spread contribution, and carry line-item interpretation in fixed income performance attribution",
+        "Client-report narrative logic for explaining rate, spread, and carry contributions without drifting into LDI-specific reporting"
+      ],
+      "does_not_cover": [
+        "Full bond pricing DCF mechanics, duration formulas, and convexity calculations (ch 1 owns them)",
+        "Funded status, hedge ratio, BPV, duration gap, and liability-relative LDI attribution (ch 3 owns them)",
+        "Structured products, tranche-level reporting fields, OC/IC tests, and waterfall analysis (ch 4 owns them)",
+        "End-to-end multi-instrument anomaly detection and final 150-word commentary deliverable (ch 5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "Risk-free rate plus credit spread yield decomposition",
+        "Diagnosing rate return versus spread return in attribution",
+        "Steepening versus flattening yield curve scenarios",
+        "Duration contribution, spread contribution, and carry line items",
+        "Client-report language for spread compression and rate moves"
+      ],
+      "notebooklm_source_focus": [
+        "Fixed income performance attribution: rate, spread, and carry components",
+        "Yield curve steepening and flattening explanations for bond portfolios",
+        "Credit spread drivers and spread duration in institutional reporting",
+        "Sample fixed income attribution reports for investment operations analysts"
+      ],
+      "dossier_path": "vault/research/courses/fixed-income-ldi-structured-products-for-operations-analysts/02-credit-spreads-yield-curves-reporting-metrics.md"
+    },
+    {
+      "num": 3,
+      "slug": "ldi-funded-status-hedge-ratios-attribution",
+      "title": "LDI Funds: Funded Status, Hedge Ratios, and Liability-Relative Performance Attribution",
+      "owns": [
+        "Defined-benefit pension funded status calculation from assets and projected liabilities",
+        "Liability duration, asset duration, duration gap, and BPV calculation from simplified pension balance sheet data",
+        "LDI hedge ratio calculation and interpretation in a pension glidepath context",
+        "Receive-fixed interest rate swap overlay effect on liability hedge ratio",
+        "Asset-only versus liability-relative benchmark logic for LDI funds",
+        "Liability-relative performance attribution narrative for funded status and hedge-ratio changes",
+        "Three-sentence monthly LDI performance commentary for a mock pension client report"
+      ],
+      "does_not_cover": [
+        "Foundational bond DCF pricing, yield, duration, and convexity from scratch (ch 1 owns them)",
+        "Generic fixed income rate/spread/carry attribution outside an LDI pension context (ch 2 owns it)",
+        "Structured product tranche mechanics and reporting fields (ch 4 owns them)",
+        "Whole-fund pack anomaly triage across fixed income, LDI, and structured products (ch 5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "Funded status, duration gap, BPV, and hedge ratio calculations",
+        "Why LDI funds benchmark against liabilities rather than only a market index",
+        "Effect of a receive-fixed swap overlay on the interest rate hedge ratio",
+        "Asset-only versus liability-relative performance commentary",
+        "Explaining hedge-ratio movement after a gilt rally"
+      ],
+      "notebooklm_source_focus": [
+        "LDI fundamentals for defined-benefit pension plans",
+        "Funded status, liability duration, BPV, and hedge ratio definitions",
+        "Receive-fixed swap overlays in pension liability hedging",
+        "Sample LDI client reports and liability-relative performance attribution"
+      ],
+      "dossier_path": "vault/research/courses/fixed-income-ldi-structured-products-for-operations-analysts/03-ldi-funded-status-hedge-ratios-attribution.md"
+    },
+    {
+      "num": 4,
+      "slug": "structured-products-mbs-abs-cmbs-clo-tranching",
+      "title": "Structured Products — MBS, ABS, CMBS, and CLO Tranching for Reporting Analysts",
+      "owns": [
+        "MBS, ABS, CMBS, and CLO classification by collateral type, SPV structure, and typical tranche stack",
+        "Bloomberg DES description clues used to classify structured product securities",
+        "Sequential loss absorption and principal waterfall mechanics across senior, mezzanine, and equity tranches",
+        "Credit enhancement through subordination, attachment point, rating, and tranche seniority",
+        "CLO trustee report fields: OC test cushion, IC test cushion, CCC bucket drift, and weighted-average spread (WAS)",
+        "Structured product holdings-line validation for rating, attachment point, CUSIP, notional, and tranche seniority consistency"
+      ],
+      "does_not_cover": [
+        "Plain-vanilla fixed-rate bond DCF pricing or duration math (ch 1 owns it)",
+        "Generic credit spread and yield curve attribution line items (ch 2 owns them)",
+        "LDI funded status, pension liability hedging, and swap overlays (ch 3 owns them)",
+        "Integrated mock fund pack QA and final client-ready commentary across all instrument types (ch 5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "Classifying MBS, ABS, CMBS, and CLO from collateral and SPV clues",
+        "Sequential loss absorption in a three-tranche waterfall",
+        "Credit enhancement, attachment point, rating, and seniority consistency",
+        "OC/IC test cushions, CCC bucket drift, and WAS interpretation",
+        "Structured product holdings-line anomaly flags"
+      ],
+      "notebooklm_source_focus": [
+        "Structured finance basics: MBS, ABS, CMBS, and CLO structures",
+        "CLO waterfall, subordination, attachment points, OC tests, and IC tests",
+        "CLO trustee report field definitions including CCC bucket and WAS",
+        "Bloomberg DES examples for structured product tranche classification"
+      ],
+      "dossier_path": "vault/research/courses/fixed-income-ldi-structured-products-for-operations-analysts/04-structured-products-mbs-abs-cmbs-clo-tranching.md"
+    },
+    {
+      "num": 5,
+      "slug": "validating-narrating-multi-instrument-fund-report",
+      "title": "Validating and Narrating a Multi-Instrument Institutional Fund Report",
+      "owns": [
+        "End-to-end QA of a mock institutional fund pack containing fixed income attribution, LDI-relative commentary, and structured product holdings",
+        "Cross-checking deliberate data anomalies across duration, swap overlay, hedge ratio, CLO tranche rating, waterfall position, and funded-status movement",
+        "One-line remediation note writing for each detected reporting anomaly",
+        "150-word client-ready performance commentary covering rate, spread, LDI hedge-ratio, and structured product contributions using only validated data",
+        "Consistency check between reported funded-status improvement and gilt yield movement in the market data section",
+        "Six-field pre-release QA checklist for fixed income or LDI client reports"
+      ],
+      "does_not_cover": [
+        "Teaching bond pricing, duration, convexity, or Bloomberg YAS/DES field meanings from scratch (ch 1 owns them)",
+        "Teaching standalone rate/spread/carry attribution concepts before integration (ch 2 owns them)",
+        "Teaching standalone LDI funded-status and hedge-ratio formulas before integration (ch 3 owns them)",
+        "Teaching standalone structured product tranching and CLO trustee fields before integration (ch 4 owns them)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "Detecting duration and swap-overlay inconsistencies in a fund report",
+        "Detecting CLO tranche rating and waterfall-position inconsistencies",
+        "Checking funded-status movement against gilt yield movement",
+        "Writing remediation notes for reporting anomalies",
+        "Drafting concise client-ready multi-instrument performance commentary"
+      ],
+      "notebooklm_source_focus": [
+        "Institutional fixed income client report QA checklists",
+        "Investment operations analyst client reporting workflows",
+        "Fixed income and LDI performance commentary examples",
+        "Structured product holdings validation examples in fund reporting"
+      ],
+      "dossier_path": "vault/research/courses/fixed-income-ldi-structured-products-for-operations-analysts/05-validating-narrating-multi-instrument-fund-report.md"
+    }
+  ]
+}

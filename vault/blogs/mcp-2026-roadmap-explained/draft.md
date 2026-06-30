@@ -7,6 +7,7 @@ content_type: article
 status: published
 reading_time_min: 6
 primary_query: "MCP 2026 roadmap what changes for builders"
+seo_description: "Learn what the MCP 2026 roadmap changes for builders: stateless transport, DPoP security, enterprise extensions, and Working Group governance."
 contrarian_angle: "The four technical features are table stakes — the real story is Anthropic handing spec governance to Working Groups, creating the first credible community veto path in any major AI protocol"
 sources:
   - https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/
@@ -71,6 +72,18 @@ Most coverage will lead with the feature list. That's the wrong lens. Here's the
 ---
 
 ## The Four Priority Areas — What Changes for You
+
+```mermaid
+flowchart TD
+    A[MCP 2026 Roadmap] --> B["Working Group Governance\nSEP process · external contributors\nno single-vendor control"]
+    A --> C[4 Priority Areas]
+    C --> D["Transport Scalability\nStateless sessions\n.well-known discovery"]
+    C --> E["Agent Task Semantics\nTasks primitive\nasync multi-step flows"]
+    C --> F["Enterprise Readiness\nAudit trails · SSO · gateways\nextensions not core spec"]
+    C --> G["Security SEPs\nSEP-1932 DPoP token binding\nSEP-1933 Workload Identity Federation"]
+    B --> H["Domain Working Groups\nAccept SEPs in their scope\nwithout Core Maintainer veto"]
+```
+*Alt: Flowchart of the MCP 2026 roadmap showing the shift to Working Group governance plus four priority areas: transport scalability, agent task semantics, enterprise extensions, and security SEPs including DPoP token binding.*
 
 ### 1. Transport Scalability: Stateless Sessions and Discovery
 

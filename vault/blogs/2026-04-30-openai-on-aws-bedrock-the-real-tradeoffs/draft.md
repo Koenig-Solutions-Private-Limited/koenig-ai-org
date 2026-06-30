@@ -8,6 +8,7 @@ status: published
 reading_time_min: 6
 primary_query: "OpenAI on AWS Bedrock auth IAM tradeoffs"
 contrarian_angle: "Bedrock is not an OpenAI API drop-in — IAM/SigV4 replaces bearer tokens and your existing openai client will not work at all"
+seo_description: "OpenAI on AWS Bedrock brings GPT models into AWS, but IAM/SigV4 auth, CloudWatch observability, and AWS billing change the migration work."
 sources:
   - https://openai.com/index/openai-on-aws/
   - https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html

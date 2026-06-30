@@ -1,15 +1,26 @@
 ---
 date: 2026-04-30
+last_updated: 2026-06-23
 author: blog-author
 ticket: KOE-29
 delta_tickets:
   - KOEA-345
+  - KOEA-8300
+  - KOEA-9101
 vendor_tag: community
 content_type: article
-status: published
-reading_time_min: 6
+status: g3-passed
+reading_time_min: 7
+seo_title: "Gemma 4 vs Llama 4 vs Qwen3: Best Open-Weights LLM 2026"
+seo_description: "Gemma 4 wins edge and single-GPU, Llama 4 Scout wins long-context RAG, Qwen3 wins cloud-batch. Pick the best open-weights LLM by deployment shape."
 primary_query: "gemma 4 vs llama 4 vs qwen3 best open weights llm 2026"
 contrarian_angle: "Benchmark leaderboards are the wrong lens — deployment shape (edge, single-GPU, cloud-batch) determines the winner before you read a single accuracy number"
+first_60_words_answer: "Choose your open-weights LLM by deployment shape: Gemma 4 (26B/31B, 256K context, Apache 2.0) leads on edge and single-GPU; Llama 4 Scout (10M-token context, fits H100 INT4) wins long-context RAG; Qwen3-235B-A22B (MoE, 22B active params) wins cloud-batch economics. Benchmark rankings are the wrong starting point — hardware constraints decide the race first."
+positions:
+  - id: benchmark-theater-vs-agent-trace-evaluation
+    engagement: refines
+  - id: mcp-as-interoperability-moat
+    engagement: neutral
 sources:
   - https://deepmind.google/models/gemma/gemma-4/
   - https://ai.meta.com/blog/llama-4-multimodal-intelligence/
@@ -17,6 +28,7 @@ sources:
   - https://huggingface.co/Qwen/Qwen3-235B-A22B
   - https://huggingface.co/mistralai/Mistral-Medium-3.5-128B
   - https://huggingface.co/moonshotai/Kimi-K2.6/blob/main/LICENSE
+  - https://ai.google.dev/gemma/docs/core
 hero_image: auto:flux
 references:
   - n: 1
@@ -39,8 +51,13 @@ references:
     title: "Mistral-Medium-3.5-128B Model Card — Hugging Face"
     url: https://huggingface.co/mistralai/Mistral-Medium-3.5-128B
     retrieved: 2026-04-30
+  - n: 6
+    title: "Gemma 4 Core Model Documentation — Google AI for Developers"
+    url: https://ai.google.dev/gemma/docs/core
+    retrieved: 2026-06-14
 note_dead_source: "https://blog.google/technology/developers/gemma-4/ returned 404 — swapped to deepmind.google canonical model page (verified 200)"
 whats_new:
+  - "June 2026 update: Llama 4 community-licence tightening is now an active concern — Apache-2.0 Gemma 4 and Qwen3, plus Modified-MIT Kimi K2.6, are the licence-safe picks"
   - "Gemma 4's April 2026 launch completes the open-weights frontier: edge through cloud, all in one model family"
 learning_objectives:
   - Match the right open-weights model family to your deployment shape (edge, single-GPU, cloud-batch)
@@ -48,14 +65,28 @@ learning_objectives:
   - Run a repeatable 10-prompt benchmark to validate model choice before committing
 faq:
   - question: "How do Gemma 4, Llama 4, and Qwen 3.5 compare for different deployment shapes?"
-    answer: "Gemma 4 targets edge and single-GPU deployments with strong per-parameter efficiency. Llama 4 Scout's 10 M-token context window suits cloud-batch RAG workloads. Qwen 3.5 leads on multilingual tasks and instruction-following across diverse domains."
+    answer: "Gemma 4 targets edge and single-GPU deployments with a 256K-token context window and strong per-parameter efficiency.[^6] Llama 4 Scout's 10 M-token context window suits long-document RAG workloads on a single H100.[^1] Qwen3 leads on multilingual tasks and instruction-following, with a hybrid thinking-mode toggle that eliminates the need for a separate reasoning model.[^2]"
   - question: "How does Llama 4 Scout's 10 million-token context change the RAG architecture?"
-    answer: "With 10 M tokens of context, Llama 4 Scout can ingest an entire document corpus directly, eliminating or drastically simplifying chunking and retrieval steps that traditional RAG pipelines require — at the cost of higher per-request inference spend."
+    answer: "With 10 M tokens of context, Llama 4 Scout can ingest an entire document corpus directly, eliminating or drastically simplifying chunking and retrieval steps that traditional RAG pipelines require — at the cost of higher per-request inference spend.[^1] This makes it the only open-weights model that sidesteps vector-database complexity for very large corpora."
   - question: "How do I run a repeatable benchmark to validate my model choice before committing?"
-    answer: "Assemble a 10-prompt test set that covers your real task distribution — reasoning, retrieval, code, and any domain-specific formats — then score each model on consistency across the full set, not just peak performance on a single prompt type."
+    answer: "Assemble a 10-prompt test set that covers your real task distribution — reasoning, retrieval, code, and any domain-specific formats — then score each model on consistency across the full set, not just peak performance on a single prompt type. The runnable example above uses an OpenAI-compatible endpoint so the same harness works for Gemma 4, Llama 4 Scout, and Qwen3.[^4]"
 ---
 
-# Which Open-Weights LLM Should You Deploy? Gemma 4, Llama 4, or Qwen3 Compared
+# Gemma 4 vs Llama 4 vs Qwen3: The Best Open-Weights LLM to Deploy in 2026
+
+_Last updated: June 23, 2026_
+
+Choose your open-weights LLM by deployment shape: Gemma 4 (26B/31B, 256K context, Apache 2.0) leads on edge and single-GPU; Llama 4 Scout (10M-token context, fits H100 INT4) wins long-context RAG; Qwen3-235B-A22B (MoE, 22B active params) wins cloud-batch economics. Benchmark rankings are the wrong starting point — hardware constraints decide the race first.
+
+> **Updated June 2026:** Licensing has become the deciding factor for production teams. Meta's Llama 4 community licence is tightening, so the licence-safe picks are now Gemma 4 and Qwen3 (both Apache 2.0) plus Kimi K2.6 (Modified MIT) for coding-heavy pipelines. The deployment-shape verdicts below are unchanged.
+
+| | Gemma 4 (26B / 31B) | Llama 4 Scout | Qwen3-235B-A22B |
+|---|---|---|---|
+| **Best for** | Edge / single GPU | Long-context RAG | Cloud-batch MoE |
+| **[Context window](/glossary/context-window)** | 256K [^6] | 10M tokens | 32K |
+| **Licence** | Apache 2.0 | Meta Custom | Apache 2.0 |
+| **Single H100 fit** | Yes (INT4) | Yes (INT4) | No (MoE routing) |
+| **Hybrid reasoning** | No | No | Yes |
 
 Open-weights LLMs reached proprietary mid-tier quality in 2025–2026. Llama 4 Maverick beats GPT-4o on standard benchmarks.[^1] Qwen3-235B-A22B matches frontier reasoning at a fraction of the compute cost using mixture-of-experts architecture.[^2] Gemma 4's 31B variant scores 89.2% on AIME 2026 Math — territory that was closed to open models a year ago.[^3] For practitioners choosing a model to deploy, the question has shifted: not "can open-weights match proprietary?" but "which open-weights model fits *my* deployment shape?"
 
@@ -64,7 +95,7 @@ Most coverage answers the wrong question. Reviews stack benchmark rows and crown
 ## Key Facts
 
 - Gemma 4 ships four sizes: **E2B and E4B** (edge, runs offline on phones, Raspberry Pi, Jetson Nano) and **26B and 31B** (single consumer or server GPU).[^3]
-- Llama 4 Scout packs a **10M-token context window** — 78× larger than GPT-4o's 128K — in a model that fits on a single H100 with INT4 quantization.[^1]
+- Llama 4 Scout packs a **10M-token [context window](/glossary/context-window)** — 78× larger than GPT-4o's 128K — in a model that fits on a single H100 with INT4 quantization.[^1]
 - Qwen3-235B-A22B activates only **22B of 235B parameters per token** via MoE routing, making it cheaper per token than dense 70B models at comparable quality.[^4]
 - Gemma 4 31B scores **1452 on the Arena AI leaderboard**, 84.3% on GPQA Diamond, and 80.0% on LiveCodeBench.[^3]
 - Llama 4 Maverick (17B active / 400B total) beats GPT-4o and Gemini 2.0 Flash on standard benchmarks while running on a single H100 DGX host.[^1]
@@ -86,9 +117,9 @@ For the [[research/google/2026-04-30|April 30 Google note]], the Gemini Enterpri
 
 If you have one GPU and need to choose between Llama 4 Scout, Qwen3-14B, or Gemma 4 31B, the decision tree is short:
 
-**Do you need context windows longer than 128K tokens?** If yes: Llama 4 Scout, and it's not close. Scout's 10M-token window is an architectural leap — it was pre-trained and post-trained with a 256K context length, then extended to 10M via position interpolation.[^1] For long-document summarization, multi-file code analysis, or agentic loops that accumulate tool-call history, Scout eliminates the chunking and retrieval overhead that plagues smaller-context models. It fits on a single H100 in INT4.
+**Do you need [context windows](/glossary/context-window) longer than 128K tokens?** If yes: Llama 4 Scout, and it's not close. Scout's 10M-token window is an architectural leap — it was pre-trained and post-trained with a 256K context length, then extended to 10M via position interpolation.[^1] For long-document summarization, multi-file code analysis, or agentic loops that accumulate tool-call history, Scout eliminates the chunking and retrieval overhead that plagues smaller-context models. It fits on a single H100 in INT4.
 
-**Do you need hybrid reasoning without running two separate models?** Qwen3 (any size) lets you set `enable_thinking=True` at inference time to activate chain-of-thought reasoning, or `False` for fast, low-cost responses.[^4] This matters for agentic workflows where some steps need deep reasoning (planning, code review) and others need speed (tool call parsing, routing). Deploying one Qwen3-14B instance covers both instead of running separate "fast" and "slow" models. Qwen3 also ships with native MCP support — relevant for the agent patterns covered in [[course/claude-tool-use-from-zero]].
+**Do you need hybrid reasoning without running two separate models?** Qwen3 (any size) lets you set `enable_thinking=True` at inference time to activate chain-of-thought reasoning, or `False` for fast, low-cost responses.[^4] This matters for agentic workflows where some steps need deep reasoning (planning, code review) and others need speed (tool call parsing, routing). Deploying one Qwen3-14B instance covers both instead of running separate "fast" and "slow" models. Qwen3 also ships with native MCP support — for a practical walkthrough of MCP-native agent patterns, see the [Claude MCP Mastery course](/courses/claude-mcp-mastery).
 
 **Default single-GPU recommendation for general use:** Gemma 4 26B or 31B, because the benchmark profile is strong, the fine-tuning ecosystem is mature, and Google's toolchain handles quantization, multimodal input, and 140-language support out of the box.[^3]
 
@@ -173,7 +204,7 @@ for name, base_url in MODELS.items():
 
 Pick your deployment shape from the matrix, pull the model from Hugging Face or llama.com, and run the 10-prompt battery above before optimizing further. The benchmark scores are directionally correct, but your workload distribution — what fraction of calls need long context, reasoning depth, or structured output — will shift the winner.
 
-For a hands-on walkthrough of building agent pipelines with open-weights models including tool use, context management, and MCP integration, see [[course/claude-tool-use-from-zero]]. The patterns transfer directly to Llama 4 and Qwen3 with minor adapter changes.
+For a hands-on walkthrough of building MCP-native agent pipelines with open-weights models including tool use, context management, and orchestration, see the [Claude MCP Mastery course](/courses/claude-mcp-mastery). The patterns transfer directly to Llama 4 and Qwen3 with minor adapter changes.
 
 ---
 
@@ -184,3 +215,4 @@ For a hands-on walkthrough of building agent pipelines with open-weights models 
 [^3]: Google DeepMind. "Gemma 4 Model Family." April 2, 2026. https://deepmind.google/models/gemma/gemma-4/
 [^4]: Qwen Team. "Qwen3-235B-A22B Model Card." Hugging Face, 2025. https://huggingface.co/Qwen/Qwen3-235B-A22B
 [^5]: Mistral AI. "Mistral-Medium-3.5-128B." Hugging Face, 2026. https://huggingface.co/mistralai/Mistral-Medium-3.5-128B
+[^6]: Google AI for Developers. "Gemma 4 Core Model Documentation." Retrieved 2026-06-14. https://ai.google.dev/gemma/docs/core — specifies 256K context window for 26B and 31B model sizes; 128K for E2B and E4B edge variants.

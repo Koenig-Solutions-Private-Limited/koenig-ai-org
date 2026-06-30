@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   applyPaperclipWorkspaceEnv,
@@ -7,10 +8,20 @@ import {
   renderPaperclipWakePrompt,
   runningProcesses,
   runChildProcess,
+  sanitizeInheritedPaperclipEnv,
   stringifyPaperclipWakePayload,
 } from "./server-utils.js";
 
 function isPidAlive(pid: number) {
+  if (process.platform !== "win32") {
+    try {
+      const status = readFileSync(`/proc/${pid}/status`, "utf8");
+      const state = status.match(/^State:\s+(\S+)/m)?.[1];
+      if (state === "Z") return false;
+    } catch {
+      return false;
+    }
+  }
   try {
     process.kill(pid, 0);
     return true;
@@ -248,6 +259,86 @@ describe("runChildProcess", () => {
         }
       }
     }
+  });
+
+  it("preserves non-PAPERCLIP_ inherited env keys while stripping run-scoped PAPERCLIP_* keys", async () => {
+    const keysToCheck = [
+      "DEVTO_API_KEY",
+      "CAREER_R2_BUCKET",
+      "POSTHOG_PROJECT_ID",
+      "PAPERCLIP_API_KEY",
+      "PAPERCLIP_RUN_ID",
+      "PAPERCLIP_RUNTIME_API_URL",
+    ] as const;
+    const injected: Record<string, string> = {
+      DEVTO_API_KEY: "test-devto-key",
+      CAREER_R2_BUCKET: "test-bucket",
+      POSTHOG_PROJECT_ID: "465279",
+      PAPERCLIP_API_KEY: "pcp_should_be_stripped",
+      PAPERCLIP_RUN_ID: "run_should_be_stripped",
+      PAPERCLIP_RUNTIME_API_URL: "http://localhost:3100",
+    };
+    const saved: Record<string, string | undefined> = {};
+    for (const key of Object.keys(injected)) {
+      saved[key] = process.env[key];
+      process.env[key] = injected[key];
+    }
+
+    try {
+      const result = await runChildProcess(
+        randomUUID(),
+        process.execPath,
+        [
+          "-e",
+          `process.stdout.write(JSON.stringify({${keysToCheck.map((k) => `${JSON.stringify(k)}:process.env[${JSON.stringify(k)}]??null`).join(",")}}))`,
+        ],
+        {
+          cwd: process.cwd(),
+          env: {},
+          timeoutSec: 5,
+          graceSec: 1,
+          onLog: async () => {},
+        },
+      );
+
+      expect(result.exitCode).toBe(0);
+      const observed = JSON.parse(result.stdout) as Record<string, string | null>;
+      expect(observed.DEVTO_API_KEY).toBe("test-devto-key");
+      expect(observed.CAREER_R2_BUCKET).toBe("test-bucket");
+      expect(observed.POSTHOG_PROJECT_ID).toBe("465279");
+      expect(observed.PAPERCLIP_API_KEY).toBeNull();
+      expect(observed.PAPERCLIP_RUN_ID).toBeNull();
+      expect(observed.PAPERCLIP_RUNTIME_API_URL).toBe("http://localhost:3100");
+    } finally {
+      for (const [key, value] of Object.entries(saved)) {
+        if (value === undefined) delete process.env[key];
+        else process.env[key] = value;
+      }
+    }
+  });
+});
+
+describe("sanitizeInheritedPaperclipEnv", () => {
+  it("strips inherited PAPERCLIP_* keys except runtime listen/API keys", () => {
+    const result = sanitizeInheritedPaperclipEnv({
+      DEVTO_API_KEY: "devto",
+      CAREER_R2_BUCKET: "lms",
+      POSTHOG_PROJECT_ID: "465279",
+      PAPERCLIP_API_KEY: "strip-me",
+      PAPERCLIP_AGENT_ID: "strip-me-too",
+      PAPERCLIP_RUNTIME_API_URL: "http://localhost:3100",
+      PAPERCLIP_LISTEN_HOST: "127.0.0.1",
+      PAPERCLIP_LISTEN_PORT: "3100",
+    });
+
+    expect(result.DEVTO_API_KEY).toBe("devto");
+    expect(result.CAREER_R2_BUCKET).toBe("lms");
+    expect(result.POSTHOG_PROJECT_ID).toBe("465279");
+    expect(result.PAPERCLIP_API_KEY).toBeUndefined();
+    expect(result.PAPERCLIP_AGENT_ID).toBeUndefined();
+    expect(result.PAPERCLIP_RUNTIME_API_URL).toBe("http://localhost:3100");
+    expect(result.PAPERCLIP_LISTEN_HOST).toBe("127.0.0.1");
+    expect(result.PAPERCLIP_LISTEN_PORT).toBe("3100");
   });
 });
 

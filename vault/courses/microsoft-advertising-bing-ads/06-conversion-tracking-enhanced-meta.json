@@ -1,0 +1,20 @@
+{
+  "chapter_num": 6,
+  "course_slug": "microsoft-advertising-bing-ads",
+  "chapter_slug": "06-conversion-tracking-enhanced",
+  "title": "Conversion Tracking, Enhanced Conversions & Performance Reporting",
+  "assets_generated": true,
+  "tool": "generate_course_audio.py + python-pptx",
+  "tool_tier": 3,
+  "notebooklm_fallback_reason": "notebooklm CLI not installed in runtime environment",
+  "slide_count": 7,
+  "slides_path": "vault/courses/microsoft-advertising-bing-ads/ch06-slides.pptx",
+  "audio_path": "vault/courses/microsoft-advertising-bing-ads/ch06-audio.mp3",
+  "duration_audio_sec": 477,
+  "audio_format": "mp3",
+  "audio_voice": "alloy",
+  "audio_model": "tts-1",
+  "produced_at": "2026-06-10T16:35:00Z",
+  "g0_review_required": true,
+  "notebooklm_rerun_queued": true
+}

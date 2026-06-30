@@ -28,11 +28,13 @@ DESIGN
 
 import json
 import os
+import re
 import sys
 import time
 import urllib.request
 import urllib.error
-from datetime import datetime, timezone
+import urllib.parse
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO = Path("/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org")
@@ -63,6 +65,12 @@ DAILY_AGENT_SCHEDULES: list[dict] = [
 # Track last-fired UTC date per agent so we don't re-fire within the same day
 # even if the cron-driver is restarted.
 _LAST_FIRED_DATE: dict[str, str] = {}
+_GUARD_TAG = "[daily-synthesis-stale-guard]"
+_EVIDENCE_RE = re.compile(
+    r"(vault/research/_daily/\d{4}-\d{2}-\d{2}\.md|vault/research/_synthesis/[^\s)]+)",
+    re.IGNORECASE,
+)
+_DATE_RE = re.compile(r"\b(20\d{2}-\d{2}-\d{2})\b")
 
 
 def parse_env_file(path: Path) -> dict:
@@ -120,6 +128,278 @@ def post(url: str, token: str, body: dict | None = None, timeout: float = 10) ->
         return e.code, e.read().decode("utf-8", errors="replace")[:300]
     except Exception as e:  # noqa: BLE001 — network timeouts, DNS, etc.
         return 0, f"network error: {e}"
+
+
+def get_json(url: str, token: str, timeout: float = 10) -> tuple[int, dict | list | None]:
+    req = urllib.request.Request(
+        url,
+        method="GET",
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+            "Host": "localhost:3100",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            raw = resp.read().decode("utf-8")
+            return resp.status, json.loads(raw) if raw else {}
+    except urllib.error.HTTPError as e:
+        try:
+            return e.code, json.loads(e.read().decode("utf-8", errors="replace"))
+        except Exception:  # noqa: BLE001
+            return e.code, None
+    except Exception:  # noqa: BLE001
+        return 0, None
+
+
+def patch_issue_status(issue_id: str, token: str, status: str, comment: str) -> tuple[int, str]:
+    req = urllib.request.Request(
+        f"{PAPERCLIP_HOST}/api/issues/{issue_id}",
+        method="PATCH",
+        data=json.dumps({"status": status, "comment": comment}).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+            "Host": "localhost:3100",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            return resp.status, resp.read().decode("utf-8")[:300]
+    except urllib.error.HTTPError as e:
+        return e.code, e.read().decode("utf-8", errors="replace")[:300]
+    except Exception as e:  # noqa: BLE001
+        return 0, f"network error: {e}"
+
+
+def _coerce_items(payload: dict | list | None) -> list[dict]:
+    if payload is None:
+        return []
+    if isinstance(payload, list):
+        return [i for i in payload if isinstance(i, dict)]
+    for key in ("issues", "items", "data"):
+        val = payload.get(key)
+        if isinstance(val, list):
+            return [i for i in val if isinstance(i, dict)]
+    return []
+
+
+def _parse_dt(raw: str | None) -> datetime | None:
+    if not raw:
+        return None
+    try:
+        return datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _text_blob(issue: dict, comments: list[dict] | None = None) -> str:
+    parts = [
+        str(issue.get("title") or ""),
+        str(issue.get("description") or ""),
+        str(issue.get("identifier") or ""),
+    ]
+    for label in issue.get("labels") or []:
+        if isinstance(label, dict):
+            parts.append(str(label.get("name") or ""))
+        else:
+            parts.append(str(label))
+    for c in comments or []:
+        parts.append(str(c.get("comment") or c.get("body") or ""))
+    return "\n".join(parts)
+
+
+def is_synthesis_candidate(issue: dict, comments: list[dict] | None = None) -> bool:
+    text = _text_blob(issue, comments).lower()
+    return "daily-synthesis" in text or (
+        "daily" in text and "synthesis" in text and "research" in text
+    )
+
+
+def extract_cycle_date(issue: dict, comments: list[dict] | None = None) -> str | None:
+    text = _text_blob(issue, comments)
+    match = _DATE_RE.search(text)
+    return match.group(1) if match else None
+
+
+def extract_evidence_path(issue: dict, comments: list[dict] | None = None) -> str | None:
+    text = _text_blob(issue, comments)
+    match = _EVIDENCE_RE.search(text)
+    return match.group(1) if match else None
+
+
+def _iso_now(now: datetime) -> str:
+    return now.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _issue_identifier(issue: dict) -> str:
+    return str(issue.get("identifier") or issue.get("id") or "unknown")
+
+
+def triage_comment_recent(comments: list[dict], now: datetime) -> bool:
+    cutoff = now - timedelta(hours=24)
+    for c in comments:
+        body = str(c.get("comment") or c.get("body") or "")
+        if _GUARD_TAG not in body or "triage requested" not in body:
+            continue
+        created = _parse_dt(c.get("createdAt"))
+        if created and created >= cutoff:
+            return True
+    return False
+
+
+def choose_superseder(
+    candidate: dict,
+    candidate_comments: list[dict],
+    superseders: list[dict],
+    superseder_comments: dict[str, list[dict]],
+) -> tuple[dict | None, str | None, str | None]:
+    candidate_cycle = extract_cycle_date(candidate, candidate_comments)
+    candidate_updated = _parse_dt(candidate.get("updatedAt"))
+    if not candidate_updated:
+        return None, None, "missing candidate updatedAt"
+    matches: list[tuple[datetime, dict, str]] = []
+    for issue in superseders:
+        if issue.get("id") == candidate.get("id"):
+            continue
+        comments = superseder_comments.get(str(issue.get("id")), [])
+        if not is_synthesis_candidate(issue, comments):
+            continue
+        evidence = extract_evidence_path(issue, comments)
+        if not evidence:
+            continue
+        cycle = extract_cycle_date(issue, comments)
+        if candidate_cycle and cycle and cycle != candidate_cycle:
+            continue
+        updated = _parse_dt(issue.get("updatedAt"))
+        if not updated or updated <= candidate_updated:
+            continue
+        matches.append((updated, issue, evidence))
+    if not matches:
+        return None, None, "no same-cycle terminal superseder with evidence"
+    matches.sort(key=lambda x: x[0], reverse=True)
+    if len(matches) > 1 and matches[0][0] == matches[1][0]:
+        return None, None, "multiple equally recent superseders"
+    return matches[0][1], matches[0][2], None
+
+
+def fetch_issue_details_and_comments(issue_id: str, token: str) -> tuple[dict | None, list[dict]]:
+    status, issue_payload = get_json(f"{PAPERCLIP_HOST}/api/issues/{issue_id}", token)
+    if status not in (200, 201) or not isinstance(issue_payload, dict):
+        return None, []
+    c_status, comments_payload = get_json(f"{PAPERCLIP_HOST}/api/issues/{issue_id}/comments", token)
+    comments = _coerce_items(comments_payload) if c_status in (200, 201) else []
+    return issue_payload, comments
+
+
+def discover_daily_synthesis_candidates(token: str) -> list[dict]:
+    candidates_by_id: dict[str, dict] = {}
+    queries = ["daily-synthesis", "research", "synthesis"]
+    for q in queries:
+        url = (
+            f"{PAPERCLIP_HOST}/api/companies/{COMPANY_ID}/issues"
+            f"?status=blocked&limit=100&q={urllib.parse.quote(q)}"
+        )
+        status, payload = get_json(url, token)
+        if status not in (200, 201):
+            continue
+        for issue in _coerce_items(payload):
+            issue_id = str(issue.get("id") or "")
+            if not issue_id:
+                continue
+            labels = issue.get("labels") or []
+            label_names = []
+            for label in labels:
+                if isinstance(label, dict):
+                    label_names.append(str(label.get("name") or "").upper())
+                else:
+                    label_names.append(str(label).upper())
+            if "daily-synthesis" in q or any(("RESEARCH" in n or "SYNTHESIS" in n) for n in label_names):
+                candidates_by_id[issue_id] = issue
+    return list(candidates_by_id.values())
+
+
+def discover_superseders(token: str) -> list[dict]:
+    superseders: list[dict] = []
+    seen: set[str] = set()
+    for status_name in ("done", "in_review"):
+        url = (
+            f"{PAPERCLIP_HOST}/api/companies/{COMPANY_ID}/issues"
+            f"?status={status_name}&limit=100&q=daily-synthesis"
+        )
+        status, payload = get_json(url, token)
+        if status not in (200, 201):
+            continue
+        for issue in _coerce_items(payload):
+            issue_id = str(issue.get("id") or "")
+            if issue_id and issue_id not in seen:
+                seen.add(issue_id)
+                superseders.append(issue)
+    return superseders
+
+
+def run_daily_synthesis_stale_guard(board_token: str | None, now: datetime | None = None) -> None:
+    if not board_token:
+        return
+    now_utc = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    stale_before = now_utc - timedelta(hours=6)
+    candidates = discover_daily_synthesis_candidates(board_token)
+    superseders = discover_superseders(board_token)
+    superseder_comments: dict[str, list[dict]] = {}
+
+    for sup in superseders:
+        issue_id = str(sup.get("id") or "")
+        if not issue_id:
+            continue
+        detail, comments = fetch_issue_details_and_comments(issue_id, board_token)
+        if detail:
+            sup.update(detail)
+        superseder_comments[issue_id] = comments
+
+    cancelled = 0
+    triaged = 0
+    for row in candidates:
+        issue_id = str(row.get("id") or "")
+        if not issue_id:
+            continue
+        issue, comments = fetch_issue_details_and_comments(issue_id, board_token)
+        if not issue:
+            continue
+        updated = _parse_dt(issue.get("updatedAt"))
+        if not updated or updated >= stale_before:
+            continue
+        if not is_synthesis_candidate(issue, comments):
+            continue
+
+        superseder, evidence, reason = choose_superseder(
+            issue, comments, superseders, superseder_comments
+        )
+        if superseder and evidence:
+            body = (
+                f"{_GUARD_TAG} cancelled: superseded by {_issue_identifier(superseder)}; "
+                f"evidence: {evidence}; evaluated_at: {_iso_now(now_utc)}"
+            )
+            status, _ = patch_issue_status(issue_id, board_token, "cancelled", body)
+            if status in (200, 201):
+                cancelled += 1
+            else:
+                log(f"stale-guard cancel failed issue={_issue_identifier(issue)} status={status}")
+            continue
+
+        if triage_comment_recent(comments, now_utc):
+            continue
+        triage_body = (
+            f"{_GUARD_TAG} triage requested: {reason or 'ambiguous superseder'}; "
+            f"evaluated_at: {_iso_now(now_utc)}"
+        )
+        status, _ = patch_issue_status(issue_id, board_token, "blocked", triage_body)
+        if status in (200, 201):
+            triaged += 1
+        else:
+            log(f"stale-guard triage failed issue={_issue_identifier(issue)} status={status}")
+
+    log(f"stale-guard done cancelled={cancelled} triaged={triaged} candidates={len(candidates)}")
 
 
 def heartbeat_freshness(token: str) -> str:
@@ -207,6 +487,7 @@ def tick(token: str, board_token: str | None) -> None:
 
     # First, run the daily schedule check (cheap, no-op most ticks).
     fire_daily_schedules(board_token)
+    run_daily_synthesis_stale_guard(board_token, datetime.now(timezone.utc))
 
     force_fire = (_TICK_COUNT % 6) == 0
     if not force_fire and not has_pending_work(token):

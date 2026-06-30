@@ -84,6 +84,101 @@ import {
 import type { PluginWorkerManager } from "../services/plugin-worker-manager.js";
 
 const MAX_ISSUE_COMMENT_LIMIT = 500;
+const BLOCKED_ACTIVATION_GUARD_CODE = "blocked_activation_guard";
+const GATE_VERDICT_REQUIRES_STATUS_FLIP_CODE = "gate_verdict_requires_status_flip";
+const GATE_BLOCK_REQUIRES_OWNER_HANDOFF_CODE = "gate_block_requires_owner_handoff";
+const GATE_METADATA_KEYS = ["g_code", "g0", "g2", "g3"] as const;
+const GATE_PASS_VERDICTS = new Set(["pass", "approve"]);
+const GATE_BLOCK_VERDICTS = new Set(["block"]);
+const GATE_BODY_VERDICT_PATTERN = /\b(G_code|G0|G2|G3)\b[\s\S]{0,80}?\b(PASS|APPROVE|BLOCK)\b/i;
+
+type GateVerdictKind = "pass" | "block";
+
+function normalizeGateVerdict(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim().toLowerCase();
+  return normalized.length > 0 ? normalized : null;
+}
+
+function extractGateVerdictFromMetadata(metadata: unknown): GateVerdictKind | null {
+  if (!metadata || typeof metadata !== "object") return null;
+  const record = metadata as Record<string, unknown>;
+  for (const key of GATE_METADATA_KEYS) {
+    const gate = record[key];
+    if (!gate || typeof gate !== "object") continue;
+    const verdict = normalizeGateVerdict((gate as Record<string, unknown>).verdict);
+    if (verdict && GATE_PASS_VERDICTS.has(verdict)) return "pass";
+    if (verdict && GATE_BLOCK_VERDICTS.has(verdict)) return "block";
+  }
+  return null;
+}
+
+function extractGateVerdictFromBody(body: string): GateVerdictKind | null {
+  const match = body.match(GATE_BODY_VERDICT_PATTERN);
+  if (!match) return null;
+  const verdict = normalizeGateVerdict(match[2]);
+  if (verdict && GATE_PASS_VERDICTS.has(verdict)) return "pass";
+  if (verdict && GATE_BLOCK_VERDICTS.has(verdict)) return "block";
+  return null;
+}
+
+function detectGateVerdictFromWrite(input: {
+  metadata?: unknown;
+  commentBody?: string | null;
+}): GateVerdictKind | null {
+  if (input.metadata !== undefined) {
+    const fromMetadata = extractGateVerdictFromMetadata(input.metadata);
+    if (fromMetadata) return fromMetadata;
+  }
+  if (input.commentBody) {
+    return extractGateVerdictFromBody(input.commentBody);
+  }
+  return null;
+}
+
+function validateGateVerdictWrite(input: {
+  verdict: GateVerdictKind | null;
+  effectiveNextStatus: string;
+  effectiveAssigneeAgentId: string | null;
+  effectiveAssigneeUserId: string | null;
+  effectiveBlockedByIssueIds: string[];
+  allowPassWithoutDone?: boolean;
+}):
+  | { ok: true }
+  | { ok: false; code: string; message: string } {
+  const {
+    verdict,
+    effectiveNextStatus,
+    effectiveAssigneeAgentId,
+    effectiveAssigneeUserId,
+    effectiveBlockedByIssueIds,
+    allowPassWithoutDone = false,
+  } = input;
+  if (!verdict) return { ok: true };
+
+  if (verdict === "pass" && !allowPassWithoutDone && effectiveNextStatus !== "done") {
+    return {
+      ok: false,
+      code: GATE_VERDICT_REQUIRES_STATUS_FLIP_CODE,
+      message: "Gate PASS/APPROVE verdict requires status flip to done",
+    };
+  }
+
+  if (verdict === "block" && effectiveNextStatus === "blocked") {
+    const hasAssignee = effectiveAssigneeAgentId !== null || effectiveAssigneeUserId !== null;
+    const hasBlockers = effectiveBlockedByIssueIds.length > 0;
+    if (!hasAssignee && !hasBlockers) {
+      return {
+        ok: false,
+        code: GATE_BLOCK_REQUIRES_OWNER_HANDOFF_CODE,
+        message: "Gate BLOCK verdict requires assignee or blocker handoff",
+      };
+    }
+  }
+
+  return { ok: true };
+}
+
 const updateIssueRouteSchema = updateIssueSchema.extend({
   interrupt: z.boolean().optional(),
 });
@@ -658,6 +753,10 @@ export function issueRoutes(
       });
     }
     return true;
+  }
+
+  async function hasAnyIssueCommentGrant(actorAgentId: string, companyId: string) {
+    return access.hasPermission(companyId, "agent", actorAgentId, "issues:comment_any");
   }
 
   async function assertExplicitResumeIntentAllowed(
@@ -2117,6 +2216,34 @@ export function issueRoutes(
       }
     }
 
+    const gateVerdict = detectGateVerdictFromWrite({
+      metadata: req.body.metadata,
+      commentBody,
+    });
+    const effectiveNextStatus =
+      updateFields.status === undefined ? existing.status : (updateFields.status as string);
+    let effectiveBlockedByIssueIds: string[];
+    if (Array.isArray(req.body.blockedByIssueIds)) {
+      effectiveBlockedByIssueIds = req.body.blockedByIssueIds as string[];
+    } else {
+      const relations = existingRelations ?? (await svc.getRelationSummaries(existing.id));
+      effectiveBlockedByIssueIds = relations.blockedBy.map((relation) => relation.id);
+    }
+    const gateVerdictValidation = validateGateVerdictWrite({
+      verdict: gateVerdict,
+      effectiveNextStatus,
+      effectiveAssigneeAgentId: nextAssigneeAgentId,
+      effectiveAssigneeUserId: nextAssigneeUserId,
+      effectiveBlockedByIssueIds,
+    });
+    if (!gateVerdictValidation.ok) {
+      res.status(400).json({
+        error: gateVerdictValidation.message,
+        code: gateVerdictValidation.code,
+      });
+      return;
+    }
+
     let issue;
     try {
       if (transition.decision && decisionId) {
@@ -2156,6 +2283,28 @@ export function issueRoutes(
         });
       }
     } catch (err) {
+      if (
+        err instanceof HttpError &&
+        (err.status === 409 || err.status === 422) &&
+        err.details &&
+        typeof err.details === "object" &&
+        (err.details as Record<string, unknown>).code === BLOCKED_ACTIVATION_GUARD_CODE
+      ) {
+        await logActivity(db, {
+          companyId: existing.companyId,
+          actorType: actor.actorType,
+          actorId: actor.actorId,
+          agentId: actor.agentId,
+          runId: actor.runId,
+          action: "issue.blocked_activation_blocked",
+          entityType: "issue",
+          entityId: existing.id,
+          details: {
+            source: "issue.update",
+            ...(err.details as Record<string, unknown>),
+          },
+        });
+      }
       if (err instanceof HttpError && err.status === 422) {
         logger.warn(
           {
@@ -2763,8 +2912,35 @@ export function issueRoutes(
 
     const checkoutRunId = requireAgentRunId(req, res);
     if (req.actor.type === "agent" && !checkoutRunId) return;
-    const updated = await svc.checkout(id, req.body.agentId, req.body.expectedStatuses, checkoutRunId);
     const actor = getActorInfo(req);
+    let updated;
+    try {
+      updated = await svc.checkout(id, req.body.agentId, req.body.expectedStatuses, checkoutRunId);
+    } catch (err) {
+      if (
+        err instanceof HttpError &&
+        (err.status === 409 || err.status === 422) &&
+        err.details &&
+        typeof err.details === "object" &&
+        (err.details as Record<string, unknown>).code === BLOCKED_ACTIVATION_GUARD_CODE
+      ) {
+        await logActivity(db, {
+          companyId: issue.companyId,
+          actorType: actor.actorType,
+          actorId: actor.actorId,
+          agentId: actor.agentId,
+          runId: actor.runId,
+          action: "issue.blocked_activation_blocked",
+          entityType: "issue",
+          entityId: issue.id,
+          details: {
+            source: "issue.checkout",
+            ...(err.details as Record<string, unknown>),
+          },
+        });
+      }
+      throw err;
+    }
 
     await logActivity(db, {
       companyId: issue.companyId,
@@ -3353,7 +3529,11 @@ export function issueRoutes(
       return;
     }
     assertCompanyAccess(req, issue.companyId);
-    if (!(await assertAgentIssueMutationAllowed(req, res, issue))) return;
+    const actorAgentId = req.actor.type === "agent" ? req.actor.agentId : null;
+    const hasCommentAnyGrant =
+      typeof actorAgentId === "string" &&
+      (await hasAnyIssueCommentGrant(actorAgentId, issue.companyId));
+    if (!hasCommentAnyGrant && !(await assertAgentIssueMutationAllowed(req, res, issue))) return;
     const closedExecutionWorkspace = await getClosedIssueExecutionWorkspace(issue);
     if (closedExecutionWorkspace) {
       respondClosedIssueExecutionWorkspace(res, closedExecutionWorkspace);
@@ -3387,6 +3567,29 @@ export function issueRoutes(
       res.status(409).json({ error: "Issue follow-up blocked by unresolved blockers" });
       return;
     }
+
+    const gateVerdict = detectGateVerdictFromWrite({ commentBody: req.body.body });
+    let commentBlockedByIssueIds: string[] = [];
+    if (gateVerdict === "block" && isBlocked) {
+      const relations = await svc.getRelationSummaries(issue.id);
+      commentBlockedByIssueIds = relations.blockedBy.map((relation) => relation.id);
+    }
+    const gateVerdictValidation = validateGateVerdictWrite({
+      verdict: gateVerdict,
+      effectiveNextStatus: issue.status,
+      effectiveAssigneeAgentId: issue.assigneeAgentId,
+      effectiveAssigneeUserId: issue.assigneeUserId,
+      effectiveBlockedByIssueIds: commentBlockedByIssueIds,
+      allowPassWithoutDone: false,
+    });
+    if (!gateVerdictValidation.ok) {
+      res.status(400).json({
+        error: gateVerdictValidation.message,
+        code: gateVerdictValidation.code,
+      });
+      return;
+    }
+
     let reopened = false;
     let reopenFromStatus: string | null = null;
     let interruptedRunId: string | null = null;

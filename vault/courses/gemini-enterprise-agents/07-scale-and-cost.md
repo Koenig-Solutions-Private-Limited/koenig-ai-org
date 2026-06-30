@@ -52,6 +52,12 @@ A multi-agent system on Gemini Enterprise Agent Platform (GEAP) that costs $200/
 
 Three numbers should sit on the wall of every team running agents in production: cost-per-invocation, cost-per-resolved-task, and cost-per-active-user-month. Cost-per-invocation is what your bill divided by invocation count gives you. Cost-per-resolved-task corrects for retries, handoffs, and abandoned conversations — the ratio of bill to *useful* outcomes. Cost-per-active-user-month is the procurement-conversation number; everything else is engineering hygiene.
 
+```takeaways
+- Cost-per-resolved-task is the correct optimization target because it accounts for retries, handoffs, and abandoned runs that cost-per-invocation hides.
+- Replacing Gemini Pro with Gemini Flash for sub-agent worker tasks (while keeping Pro for the orchestrator) reduces per-task token cost by roughly 3x on a typical mixed-model pipeline.
+- Auditing the agent's call graph for redundant invocations (unnecessary retries, re-reading full history each turn, always-summarize steps) yields larger cost reductions than model price negotiation.
+```
+
 Use this as illustrative arithmetic, not a Koenig benchmark: a three-agent invoice pipeline running 2,000 invoices/day, with Gemini Pro for the orchestrator and Gemini Flash for two sub-agents. If the orchestrator uses 3,000 input tokens and 500 output tokens while the Flash sub-agents use a combined 8,400 input tokens and 1,400 output tokens, the published on-demand prices in source [1] put the mixed-model path near $0.012 per invoice, or about $726/month. Rebuilding the same token shape with Pro everywhere lands near $0.038 per invoice, or about $2,280/month. Same traffic model, about 3.1x more expensive. Model selection is the single largest lever, and the next four sections all bow to it.
 
 <RunPromptCell
@@ -77,6 +83,12 @@ Use this as illustrative arithmetic, not a Koenig benchmark: a three-agent invoi
 ## Lever 1: Provisioned Throughput vs on-demand
 
 Provisioned Throughput (PT) is a capacity commitment. You pay for a guaranteed N tokens-per-second of generation throughput on a specific model in a specific region, and your traffic up to that limit bypasses the on-demand queue entirely. [2] Above the limit, requests either queue, fail, or burst into on-demand pricing depending on your overflow policy.
+
+```takeaways
+- Provisioned Throughput becomes economically rational only when steady-state generation exceeds roughly 50 tokens/second sustained; below that threshold, the minimum commitment unit exceeds actual usage.
+- Spiky workloads that run a fraction of the day are wrong for Provisioned Throughput — the commitment covers 24 hours of capacity regardless of actual usage hours.
+- Procurement teams often prefer PT's fixed monthly line item over unpredictable usage-based billing even when on-demand is technically cheaper, making budget approval a valid deciding factor independent of the raw token-price math.
+```
 
 The on-demand vs PT decision reduces to four questions:
 
@@ -127,6 +139,12 @@ A subtle trap: if your agent is deployed regionally for residency but you call t
 ## Lever 3: Batch prediction for offline workloads
 
 Many agent workloads are nominally synchronous but contain offline-able sub-tasks. Document classification on a daily ingest. Bulk evaluation runs against a 50,000-prompt test set. Periodic enrichment of customer records. For these, [Vertex AI batch prediction](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/model-reference/batch-prediction-api) cuts the per-token rate by 50% with a 24-hour completion SLA. [3]
+
+```takeaways
+- Batch prediction reduces the per-token rate by 50% with a 24-hour completion SLA, and stacking it with Gemini Flash pricing produces an effective rate near $0.075 per 1M input tokens.
+- The correct architecture for cost optimization is to split the agent's reasoning into a synchronous critical path (on-demand endpoint) and an asynchronous enrichment path (batch job) rather than routing everything through the synchronous path.
+- Most teams default to running every reasoning step synchronously because it is the simpler architecture; the nightly batch savings on enrichment work are a direct cost of that simplicity.
+```
 
 ```python
 from google.cloud import aiplatform
@@ -244,6 +262,12 @@ As of May 2026, many capable models appear first as preview or experimental mode
 ## Cost attribution: who is paying for what
 
 Finance teams ask one question that matters more than all the dashboards: "Which team is responsible for which fraction of the agent bill?" GEAP makes this answerable, but only if you wire labels at deploy time.
+
+```takeaways
+- GCP resource labels (`team`, `cost_center`, `environment`) are forwarded to the billing system and become the join key for per-team chargeback reports in the BigQuery billing export.
+- Making labels a required field in the deploy template — not a convention — is the only reliable way to prevent unallocated spend, because untagged deployments cannot be charged back without manual investigation.
+- A visible "unallocated AI" report for untagged spend creates governance pressure on owners to fix deployment metadata rather than relying on a reactive cleanup process after the invoice arrives.
+```
 
 Three label dimensions matter: `team`, `cost_center`, and `environment`. Apply them on every agent deployment:
 

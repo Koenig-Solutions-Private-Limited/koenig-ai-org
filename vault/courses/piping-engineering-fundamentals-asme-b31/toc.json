@@ -1,0 +1,217 @@
+{
+  "course_slug": "piping-engineering-fundamentals-asme-b31",
+  "toc_locked": true,
+  "chapters": [
+    {
+      "num": 1,
+      "slug": "reading-pids-and-piping-drawings",
+      "title": "Reading P&IDs and Piping Drawings: Extracting Engineering Intent from Plant Documentation",
+      "duration_min": 12,
+      "owns": [
+        "Interpreting P&ID symbols, line designations, instrument tags, and revision marks as design intent",
+        "Extracting existing pipe class references, fluid service labels, equipment nozzles, tie-ins, and battery limits from P&IDs and isometrics",
+        "Checking consistency between a P&ID revision and a matching piping isometric for one line",
+        "Marking missing documentation inputs that would block a pipe stress input sheet"
+      ],
+      "does_not_cover": [
+        "Selecting pipe material, schedule, wall thickness, corrosion allowance, or B31.3 fluid-service category; chapter 2 owns those decisions",
+        "Building or running a CAESAR II model; chapter 3 owns the stress-model workflow",
+        "Calculating B31J SIFs for fittings; chapter 4 owns SIF methodology",
+        "Placing supports or extracting deliverables in AutoCAD Plant 3D; chapter 5 owns layout deliverables"
+      ],
+      "word_budget": {
+        "min": 800,
+        "max": 1200
+      },
+      "quiz_topics": [
+        "P&ID line-number and tag decoding",
+        "P&ID-to-isometric consistency checks",
+        "Battery limits, tie-ins, and nozzle data",
+        "Missing data that blocks stress-analysis inputs"
+      ],
+      "notebooklm_source_focus": [
+        "ISA and PIP symbol conventions for process plant P&IDs",
+        "Public examples of piping isometrics and line designation conventions",
+        "Stress input sheet examples that show required operating and geometry data",
+        "Revision-control practices for P&ID and isometric consistency"
+      ],
+      "dossier_path": "vault/research/courses/piping-engineering-fundamentals-asme-b31/01-reading-pids-and-piping-drawings.md"
+    },
+    {
+      "num": 2,
+      "slug": "selecting-pipe-materials-schedules-and-classes",
+      "title": "Selecting Pipe Materials, Schedules, and Piping-Class Specifications to ASME B31.3 (2022/2024 Edition)",
+      "duration_min": 14,
+      "owns": [
+        "Applying ASME B31.3 wall-thickness logic for NPS, design pressure, temperature, material, quality factor, Y coefficient, and corrosion allowance",
+        "Classifying B31.3 fluid service as Normal, Category D, Category M, or High-Pressure from supplied process conditions",
+        "Selecting a piping class, pipe schedule, material grade, and examination basis for carbon-steel hydrocarbon and high-temperature steam examples",
+        "Finding and correcting common B31.3 sizing errors involving elevated-temperature Y coefficients and quality factor E"
+      ],
+      "does_not_cover": [
+        "Teaching P&ID symbol extraction beyond the input data needed for sizing; chapter 1 owns document interpretation",
+        "Entering the selected pipe data into a CAESAR II model; chapter 3 owns model setup",
+        "Computing B31J SIFs or comparing legacy Appendix D values; chapter 4 owns SIF methodology",
+        "Producing Plant 3D isometrics or material take-offs; chapter 5 owns layout deliverables"
+      ],
+      "word_budget": {
+        "min": 800,
+        "max": 1200
+      },
+      "quiz_topics": [
+        "ASME B31.3 wall-thickness inputs and equation terms",
+        "Fluid-service classification",
+        "Pipe schedule, material grade, and corrosion allowance selection",
+        "Y coefficient and quality factor error diagnosis"
+      ],
+      "notebooklm_source_focus": [
+        "Official ASME B31.3 product and table-of-contents pages for scope and edition framing",
+        "Public engineering references explaining B31.3 pipe wall thickness inputs without reproducing restricted code text",
+        "Fluid-service classification summaries from reputable training or engineering sources",
+        "ASTM pipe material and schedule reference tables from public manufacturer or engineering handbooks"
+      ],
+      "dossier_path": "vault/research/courses/piping-engineering-fundamentals-asme-b31/02-selecting-pipe-materials-schedules-and-classes.md"
+    },
+    {
+      "num": 3,
+      "slug": "building-a-caesar-ii-stress-model",
+      "title": "Building a Pipe Stress Model in CAESAR II v14: Geometry, Supports, and Load Cases",
+      "duration_min": 15,
+      "owns": [
+        "Creating a CAESAR II v14 single-branch piping model from node coordinates, pipe properties, temperatures, pressure, and material inputs",
+        "Applying anchors, guides, rests, and spring hangers inside the stress model and checking their effect on sustained stress ratio",
+        "Configuring standard operating, sustained, and thermal-expansion load cases for static analysis",
+        "Reading CAESAR II output to diagnose an overstressed node and repositioning one support to bring the code stress ratio below 1.0"
+      ],
+      "does_not_cover": [
+        "Selecting pipe class, schedule, wall thickness, or fluid-service category; chapter 2 owns input selection",
+        "Deriving B31J SIFs or teaching the Appendix D-to-B31J transition; chapter 4 owns SIF methodology",
+        "Placing supports in AutoCAD Plant 3D drawings or creating BOM deliverables; chapter 5 owns layout deliverables",
+        "Running the complete multi-branch capstone package; chapter 6 owns the integrated deliverable"
+      ],
+      "word_budget": {
+        "min": 800,
+        "max": 1200
+      },
+      "quiz_topics": [
+        "CAESAR II v14 node, element, and restraint setup",
+        "Anchor, guide, rest, and spring hanger behavior",
+        "Operating, sustained, and expansion load-case definitions",
+        "Stress summary interpretation and support repositioning"
+      ],
+      "notebooklm_source_focus": [
+        "Hexagon CAESAR II v14 release and training materials",
+        "Public CAESAR II static load case editor and output interpretation resources",
+        "Introductory pipe support modeling references for anchors, guides, rests, and spring hangers",
+        "Version note: preserve the approved v14 workflow while mentioning that newer CAESAR II releases exist"
+      ],
+      "dossier_path": "vault/research/courses/piping-engineering-fundamentals-asme-b31/03-building-a-caesar-ii-stress-model.md"
+    },
+    {
+      "num": 4,
+      "slug": "interpreting-b31j-sifs",
+      "title": "Interpreting Stress-Intensification Factors (SIFs) Under ASME B31J: Tees, Bends, and Trunnions",
+      "duration_min": 12,
+      "owns": [
+        "Explaining the B31.3 Appendix D deletion context and the shift to ASME B31J for SIF and flexibility-factor determination",
+        "Calculating and interpreting in-plane and out-plane SIF behavior for welding tees, bends, and trunnion-style attachments at a conceptual worked-example level",
+        "Configuring B31J SIF options in CAESAR II v14 for a tee and trunnion model",
+        "Deciding whether higher B31J-derived SIFs require a design response such as a loop, heavier fitting, or support/layout change"
+      ],
+      "does_not_cover": [
+        "Teaching basic CAESAR II model construction or load-case setup; chapter 3 owns the modeling foundation",
+        "Selecting pipe schedule, material, or B31.3 fluid-service category; chapter 2 owns those inputs",
+        "Creating AutoCAD Plant 3D support drawings or BOMs; chapter 5 owns drawing deliverables",
+        "Completing the full package from P&ID to stress sign-off; chapter 6 owns integration"
+      ],
+      "word_budget": {
+        "min": 800,
+        "max": 1200
+      },
+      "quiz_topics": [
+        "Appendix D deletion and B31J scope",
+        "In-plane vs out-plane SIF interpretation",
+        "B31J setup in CAESAR II v14",
+        "Design responses to SIF-driven overstress"
+      ],
+      "notebooklm_source_focus": [
+        "Official ASME B31J scope and table-of-contents material",
+        "Public technical papers or vendor notes on B31J SIF and flexibility-factor changes",
+        "Hexagon CAESAR II B31J option documentation and release notes",
+        "Worked examples from reputable engineering sources that avoid copying proprietary ASME tables"
+      ],
+      "dossier_path": "vault/research/courses/piping-engineering-fundamentals-asme-b31/04-interpreting-b31j-sifs.md"
+    },
+    {
+      "num": 5,
+      "slug": "pipe-support-design-and-layout-review",
+      "title": "Pipe Support Design and Layout Review Using AutoCAD Plant 3D",
+      "duration_min": 13,
+      "owns": [
+        "Navigating an AutoCAD Plant 3D piping project, applying a piping specification, and checking route clashes",
+        "Placing and annotating rest supports, guides, and fixed anchors on a 3D model from a supplied support-spacing table",
+        "Extracting a fully dimensioned isometric drawing and verifying bill-of-materials quantities against design intent",
+        "Exporting a PCF file from AutoCAD Plant 3D and importing it into CAESAR II v14 for geometry-transfer confirmation"
+      ],
+      "does_not_cover": [
+        "Teaching P&ID or isometric interpretation from first principles; chapter 1 owns drawing interpretation",
+        "Selecting wall thickness, material, corrosion allowance, or fluid-service category; chapter 2 owns piping-class decisions",
+        "Running stress analysis, reading stress ratios, or fixing overstressed nodes; chapter 3 owns stress-model execution",
+        "Calculating B31J SIF values; chapter 4 owns SIF methodology"
+      ],
+      "word_budget": {
+        "min": 800,
+        "max": 1200
+      },
+      "quiz_topics": [
+        "AutoCAD Plant 3D project navigation and spec application",
+        "Support-spacing table use and support annotation",
+        "Isometric extraction and BOM verification",
+        "PCF export and CAESAR II geometry import checks"
+      ],
+      "notebooklm_source_focus": [
+        "Autodesk AutoCAD Plant 3D documentation for specs, isometrics, clash checks, and PCF export",
+        "Public support-spacing and pipe-support selection references",
+        "Plant 3D-to-CAESAR II interoperability notes",
+        "Examples of MTO and isometric quality checks for construction deliverables"
+      ],
+      "dossier_path": "vault/research/courses/piping-engineering-fundamentals-asme-b31/05-pipe-support-design-and-layout-review.md"
+    },
+    {
+      "num": 6,
+      "slug": "integrating-a-complete-piping-package",
+      "title": "Integrating a Complete Piping Package: From P&ID Mark-Up to Code-Compliant Stress Sign-Off",
+      "duration_min": 14,
+      "owns": [
+        "Completing a piping input data sheet from a supplied P&ID and process datasheet by combining operating conditions, fluid-service classification, pipe class, and wall thickness",
+        "Building a multi-branch CAESAR II v14 model that incorporates B31J SIFs and identifying the governing load case and code stress ratio",
+        "Resolving a thermal-expansion overstress by comparing loop addition against expansion-joint use on space, cost, maintainability, and code criteria",
+        "Compiling the final design-review package: stress report, annotated isometric, support list, and sign-off notes"
+      ],
+      "does_not_cover": [
+        "Reteaching P&ID symbols, line designations, or isometric reading from scratch; chapter 1 owns those foundations",
+        "Reteaching B31.3 wall-thickness calculation or fluid-service classification from scratch; chapter 2 owns those foundations",
+        "Reteaching CAESAR II node entry and load-case basics from scratch; chapter 3 owns those foundations",
+        "Reteaching B31J SIF theory from scratch; chapter 4 owns that method",
+        "Reteaching AutoCAD Plant 3D navigation, isometric extraction, or PCF export from scratch; chapter 5 owns those tools"
+      ],
+      "word_budget": {
+        "min": 800,
+        "max": 1200
+      },
+      "quiz_topics": [
+        "Piping input data sheet completeness",
+        "Integrated CAESAR II model and B31J SIF application",
+        "Loop addition vs expansion-joint tradeoffs",
+        "Stress report, annotated isometric, and support-list package review"
+      ],
+      "notebooklm_source_focus": [
+        "Public EPC design-package checklists for piping stress deliverables",
+        "Examples of piping input data sheets and stress report review workflows",
+        "Engineering guidance on expansion loops versus expansion joints",
+        "Quality-review checklists for stress reports, marked-up isometrics, and support lists"
+      ],
+      "dossier_path": "vault/research/courses/piping-engineering-fundamentals-asme-b31/06-integrating-a-complete-piping-package.md"
+    }
+  ]
+}

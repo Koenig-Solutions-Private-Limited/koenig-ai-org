@@ -1,0 +1,154 @@
+{
+  "course_slug": "outbound-prospecting-new-logo-acquisition-b2b",
+  "toc_locked": true,
+  "chapters": [
+    {
+      "num": 1,
+      "slug": "01-building-icp-target-account-list",
+      "title": "Building an ICP and Target Account List for Corporate Learning Buyers",
+      "owns": [
+        "Ideal Customer Profile (ICP) definition using firmographic criteria",
+        "L&D budget signals and tech-stack indicators for corporate training buyers",
+        "Target account list assembly using free/trial prospecting tools (Apollo.io, LinkedIn Sales Navigator)",
+        "Account tiering — Tier 1 (dream accounts), Tier 2 (strong fit), Tier 3 (broad fit)",
+        "Buying-committee persona mapping (L&D Manager, IT Director, CLO) per account",
+        "ICP fit scoring methodology"
+      ],
+      "does_not_cover": [
+        "Signal monitoring tool configuration (ch2 owns it)",
+        "Outreach sequence writing or cadence design (ch3 owns it)",
+        "Referral ask scripts or referral tracking (ch4 owns it)",
+        "End-to-end live account pursuit (ch5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "What firmographic criteria define a Tier 1 ICP account in the corporate learning market?",
+        "How do you classify accounts into prospecting tiers (T1/T2/T3) and what rationale is required?",
+        "Which buying-committee personas should you map per account and why?"
+      ],
+      "notebooklm_source_focus": [
+        "Ideal Customer Profile frameworks for B2B sales",
+        "Apollo.io and LinkedIn Sales Navigator prospecting tutorials",
+        "Corporate learning buyer personas — L&D Manager, IT Director, CLO decision-making"
+      ],
+      "dossier_path": "vault/research/courses/outbound-prospecting-new-logo-acquisition-b2b/01-building-icp-target-account-list.md"
+    },
+    {
+      "num": 2,
+      "slug": "02-reading-acting-buying-signals",
+      "title": "Reading and Acting on Buying Signals Before Your Competitor Does",
+      "owns": [
+        "Buying signal types: new hires, budget cycles, compliance deadlines, headcount surges",
+        "Signal-monitoring tool configuration (LinkedIn job-change alerts, Google Alerts, Apollo/HubSpot intent data)",
+        "Trigger-event-to-outreach mapping for corporate training buyers",
+        "Shortlist prioritization by combining ICP fit score with trigger-event recency",
+        "Activity-based vs outcome-based metrics; weekly tracking baseline"
+      ],
+      "does_not_cover": [
+        "Building the ICP or account list (ch1 owns it)",
+        "Writing outreach messages or cadence sequences (ch3 owns it)",
+        "Referral pipeline generation (ch4 owns it)",
+        "Live end-to-end account pursuit (ch5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "What four trigger event types indicate a corporate learning prospect is ready to engage?",
+        "How do you configure at least two signal-monitoring sources for Tier 1 accounts?",
+        "What is the difference between activity-based metrics and outcome-based metrics in prospecting?"
+      ],
+      "notebooklm_source_focus": [
+        "B2B intent data and buying signals for corporate learning buyers",
+        "LinkedIn job alerts and Google Alerts for sales prospecting 2026",
+        "Trigger-based outreach timing best practices B2B"
+      ],
+      "dossier_path": "vault/research/courses/outbound-prospecting-new-logo-acquisition-b2b/02-reading-acting-buying-signals.md"
+    },
+    {
+      "num": 3,
+      "slug": "03-crafting-signal-triggered-outreach-sequences",
+      "title": "Crafting Signal-Triggered Outreach Sequences Across Email and LinkedIn",
+      "owns": [
+        "Three-message email sequence structure: signal-triggered first touch, value-add follow-up, breakup message",
+        "LinkedIn connection request and follow-up InMail drafting (content/role-referenced, not product-led)",
+        "10–12 touch cadence design spread across 4–6 weeks",
+        "Sequencing tool selection (free tools or manual spreadsheet)",
+        "Tiered personalization: full-custom (T1), persona-level templates (T2), ICP-fit templates (T3)"
+      ],
+      "does_not_cover": [
+        "Identifying which signals trigger outreach (ch2 owns it)",
+        "Building the account list or tiering accounts (ch1 owns it)",
+        "Referral ask scripts or referral channels (ch4 owns it)",
+        "Executing a live full-pursuit sequence with all channels integrated (ch5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "What are the three messages in a signal-triggered email sequence and what does each accomplish?",
+        "How does tiered personalization differ across Tier 1, Tier 2, and Tier 3 accounts?",
+        "What is the recommended touch count and time spread for a B2B outreach cadence in 2026?"
+      ],
+      "notebooklm_source_focus": [
+        "B2B email sequence templates and high reply rate strategies 2026",
+        "LinkedIn InMail cold outreach for corporate training and IT services sales",
+        "Multi-touch sales cadence design and sequencing tools"
+      ],
+      "dossier_path": "vault/research/courses/outbound-prospecting-new-logo-acquisition-b2b/03-crafting-signal-triggered-outreach-sequences.md"
+    },
+    {
+      "num": 4,
+      "slug": "04-generating-referral-pipeline",
+      "title": "Generating Referral Pipeline from Existing Client Networks",
+      "owns": [
+        "Identifying existing client contacts with referral network, credibility, and motivation",
+        "Referral ask script tied to a concrete outcome the client already experienced",
+        "Referral tracking log: ask date, referral status, follow-up date, outcome",
+        "Diagnosing failed referral asks: wrong timing, wrong contact, vague ask, no reciprocal value",
+        "Rewriting a failed referral ask to address root cause"
+      ],
+      "does_not_cover": [
+        "Cold email or LinkedIn outreach sequences (ch3 owns it)",
+        "Signal monitoring or trigger event identification (ch2 owns it)",
+        "ICP or account list construction (ch1 owns it)",
+        "Live full-pursuit execution combining all channels (ch5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "What three criteria qualify an existing client contact for a referral ask?",
+        "What makes a referral ask script effective vs. a generic 'do you know anyone' ask?",
+        "What are the four most common reasons referral asks fail?"
+      ],
+      "notebooklm_source_focus": [
+        "Referral selling and warm introduction strategies for B2B account managers",
+        "Referral ask scripts grounded in customer outcomes and reciprocal value",
+        "CRM referral tracking and pipeline sourcing from existing accounts"
+      ],
+      "dossier_path": "vault/research/courses/outbound-prospecting-new-logo-acquisition-b2b/04-generating-referral-pipeline.md"
+    },
+    {
+      "num": 5,
+      "slug": "05-running-full-new-logo-pursuit",
+      "title": "Running a Full New-Logo Pursuit: From First Signal to First Meeting",
+      "owns": [
+        "End-to-end new-logo prospecting motion integrating ICP scoring, signal monitoring, multi-channel sequencing, and referral sourcing",
+        "Target account selection documentation: ICP fit score, trigger event, two-persona buying committee",
+        "Live sequencing execution: minimum 5 touches across email and LinkedIn over 2 weeks with CRM logging",
+        "Sequence performance evaluation against positive-reply-rate baseline; identifying one specific improvement",
+        "One-page new-logo pipeline report: accounts contacted, touches sent, meetings booked/pending, next actions"
+      ],
+      "does_not_cover": [
+        "Individual skill deep-dives (ICP, signals, sequences, referrals) — owned by ch1–ch4 respectively"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "What three inputs must you document before selecting a net-new target account for pursuit?",
+        "How do you evaluate sequence performance and what data supports a specific improvement recommendation?",
+        "What are the four columns a new-logo pipeline report must include for a manager review?"
+      ],
+      "notebooklm_source_focus": [
+        "New-logo acquisition playbooks for B2B account managers in IT training",
+        "Sales pipeline reporting templates and metrics for sales managers",
+        "New-logo prospecting KPIs: positive reply rate, meetings booked, pipeline velocity"
+      ],
+      "dossier_path": "vault/research/courses/outbound-prospecting-new-logo-acquisition-b2b/05-running-full-new-logo-pursuit.md"
+    }
+  ]
+}

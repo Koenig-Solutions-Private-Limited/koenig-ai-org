@@ -1,0 +1,14 @@
+chapter_path: vault/courses/cursor-composer-2/03-cursor-cli-headless/chapter.md
+course_slug: cursor-composer-2
+chapter_num: 3
+chapter_slug: 03-cursor-cli-headless
+title: "Cursor CLI and Headless Usage — When to Leave the IDE"
+assets_generated: true
+tool: generate_course_audio.py
+slide_count: 7
+duration_audio_sec: 1980
+produced_at: "2026-06-11T02:30:00Z"
+assets:
+  slides_url: vault/courses/cursor-composer-2/03-cursor-cli-headless/slides.pptx
+  audio_url: vault/courses/cursor-composer-2/03-cursor-cli-headless/audio.mp3
+status: complete

@@ -9,6 +9,7 @@ import {
   AGENT_DEFAULT_MAX_CONCURRENT_RUNS,
   ISSUE_CONTINUATION_SUMMARY_DOCUMENT_KEY,
   isEnvironmentDriverSupportedForAdapter,
+  type HeartbeatRunStatus,
   type BillingType,
   type EnvironmentLeaseStatus,
   type ExecutionWorkspace,
@@ -38,9 +39,9 @@ import { conflict, HttpError, notFound } from "../errors.js";
 import { logger } from "../middleware/logger.js";
 import { publishLiveEvent } from "./live-events.js";
 import { getRunLogStore, type RunLogHandle } from "./run-log-store.js";
-import { getServerAdapter, runningProcesses } from "../adapters/index.js";
+import { getServerAdapter, requireServerAdapter, runningProcesses } from "../adapters/index.js";
 import type { AdapterExecutionResult, AdapterInvocationMeta, AdapterSessionCodec, UsageSummary } from "../adapters/index.js";
-import { createLocalAgentJwt } from "../agent-auth-jwt.js";
+import { createLocalAgentJwt, inspectLocalAgentJwt } from "../agent-auth-jwt.js";
 import { parseObject, asBoolean, asNumber, appendWithByteCap, MAX_EXCERPT_BYTES } from "../adapters/utils.js";
 import { costService } from "./costs.js";
 import { trackAgentFirstHeartbeat } from "@paperclipai/shared/telemetry";
@@ -109,7 +110,7 @@ import {
   readContinuationAttempt,
 } from "./recovery/index.js";
 import { isAutomaticRecoverySuppressedByPauseHold } from "./recovery/pause-hold-guard.js";
-import { recoveryService } from "./recovery/service.js";
+import { isIntentionallySuppressedStaleTriageIssue, recoveryService } from "./recovery/service.js";
 import { productivityReviewService } from "./productivity-review.js";
 import { withAgentStartLock } from "./agent-start-lock.js";
 import { redactCurrentUserText, redactCurrentUserValue } from "../log-redaction.js";
@@ -240,6 +241,7 @@ function mergeAdapterRecoveryMetadata(input: {
   };
 }
 const RUNNING_ISSUE_WAKE_REASONS_REQUIRING_FOLLOWUP = new Set(["approval_approved"]);
+const BLOCKED_AUTO_CHECKOUT_WAKE_REASONS = new Set(["issue_blockers_resolved"]);
 const SESSIONED_LOCAL_ADAPTERS = new Set([
   "claude_local",
   "codex_local",
@@ -639,6 +641,8 @@ const heartbeatRunListColumns = {
   nextAction: heartbeatRuns.nextAction,
   createdAt: heartbeatRuns.createdAt,
   updatedAt: heartbeatRuns.updatedAt,
+  agentName: agents.name,
+  adapterType: agents.adapterType,
 } as const;
 
 const heartbeatRunListContextColumns = {
@@ -1273,6 +1277,52 @@ function parseIssueAssigneeAdapterOverrides(
   };
 }
 
+interface BuildLocalAgentJwtSafeRuntimeConfigInput {
+  runtimeConfig: Record<string, unknown>;
+  adapterSupportsLocalAgentJwt: boolean;
+  expected: {
+    runId: string;
+    agentId: string;
+    companyId: string;
+    adapterType: string;
+  };
+  freshAuthToken: string | null;
+  nowSeconds: number;
+}
+
+export function buildLocalAgentJwtSafeRuntimeConfig(
+  input: BuildLocalAgentJwtSafeRuntimeConfigInput,
+): Record<string, unknown> {
+  const { runtimeConfig, adapterSupportsLocalAgentJwt, expected, freshAuthToken, nowSeconds } = input;
+  if (!adapterSupportsLocalAgentJwt || !freshAuthToken) return runtimeConfig;
+
+  const runtimeEnv = parseObject(runtimeConfig.env);
+  const explicitApiKey = typeof runtimeEnv.PAPERCLIP_API_KEY === "string" ? runtimeEnv.PAPERCLIP_API_KEY : null;
+  if (!explicitApiKey) return runtimeConfig;
+
+  const inspection = inspectLocalAgentJwt(explicitApiKey, { now: nowSeconds });
+  if (!inspection.signatureValid || !inspection.hasPaperclipShape) {
+    return runtimeConfig;
+  }
+
+  const runMismatch = inspection.runId !== expected.runId;
+  const agentMismatch = inspection.agentId !== expected.agentId;
+  const companyMismatch = inspection.companyId !== expected.companyId;
+  const adapterMismatch = inspection.adapterType !== expected.adapterType;
+  const shouldReplace =
+    inspection.expired || runMismatch || agentMismatch || companyMismatch || adapterMismatch;
+
+  if (!shouldReplace) return runtimeConfig;
+
+  return {
+    ...runtimeConfig,
+    env: {
+      ...runtimeEnv,
+      PAPERCLIP_API_KEY: freshAuthToken,
+    },
+  };
+}
+
 /**
  * Synthetic task key for timer/heartbeat wakes that have no issue context.
  * This allows timer wakes to participate in the `agentTaskSessions` system
@@ -1437,7 +1487,7 @@ function describeSessionResetReason(
   return null;
 }
 
-function shouldAutoCheckoutIssueForWake(input: {
+export function shouldAutoCheckoutIssueForWake(input: {
   contextSnapshot: Record<string, unknown> | null | undefined;
   issueStatus: string | null;
   issueAssigneeAgentId: string | null;
@@ -1461,6 +1511,15 @@ function shouldAutoCheckoutIssueForWake(input: {
   if (!wakeReason) return false;
   if (wakeReason === "issue_comment_mentioned") return false;
   if (wakeReason.startsWith("execution_")) return false;
+  // Deferred/plain comment wakes on blocked issues deliver context only; checkout would drift status to in_progress.
+  if (issueStatus === "blocked" && wakeReason !== "issue_reopened_via_comment") return false;
+
+  // Deliberate blocked status must survive heartbeat finalization and chained
+  // follow-up runs (missing comment retry, liveness continuation, etc.). Only
+  // explicit blocker-resolution wakes may auto-checkout from blocked.
+  if (issueStatus === "blocked") {
+    return BLOCKED_AUTO_CHECKOUT_WAKE_REASONS.has(wakeReason);
+  }
 
   return true;
 }
@@ -1506,68 +1565,15 @@ export function extractWakeCommentIds(
   return out;
 }
 
-type DeferredWakeCommentSnapshot = {
-  id: string;
-  authorAgentId: string | null;
-  authorUserId: string | null;
-  createdAt: Date;
-};
-
-export function isDeferredCommentWakeReopenWorthy(input: {
-  issueStatus: string;
-  assigneeAgentId: string | null;
-  deferredCommentIds: string[];
-  deferredWakeReason: string | null;
-  resumeIntent: boolean;
-  followUpRequested: boolean;
-  deferredComments: DeferredWakeCommentSnapshot[];
-  latestComment: DeferredWakeCommentSnapshot | null;
-}): boolean {
-  const isTerminalIssue = input.issueStatus === "done" || input.issueStatus === "cancelled";
-  const hasExplicitReopenIntent =
-    input.deferredWakeReason === "issue_reopened_via_comment" ||
-    input.resumeIntent ||
-    input.followUpRequested;
-
-  const baseReopenCandidate =
-    input.deferredCommentIds.length > 0 &&
-    isTerminalIssue &&
-    hasExplicitReopenIntent;
-
-  if (!baseReopenCandidate) return false;
-  if (input.deferredComments.length === 0) return false;
-
-  const deferredIdSet = new Set(input.deferredCommentIds);
-  const latestComment = input.latestComment;
-  if (!latestComment) return true;
-  if (deferredIdSet.has(latestComment.id)) return true;
-
-  const latestDeferredCreatedAt = input.deferredComments.reduce(
-    (max, row) => (row.createdAt > max ? row.createdAt : max),
-    input.deferredComments[0]!.createdAt,
-  );
-
-  const latestSupersedesDeferred =
-    latestComment.createdAt > latestDeferredCreatedAt ||
-    (
-      latestComment.createdAt.getTime() === latestDeferredCreatedAt.getTime() &&
-      !deferredIdSet.has(latestComment.id)
-    );
-
-  if (!latestSupersedesDeferred) return true;
-
-  if (
-    input.assigneeAgentId &&
-    latestComment.authorAgentId === input.assigneeAgentId
-  ) {
-    return false;
-  }
-
-  if (input.deferredWakeReason === "issue_reopened_via_comment") {
-    return true;
-  }
-
-  return Boolean(latestComment.authorUserId);
+export function hasExplicitDeferredCommentReopenIntent(
+  deferredContextSeed: Record<string, unknown>,
+  deferredWakeReason: string | null,
+): boolean {
+  if (deferredWakeReason !== "issue_reopened_via_comment") return false;
+  if (deferredContextSeed.resumeIntent === true) return true;
+  if (deferredContextSeed.followUpRequested === true) return true;
+  if (readNonEmptyString(deferredContextSeed.reopenedFrom)) return true;
+  return false;
 }
 
 function mergeWakeCommentIds(...values: Array<unknown>): string[] {
@@ -5625,11 +5631,12 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
         });
       };
 
-      const adapter = getServerAdapter(agent.adapterType);
-      const authToken = adapter.supportsLocalAgentJwt
+      const adapter = requireServerAdapter(agent.adapterType);
+      const nowSeconds = Math.floor(Date.now() / 1000);
+      const rawAuthToken = adapter.supportsLocalAgentJwt
         ? createLocalAgentJwt(agent.id, agent.companyId, agent.adapterType, run.id)
         : null;
-      if (adapter.supportsLocalAgentJwt && !authToken) {
+      if (adapter.supportsLocalAgentJwt && !rawAuthToken) {
         logger.warn(
           {
             companyId: agent.companyId,
@@ -5640,11 +5647,38 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
           "local agent jwt secret missing or invalid; running without injected PAPERCLIP_API_KEY",
         );
       }
+      const authInspection = rawAuthToken ? inspectLocalAgentJwt(rawAuthToken, { now: nowSeconds }) : null;
+      const authToken = authInspection?.claims && !authInspection.expired && authInspection.signatureValid
+        ? rawAuthToken
+        : null;
+      if (adapter.supportsLocalAgentJwt && rawAuthToken && !authToken) {
+        logger.warn(
+          {
+            companyId: agent.companyId,
+            agentId: agent.id,
+            runId: run.id,
+            adapterType: agent.adapterType,
+          },
+          "local agent jwt creation produced a token that failed immediate API-clock validation; running without injected PAPERCLIP_API_KEY",
+        );
+      }
+      const adapterRuntimeConfig = buildLocalAgentJwtSafeRuntimeConfig({
+        runtimeConfig,
+        adapterSupportsLocalAgentJwt: adapter.supportsLocalAgentJwt === true,
+        expected: {
+          runId: run.id,
+          agentId: agent.id,
+          companyId: agent.companyId,
+          adapterType: agent.adapterType,
+        },
+        freshAuthToken: authToken,
+        nowSeconds,
+      });
       const adapterResult = await adapter.execute({
         runId: run.id,
         agent,
         runtime: runtimeForAdapter,
-        config: runtimeConfig,
+        config: adapterRuntimeConfig,
         context,
         executionTarget,
         executionTransport: remoteExecution
@@ -6222,76 +6256,12 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
         }
         const deferredCommentIds = extractWakeCommentIds(deferredContextSeed);
         const deferredWakeReason = readNonEmptyString(deferredContextSeed.wakeReason);
-        const deferredResumeIntent =
-          deferredContextSeed.resumeIntent === true || deferredContextSeed.followUpRequested === true;
-        const isTerminalIssue = issue.status === "done" || issue.status === "cancelled";
-        const deferredCommentRows =
-          deferredCommentIds.length > 0
-            ? await tx
-              .select({
-                id: issueComments.id,
-                authorAgentId: issueComments.authorAgentId,
-                authorUserId: issueComments.authorUserId,
-                createdAt: issueComments.createdAt,
-              })
-              .from(issueComments)
-              .where(
-                and(
-                  eq(issueComments.companyId, issue.companyId),
-                  eq(issueComments.issueId, issue.id),
-                  inArray(issueComments.id, deferredCommentIds),
-                ),
-              )
-            : [];
-        const latestCommentRow = await tx
-          .select({
-            id: issueComments.id,
-            authorAgentId: issueComments.authorAgentId,
-            authorUserId: issueComments.authorUserId,
-            createdAt: issueComments.createdAt,
-          })
-          .from(issueComments)
-          .where(
-            and(
-              eq(issueComments.companyId, issue.companyId),
-              eq(issueComments.issueId, issue.id),
-            ),
-          )
-          .orderBy(desc(issueComments.createdAt), desc(issueComments.id))
-          .limit(1)
-          .then((rows) => rows[0] ?? null);
-        // Only human/comment-reopen interactions should revive completed issues;
-        // system follow-ups such as retry or cleanup wakes must not reopen closed work.
-        const shouldReopenDeferredCommentWake = isDeferredCommentWakeReopenWorthy({
-          issueStatus: issue.status,
-          assigneeAgentId: issue.assigneeAgentId,
-          deferredCommentIds,
-          deferredWakeReason,
-          resumeIntent: deferredResumeIntent,
-          followUpRequested: deferredContextSeed.followUpRequested === true,
-          deferredComments: deferredCommentRows,
-          latestComment: latestCommentRow,
-        });
-        const hasExplicitReopenIntent =
-          deferredWakeReason === "issue_reopened_via_comment" || deferredResumeIntent;
-
-        if (
-          isTerminalIssue &&
+        // Only explicit route-level reopen intent should revive terminal issues.
+        // Plain issue_commented deferred wakes deliver comment context without status drift.
+        const shouldReopenDeferredCommentWake =
           deferredCommentIds.length > 0 &&
-          !hasExplicitReopenIntent
-        ) {
-          await tx
-            .update(agentWakeupRequests)
-            .set({
-              status: "skipped",
-              reason: "terminal_issue_passive_comment_wake",
-              finishedAt: new Date(),
-              updatedAt: new Date(),
-            })
-            .where(eq(agentWakeupRequests.id, deferred.id));
-          continue;
-        }
-
+          (issue.status === "done" || issue.status === "cancelled") &&
+          hasExplicitDeferredCommentReopenIntent(deferredContextSeed, deferredWakeReason);
         let reopenedActivity: LogActivityInput | null = null;
 
         if (shouldReopenDeferredCommentWake) {
@@ -6435,6 +6405,9 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
       }
 
       if (await isAutomaticRecoverySuppressedByPauseHold(db, issue.companyId, issue.id, treeControlSvc)) {
+        return { kind: "released" as const };
+      }
+      if (await isIntentionallySuppressedStaleTriageIssue(tx, issue.companyId, issue.id, issue.status)) {
         return { kind: "released" as const };
       }
 
@@ -7480,8 +7453,15 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
   }
 
   return {
-    list: async (companyId: string, agentId?: string, limit?: number) => {
+    list: async (companyId: string, agentId?: string, limit?: number, status?: HeartbeatRunStatus) => {
       const safeForLegacyEncoding = await hasUnsafeTextProjectionDatabase();
+      const conditions = [eq(heartbeatRuns.companyId, companyId)];
+      if (agentId) {
+        conditions.push(eq(heartbeatRuns.agentId, agentId));
+      }
+      if (status) {
+        conditions.push(eq(heartbeatRuns.status, status));
+      }
       const query = db
         .select(
           safeForLegacyEncoding
@@ -7497,11 +7477,8 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
               },
         )
         .from(heartbeatRuns)
-        .where(
-          agentId
-            ? and(eq(heartbeatRuns.companyId, companyId), eq(heartbeatRuns.agentId, agentId))
-            : eq(heartbeatRuns.companyId, companyId),
-        )
+        .leftJoin(agents, eq(heartbeatRuns.agentId, agents.id))
+        .where(and(...conditions))
         .orderBy(desc(heartbeatRuns.createdAt));
 
       const rows = limit ? await query.limit(limit) : await query;

@@ -1,7 +1,8 @@
 ---
+course_slug: multi-agent-orchestration-a2a
 slug: multi-agent-orchestration-a2a
 title: "Multi-Agent Orchestration with A2A Protocol: Building the Internet of Agents"
-status: outline-draft-for-review
+status: awaiting-g0
 author: course-author
 level: Advanced
 tags: [A2A, Multi-Agent, Orchestration, Protocol, MCP, AGNTCY, Distributed Systems]
@@ -166,9 +167,13 @@ By the end, you won't just be chaining LLM calls—you'll be orchestrating a sov
 - **Duration**: 120 min
 - **Prerequisites**: All previous chapters
 - **Learning objectives**:
-  1. Design, implement, and deploy a production-grade 4-agent network collaborating via A2A
-  2. Prove all learning outcomes via a verifiable, multi-step agentic deliverable
-- **Key concepts**: Full-stack A2A, System Integration, Performance Tuning, Security Hardening, Production Observability
+  1. Assemble the course components into a working 4-agent A2A network with one orchestrator and three specialists
+  2. Publish and consume Agent Cards/capability advertisements for every specialist before any task handoff occurs
+  3. Validate the production path end to end: A2A handshake, MCP-backed market-data lookup, DPoP rejection test, resumability test, and distributed trace export
+  4. Package the project with a runnable README, test commands, and an architecture decision record that explains each protocol and topology choice
+- **Key concepts**: Capstone integration plan, Agent Card publication, end-to-end protocol verification, production readiness checklist, failure-injection testing, architecture decision records
+- **Hands-on exercise**: Build the final "Cross-Vendor Investment Researcher" incrementally: start with a passing two-agent handshake, add the MCP-backed Market Data Specialist, add Sentiment Analyst and Financial Writer specialists, then run the crash-resume and DPoP rejection tests before producing the final PDF report. Success criteria: one command starts the network, one test proves unsigned A2A messages are rejected, one test proves a failed Writer can resume without re-running Market Data, and one trace links every agent handoff.
+- **Contrarian angle**: A capstone is not a demo script. If the system only works when every service is started in the perfect order, every token is valid, and every agent responds instantly, you have proven a conference demo—not an interoperable agent network. The final chapter forces learners to prove failure behavior, not just happy-path collaboration.
 
 ---
 

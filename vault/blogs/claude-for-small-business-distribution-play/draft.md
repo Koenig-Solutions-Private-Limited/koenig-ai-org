@@ -7,7 +7,15 @@ author: blog-author
 ticket: KOEA-5273
 vendor_tag: anthropic
 content_type: article
-status: awaiting-g0
+status: g3-passed
+seo_description: "Anthropic's Claude for Small Business launch is best read as an SMB distribution test: packaged workflows, PayPal co-developed training, and local workshops."
+g3_review:
+  approved_by: CEO (5a1e1c39-1ba7-46af-a4df-c6bbef8549e9)
+  approved_at: 2026-05-28
+  ticket: KOEA-6147
+  verdict: pass
+  rationale: "Strategic fit confirmed: on-brand contrarian angle (SMB distribution test vs. feature recap), sourcing discipline (PayPal hedge held), serves blog-traffic goal 9d41cc25 and ≥3 internal-links goal 1bf6c2b4. One pre-publish defect flagged separately: broken wikilink to non-existent course/building-ai-agents-with-mcp."
+  next_gate: G4 (human publish authorization via request_board_approval)
 reading_time_min: 9
 primary_query: "Claude for Small Business Anthropic SMB strategy"
 contrarian_angle: "The product announcement matters less than the activation stack around it: PayPal co-developed education, local workshops, and nonprofit access programs."
@@ -43,6 +51,8 @@ faq:
     answer: "The public sources verify a PayPal and Anthropic co-developed free AI fluency course. They do not prove a merchant-dashboard recommendation or distribution agreement, so this draft treats PayPal-channel leverage as analysis, not a sourced fact."
   - question: "Why does the Claude SMB Tour matter?"
     answer: "The tour matters because Anthropic paired online education with in-person training for 100 local business leaders per stop and a one-month Claude Max subscription, turning the launch into hands-on activation."
+positions: none  # strategic-analysis piece; STANCES.md not yet populated — no current Koenig stance directly engaged
+first_60_words_answer: "Anthropic's Claude for Small Business is a May 2026 package of Claude Cowork workflows for small-business tasks like payroll, invoicing, and campaign execution. The strategic read is that Anthropic paired workflows with PayPal co-developed AI training, a 10-city workshop tour, and nonprofit access programs — creating an SMB adoption path for businesses that do not buy AI through enterprise IT."
 tags: [anthropic, smb, distribution, claude, strategy, gtm, paypal, quickbooks, cowork]
 ---
 
@@ -92,7 +102,7 @@ Anthropic's enterprise route looks different because enterprises already buy thr
 
 That contrast is the strategic lesson. Enterprise buyers can adopt Claude through existing cloud procurement, compliance, and developer workflows. Small businesses usually do not have an AI platform team, so Anthropic is packaging use cases and training around the software they already know. The SMB motion is not "smaller enterprise." It is education, templates, connectors, and local activation.
 
-For SaaS builders, the practical response is not to panic about horizontal AI replacing every workflow. The public launch covers obvious cross-business jobs: payroll planning, close packets, cash-position checks, lead triage, and campaign drafts. The durable opportunity is vertical specificity: restaurant cost-of-goods reconciliation, contractor job costing, dental-practice recall campaigns, or retail inventory-linked cash forecasts. Use Claude where it helps, but make your product the system that understands the industry-specific edge case. That is the same design pressure behind [[course/building-ai-agents-with-mcp]].
+For SaaS builders, the practical response is not to panic about horizontal AI replacing every workflow. The public launch covers obvious cross-business jobs: payroll planning, close packets, cash-position checks, lead triage, and campaign drafts. The durable opportunity is vertical specificity: restaurant cost-of-goods reconciliation, contractor job costing, dental-practice recall campaigns, or retail inventory-linked cash forecasts. Use Claude where it helps, but make your product the system that understands the industry-specific edge case. That is the same design pressure behind [[course/mcp-from-first-principles-to-production]].
 
 Take a field-service software company as the concrete version. Claude can draft invoice reminders and summarize a general cash gap, but a plumbing or HVAC platform can know which jobs are warranty callbacks, which technicians are certified for a part category, which deposits are legally required before work starts, and which customers should not receive an automated nudge because a manager already promised a concession. The horizontal model handles language and summarization; the vertical app owns policy, context, and exception memory.
 

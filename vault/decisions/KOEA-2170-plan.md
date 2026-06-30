@@ -1,59 +1,63 @@
 ---
 ticket: KOEA-2170
-planning_ticket: KOEA-5775
+planning_ticket: KOEA-6023
 planner: planner
 agent: planner
-date: 2026-05-27
+date: 2026-05-28
 type: decision
 tags:
   - decision
   - engineering
+  - performance
   - course/picking-a-frontier-model-2026-q2
 estimated_complexity: medium
-estimated_token_cost: "$0.42"
+estimated_token_cost: "$0.34"
 base_branch: academy/redesign-v1
 basebranch_verified: true
-authorized_by_approval: 8e6bb0cb-4da7-4075-9a21-ffee42523b26
+revision: 2
+revision_marker: koea-2170-lcp-replan-r2
+supersedes_revision: 1
+triggered_by_approval: 66c4cfec-bc9a-42c7-a751-635e863bbe47
+prior_pr: https://github.com/Koenig-Solutions-Private-Limited/learnovaBeast/pull/68
 ---
 
-# Plan: Fix LCP on the published frontier-model course page
+# Plan: Finish the remaining LCP path for the frontier-model course page
 
 ## Goal
-Bring `https://academy.kspl.tech/learn/picking-a-frontier-model-2026-q2` below the G2 LCP threshold of 2500 ms while preserving the existing course content, layout, Nova tutor affordance, chapter navigation, and learning resources. Success is a small Academy-only change with before/after Lighthouse evidence showing LCP under 2500 ms, CLS still acceptable, and TBT not regressed.
+Bring `https://academy.kspl.tech/learn/picking-a-frontier-model-2026-q2` below the G2 mobile LCP threshold of 2500 ms after PR #68 failed that gate. Success is a narrow continuation of PR #68 that preserves the course page, Nova tutor, search palette, analytics, CLS, and TBT while proving the remaining LCP path with before/after Lighthouse evidence.
 
 ## Context
-- Files to read first: `learnova-academy/src/app/learn/[slug]/page.tsx:83-164`, `learnova-academy/src/app/learn/[slug]/page.tsx:394-518`, `learnova-academy/src/app/learn/[slug]/page.tsx:801-973`, `learnova-academy/src/app/learn/[slug]/client-shell.tsx:1-37`, `learnova-academy/src/components/_shared/tutor.tsx:26-64`, `learnova-academy/src/components/_shared/tutor.tsx:76-118`, `learnova-academy/src/app/api/tutor/route.ts:19-39`, `learnova-academy/src/lib/courses.ts:91-172`, `learnova-academy/README.md:147-155`.
-- Relevant prior work: KOEA-2135 recorded G2 Lighthouse LCP `2889ms` on the live course URL, with CLS `0` and TBT `47.5ms`; KOEA-2156 and KOEA-2170 ask for the smallest safe LCP fix; Chief Engineering authorized this plan after planner-chain alert `8e6bb0cb-4da7-4075-9a21-ffee42523b26`.
-- Current code evidence: the route has already moved heavy slide/PDF embeds into closed `<details>` sections, but still builds `groundingBody` from the full outline plus every chapter and passes it through the client shell into `TutorRail`. The tutor API later slices that body to 18000 chars, so shipping more than that to the browser is avoidable initial payload.
-- Constraints: target only `learnovaBeast/learnova-academy` on `origin/academy/redesign-v1`; do not edit vault course prose or media unless a verification run proves content metadata is the direct LCP cause; do not touch `learnova-tc` unless Convex is required, and this plan expects no Convex change; current local worktree was dirty/ahead/behind during planning, so Executor should start from a clean branch off freshly fetched `origin/academy/redesign-v1`.
+- Files to read first: `learnova-academy/src/app/layout.tsx:9-29`, `learnova-academy/src/app/layout.tsx:83-97`, `learnova-academy/src/components/_shared/SitePalette.tsx:1-12`, `learnova-academy/src/components/_shared/chrome.tsx:167-185`, `learnova-academy/src/app/academy.css:55-57`, `learnova-academy/src/app/learn/[slug]/page.tsx:196-218`, PR #68 head `learnova-academy/src/app/learn/[slug]/page.tsx:85-116`, PR #68 head `learnova-academy/src/app/learn/[slug]/page.tsx:420-425`, PR #68 head `learnova-academy/src/app/learn/[slug]/client-shell.tsx:10-35`, PR #68 head `learnova-academy/src/components/_shared/tutor.tsx:72-124`.
+- Relevant prior work: PR #68 (`920301c9`, `59d7af77`) capped Nova tutor context at 18000 chars, lazy-loaded chapter widgets, moved tutor context into `#nova-tutor-context`, deferred TutorRail hydration, and removed the duplicate course-page command palette.
+- Verification evidence from Executor: G2 baseline `2889 ms`, live pre-merge `3028 ms`, local post-fix `3653 ms`, Vercel preview `5325 ms`; CLS stayed `0` and TBT stayed acceptable, so the remaining failure is LCP-specific.
+- Constraints: continue in `learnovaBeast/learnova-academy` only, based on `academy/redesign-v1` and preferably continuing PR #68 branch `koea-2170/lcp-frontier-model`; do not touch `learnova-tc`, Convex, other portals, vault course prose, slides, or audio. Keep the patch to at most these files unless measurement proves a different LCP owner: `src/app/layout.tsx`, `src/components/_shared/SitePalette.tsx`, `src/components/_shared/chrome.tsx`, `src/app/academy.css`, `src/app/learn/[slug]/page.tsx`.
 
 ## Approach (1 chosen, alternatives rejected)
-**Chosen**: Measure first, then reduce the course page's initial client payload and non-critical hydration. Keep the visual page structure intact, but stop sending the full multi-chapter `groundingBody` to the client when `/api/tutor` only uses the first 18000 chars. If the first Lighthouse trace shows remaining LCP pressure from client JS, lazily split the study-guide, mind-map, and flashcard widgets behind their click affordances so the chapter text can paint before optional learning-resource UI hydrates.
+**Chosen**: continue PR #68 and remove sitewide non-critical work from the mobile course-page critical path. PR #68 already addressed the route-specific tutor payload, so Executor should first capture a fresh Lighthouse trace on the PR preview, then defer the root command-palette/tutor chunk and Clarity script from initial page load. If the trace shows the hero title or target-audience text is the LCP element and font work is still delaying paint, reduce the course hero's dependency on preloaded Google font assets with the smallest route-scoped typography change.
 
-**Rejected**: remove audio/slides/resources from the page - too much product regression for a performance bug; change course content or delete media assets - violates the KOEA-2170 scope unless metadata is proven causal; add CDN or Convex deploy steps - unnecessary for a static Next route and risks targeting the wrong portal.
+**Rejected**: repeat the tutor payload work from revision 1 — already implemented and did not meet the gate; accept the current baseline — violates KOEA-2170 success criteria; broad redesign/CDN/Convex changes — outside scope and unlikely to address a single static course route.
 
 ## Steps (Executor follows in order)
-1. Create a clean implementation branch from `origin/academy/redesign-v1` in `/Users/vardaankoenig/Documents/Paperclip/learnovaBeast`; ignore the unrelated dirty local files seen during planning (`learnova-academy/next-env.d.ts`, `learnova-academy/public/slides/`, `learnova-academy/scripts/check-meta-descriptions.mjs`).
-2. Capture baseline evidence before editing: run Lighthouse against the live URL and, if feasible, a local production build of the same branch. Record LCP element, LCP ms, CLS, TBT, transferred bytes, and JS execution/hydration cost in the PR notes.
-3. In `learnova-academy/src/app/learn/[slug]/page.tsx`, replace the full `groundingBody` passed to `CoursePageClient` with a bounded tutor context helper, capped at the same 18000 chars used by `src/app/api/tutor/route.ts`. Preserve the title, outline, and chapter ordering, but do not serialize the entire course body to the browser.
-4. In `learnova-academy/src/app/learn/[slug]/client-shell.tsx` and `learnova-academy/src/components/_shared/tutor.tsx`, rename or document the prop as bounded tutor context, keep the existing Nova UX, and ensure `/api/tutor` still receives `slug`, `type`, `title`, and the bounded body when the learner actually sends a message.
-5. If the post-step-4 local Lighthouse run is still above 2500 ms or shows high JS evaluation/hydration, split optional chapter asset widgets out of the initial route: use `next/dynamic` or a small local lazy wrapper for `StudyGuideEmbed`, `MindMapTree`, and `FlashcardsDeck` in `learnova-academy/src/app/learn/[slug]/page.tsx`, keeping visible links/buttons stable and fetching/rendering rich widgets only after user interaction.
-6. Run the verification commands below. If the exact G2 harness is unavailable, include the local Lighthouse command output and the live-production Lighthouse command output, then state that it is the closest reproducible verifier.
-7. Hand back to the existing KOEA-2170 Executor chain: comment on KOEA-2170, KOEA-2156, and KOEA-2135 with changed files, before/after metrics, and PR URL; then clear KOEA-2170's blocker on KOEA-5775 or ask Chief Engineering to wake Executor if direct blocker mutation is not permitted.
+1. Continue from PR #68 branch `koea-2170/lcp-frontier-model` against `origin/academy/redesign-v1`; do not discard commits `920301c9` or `59d7af77`, and ignore unrelated dirty files in local worktrees.
+2. Capture a fresh mobile Lighthouse JSON against the PR #68 Vercel preview and, if possible, local production start. Record LCP element selector/text, LCP subparts, main-thread tasks, JS transfer/evaluation, font requests, and Clarity request timing before editing.
+3. In `learnova-academy/src/components/_shared/SitePalette.tsx`, keep the global `OPEN_PALETTE_EVENT` behavior but stop importing/rendering `CommandPalette` on initial load. Use a tiny client shell that listens for the event and dynamically imports the palette only after the user opens search; update `TopBar` only if the event wiring needs a stable exported helper.
+4. In `learnova-academy/src/app/layout.tsx`, move Microsoft Clarity from the inline body script to a lazy non-critical load path, preferably `next/script` with `strategy="lazyOnload"` or an equivalent idle callback. Preserve Vercel Analytics and do not remove Clarity entirely unless the Lighthouse trace proves it is the dominant LCP contention and the PR notes call out that rollback.
+5. Re-run local Lighthouse. If LCP is still above 2500 ms and the trace shows the course hero text is LCP with font-related delay, make the smallest typography-path fix in `src/app/layout.tsx`, `src/app/academy.css`, and/or `src/app/learn/[slug]/page.tsx`: reduce non-critical `next/font` preloads/weights, avoid loading JetBrains Mono on first paint, or let the course hero use the system serif fallback before Source Serif 4. Do not change course content.
+6. Run verification and open/update PR #68 with before/after metrics. If the preview still cannot reach <2500 ms after steps 3-5, stop and block with the trace evidence rather than adding new scope.
+7. Comment on KOEA-2170, KOEA-2156, and KOEA-2135 with the revised plan marker `koea-2170-lcp-replan-r2`, changed files, before/after LCP/CLS/TBT, PR URL, and whether the final fix was palette, Clarity, font, or a measured combination.
 
 ## Verification (QA Verifier checks these)
-- [ ] From `learnova-academy`, `pnpm typecheck` passes.
-- [ ] From `learnova-academy`, `pnpm build` passes after `scripts/sync-vault.mjs` runs.
-- [ ] Local production smoke: `pnpm start -p 3010` serves `/learn/picking-a-frontier-model-2026-q2` with the course title, chapter index, Nova button, and chapter content visible.
-- [ ] Lighthouse local command exits successfully and reports LCP under 2500 ms, CLS <= 0.1, and TBT not meaningfully worse than the prior 47.5 ms baseline:
-  `npx lighthouse http://localhost:3010/learn/picking-a-frontier-model-2026-q2 --chrome-flags="--headless=new" --only-categories=performance --output=json --output-path=/tmp/koea-2170-local-lh.json`
-- [ ] Lighthouse live command after deploy reports LCP under 2500 ms on `https://academy.kspl.tech/learn/picking-a-frontier-model-2026-q2`; include the JSON or parsed metrics in the issue/PR.
-- [ ] Manual click smoke: open Nova, send a short prompt, and confirm `/api/tutor` still streams an answer grounded in the course; open one chapter resource button if present and confirm no client-side error.
+- [ ] `pnpm --dir learnova-academy typecheck` passes on the PR branch.
+- [ ] `pnpm --dir learnova-academy build` passes after the normal vault sync.
+- [ ] Mobile Lighthouse on local production or PR preview reports LCP `<2500 ms`, CLS `<=0.1`, and TBT not meaningfully worse than the prior acceptable runs; attach or summarize the JSON metrics.
+- [ ] Course smoke: `/learn/picking-a-frontier-model-2026-q2` shows the title, chapter list, first chapter content, bottom navigation, and no console errors.
+- [ ] Search/Nova smoke: clicking the topbar search opens the command palette after lazy loading; opening Nova and sending a short question still reads `#nova-tutor-context` and streams a grounded answer.
+- [ ] Analytics smoke: Vercel Analytics remains mounted and Clarity still loads after idle/lazy load on a production-like page unless intentionally disabled with trace evidence.
 
 ## Risk
-- The actual live LCP element may be text/font/CSS rather than client payload. Mitigation: Step 2 requires capturing the LCP element before edits; if the trace points elsewhere, make the smallest targeted fix in that path and document why the chosen payload work was insufficient.
+- The Vercel preview may be slower than G2/live because of deployment variance rather than code. Mitigation: require the trace and LCP element/subpart evidence before each change, compare local production and preview results, and stop with a measured blocker if the remaining gap is environment noise rather than code.
 
 ## Out of scope
-- Rewriting course prose, citations, slide decks, audio, or source URLs.
-- Convex deploys or changes to `learnova-tc`, `learnova-admin`, `learnova-sales`, or `learnova-student`.
-- Broad Academy redesign or a new performance framework; this is a focused LCP fix for one published course route.
+- Rewriting course prose, citations, slide/audio assets, Nova API behavior, or sitemap/source URL fixes.
+- Touching `learnova-tc`, Convex, `learnova-admin`, `learnova-sales`, or `learnova-student`.
+- Replacing the sitewide design system, removing the command palette feature, or removing analytics permanently without explicit Chief Engineering approval.

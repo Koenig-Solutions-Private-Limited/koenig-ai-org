@@ -1,0 +1,20 @@
+{
+  "chapter_num": 7,
+  "course_slug": "microsoft-advertising-bing-ads",
+  "chapter_slug": "07-cross-platform-budget-allocation",
+  "title": "Cross-Platform Budget Allocation: Splitting Spend Between Google Ads and Microsoft Advertising",
+  "assets_generated": true,
+  "tool": "generate_course_audio.py + python-pptx",
+  "tool_tier": 3,
+  "notebooklm_fallback_reason": "notebooklm CLI not installed in runtime environment",
+  "slide_count": 7,
+  "slides_path": "vault/courses/microsoft-advertising-bing-ads/ch07-slides.pptx",
+  "audio_path": "vault/courses/microsoft-advertising-bing-ads/ch07-audio.mp3",
+  "duration_audio_sec": 775,
+  "audio_format": "mp3",
+  "audio_voice": "alloy",
+  "audio_model": "tts-1",
+  "produced_at": "2026-06-10T18:41:00Z",
+  "g0_review_required": true,
+  "notebooklm_rerun_queued": true
+}

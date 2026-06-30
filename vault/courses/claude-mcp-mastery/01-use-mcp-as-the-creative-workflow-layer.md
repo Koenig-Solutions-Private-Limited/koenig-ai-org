@@ -8,7 +8,8 @@ chapter_num: 1
 title: "Use MCP as the creative workflow layer"
 slug: 01-use-mcp-as-the-creative-workflow-layer
 description: "Learn how to design safe, human-approved Claude MCP connector workflows for creative software including Blender, Adobe for creativity, Ableton, and Splice without surrendering creative direction to the model."
-status: g0-blocked
+status: g3-passed
+last_updated: 2026-06-14
 reading_time_min: 9
 tags:
   - mcp
@@ -26,11 +27,11 @@ whats_new:
   - "This chapter turns the connector launch into a production workflow model for creative teams."
 faq:
   - question: "What is the difference between advice mode and action mode?"
-    answer: "Advice mode asks Claude to reason from supplied context without changing files; action mode lets Claude call a connector-exposed tool against an external system."
+    answer: "Advice mode asks Claude to reason from supplied context without changing files or triggering any external system; action mode lets Claude invoke a connector-exposed tool, creating an explicit protocol event that can modify real creative assets. The Claude tool-use documentation notes that the model requests tool use, receives results, and continues reasoning — meaning action mode produces observable, traceable side effects that advice mode never does (source: https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview)."
   - question: "Why should creative connector workflows use checkpoints?"
-    answer: "Checkpoints keep file state, review, rights, and rollback visible after each assistant action, which prevents broad connector prompts from making hidden production changes."
+    answer: "Checkpoints keep file state, review, rights, and rollback visible after each assistant action, preventing broad connector prompts from making hidden production changes. The MCP tool specification recommends clear tool exposure, visible invocation indicators, and confirmation prompts so humans stay in the loop on every tool call — in a creative studio this is not just a security concern but how taste and accountability are preserved at each step (source: https://modelcontextprotocol.io/specification/2025-06-18/server/tools)."
   - question: "Can Claude own final creative approval?"
-    answer: "No. Claude can help inspect, draft, explain, and execute bounded tasks, but humans should own taste, brand fit, licensing, destructive edits, and final release."
+    answer: "No. Claude can help inspect, draft, explain, and execute bounded tasks, but humans must own taste, brand fit, licensing decisions, destructive edits, and final release. Anthropic positions its creative connectors as a way for Claude to work alongside professional creative software — explicitly not as a replacement for creative professionals — so the connector accelerates production but cannot substitute for human direction, rights review, or final approval (source: https://www.anthropic.com/news/claude-for-creative-work?lang=us)."
 related_courses:
   - "claude-tool-use-from-zero"
   - "mcp-from-first-principles-to-production"
@@ -90,6 +91,12 @@ Use this rule for the rest of the course:
   ]}
 />
 
+```takeaways
+- Advice mode and action mode are distinct: advice changes nothing in your project; action mode triggers a connector tool call that can modify external systems.
+- Human approval covers taste, rights, brand fit, destructive edits, and final delivery — these are never delegated to the connector.
+- The MCP tool specification recommends visible invocation indicators and confirmation prompts so humans remain in the loop on every connector action.
+```
+
 ## Map the creative stack before you prompt
 
 MCP is an open standard for connecting AI applications to external systems such as data sources, tools, and workflows.[^mcp-intro] In creative work, those systems are not just APIs. They include live project state, files on disk, app-specific histories, layers, timelines, material graphs, sample libraries, export queues, and human review rituals.
@@ -118,6 +125,12 @@ Create a workflow map with five columns: host, connector/server, tool action, re
   expectedOutput={`A table with advice steps first, then bounded connector actions such as inspecting a Blender scene, drafting a non-destructive scene-change script, preparing export variants, and documenting checkpoints. Live app results should be marked "TODO: verify with QA" because the prompt has not actually run against Blender or Adobe.`}
 />
 
+```takeaways
+- A useful creative MCP map has five named parts: host, connector/server, tool, resource, and checkpoint — map these before writing any prompt.
+- Prompts that skip from brief to action hide too many decisions; a production prompt turns work into a bounded tool call plus an explicit review plan.
+- The most common mistake is writing a prompt like "make this scene feel premium" that forces the connector to infer style, scope, rights, and output dimensions without guidance.
+```
+
 ## Keep the file state visible
 
 Creative work fails quietly when file state is vague. "Update the scene" is not a production instruction. "On a duplicate of `lamp_loop_v03.blend`, add a temporary area light named `AI_TEST_softbox_01`, do not delete existing lights, return a summary of changed objects before I save" is a production instruction.
@@ -139,6 +152,12 @@ The same pattern applies outside Blender. Adobe for creativity workflows often d
 <Callout type="warn">
 Never ask a creative connector to make broad subjective changes to a production file without first naming the file, allowed edit scope, rollback path, and checkpoint. "Make it better" is not a safe tool instruction.
 </Callout>
+
+```takeaways
+- File state answers five questions before any connector call: current file, read vs. write permission, objects in scope, naming convention for AI changes, and what must be returned before saving.
+- Blender's connector exposes Blender's Python API; read-only inspection followed by script review before execution on a duplicate file is the safest first workflow.
+- The same file-state discipline applies across all creative tools: Adobe layers, Ableton Live sets, Splice sample licensing, and SketchUp scenes.
+```
 
 ## Put the human decisions in the prompt
 
@@ -178,6 +197,12 @@ Constraints:
 - Mark any app-specific result as TODO: verify with QA.`}
   expectedOutput={`A safer prompt that asks Claude to inspect the scene first, summarize current lighting/camera/material state, propose 2-3 non-destructive changes, draft Python with comments, wait for approval before execution, use a duplicate file for exports, and mark live results as TODO: verify with QA.`}
 />
+
+```takeaways
+- Prompts that state what Claude may and may not decide are safer and more reliable than open-ended action prompts — Claude can execute bounded tasks but should not own taste or rights decisions.
+- Script drafting without execution and file duplication before exports are the two safest defaults for any creative connector workflow.
+- Anthropic positions connectors as a way for Claude to work alongside professional creative software, not as a replacement for creative professionals.
+```
 
 ## Use checkpoints as your production control system
 

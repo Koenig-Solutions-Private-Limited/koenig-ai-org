@@ -1,9 +1,11 @@
 import express from "express";
 import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { HttpError } from "../errors.js";
 
 const mockIssueService = vi.hoisted(() => ({
   getById: vi.fn(),
+  checkout: vi.fn(),
   assertCheckoutOwner: vi.fn(),
   update: vi.fn(),
   addComment: vi.fn(),
@@ -11,6 +13,7 @@ const mockIssueService = vi.hoisted(() => ({
   findMentionedAgents: vi.fn(),
   listWakeableBlockedDependents: vi.fn(),
   getWakeableParentAfterChildCompletion: vi.fn(),
+  getRelationSummaries: vi.fn(),
 }));
 
 const mockAccessService = vi.hoisted(() => ({
@@ -210,6 +213,7 @@ describe.sequential("issue comment reopen routes", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockIssueService.getById.mockReset();
+    mockIssueService.checkout.mockReset();
     mockIssueService.assertCheckoutOwner.mockReset();
     mockIssueService.update.mockReset();
     mockIssueService.addComment.mockReset();
@@ -217,6 +221,7 @@ describe.sequential("issue comment reopen routes", () => {
     mockIssueService.findMentionedAgents.mockReset();
     mockIssueService.listWakeableBlockedDependents.mockReset();
     mockIssueService.getWakeableParentAfterChildCompletion.mockReset();
+    mockIssueService.getRelationSummaries.mockReset();
     mockAccessService.canUser.mockReset();
     mockAccessService.hasPermission.mockReset();
     mockHeartbeatService.wakeup.mockReset();
@@ -283,7 +288,12 @@ describe.sequential("issue comment reopen routes", () => {
     });
     mockIssueService.listWakeableBlockedDependents.mockResolvedValue([]);
     mockIssueService.getWakeableParentAfterChildCompletion.mockResolvedValue(null);
+    mockIssueService.getRelationSummaries.mockResolvedValue({ blockedBy: [], blocks: [] });
     mockIssueService.assertCheckoutOwner.mockResolvedValue({ adoptedFromRunId: null });
+    mockIssueService.checkout.mockResolvedValue({
+      ...makeIssue("in_progress"),
+      checkoutRunId: "run-1",
+    });
     mockAccessService.canUser.mockResolvedValue(false);
     mockAccessService.hasPermission.mockResolvedValue(false);
     mockAgentService.getById.mockResolvedValue(null);
@@ -1233,5 +1243,70 @@ describe.sequential("issue comment reopen routes", () => {
         }),
       }),
     ));
+  });
+
+  it("logs blocked activation audit signal on guarded PATCH rejection", async () => {
+    const issue = makeIssue("blocked");
+    mockIssueService.getById.mockResolvedValue(issue);
+    mockIssueService.update.mockRejectedValue(
+      new HttpError(409, "Blocked issue requires explicit unblock before activation", {
+        code: "blocked_activation_guard",
+        source: "issue.update",
+        previousStatus: "blocked",
+        requestedStatus: "in_progress",
+        guardMetadata: { unblock_owner: "chief-content", unblock_action: "repair frontmatter" },
+      }),
+    );
+
+    const res = await request(await installActor(createApp()))
+      .patch(`/api/issues/${issue.id}`)
+      .send({ status: "in_progress" });
+
+    expect(res.status).toBe(409);
+    expect(mockLogActivity).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        action: "issue.blocked_activation_blocked",
+        entityId: issue.id,
+        details: expect.objectContaining({
+          source: "issue.update",
+          code: "blocked_activation_guard",
+          requestedStatus: "in_progress",
+        }),
+      }),
+    );
+  });
+
+  it("logs blocked activation audit signal on guarded checkout rejection with run id", async () => {
+    const issue = makeIssue("blocked");
+    const actor = agentActor();
+    mockIssueService.getById.mockResolvedValue(issue);
+    mockIssueService.checkout.mockRejectedValue(
+      new HttpError(409, "Blocked issue requires explicit unblock before activation", {
+        code: "blocked_activation_guard",
+        source: "issue.checkout",
+        previousStatus: "blocked",
+        requestedStatus: "in_progress",
+        guardMetadata: { status_drift_child_issue: "KOEA-3676" },
+      }),
+    );
+
+    const res = await request(await installActor(createApp(), actor))
+      .post(`/api/issues/${issue.id}/checkout`)
+      .set("X-Paperclip-Run-Id", actor.runId)
+      .send({ agentId: actor.agentId, expectedStatuses: ["blocked"] });
+
+    expect(res.status).toBe(409);
+    expect(mockLogActivity).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        action: "issue.blocked_activation_blocked",
+        runId: actor.runId,
+        details: expect.objectContaining({
+          source: "issue.checkout",
+          code: "blocked_activation_guard",
+        }),
+      }),
+    );
   });
 });

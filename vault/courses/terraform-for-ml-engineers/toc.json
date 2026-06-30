@@ -1,0 +1,180 @@
+{
+  "course_slug": "terraform-for-ml-engineers",
+  "toc_locked": true,
+  "chapters": [
+    {
+      "num": 1,
+      "slug": "hcl-configuration-core-workflow",
+      "title": "Writing and Applying Your First HCL Configuration with Terraform 1.15",
+      "duration_min": 12,
+      "owns": [
+        "HCL configuration syntax and file layout",
+        "provider block authoring and version constraints",
+        "terraform init / plan / apply / destroy core cycle",
+        ".terraform.lock.hcl purpose and version pinning",
+        "reading and interpreting terraform plan output",
+        "verifying resource removal in cloud console and local state after destroy"
+      ],
+      "does_not_cover": [
+        "remote backends or state locking (ch 2 owns it)",
+        "module authoring (ch 3 owns it)",
+        "CI/CD pipeline wiring (ch 4 owns it)",
+        "drift detection and remediation (ch 5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "HCL syntax rules: blocks, arguments, expressions",
+        "purpose of the required_providers block and version constraints",
+        "how to interpret +/~/- symbols in terraform plan output",
+        "why .terraform.lock.hcl must be committed to version control",
+        "what terraform destroy verifies before removing a resource"
+      ],
+      "notebooklm_source_focus": [
+        "Terraform 1.15 HCL language documentation",
+        "HashiCorp provider versioning and lock file spec",
+        "terraform init / plan / apply / destroy CLI reference"
+      ],
+      "dossier_path": "vault/research/courses/terraform-for-ml-engineers/01-hcl-configuration-core-workflow.md"
+    },
+    {
+      "num": 2,
+      "slug": "remote-state-locking-ml-teams",
+      "title": "Managing Shared Remote State with Locking for Multi-Engineer ML Teams",
+      "duration_min": 13,
+      "owns": [
+        "remote backend configuration: S3 + DynamoDB and GCS with locking",
+        "state migration using terraform init -migrate-state",
+        "state locking mechanism and simulating concurrent apply conflicts",
+        "workspace vs directory-per-environment isolation patterns",
+        "terraform refresh to detect and recover from stale state",
+        "diagnosing plan failures caused by state drift"
+      ],
+      "does_not_cover": [
+        "HCL syntax and provider pinning (ch 1 owns it)",
+        "module variable patterns (ch 3 owns it)",
+        "CI pipeline secrets management (ch 4 owns it)",
+        "lifecycle preconditions and import-based remediation (ch 5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "S3 + DynamoDB vs GCS locking: what each component does",
+        "what happens when two engineers apply simultaneously without locking",
+        "workspace vs directory-per-env trade-offs for ML dev/staging/prod",
+        "step-by-step terraform init -migrate-state walkthrough",
+        "when to use terraform refresh vs terraform plan to detect drift"
+      ],
+      "notebooklm_source_focus": [
+        "Terraform remote backend documentation (S3, GCS)",
+        "DynamoDB state locking design",
+        "terraform workspaces vs directory isolation patterns",
+        "terraform refresh CLI reference"
+      ],
+      "dossier_path": "vault/research/courses/terraform-for-ml-engineers/02-remote-state-locking-ml-teams.md"
+    },
+    {
+      "num": 3,
+      "slug": "reusable-modules-ml-infrastructure",
+      "title": "Building Reusable Modules for ML Infrastructure Components",
+      "duration_min": 12,
+      "owns": [
+        "module file layout: variables.tf, locals.tf, outputs.tf, main.tf",
+        "authoring input variables with type constraints and defaults",
+        "using local values to reduce repetition inside a module",
+        "declaring and consuming module outputs",
+        "calling a module from root configuration with environment-specific .tfvars",
+        "keeping IAM, tagging, and logging policy inside the module boundary",
+        "terraform validate for pre-plan type checking"
+      ],
+      "does_not_cover": [
+        "remote backend configuration (ch 2 owns it)",
+        "CI pipeline plan/apply gating (ch 4 owns it)",
+        "drift detection and terraform import (ch 5 owns it)",
+        "provider version pinning in root config (ch 1 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "required vs optional input variables: when to use each",
+        "what local values are and why they differ from input variables",
+        "how module outputs flow to the calling root configuration",
+        ".tfvars file precedence and override order",
+        "what terraform validate catches that terraform plan does not"
+      ],
+      "notebooklm_source_focus": [
+        "Terraform module creation documentation",
+        "input variables, local values, and output values reference",
+        "terraform validate CLI reference",
+        "HashiCorp module design best practices"
+      ],
+      "dossier_path": "vault/research/courses/terraform-for-ml-engineers/03-reusable-modules-ml-infrastructure.md"
+    },
+    {
+      "num": 4,
+      "slug": "cicd-plan-approve-gates",
+      "title": "Integrating Terraform into a CI/CD Review Workflow with Plan-Then-Approve Gates",
+      "duration_min": 10,
+      "owns": [
+        "GitHub Actions (or equivalent) pipeline for terraform fmt -check / validate / plan on PR",
+        "posting terraform plan output as a PR comment artifact",
+        "manual approval gate placement between plan and apply stages",
+        "storing cloud credentials and API keys as CI secrets",
+        "confirming sensitive variables never appear in plan output",
+        "diagnosing and fixing missing-required-variable failures in CI"
+      ],
+      "does_not_cover": [
+        "module authoring (ch 3 owns it)",
+        "remote state backend setup (ch 2 owns it)",
+        "HCL syntax (ch 1 owns it)",
+        "drift reconciliation and terraform import (ch 5 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "what terraform fmt -check does and when it fails",
+        "why plan output is posted as a PR comment rather than just CI logs",
+        "how to pass a secret Terraform variable in GitHub Actions without leaking it",
+        "placement of the manual approval gate: before plan, after plan, or after apply",
+        "how to diagnose 'Error: No value for required variable' in a CI run"
+      ],
+      "notebooklm_source_focus": [
+        "GitHub Actions workflow syntax for Terraform",
+        "Terraform GitHub Actions official action documentation",
+        "HashiCorp best practices for secrets in CI/CD",
+        "terraform fmt / validate CLI reference"
+      ],
+      "dossier_path": "vault/research/courses/terraform-for-ml-engineers/04-cicd-plan-approve-gates.md"
+    },
+    {
+      "num": 5,
+      "slug": "drift-detection-remediation",
+      "title": "Detecting and Remediating Infrastructure Drift in a Live ML Environment",
+      "duration_min": 13,
+      "owns": [
+        "running terraform plan against a live environment to surface manual changes",
+        "reading drift diffs: which attributes changed, by whom, and what Terraform intends",
+        "reconcile decision: re-apply Terraform definition vs import console change",
+        "terraform import workflow for bringing unmanaged resources under state control",
+        "terraform state list and terraform state show for inspecting individual resource attributes",
+        "lifecycle precondition block to enforce minimum resource specifications (e.g., GPU instance type)"
+      ],
+      "does_not_cover": [
+        "CI/CD pipeline gating (ch 4 owns it)",
+        "module variable design (ch 3 owns it)",
+        "remote state backend and locking (ch 2 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "how terraform plan reveals that a resource was manually changed in the cloud console",
+        "when to use terraform import vs re-applying the Terraform definition to reconcile drift",
+        "what terraform state list returns and how to use it to find a specific resource",
+        "syntax and semantics of a lifecycle precondition block",
+        "how a failed lifecycle precondition surfaces in terraform plan output"
+      ],
+      "notebooklm_source_focus": [
+        "Terraform drift detection and reconciliation patterns",
+        "terraform import CLI reference and workflow",
+        "terraform state subcommands: list, show, mv, rm",
+        "lifecycle meta-arguments: precondition and postcondition"
+      ],
+      "dossier_path": "vault/research/courses/terraform-for-ml-engineers/05-drift-detection-remediation.md"
+    }
+  ]
+}

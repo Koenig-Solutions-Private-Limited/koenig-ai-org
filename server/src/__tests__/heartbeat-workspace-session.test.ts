@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import type { agents } from "@paperclipai/db";
 import { sessionCodec as codexSessionCodec } from "@paperclipai/adapter-codex-local/server";
 import { resolveDefaultAgentWorkspaceDir } from "../home-paths.js";
+import { createLocalAgentJwt } from "../agent-auth-jwt.js";
 import {
   applyPersistedExecutionWorkspaceConfig,
+  buildLocalAgentJwtSafeRuntimeConfig,
   buildRealizedExecutionWorkspaceFromPersisted,
   buildExplicitResumeSessionOverride,
   deriveTaskKeyWithHeartbeatFallback,
@@ -557,5 +559,69 @@ describe("parseSessionCompactionPolicy", () => {
       maxRawInputTokens: 500_000,
       maxSessionAgeHours: 0,
     });
+  });
+});
+
+describe("buildLocalAgentJwtSafeRuntimeConfig", () => {
+  it("replaces stale prior-run Paperclip JWT in explicit PAPERCLIP_API_KEY", () => {
+    const originalSecret = process.env.PAPERCLIP_AGENT_JWT_SECRET;
+    const originalTtl = process.env.PAPERCLIP_AGENT_JWT_TTL_SECONDS;
+    process.env.PAPERCLIP_AGENT_JWT_SECRET = "test-secret";
+    process.env.PAPERCLIP_AGENT_JWT_TTL_SECONDS = "1";
+    const previousRunToken = createLocalAgentJwt("agent-1", "company-1", "codex_local", "run-1");
+    process.env.PAPERCLIP_AGENT_JWT_TTL_SECONDS = "3600";
+    const freshRunToken = createLocalAgentJwt("agent-1", "company-1", "codex_local", "run-2");
+
+    const updated = buildLocalAgentJwtSafeRuntimeConfig({
+      runtimeConfig: {
+        env: {
+          PAPERCLIP_API_KEY: previousRunToken,
+        },
+      },
+      adapterSupportsLocalAgentJwt: true,
+      expected: {
+        runId: "run-2",
+        agentId: "agent-1",
+        companyId: "company-1",
+        adapterType: "codex_local",
+      },
+      freshAuthToken: freshRunToken,
+      nowSeconds: Math.floor(Date.now() / 1000) + 10,
+    });
+
+    const env = (updated.env ?? {}) as Record<string, unknown>;
+    expect(env.PAPERCLIP_API_KEY).toBe(freshRunToken);
+    if (originalSecret === undefined) delete process.env.PAPERCLIP_AGENT_JWT_SECRET;
+    else process.env.PAPERCLIP_AGENT_JWT_SECRET = originalSecret;
+    if (originalTtl === undefined) delete process.env.PAPERCLIP_AGENT_JWT_TTL_SECONDS;
+    else process.env.PAPERCLIP_AGENT_JWT_TTL_SECONDS = originalTtl;
+  });
+
+  it("keeps opaque explicit PAPERCLIP_API_KEY values unchanged", () => {
+    const originalSecret = process.env.PAPERCLIP_AGENT_JWT_SECRET;
+    const opaqueKey = "plain-static-key-value";
+    process.env.PAPERCLIP_AGENT_JWT_SECRET = "test-secret";
+    const freshRunToken = createLocalAgentJwt("agent-1", "company-1", "codex_local", "run-2");
+    const updated = buildLocalAgentJwtSafeRuntimeConfig({
+      runtimeConfig: {
+        env: {
+          PAPERCLIP_API_KEY: opaqueKey,
+        },
+      },
+      adapterSupportsLocalAgentJwt: true,
+      expected: {
+        runId: "run-2",
+        agentId: "agent-1",
+        companyId: "company-1",
+        adapterType: "codex_local",
+      },
+      freshAuthToken: freshRunToken,
+      nowSeconds: Math.floor(Date.now() / 1000),
+    });
+
+    const env = (updated.env ?? {}) as Record<string, unknown>;
+    expect(env.PAPERCLIP_API_KEY).toBe(opaqueKey);
+    if (originalSecret === undefined) delete process.env.PAPERCLIP_AGENT_JWT_SECRET;
+    else process.env.PAPERCLIP_AGENT_JWT_SECRET = originalSecret;
   });
 });

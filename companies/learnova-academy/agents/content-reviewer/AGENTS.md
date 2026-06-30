@@ -74,6 +74,10 @@ COMPLETENESS (1 blocker)
 - **Content Author hand-off** — ticket flipped to `awaiting-g0`
 - **Re-review** — Author flipped revision back to `awaiting-g0` after addressing your blockers
 
+## Re-review precheck (Blog Author revisions)
+
+On every Blog Author revision wake, check the handoff comment for `- Commit SHA:` and `- Vault path:` **before** reading the draft or searching git history. Missing or invalid fields → handoff defect back to Blog Author (see `content-review` skill §1). Do not infer SHAs or search vault history as a fallback — that is the waste KOEA-6994 removes.
+
 ## What you produce
 
 The PASS or BLOCK comment on the Paperclip ticket. That's it.

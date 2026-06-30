@@ -17,6 +17,7 @@ tags:
   - developer-tools
 reading_time_min: 6
 primary_query: "claude skills vs mcp when to use which"
+seo_description: "Choose Claude Skills when you need reusable workflow memory, use MCP when Claude must reach live systems, and combine them for production agents."
 contrarian_angle: "Skills and MCP are not competing extension mechanisms. Skills encode repeatable judgment; MCP exposes live systems. The highest-leverage architecture is usually hybrid."
 sources:
   - https://www.anthropic.com/news/skills
@@ -109,6 +110,25 @@ Use Claude Skills when you need Claude to follow a repeatable way of working; us
 
 The missed point is that Skills and MCP are not rivals. Skills encode judgment: how your team reviews PRs, writes incident notes, or runs a release. MCP exposes access: the GitHub issue, the customer record, the database row. Production agents usually need both, but not in the same layer.
 
+```mermaid
+flowchart LR
+    subgraph Skills["Claude Skills (workflow judgment)"]
+        S1["Reusable prompt templates"]
+        S2["Step-by-step how-tos"]
+        S3["Domain knowledge"]
+    end
+    subgraph MCP["MCP (live system access)"]
+        M1["Tool calls → GitHub"]
+        M2["Tool calls → Databases"]
+        M3["Tool calls → APIs"]
+    end
+    Agent["Claude Code agent"] --> Skills
+    Agent --> MCP
+    Skills -->|"informs reasoning"| Agent
+    MCP -->|"returns live data"| Agent
+```
+<!-- alt: Diagram contrasting Claude Skills (reusable workflow templates and domain knowledge) with MCP (live tool calls to GitHub, databases, and APIs), both feeding the same Claude Code agent. -->
+
 ## Use Skills to preserve reusable workflow judgment
 
 Claude Skills are filesystem folders centered on `SKILL.md`. Anthropic describes them as specialized folders with instructions, scripts, and resources that Claude can load dynamically for specific tasks ([Introducing Agent Skills](https://www.anthropic.com/news/skills), retrieved 2026-05-13). The docs call out progressive disclosure: Claude scans metadata first, loads the full Skill when relevant, and only opens extra resources or scripts when needed ([Agent Skills overview](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview), retrieved 2026-05-13).
@@ -131,7 +151,7 @@ prompt: |
   - End with PASS, CHANGES, or BLOCK.
   EOF
 expected_output: |
-  .claude/skills/pr-review/SKILL.md exists and Claude Code can discover the skill when PR review is requested.
+  .claude/skills/pr-review/SKILL.md exists and [Claude Code](/blog/cursor-3-2-vs-claude-code-workflow) can discover the skill when PR review is requested.
 </RunPromptCell>
 
 ## Use MCP to expose live systems and authenticated actions
@@ -140,7 +160,7 @@ MCP is the right default when Claude needs current external state. Anthropic int
 
 That means MCP is for querying GitHub issues, reading CRM records, calling internal services, writing tickets, or exposing organization tools across more than one assistant surface. The quickstart shows the practical cost: even a basic MCP server has an executable, runtime, transport, tool schema, and client configuration ([Build an MCP server](https://modelcontextprotocol.io/quickstart), retrieved 2026-05-13). That overhead is wasted for static instructions, but justified when the agent crosses a live application boundary.
 
-The recent release cadence reinforces the point. The official Python SDK shipped v1.27.1 on May 8, 2026, and the MCP registry shipped v1.7.9 on May 12, 2026 ([modelcontextprotocol/python-sdk v1.27.1](https://github.com/modelcontextprotocol/python-sdk/releases/tag/v1.27.1), retrieved 2026-05-26; [modelcontextprotocol/registry v1.7.9](https://github.com/modelcontextprotocol/registry/releases/tag/v1.7.9), retrieved 2026-05-26). Treat MCP like infrastructure with versions and operations, not like a prompt snippet.
+The recent release cadence reinforces the point. The official Python SDK shipped v1.27.1 on May 8, 2026, and the [MCP registry](/blog/mcp-server-registry-security) shipped v1.7.9 on May 12, 2026 ([modelcontextprotocol/python-sdk v1.27.1](https://github.com/modelcontextprotocol/python-sdk/releases/tag/v1.27.1), retrieved 2026-05-26; [modelcontextprotocol/registry v1.7.9](https://github.com/modelcontextprotocol/registry/releases/tag/v1.7.9), retrieved 2026-05-26). Treat MCP like infrastructure with versions and operations, not like a prompt snippet.
 
 ## Combine them when workflow repeats but data changes
 
@@ -153,6 +173,17 @@ Use this decision rule:
 | Repo-specific review checklist or release playbook | Skill | Stable procedure, low integration overhead |
 | Querying GitHub, Slack, CRM, or production metrics | MCP | Needs live state and authenticated actions |
 | Support triage with current customer data and house style | Hybrid | MCP fetches records; Skill controls reasoning and format |
+
+```mermaid
+flowchart TD
+    Q{"What does Claude need?"}
+    Q -->|"Repeatable workflow\nor team procedure"| S["Claude Skills\nSKILL.md + instructions\nloaded on demand"]
+    Q -->|"Live external system\nor authenticated action"| M["MCP Server\nclient-server protocol\nJSON-RPC tool calls"]
+    Q -->|"Both: recurring workflow\nwith live data"| H["Hybrid\nSkill encodes HOW\nMCP exposes WHAT"]
+    S --> SE["✓ PR review checklist\n✓ Release playbook\n✓ Support escalation policy"]
+    M --> ME["✓ GitHub issues\n✓ CRM records\n✓ Production database"]
+    H --> HE["✓ Support triage:\nMCP fetches customer data\nSkill controls reply format"]
+```
 
 Anthropic's March 24, 2026 Claude Code advanced-patterns session puts MCP beside subagents, hooks, and large-repo context strategies for teams scaling Claude Code into real engineering work ([Claude Code Advanced Patterns](https://www.anthropic.com/webinars/claude-code-advanced-patterns), retrieved 2026-05-26). In Paperclip environments, that is also where [[paperclip-create-plugin]] becomes relevant, while [[course/mcp-from-first-principles-to-production/03-tools-resources-prompts]] covers the mechanics of the live boundary.
 
