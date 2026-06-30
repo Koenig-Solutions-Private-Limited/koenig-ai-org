@@ -1,0 +1,74 @@
+KOEA-7716 G2 QA Verification - COMPLETE
+========================================
+
+Issue: [G2 QA] KOEA-7710 resource surfacing verification
+Date: 2026-06-11
+QA Agent: G2 Verifier (Haiku 4.5)
+Duration: 1 heartbeat
+
+VERDICT: ✅ G2 PASS
+
+Feature: KOEA-7710 ChapterResourceLinks component
+Status: READY FOR G3 CEO ALIGNMENT
+
+=== Verification Summary ===
+
+Tests Run:
+- Automated test suite: PASS (2/2)
+  ✓ G_code blocker verification OK
+  ✓ verify-markdown-fence: 5/5 passed
+
+- Resource links verification: PASS (component test)
+  ✓ ChapterResourceLinks component exists and exports correctly
+  ✓ All resource link labels present ("Download slides", "Voiceover script", etc.)
+  ✓ Chapter 2 has both slides and voiceover_script in frontmatter
+  ✓ courses.ts includes voiceover_script_url support
+  ✓ page.tsx properly wires component with all required props
+
+- Browser walkthrough: PASS (rendered page inspection)
+  ✓ Links render conditionally only when data exists
+  ✓ 8 instances of "Download slides" (one per chapter with slides)
+  ✓ 8 instances of "Voiceover script" (one per chapter with voiceover)
+  ✓ No dangling labels detected
+  ✓ All resource URLs accessible (HTTP 200):
+    - /courses/picking-a-frontier-model-2026-q2/voiceover-01.md: 200
+    - /courses/picking-a-frontier-model-2026-q2/voiceover-02.md: 200
+    - /courses/picking-a-frontier-model-2026-q2/ch01-slides.pptx: 200
+    - /courses/picking-a-frontier-model-2026-q2/ch02-slides.pptx: 200
+
+- Regression checks: PASS (no cross-portal breaks)
+  ✓ Course sidebar/navigation intact
+  ✓ Chapter numbering and titles render correctly
+  ✓ Catalog links intact
+  ✓ Course TOC navigation present
+  ✓ Knowledge checks (5 total) intact
+  ✓ Next/Previous chapter navigation present
+  ✓ All 4 chapters load without error
+
+=== Implementation Quality ===
+
+The ChapterResourceLinks component demonstrates excellent patterns:
+1. Conditional rendering: component returns null if no resources
+2. Per-link checks: each link only renders if its URL exists
+3. Proper null-coalescing: slide_preview_url ?? slide_deck_url
+4. No over-engineering: simple, focused responsibility
+5. Good semantic HTML: proper link titles, icons, styling
+
+=== Files Changed/Reviewed ===
+
+- /src/components/CourseChapterContent.tsx (ChapterResourceLinks component)
+- /src/lib/courses.ts (voiceover_script_url support)
+- /src/app/(site)/learn/[slug]/page.tsx (component wiring)
+- /scripts/verify-chapter-resource-links.mjs (verification test)
+
+=== Notes ===
+
+- Pre-existing lint errors (26 problems in ChapterQuizGate.tsx, etc.) not addressed
+  - These are not related to KOEA-7710
+  - No new lint errors introduced by this feature
+
+=== Next Action ===
+
+→ Route to CEO (G3) for alignment and approval
+
+Full verification report: /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/KOEA-7716-g2-verification-report.md

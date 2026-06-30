@@ -1,45 +1,48 @@
 ---
 ticket: KOEA-2015
 planner: planner
-date: 2026-05-14
+date: 2026-05-26
 estimated_complexity: small
-estimated_token_cost: $0.25
+estimated_token_cost: $0.30
 base_branch: origin/academy/redesign-v1
 implementation_branch: koea-2015/faq-jsonld
 basebranch_verified: true
-planner_issue: KOEA-2023
+planner_issue: KOEA-5015
+revises_plan_issue: KOEA-2023
+shared_fix_for: KOEA-2045
 ---
 
-# Plan: FAQPage JSON-LD for FAQ blog frontmatter
+# Plan: FAQPage JSON-LD preserves FAQ frontmatter content
 
 ## Goal
-Make any publishable academy blog with `faq:` frontmatter emit schema.org `FAQPage` JSON-LD alongside the existing `BlogPosting` and `BreadcrumbList` data. Success is observable on `/blog/2026-04-30-gpt-5-5-in-codex`: local build output contains a JSON-LD object with `"@type":"FAQPage"` and `mainEntity` questions matching the vault frontmatter, without touching non-academy portals or deploying Convex.
+Make any publishable academy blog with `faq:` frontmatter emit schema.org `FAQPage` JSON-LD alongside the existing `BlogPosting` and `BreadcrumbList` data. Success is observable on both `/blog/2026-04-30-gpt-5-5-in-codex` and `/blog/2026-05-13-cloudflare-agents-week-2026-build-deep-dive`: generated and live JSON-LD contains `FAQPage.mainEntity` with `Question.name` and `Answer.text` matching the vault frontmatter, without touching non-academy portals or deploying Convex.
 
 ## Context
-- Files to read first: `/paperclip/instances/default/workspaces/learnovaBeast-koea-2015/learnova-academy/src/lib/vault.ts:21-120`, `/paperclip/instances/default/workspaces/learnovaBeast-koea-2015/learnova-academy/src/lib/seo.ts:146-223`, `/paperclip/instances/default/workspaces/learnovaBeast-koea-2015/learnova-academy/src/app/blog/[slug]/page.tsx:16-103`, `/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/vault/blogs/2026-04-30-gpt-5-5-in-codex/draft.md:56-62`, `/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/vault/_audit/g5/2026-04-30-gpt-5-5-in-codex-20260514.md:42-54`.
-- Relevant prior work: G5 audit `vault/_audit/g5/2026-04-30-gpt-5-5-in-codex-20260514.md` reports live JSON-LD types `BlogPosting`, `BreadcrumbList`, and `ListItem`, but no `FAQPage`, even though the source draft has three FAQ entries.
-- Constraints: use worktree `/paperclip/instances/default/workspaces/learnovaBeast-koea-2015`; target `origin/academy/redesign-v1`; implementation branch `koea-2015/faq-jsonld`; do not deploy Convex; do not touch `learnova-student`, `learnova-sales`, `learnova-admin`, or `learnova-tc`.
+- Files to read first: `/paperclip/instances/default/workspaces/learnovaBeast-koea-2015/learnova-academy/src/lib/vault.ts:21-120`, `/paperclip/instances/default/workspaces/learnovaBeast-koea-2015/learnova-academy/src/lib/seo.ts:146-223`, `/paperclip/instances/default/workspaces/learnovaBeast-koea-2015/learnova-academy/src/app/blog/[slug]/page.tsx:16-103`, `/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/vault/blogs/2026-04-30-gpt-5-5-in-codex/draft.md:56-62`, `/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/vault/blogs/2026-05-13-cloudflare-agents-week-2026-build-deep-dive/draft.md:22-28`, `/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/vault/_audit/g5/2026-05-13-cloudflare-agents-week-2026-build-deep-dive-20260514.md:51-77`.
+- Relevant prior work: KOEA-2024 requested a plan revision after KOEA-2045 added the KOEA-1748 live-blog regression. The GPT-5.5 draft uses `faq[].question` / `faq[].answer`; the Cloudflare draft uses `faq[].q` / `faq[].a`. Current live KOEA-1748 JSON-LD now includes `FAQPage`, but each `Question` lacks `name` and each `Answer` lacks `text`, so KOEA-2045 is not complete.
+- Constraints: use worktree `/paperclip/instances/default/workspaces/learnovaBeast-koea-2015`; target `origin/academy/redesign-v1` verified 2026-05-26; implementation branch `koea-2015/faq-jsonld`; keep scope constrained to `learnova-academy`; route KOEA-1748-specific live verification through KOEA-2050 after shared G_code KOEA-2026 passes; do not deploy Convex; do not touch `learnova-student`, `learnova-sales`, `learnova-admin`, or `learnova-tc`.
 
 ## Approach (1 chosen, alternatives rejected)
-**Chosen**: Preserve the existing academy structured-data pipeline and add a focused regression verification. In the current checkout, `vault.ts` already carries `faq` into `BlogPost`, `seo.ts` already has `faqPageLd`, and `blog/[slug]/page.tsx` already appends `faqPageLd(post.faq)` when FAQ frontmatter exists. Executor should first confirm that production hook is present, avoid duplicating it, then add a small build-output verifier under `learnova-academy/scripts/` plus an npm script so the PR proves the target blog's generated HTML contains `FAQPage`.
-**Rejected**: Inline FAQ JSON-LD directly in `blog/[slug]/page.tsx` - duplicates `faqPageLd` and weakens shared SEO helpers; move FAQ data out of blog frontmatter - changes content contract outside the G5 failure; broad SEO refactor across course/blog pages - too much blast radius for a single L3 red.
+**Chosen**: Normalize blog FAQ frontmatter at the vault boundary, then strengthen the regression verifier to compare generated JSON-LD against the source Q&A content for both affected slugs. `blog/[slug]/page.tsx` already appends `faqPageLd(post.faq)` and `seo.ts` already renders the correct schema shape when it receives `{ question, answer }`, so the smallest durable fix is to make `vault.ts` accept both `question`/`answer` and `q`/`a` frontmatter forms and expose one normalized `BlogPost.faq` contract.
+**Rejected**: Tolerate `q`/`a` inside `faqPageLd` - leaks vault parsing concerns into SEO helpers; rewrite the Cloudflare draft frontmatter to `question`/`answer` - fixes one article but leaves the content contract ambiguous; inline special-case JSON-LD in `blog/[slug]/page.tsx` - duplicates the existing helper and increases page-level blast radius.
 
 ## Steps (Executor follows in order)
-1. Confirm branch state in `/paperclip/instances/default/workspaces/learnovaBeast-koea-2015`: stay on `koea-2015/faq-jsonld`, verify `git ls-remote --heads origin academy/redesign-v1` returns a row, and keep changes inside `learnova-academy/`.
-2. Inspect `learnova-academy/src/app/blog/[slug]/page.tsx`. If the `faqPageLd` import and `...(post.faq?.length ? [faqPageLd(post.faq)] : [])` entry are missing in Executor's checkout, add them inside the existing `jsonLdScript([...])`; if they are present, leave this production hook unchanged.
-3. Inspect `learnova-academy/src/lib/vault.ts` and `learnova-academy/src/lib/seo.ts`. Keep `BlogPost.faq`, `faq: Array.isArray(data.faq) ? data.faq : undefined`, and `faqPageLd` aligned; only adjust types if needed for the verifier, not for a broader schema redesign.
-4. Add `learnova-academy/scripts/verify-blog-faq-jsonld.mjs` that reads the built HTML for a slug argument, parses all `<script type="application/ld+json">` blocks, flattens array payloads, and fails unless one object has `"@type" === "FAQPage"` with non-empty `mainEntity`.
+1. Confirm branch state in `/paperclip/instances/default/workspaces/learnovaBeast-koea-2015`: work from `origin/academy/redesign-v1` on implementation branch `koea-2015/faq-jsonld`, account for any existing workspace dirt before editing, and keep changes inside `learnova-academy/`.
+2. Update `learnova-academy/src/lib/vault.ts` to normalize `data.faq` into `{ question, answer }[]` by accepting either `question`/`answer` or `q`/`a`, trimming strings, and dropping invalid or incomplete entries. Keep `BlogPost.faq` as the normalized contract.
+3. Inspect `learnova-academy/src/lib/seo.ts` and `learnova-academy/src/app/blog/[slug]/page.tsx`. Preserve the existing `faqPageLd` output shape and page hook; only adjust them if required to avoid emitting an empty `FAQPage` when normalization returns no valid entries.
+4. Add or update `learnova-academy/scripts/verify-blog-faq-jsonld.mjs` so it accepts one or more slug arguments, reads each source vault draft, normalizes FAQ entries with the same accepted key forms, parses built `<script type="application/ld+json">` payloads, and fails unless `BlogPosting`, `BreadcrumbList`, and `FAQPage` are present and every generated `Question.name` / `Answer.text` matches the source Q&A content.
 5. Add a package script in `learnova-academy/package.json`, for example `"verify:faq-jsonld": "node ./scripts/verify-blog-faq-jsonld.mjs"`, without adding new dependencies.
-6. Run the smallest verification from `learnova-academy`: `KOENIG_VAULT_ROOT=/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/vault npm run build && npm run verify:faq-jsonld -- 2026-04-30-gpt-5-5-in-codex`. If build output path differs under Next 16, update the verifier to discover the slug HTML under `.next/server/app/blog/`.
-7. Open the draft PR against `academy/redesign-v1` and report whether the production FAQ hook was newly added or already present on the base branch; do not deploy Convex or touch other portals.
+6. Run the smallest verification from `learnova-academy`: `KOENIG_VAULT_ROOT=/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/vault npm run build && npm run verify:faq-jsonld -- 2026-04-30-gpt-5-5-in-codex 2026-05-13-cloudflare-agents-week-2026-build-deep-dive`. If Next's output path differs, update the verifier to discover slug HTML under `.next/server/app/blog/`.
+7. Open or update the draft PR against `academy/redesign-v1`, report that KOEA-1748-specific live validation is delegated to KOEA-2050 after KOEA-2026 shared G_code passes, and do not deploy Convex or touch other portals.
 
 ## Verification (QA Verifier checks these)
 - [ ] Local build command succeeds with `KOENIG_VAULT_ROOT=/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/vault npm run build`.
-- [ ] `npm run verify:faq-jsonld -- 2026-04-30-gpt-5-5-in-codex` finds `FAQPage` with at least one `mainEntity` question in the generated blog HTML.
-- [ ] Changed files are limited to `learnova-academy/src/app/blog/[slug]/page.tsx` if the hook was missing, `learnova-academy/scripts/verify-blog-faq-jsonld.mjs`, and `learnova-academy/package.json`.
+- [ ] `npm run verify:faq-jsonld -- 2026-04-30-gpt-5-5-in-codex 2026-05-13-cloudflare-agents-week-2026-build-deep-dive` finds parseable `BlogPosting`, `BreadcrumbList`, and `FAQPage` JSON-LD for both generated blog pages, with `FAQPage.mainEntity` preserving source `Question.name` and `Answer.text`.
+- [ ] After the PR is deployed, KOEA-2050 confirms the live URL `https://academy.kspl.tech/blog/2026-05-13-cloudflare-agents-week-2026-build-deep-dive` emits parseable `BlogPosting`, `BreadcrumbList`, and content-bearing `FAQPage` JSON-LD.
+- [ ] Changed files are limited to `learnova-academy/src/lib/vault.ts`, `learnova-academy/src/lib/seo.ts` only if empty FAQ suppression is needed, `learnova-academy/src/app/blog/[slug]/page.tsx` only if the hook is missing, `learnova-academy/scripts/verify-blog-faq-jsonld.mjs`, and `learnova-academy/package.json`.
 
 ## Risk
-- The current base branch appears to already contain the FAQ JSON-LD hook, so the live red may be stale deployment or Vercel vault-sync state rather than missing source code. Mitigation: require the build-output verifier and have Executor explicitly report whether source code changed or the PR is regression/deploy-trigger only.
+- There are two FAQ frontmatter shapes in live vault content, so future articles could introduce more variants. Mitigation: support only the two observed shapes in `vault.ts`, fail the verifier on incomplete entries, and leave broader content-schema validation to a separate ticket.
 
 ## Out of scope
-- No Convex deployment, no changes to student/sales/admin/tc portals, no changes to blog content frontmatter, and no broad structured-data refactor beyond the FAQ blog path.
+- No Convex deployment, no changes to student/sales/admin/tc portals, no live deployment by Executor, no manual rewrite of blog content frontmatter, and no broad structured-data refactor beyond the academy blog FAQ path.

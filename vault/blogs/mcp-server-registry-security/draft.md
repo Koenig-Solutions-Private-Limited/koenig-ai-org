@@ -5,7 +5,7 @@ agent_drafted_by: blog-author
 ticket: KOEA-1339
 vendor_tag: anthropic
 content_type: article
-status: g3-passed
+status: published
 title: "Treat the MCP server registry like npm in 2016, not an app store"
 slug: 2026-05-13-mcp-server-registry-security
 description: "The MCP server registry is not safe by default because one-click bundles, community directories, and remote authorization flows still move faster than signing, provenance, and review standards."
@@ -17,6 +17,7 @@ tags:
   - registry
 reading_time_min: 15
 primary_query: "is the mcp server registry safe"
+seo_description: "The MCP server registry is not safe by default: install flows moved faster than signing and provenance standards. How to treat it like npm in 2016."
 contrarian_angle: "The main MCP registry failure is not prompt injection alone. It is packaging trust: install flows became one-click before provenance, signing, and review became legible."
 sources:
   - https://www.anthropic.com/engineering/desktop-extensions
@@ -108,7 +109,7 @@ The MCP server registry is a fragmented set of distribution channels, community-
 1. Claude Desktop Extensions package a server, its dependencies, and a manifest into an `.mcpb` bundle that a user can install with a drag-and-drop flow, which means the distance between curiosity and local code execution is now very short.[1]
 2. The current protocol docs tell implementors to treat tools as arbitrary code execution and untrusted surfaces, and the authorization spec exists, but that still leaves users navigating inconsistent real-world auth behavior and uneven host implementations.[2][3][7][8]
 3. The public MCP ecosystem is not one store. It spans Anthropic product surfaces, community-maintained GitHub lists such as `cnych/claude-mcp`, GitHub issue trackers, and ordinary npm or PyPI packaging conventions.[5][6][13]
-4. Anthropic has shipped useful compensating controls, including Claude Code sandboxing and Claude Security, but neither control is the same thing as registry-wide provenance, artifact signing, or reproducible verification.[9][10]
+4. Anthropic has shipped useful compensating controls, including [Claude Code](/blog/cursor-3-2-vs-claude-code-workflow) sandboxing and [Claude Security](/blog/claude-security-beta-devsecops), but neither control is the same thing as registry-wide provenance, artifact signing, or reproducible verification.[9][10]
 
 Most people frame MCP security as a prompt injection story. That is only half right. The larger failure is packaging trust. Once a server looks legitimate, with stars, a clean README, and a one-click installer, the important boundary has already been crossed. The injection may come later. This is the MCP-specific slice of our earlier [[vault/blogs/ai-coding-agent-supply-chain-threat-atlas-2026|AI Coding Agent Supply Chain Threat Atlas]]: the same supply chain logic, compressed into a faster install loop and wrapped in agent tooling.
 
@@ -264,7 +265,7 @@ If you want the defensive workflow behind that answer, start with [[course/secur
 ## References
 
 [1] Claude Desktop Extensions: One-click MCP server installation - Anthropic — https://www.anthropic.com/engineering/desktop-extensions · retrieved 2026-05-12
-[2] Model Context Protocol Specification 2025-03-26 - modelcontextprotocol.io — https://modelcontextprotocol.io/specification/2025-03-26 · retrieved 2026-05-13
+[2] [Model Context Protocol](/blog/mcp-2026-roadmap-explained) Specification 2025-03-26 - modelcontextprotocol.io — https://modelcontextprotocol.io/specification/2025-03-26 · retrieved 2026-05-13
 [3] Authorization - MCP Specification 2025-03-26 - modelcontextprotocol.io — https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization · retrieved 2026-05-13
 [4] Model Context Protocol specification repository - GitHub — https://github.com/modelcontextprotocol/specification · retrieved 2026-05-13
 [5] anthropics/claude-ai-mcp - GitHub — https://github.com/anthropics/claude-ai-mcp · retrieved 2026-05-12

@@ -12,7 +12,8 @@ faq:
     a: "No. acceptEdits covers file edits; MCP tools still need explicit allowedTools grants."
   - q: "Which MCP transport should I use first?"
     a: "Use stdio for local server processes, HTTP for stateless remote APIs, and SSE when the server needs streaming."
-status: awaiting-g0
+status: g0-passed
+last_updated: 2026-06-14
 author: vardaan-koenig
 agent_drafted_by: course-author
 date: 2026-04-30
@@ -37,28 +38,18 @@ sources:
 
 # MCP connector: orchestrating multi-server agents
 
-The Model Context Protocol (MCP) connector in the Claude Agent SDK is a built-in mechanism for attaching external tool servers — databases, APIs, browsers, and code execution environments — to an agent at runtime, using a standard open protocol that Anthropic co-developed with the broader AI ecosystem in 2024. It builds on the [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK migration]] and prepares the tool layer used later by [[course/production-agents-claude-agent-sdk-mcp-connector/04-files-api-code-execution|Files API workflows]] and [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|production controls]].
-
-When Anthropic shipped the [[course/production-agents-claude-agent-sdk-mcp-connector/01-sdk-rename-what-changed|Agent SDK]] rename in April 2026, the MCP connector shipped with it as a first-class feature rather than a configuration hack. The connector supports three transport modes — stdio for local process servers, HTTP for stateless remote APIs, and SSE for streaming remote servers — and handles connection management, tool discovery, and error signaling automatically [1]. As of April 2026, the public MCP server registry lists hundreds of community servers for databases, SaaS tools, and developer infrastructure, though quality varies considerably.
-
-> **Prerequisites**: Chapter 1 (Agent SDK installed, one successful `query()` call)
->
-> **Time**: 50 minutes
->
-> **Learning objectives**: By the end of this chapter you can wire three MCP servers of different transport types into a single agent, scope permissions correctly, and handle connection failures before the agent starts working.
+The MCP connector in the Claude Agent SDK attaches external tool servers — databases, APIs, browsers — to an agent at runtime. Three transport modes (stdio, HTTP, SSE) handle connection management, tool discovery, and error signaling automatically [1]. For a breakdown of which community servers teams are actually deploying, see [[blogs/2026-05-31-mcp-server-adoption-2026|MCP server adoption 2026]].
 
 ## Key facts
 
-1. MCP tools follow the naming pattern `mcp__<server-name>__<tool-name>` — e.g., the GitHub server named `"github"` with a `list_issues` tool becomes `mcp__github__list_issues` [1].
-2. MCP tools require explicit permission via `allowedTools`; `permissionMode: "acceptEdits"` does NOT auto-approve MCP tools [1].
-3. Three transport types: stdio (local processes), HTTP (stateless remote), SSE (streaming remote). A fourth option — SDK MCP servers — runs tools in-process as code [1].
-4. The default connection timeout for stdio servers is 60 seconds; servers that take longer to start fail silently unless you check the `init` system message [1].
-5. Tool search is enabled by default when many MCP tools are configured, withholding tool definitions from the context window and loading only what Claude needs per turn [1].
-6. OAuth2 credentials are handled manually: complete the OAuth flow in your application, then pass the access token via `headers` in the MCP server config [1].
+1. MCP tools are named `mcp__<server-name>__<tool-name>` — e.g., server `"github"` + tool `list_issues` = `mcp__github__list_issues` [1].
+2. MCP tools need explicit `allowedTools` grants; `permissionMode: "acceptEdits"` does NOT cover MCP [1].
+3. stdio: local process; HTTP: stateless remote; SSE: streaming remote. Default stdio timeout: 60 seconds [1].
+4. Tool search is enabled by default — withholds tool definitions from context and loads only what's needed per turn [1].
 
 ## The MCP naming convention
 
-Understanding the naming pattern is the foundation for everything that follows. Given an `mcpServers` config entry with key `"github"`, every tool that server exposes gets prefixed with `mcp__github__`. If the GitHub server exposes `list_issues`, `search_issues`, `create_issue`, and `get_pull_request`, their agent-visible names are:
+Given `mcpServers` key `"github"`, every tool is prefixed `mcp__github__`. Example:
 
 ```
 mcp__github__list_issues
@@ -67,7 +58,13 @@ mcp__github__create_issue
 mcp__github__get_pull_request
 ```
 
-This prefix structure matters because it's what you put in `allowedTools`. The wildcard pattern `mcp__github__*` allows all tools from the `github` server. The explicit pattern `mcp__github__list_issues` allows only that one tool.
+`mcp__github__*` allows all tools from the server; `mcp__github__list_issues` allows only that one.
+
+```takeaways
+- MCP tools follow the naming pattern `mcp__<server-name>__<tool-name>` where the server name is the key used in `mcpServers`, not the package name.
+- Use `mcp__<server>__*` wildcards during development; narrow to specific tool names in production to minimize blast radius.
+- All MCP tools require explicit `allowedTools` grants — `permissionMode: "acceptEdits"` does not auto-approve MCP tool calls.
+```
 
 ## The three transport types
 
@@ -175,7 +172,7 @@ The SDK transparently handles SSE reconnection — you don't need to manage the 
 
 ## Orchestrating three servers in one agent
 
-This is where the real power emerges. You can configure multiple servers with different transport types in a single `mcpServers` dict. The agent uses whichever tools it needs based on the task:
+Multiple servers with different transports go in one `mcpServers` dict:
 
 ```python
 import asyncio
@@ -246,9 +243,15 @@ asyncio.run(investigate_issue(
 ))
 ```
 
+```takeaways
+- Multiple MCP servers with different transport types (stdio, HTTP, SSE) can be configured in a single `mcpServers` dict; the agent uses whichever tools match the task.
+- Check the `mcp_servers` list in the `SystemMessage` init event before the agent starts work to catch connection failures before tokens are wasted.
+- Never hard-code secrets in `mcpServers.env` — use `os.environ["KEY"]` or `process.env.KEY` to pull credentials from environment variables.
+```
+
 ## Why `permissionMode: "acceptEdits"` is not enough
 
-This is the most common production mistake with MCP. The Agent SDK has three permission modes:
+The Agent SDK has three permission modes:
 
 | Mode | What it auto-approves | Auto-approves MCP? |
 |---|---|---|
@@ -256,9 +259,7 @@ This is the most common production mistake with MCP. The Agent SDK has three per
 | `acceptEdits` | File edit and filesystem Bash commands | **No** |
 | `bypassPermissions` | Everything including MCP | Yes (but dangerous) |
 
-`acceptEdits` is useful for coding agents that need to read and write files without prompting. But it explicitly does not cover MCP tools. If you set `acceptEdits` and rely on it to green-light your GitHub server, the agent will see the tools but refuse to call them.
-
-The correct pattern is `allowedTools` with explicit grants:
+`acceptEdits` does not cover MCP. The agent sees the tools but refuses to call them without explicit grants:
 
 ```python
 # WRONG — permissionMode doesn't cover MCP
@@ -275,11 +276,11 @@ options = ClaudeAgentOptions(
 )
 ```
 
-Using `bypassPermissions` to work around this is not the answer — it disables every safety check in the SDK, including approval prompts for destructive Bash operations.
+`bypassPermissions` disables all safety checks — do not use it to work around missing `allowedTools`. The complete production-safe permission model — combining `allowedTools`, `permissionMode`, and cost circuit breakers — is detailed in [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|Chapter 5]].
 
 ## Detecting connection failures
 
-MCP servers fail silently if you don't check for them. The `SystemMessage` with subtype `init` arrives before the agent does any work. It includes a `mcp_servers` list where each entry has a `status` field:
+The `SystemMessage` with subtype `init` arrives before the agent does any work. Check its `mcp_servers` list — servers fail silently otherwise:
 
 ```python
 async for message in query(prompt=..., options=options):
@@ -310,11 +311,17 @@ Common failure causes by transport:
 - **HTTP**: URL unreachable, invalid SSL certificate, wrong endpoint path
 - **SSE**: CORS headers missing on the server, auth token expired
 
-The default connection timeout for stdio servers is 60 seconds. If your server process takes longer than that to respond to its first handshake, it fails. Pre-warm slow servers before starting a query.
+Pre-warm slow stdio servers before querying to avoid the 60-second connection timeout.
+
+```takeaways
+- Check the `mcp_servers` list in the `SystemMessage` init event before the agent does any work — servers fail silently if you don't inspect this event.
+- The three most common stdio failure causes are: `npx` not on PATH, missing environment variables, and servers that take longer than 60 seconds to start.
+- Pre-warm slow server processes before starting a query to avoid the default 60-second connection timeout.
+```
 
 ## Project-level config with `.mcp.json`
 
-For projects where the same servers are always needed, put them in `.mcp.json` at the project root. The SDK loads this file automatically when `project` is in `settingSources` (the default):
+Put shared servers in `.mcp.json` at the project root — the SDK loads it automatically:
 
 ```json
 {
@@ -334,102 +341,27 @@ For projects where the same servers are always needed, put them in `.mcp.json` a
 }
 ```
 
-The `${VAR}` syntax expands environment variables at load time. This keeps credentials out of your code while making the MCP config declarative and version-controllable.
-
----
-
-## The "SMB Workflow" Pattern (May 2026 Update)
-
-As of May 2026, Anthropic has packaged several enterprise-grade connectors specifically for Small Business (SMB) workflows. These are available as a toggle in **Claude Cowork** and can be orchestrated via the Agent SDK.
-
-The "SMB Stack" typically includes:
-- **Financial**: QuickBooks, PayPal
-- **CRM/Growth**: HubSpot, Salesforce
-- **Creative/Docs**: Canva, DocuSign, Google Workspace, Microsoft 365
-
-The power of the Agent SDK is **coordination**. A single `query()` can reconcile PayPal settlements against a QuickBooks ledger and then trigger a HubSpot "deal won" update.
-
-### Example: Automated Payment Reconciliation
-
-```python
-options = ClaudeAgentOptions(
-    mcp_servers={
-        "quickbooks": {"type": "http", "url": "https://api.anthropic.com/connectors/quickbooks"},
-        "paypal": {"type": "http", "url": "https://api.anthropic.com/connectors/paypal"},
-        "hubspot": {"type": "http", "url": "https://api.anthropic.com/connectors/hubspot"},
-    },
-    allowed_tools=["mcp__quickbooks__*", "mcp__paypal__*", "mcp__hubspot__*"]
-)
-
-prompt = "Find all PayPal transactions from yesterday, match them to QuickBooks invoices, and update the associated HubSpot deal to 'Closed Won'."
-```
-
-<Callout type="hot">
-**The "Human-in-the-Loop" requirement.** SMB workflows often involve financial transfers or legal signatures. Never set `permissionMode: "bypassPermissions"` for these agents. Always use `default` or `acceptEdits` (with explicit MCP grants) to ensure the user approves the final reconciliation or signature call.
-</Callout>
-
-<RunPromptCell
-  model="claude-sonnet-4-6"
-  prompt="I've configured an MCP server named 'github' with the @modelcontextprotocol/server-github package. What is the full tool name I should put in allowedTools to allow only the list_issues tool from this server?"
-  expectedOutput="The correct value is `mcp__github__list_issues`. Claude explains the naming pattern: prefix `mcp__`, then the server name as it appears in the mcpServers key, then `__`, then the tool name. A wildcard to allow all GitHub tools would be `mcp__github__*`."
-/>
+`${VAR}` expands environment variables at load time — credentials stay out of code.
 
 ## Tool search for large tool sets
 
-When you configure many MCP servers simultaneously, their tool definitions can fill a significant portion of the context window. The SDK's tool search feature addresses this: it withholds tool definitions from context and loads only the ones Claude needs for each turn, based on a vector similarity search over the tool names and descriptions.
+Tool search is enabled by default: the SDK withholds all tool definitions from context and loads only those relevant to each turn via vector similarity search. With 200 tools across servers, this prevents context exhaustion before any work begins. Disable per-server via `mcpServers` config if a server's tools always need to be in context.
 
-Tool search is enabled by default. You can verify it's active by checking whether long tool definition lists appear in your debug output. If you need to disable it for a specific server (e.g., a server with tools that always need to be in context), configure it in the `mcpServers` entry per the [tool search docs](https://code.claude.com/docs/en/agent-sdk/tool-search).
-
-## OAuth2 authentication
-
-For servers that require OAuth 2.1, the SDK doesn't handle the OAuth flow — that's your application's job. After you complete the flow and receive an access token, pass it as a header:
-
-```python
-access_token = await your_oauth_flow()  # your app handles PKCE/redirect
-
-options = ClaudeAgentOptions(
-    mcp_servers={
-        "oauth-service": {
-            "type": "http",
-            "url": "https://your-service.com/mcp",
-            "headers": {"Authorization": f"Bearer {access_token}"},
-        }
-    },
-    allowed_tools=["mcp__oauth-service__*"],
-)
+```takeaways
+- Tool search is enabled by default; it withholds all tool definitions from context and loads only tools relevant to each turn using vector similarity search.
+- Without tool search, a system with 200 MCP tools sends every definition to Claude on every turn, consuming large amounts of context window before any work begins.
+- Project-level `.mcp.json` files keep MCP config declarative and version-controllable; use `${VAR}` syntax for environment variable expansion.
 ```
-
-Refresh token handling is also your responsibility. Wire token refresh into your session initialization code, not into the agent loop.
-
-<RunPromptCell
-  model="claude-sonnet-4-6"
-  prompt="I see this in my init message: `{'name': 'postgres', 'status': 'failed', 'error': 'connection timeout'}`. What are the three most likely causes and how do I debug each one?"
-  expectedOutput="Claude explains: (1) npx not installed or @modelcontextprotocol/server-postgres package missing — fix: run `npx @modelcontextprotocol/server-postgres --version` manually; (2) DATABASE_URL env var not set or malformed — fix: echo the variable and test with psql; (3) server process takes >60s to start (large package install, slow network) — fix: pre-install the package globally with `npm install -g @modelcontextprotocol/server-postgres` to eliminate startup time."
-/>
 
 ## Hands-on exercise
 
-**Wire a GitHub MCP server + a Postgres MCP server + the Claude Code docs HTTP server into one agent.**
+**Wire GitHub (stdio) + Postgres (stdio) + Claude Code docs (HTTP) into one agent.**
 
-Setup:
-1. Install `@modelcontextprotocol/server-github` and `@modelcontextprotocol/server-postgres` via npx (they auto-install on first use)
-2. Set `GITHUB_TOKEN` to a GitHub personal access token with `repo:read` scope
-3. Set `DATABASE_URL` to a local Postgres instance (e.g., `postgresql://localhost/testdb`) — even a fresh empty DB works
+Setup: `GITHUB_TOKEN` (repo:read), `DATABASE_URL` (any Postgres instance).
 
-Task prompt:
-```
-1. Get the README from the anthropics/claude-code repository on GitHub.
-2. Search the postgres database for any table named 'issues' — if it doesn't exist, say so.
-3. Look up what 'hooks' are in the Agent SDK using the docs MCP server.
-4. Write a three-sentence summary combining what you found.
-```
+Prompt: "Get the README from anthropics/claude-code. Check for an 'issues' table in postgres. Look up 'hooks' in the docs. Write a three-sentence summary."
 
-**Verification**:
-- The `init` message shows all three servers with `status: "connected"`
-- You see at least two different `mcp__*` tool calls in the output (one GitHub, one docs at minimum)
-- The summary references Claude Code and hooks with specific details from the docs
-
-**Estimated time**: 25 minutes
+**Verify**: init shows all 3 servers connected; at least 2 different `mcp__*` tool calls appear. **Est. time**: 25 min
 
 <KnowledgeCheck
   question="Your agent is configured with `permissionMode: 'acceptEdits'` and an MCP server named `db`. You've added the server to `mcpServers` but NOT listed any MCP tools in `allowedTools`. What happens when Claude tries to call `mcp__db__query`?"
@@ -452,11 +384,11 @@ Task prompt:
 
 ## What's next
 
-In [[course/production-agents-claude-agent-sdk-mcp-connector/04-files-api-code-execution|Chapter 4]] you'll complete the agent's IO surface with the Files API and code execution tool. The Files API lets you upload a document once and reference it across multiple Messages calls — but the billing model is counterintuitive. The code execution tool gives your agent a Python sandbox for computation and chart generation, and the output files feed directly back into the Files API for download. Together they form the document and data layer that most production agents need.
+[[course/production-agents-claude-agent-sdk-mcp-connector/04-files-api-code-execution|Chapter 4]] covers the Files API and code execution tool — upload documents once, reference by `file_id`, generate and download chart output.
 
 ## References
 
-[1] Agent SDK MCP Connector — https://docs.anthropic.com/en/docs/claude-code/sdk/sdk-mcp · retrieved 2026-05-14
+[1] Agent SDK MCP Connector — https://code.claude.com/docs/en/sdk/sdk-mcp · retrieved 2026-06-14
 [2] Model Context Protocol specification — https://modelcontextprotocol.io/docs/getting-started/intro · retrieved 2026-04-30
 [3] MCP server registry — https://github.com/modelcontextprotocol/servers · retrieved 2026-04-30
 [4] Claude Agent SDK Overview — https://code.claude.com/docs/en/agent-sdk/overview · retrieved 2026-04-30

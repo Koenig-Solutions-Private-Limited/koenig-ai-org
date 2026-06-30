@@ -9,6 +9,7 @@ import {
   AGENT_DEFAULT_MAX_CONCURRENT_RUNS,
   ISSUE_CONTINUATION_SUMMARY_DOCUMENT_KEY,
   isEnvironmentDriverSupportedForAdapter,
+  type HeartbeatRunStatus,
   type BillingType,
   type EnvironmentLeaseStatus,
   type ExecutionWorkspace,
@@ -38,7 +39,7 @@ import { conflict, HttpError, notFound } from "../errors.js";
 import { logger } from "../middleware/logger.js";
 import { publishLiveEvent } from "./live-events.js";
 import { getRunLogStore, type RunLogHandle } from "./run-log-store.js";
-import { getServerAdapter, runningProcesses } from "../adapters/index.js";
+import { getServerAdapter, requireServerAdapter, runningProcesses } from "../adapters/index.js";
 import type { AdapterExecutionResult, AdapterInvocationMeta, AdapterSessionCodec, UsageSummary } from "../adapters/index.js";
 import { createLocalAgentJwt, inspectLocalAgentJwt } from "../agent-auth-jwt.js";
 import { parseObject, asBoolean, asNumber, appendWithByteCap, MAX_EXCERPT_BYTES } from "../adapters/utils.js";
@@ -109,7 +110,7 @@ import {
   readContinuationAttempt,
 } from "./recovery/index.js";
 import { isAutomaticRecoverySuppressedByPauseHold } from "./recovery/pause-hold-guard.js";
-import { recoveryService } from "./recovery/service.js";
+import { isIntentionallySuppressedStaleTriageIssue, recoveryService } from "./recovery/service.js";
 import { productivityReviewService } from "./productivity-review.js";
 import { withAgentStartLock } from "./agent-start-lock.js";
 import { redactCurrentUserText, redactCurrentUserValue } from "../log-redaction.js";
@@ -240,6 +241,7 @@ function mergeAdapterRecoveryMetadata(input: {
   };
 }
 const RUNNING_ISSUE_WAKE_REASONS_REQUIRING_FOLLOWUP = new Set(["approval_approved"]);
+const BLOCKED_AUTO_CHECKOUT_WAKE_REASONS = new Set(["issue_blockers_resolved"]);
 const SESSIONED_LOCAL_ADAPTERS = new Set([
   "claude_local",
   "codex_local",
@@ -639,6 +641,8 @@ const heartbeatRunListColumns = {
   nextAction: heartbeatRuns.nextAction,
   createdAt: heartbeatRuns.createdAt,
   updatedAt: heartbeatRuns.updatedAt,
+  agentName: agents.name,
+  adapterType: agents.adapterType,
 } as const;
 
 const heartbeatRunListContextColumns = {
@@ -1483,7 +1487,7 @@ function describeSessionResetReason(
   return null;
 }
 
-function shouldAutoCheckoutIssueForWake(input: {
+export function shouldAutoCheckoutIssueForWake(input: {
   contextSnapshot: Record<string, unknown> | null | undefined;
   issueStatus: string | null;
   issueAssigneeAgentId: string | null;
@@ -1507,6 +1511,15 @@ function shouldAutoCheckoutIssueForWake(input: {
   if (!wakeReason) return false;
   if (wakeReason === "issue_comment_mentioned") return false;
   if (wakeReason.startsWith("execution_")) return false;
+  // Deferred/plain comment wakes on blocked issues deliver context only; checkout would drift status to in_progress.
+  if (issueStatus === "blocked" && wakeReason !== "issue_reopened_via_comment") return false;
+
+  // Deliberate blocked status must survive heartbeat finalization and chained
+  // follow-up runs (missing comment retry, liveness continuation, etc.). Only
+  // explicit blocker-resolution wakes may auto-checkout from blocked.
+  if (issueStatus === "blocked") {
+    return BLOCKED_AUTO_CHECKOUT_WAKE_REASONS.has(wakeReason);
+  }
 
   return true;
 }
@@ -1550,6 +1563,17 @@ export function extractWakeCommentIds(
     out.push(value);
   }
   return out;
+}
+
+export function hasExplicitDeferredCommentReopenIntent(
+  deferredContextSeed: Record<string, unknown>,
+  deferredWakeReason: string | null,
+): boolean {
+  if (deferredWakeReason !== "issue_reopened_via_comment") return false;
+  if (deferredContextSeed.resumeIntent === true) return true;
+  if (deferredContextSeed.followUpRequested === true) return true;
+  if (readNonEmptyString(deferredContextSeed.reopenedFrom)) return true;
+  return false;
 }
 
 function mergeWakeCommentIds(...values: Array<unknown>): string[] {
@@ -5607,7 +5631,7 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
         });
       };
 
-      const adapter = getServerAdapter(agent.adapterType);
+      const adapter = requireServerAdapter(agent.adapterType);
       const nowSeconds = Math.floor(Date.now() / 1000);
       const rawAuthToken = adapter.supportsLocalAgentJwt
         ? createLocalAgentJwt(agent.id, agent.companyId, agent.adapterType, run.id)
@@ -6232,15 +6256,12 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
         }
         const deferredCommentIds = extractWakeCommentIds(deferredContextSeed);
         const deferredWakeReason = readNonEmptyString(deferredContextSeed.wakeReason);
-        // Only human/comment-reopen interactions should revive completed issues;
-        // system follow-ups such as retry or cleanup wakes must not reopen closed work.
+        // Only explicit route-level reopen intent should revive terminal issues.
+        // Plain issue_commented deferred wakes deliver comment context without status drift.
         const shouldReopenDeferredCommentWake =
           deferredCommentIds.length > 0 &&
           (issue.status === "done" || issue.status === "cancelled") &&
-          (
-            deferred.requestedByActorType === "user" ||
-            deferredWakeReason === "issue_reopened_via_comment"
-          );
+          hasExplicitDeferredCommentReopenIntent(deferredContextSeed, deferredWakeReason);
         let reopenedActivity: LogActivityInput | null = null;
 
         if (shouldReopenDeferredCommentWake) {
@@ -6384,6 +6405,9 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
       }
 
       if (await isAutomaticRecoverySuppressedByPauseHold(db, issue.companyId, issue.id, treeControlSvc)) {
+        return { kind: "released" as const };
+      }
+      if (await isIntentionallySuppressedStaleTriageIssue(tx, issue.companyId, issue.id, issue.status)) {
         return { kind: "released" as const };
       }
 
@@ -7429,8 +7453,15 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
   }
 
   return {
-    list: async (companyId: string, agentId?: string, limit?: number) => {
+    list: async (companyId: string, agentId?: string, limit?: number, status?: HeartbeatRunStatus) => {
       const safeForLegacyEncoding = await hasUnsafeTextProjectionDatabase();
+      const conditions = [eq(heartbeatRuns.companyId, companyId)];
+      if (agentId) {
+        conditions.push(eq(heartbeatRuns.agentId, agentId));
+      }
+      if (status) {
+        conditions.push(eq(heartbeatRuns.status, status));
+      }
       const query = db
         .select(
           safeForLegacyEncoding
@@ -7446,11 +7477,8 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
               },
         )
         .from(heartbeatRuns)
-        .where(
-          agentId
-            ? and(eq(heartbeatRuns.companyId, companyId), eq(heartbeatRuns.agentId, agentId))
-            : eq(heartbeatRuns.companyId, companyId),
-        )
+        .leftJoin(agents, eq(heartbeatRuns.agentId, agents.id))
+        .where(and(...conditions))
         .orderBy(desc(heartbeatRuns.createdAt));
 
       const rows = limit ? await query.limit(limit) : await query;

@@ -7,6 +7,7 @@ vendor_tag: anthropic
 content_type: article
 status: published
 reading_time_min: 6
+seo_description: "Use Opus 4.7 for harder long-running coding tasks, but budget for tokenizer-driven input growth and benchmark context drift before migrating."
 primary_query: "Claude Opus 4.7 long-running coding tasks"
 contrarian_angle: "The 3× production task gain is real — but a new tokenizer inflates long-session costs 35%, and context drift past step 100 remains unsolved by any of the published benchmarks"
 sources:

@@ -5,4 +5,6 @@ assets_generated:
 tool: python-pptx (manual rework for KOEA-4951)
 slide_count: 7
 produced_at: 2026-05-26T11:27:00Z
+status: g3-passed
+approval_id: c76f28aa-cac2-4d11-8acb-09884f882060
 ---

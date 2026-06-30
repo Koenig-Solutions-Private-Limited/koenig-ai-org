@@ -62,6 +62,17 @@ Per-company config in `COMPANY.md` (org chart) and `CLAUDE.md` (per-product cont
 - **Watchdog must be running** before you cron-schedule any agent — otherwise cost runaway risk.
 - **Don't put secrets in `vault/`** (it's checked in). `.env` only.
 
+## `.env.koenig` editing contract (all agents + CEO)
+
+The operator injects credential blocks into the live `.env.koenig` out-of-band that do **not** exist in any checked-in `.env.koenig.bak-v*` file. Wholesale restore from a backup will silently drop them.
+
+1. Edit `.env.koenig` **additively only** — append new keys, modify specific lines. Never rewrite the file.
+2. Never `cp .env.koenig.bak-v* .env.koenig`. If a rebuild is genuinely unavoidable, `diff` the backup against the live file first and carry forward every key/block present in live but not in backup.
+3. Any block tagged `# ... injected by operator; DO NOT remove ...` is load-bearing. The current load-bearing block is `CAREER_R2_*` (account id, access key, secret, `CAREER_R2_BUCKET=lms`) — consumed by `scripts/career-reconcile.{sh,mjs}`, `scripts/upload-chapter-assets.mjs`, `scripts/academy-status-export.mjs`.
+4. After any env-related recovery, verify load-bearing blocks are still present before declaring done.
+
+Origin: operator note on [KOEA-6012](/KOEA/issues/KOEA-6012) (2026-06-11) after a `bak-v2` restore deleted `CAREER_R2_*` and broke the career-reconciler + academy admin status exporter.
+
 ## When in doubt
 
 - New product? `./scripts/seed-company.sh _template <new-product>`

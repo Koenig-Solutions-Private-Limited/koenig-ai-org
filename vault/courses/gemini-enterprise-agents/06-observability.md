@@ -12,7 +12,7 @@ content_type: chapter
 chapter: 6
 parent_course: gemini-enterprise-agents
 ticket: KOEA-2633
-status: awaiting-g0
+status: g0-blocked
 review_target: content-reviewer
 revision_note: "KOEA-2633 G0 fixes complete: unsupported auto-instrumentation, metric, OTel status, Model Monitoring, pricing, retention, and OTLP claims removed or replaced with sourced Agent Runtime observability and Agent Platform evaluation guidance."
 vendor_tag: google
@@ -70,6 +70,12 @@ If you do not have a deployed agent yet, you can still complete the reasoning ex
 
 A production agent needs more than "the endpoint returned 200." Agent behavior is a chain: user request, orchestrator decision, tool call, sub-agent handoff, model call, policy check, final response. A normal HTTP metric tells you whether the outer request succeeded. It does not tell you whether the agent silently skipped a required tool, called the wrong extractor, or spent 24 seconds waiting on Document AI before returning a fallback answer.
 
+```takeaways
+- GEAP observability is split into four layers: traces for execution path debugging, logs for durable business facts, metrics for trend detection, and evaluation signals for answer-quality measurement.
+- Agent Runtime automatically collects operational metrics (request count, latency, container CPU and memory) for the Reasoning Engine resource; tool-call counts and custom business counters require log-based metrics.
+- The practical rule is to use traces to debug one request, logs to preserve event facts, metrics to detect trend changes, and evaluations to detect answer-quality regressions — they are not interchangeable.
+```
+
 Gemini Enterprise Agent Platform splits the problem across four layers.
 
 **Traces** show the execution path. Google describes a trace as a timeline for a query, composed of spans that represent units of work such as function calls, LLM interactions, or tool executions.[^trace] For your invoice pipeline, the trace is where you see that the Orchestrator called the Extractor, the Extractor called Document AI, and the Validator rejected a schema field.
@@ -113,6 +119,12 @@ For non-ADK frameworks, the setup differs. LangChain and LangGraph agent wrapper
 ## Read the trace DAG, not just the top-line latency
 
 Cloud Trace and the Agent Platform Traces tab let you inspect a session or span and view a directed acyclic graph of spans, inputs/outputs, and metadata attributes.[^trace] That DAG is the fastest way to debug a multi-agent request because it preserves the causal path.
+
+```takeaways
+- A trace DAG immediately distinguishes whether a slow request is caused by model reasoning, a tool call, a sub-agent handoff, or policy enforcement — information that top-level latency metrics cannot provide.
+- Missing expected downstream spans in a trace (e.g., the Validator not appearing after the Extractor) are as informative as slow spans, because they reveal the agent's actual execution path differed from the intended one.
+- Every trace ID from a production incident should be copied into evaluation cases and incident notes to connect operations directly to the improvement workflow.
+```
 
 Suppose a customer uploads an invoice and the system takes 31 seconds before returning "unable to validate." A flat log search gives you several events. The trace shows the shape:
 
@@ -213,6 +225,12 @@ The strongest pattern is to log identifiers that let authorized responders join 
 
 Latency, error rate, and trace topology catch runtime failures. They do not prove the agent gave a correct answer. A fast wrong answer is still wrong.
 
+```takeaways
+- Runtime metrics (latency, error rate, request count) can look healthy while the agent silently skips a required tool or approves work it should have rejected, making evaluation metrics a separate and necessary quality layer.
+- Agent Platform supports three evaluation modes: Rapid Evaluation for local iteration, Test Case Evaluation for CI/CD regression, and Online Monitors for continuous production quality tracking — each serves a distinct lifecycle stage.
+- Online Monitors run on a scheduled loop, sampling live traces and evaluating them against quality metrics like hallucination rate and tool-use quality, then writing results back to Cloud Logging and Cloud Monitoring for visibility.
+```
+
 Agent Platform evaluation gives you the quality layer. Google describes three evaluation types:
 
 - Rapid Evaluation for frequent development checks.
@@ -284,6 +302,12 @@ Google's evaluation-results docs also describe failure clusters and Automatic Lo
 ## Use failure clusters to choose the next fix
 
 A weak evaluation report says "score dropped from 0.89 to 0.74." A useful evaluation report says "score dropped because the Validator ignores missing PO matches when the supplier is a strategic vendor."
+
+```takeaways
+- Agent Platform groups evaluation failures into semantic clusters and predefined loss patterns (tool calling, tool output handling, instruction following, hallucination), making systemic causes visible without reading individual bad traces.
+- Each failure cluster should be treated as a product bug assigned to one owner with one fix type: prompt/tool policy, tool wrapper/schema validation, grounding, gateway policy tuning, or tool timeout/retry.
+- Prompt optimization should only happen after cluster diagnosis — if the failure is a bad tool timeout or a missing schema check, prompt optimization is theater and the wrong fix.
+```
 
 Failure clusters are the bridge. After an evaluation run, Agent Platform can group failures into semantic clusters and loss patterns so you can see systemic causes instead of reading 100 individual bad traces.[^clusters]
 

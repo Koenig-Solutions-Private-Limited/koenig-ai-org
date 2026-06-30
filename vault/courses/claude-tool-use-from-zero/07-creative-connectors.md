@@ -54,9 +54,15 @@ The creative connectors are a suite of nine integrations launched by Anthropic o
 
 Most AI providers chase enterprise CRM and ERP integrations. Anthropic’s pivot to creative tools is non-obvious but brilliant for three reasons:
 
-1.  **High Syntax Barrier**: Writing `bpy` (Blender Python) or ExtendScript (Adobe) is notoriously difficult for humans but easy for LLMs. This creates an immediate "aha!" moment that checking a Jira ticket doesn't.
+1.  **High Syntax Barrier**: Writing `bpy` (Blender Python) or ExtendScript (Adobe) is notoriously difficult for humans but easy for LLMs. This creates an immediate "aha!" moment that checking a Jira ticket doesn’t.
 2.  **Low Risk, High Visibility**: A bug in a generative 3D script is a creative glitch; a bug in a Salesforce integration is a business catastrophe. Creative tools provide a safe sandbox to stress-test MCP in production.
 3.  **Synthesizing the Pipeline**: Creative work is rarely done in one app. By winning the "bridge" between Blender and Photoshop, Anthropic positions Claude as the OS for the creative studio, not just another chat box.
+
+```takeaways
+- Creative tools have a high syntax barrier (bpy, ExtendScript) that makes LLM assistance immediately valuable while keeping failure risk low.
+- A bug in a generative 3D script is a creative glitch; a bug in a CRM integration is a business incident — creative apps are safer early production targets for MCP.
+- Positioning Claude as a cross-app bridge is a distribution strategy: the model becomes the interface to the entire creative studio stack, not a single chat feature.
+```
 
 This signals that Anthropic view MCP as a **distribution play**. By becoming the default way humans interact with complex, fragmented software suites, they bypass the need for every software vendor to build their own AI UI. For a primer on the protocol itself, see [[course/mcp-from-first-principles-to-production/01-why-mcp-exists]].
 
@@ -66,6 +72,12 @@ This signals that Anthropic view MCP as a **distribution play**. By becoming the
 
 
 The Blender connector is the most technically transparent of Anthropic's nine creative integrations. Unlike connectors that wrap proprietary APIs, the [Blender MCP server](https://www.anthropic.com/news/claude-for-creative-work) exposes Blender's native Python API (`bpy`) directly to Claude. That means every technique Claude uses here is a real `bpy` pattern you can learn, copy, and extend.
+
+```takeaways
+- The Blender MCP server exposes the native `bpy` Python API, so Claude's tool calls are real Blender patterns that execute against the live scene, not a simplified wrapper.
+- Claude never touches your filesystem directly — it sends a tool call with Python code, and the local MCP server executes it inside Blender's interpreter.
+- Because the connector runs locally, creative assets stay on your machine while only structured commands and results cross the MCP boundary.
+```
 
 ### How the connection works
 
@@ -307,6 +319,12 @@ For industrial designers and architects, the Fusion and SketchUp connectors prov
 ---
 
 ## Which connector should you use?
+
+```takeaways
+- Integration depth ranges from high (Blender's full Python API, Autodesk's command API) to medium (Adobe's multi-app pipeline, Ableton's metadata layer) — match the connector to the task complexity.
+- Ableton and Splice focus on session management and asset discovery rather than direct audio generation, making them useful for documentation and search workflows.
+- Resolume connectors target live performance automation, not post-production — clip and effect triggering is the primary use case.
+```
 
 | Domain | Tool | Integration Depth | Best for... |
 |---|---|---|---|

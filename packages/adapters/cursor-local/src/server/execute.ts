@@ -46,6 +46,9 @@ import { hasCursorTrustBypassArg } from "../shared/trust.js";
 
 const __moduleDir = path.dirname(fileURLToPath(import.meta.url));
 
+/** Conservative single-argument limit before Cursor CLI invocation (see KOEA-5382). */
+const MAX_CURSOR_PROMPT_ARG_CHARS = 200_000;
+
 function firstNonEmptyLine(text: string): string {
   return (
     text
@@ -421,7 +424,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     if (autoTrustEnabled) {
       notes.push("Auto-added --yolo to bypass interactive prompts.");
     }
-    notes.push("Prompt is piped to Cursor via stdin.");
+    notes.push("Prompt is passed to Cursor as the final positional argument.");
     if (!instructionsFilePath) return notes;
     if (instructionsPrefix.length > 0) {
       notes.push(
@@ -473,18 +476,24 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     heartbeatPromptChars: renderedPrompt.length,
   };
 
-  const buildArgs = (resumeSessionId: string | null) => {
+  const buildArgs = (resumeSessionId: string | null, promptArg: string) => {
     const args = ["-p", "--output-format", "stream-json", "--workspace", effectiveExecutionCwd];
     if (resumeSessionId) args.push("--resume", resumeSessionId);
     if (model) args.push("--model", model);
     if (mode) args.push("--mode", mode);
     if (autoTrustEnabled) args.push("--yolo");
     if (extraArgs.length > 0) args.push(...extraArgs);
+    args.push(promptArg);
     return args;
   };
 
   const runAttempt = async (resumeSessionId: string | null) => {
-    const args = buildArgs(resumeSessionId);
+    if (prompt.length > MAX_CURSOR_PROMPT_ARG_CHARS) {
+      throw new Error(
+        `Cursor prompt exceeds ${MAX_CURSOR_PROMPT_ARG_CHARS} characters (${prompt.length}); shorten the prompt or split the task.`,
+      );
+    }
+    const args = buildArgs(resumeSessionId, prompt);
     if (onMeta) {
       await onMeta({
         adapterType: "cursor",
@@ -528,7 +537,6 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
       env,
       timeoutSec,
       graceSec,
-      stdin: prompt,
       onSpawn,
       onLog: async (stream, chunk) => {
         if (stream !== "stdout") {

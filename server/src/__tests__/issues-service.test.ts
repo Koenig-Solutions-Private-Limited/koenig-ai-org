@@ -1773,6 +1773,142 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
     ).rejects.toMatchObject({ status: 422 });
   });
 
+  it("blocks metadata-guarded blocked issues from activating via update or checkout", async () => {
+    const companyId = randomUUID();
+    const assigneeAgentId = randomUUID();
+    await db.insert(companies).values({
+      id: companyId,
+      name: "Paperclip",
+      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      requireBoardApprovalForNewAgents: false,
+    });
+    await db.insert(agents).values({
+      id: assigneeAgentId,
+      companyId,
+      name: "CodexCoder",
+      role: "engineer",
+      status: "active",
+      adapterType: "codex_local",
+      adapterConfig: {},
+      runtimeConfig: {},
+      permissions: {},
+    });
+
+    const blockedId = randomUUID();
+    await db.insert(issues).values({
+      id: blockedId,
+      companyId,
+      title: "Metadata-guarded blocked issue",
+      status: "blocked",
+      priority: "medium",
+      assigneeAgentId,
+      metadata: {
+        unblock_owner: "chief-content",
+        unblock_action: "repair frontmatter",
+        status_drift_child_issue: "KOEA-3676",
+      },
+    });
+
+    await expect(svc.update(blockedId, { status: "in_progress" })).rejects.toMatchObject({
+      status: 409,
+      details: expect.objectContaining({ code: "blocked_activation_guard", source: "issue.update" }),
+    });
+    await expect(svc.checkout(blockedId, assigneeAgentId, ["blocked"], randomUUID())).rejects.toMatchObject({
+      status: 409,
+      details: expect.objectContaining({ code: "blocked_activation_guard", source: "issue.checkout" }),
+    });
+  });
+
+  it("allows explicit unblock by metadata change before activation", async () => {
+    const companyId = randomUUID();
+    const assigneeAgentId = randomUUID();
+    await db.insert(companies).values({
+      id: companyId,
+      name: "Paperclip",
+      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      requireBoardApprovalForNewAgents: false,
+    });
+    await db.insert(agents).values({
+      id: assigneeAgentId,
+      companyId,
+      name: "CodexCoder",
+      role: "engineer",
+      status: "active",
+      adapterType: "codex_local",
+      adapterConfig: {},
+      runtimeConfig: {},
+      permissions: {},
+    });
+
+    const blockedId = randomUUID();
+    await db.insert(issues).values({
+      id: blockedId,
+      companyId,
+      title: "Blocked issue",
+      status: "blocked",
+      priority: "medium",
+      assigneeAgentId,
+      metadata: {
+        unblock_owner: "chief-content",
+        unblock_action: "repair frontmatter",
+      },
+    });
+
+    const resumed = await svc.update(blockedId, {
+      status: "in_progress",
+      metadata: {
+        unblock_owner: "chief-content",
+        unblock_action: "completed",
+      },
+    });
+    expect(resumed?.status).toBe("in_progress");
+  });
+
+  it("still allows activation after first-class blockers resolve", async () => {
+    const companyId = randomUUID();
+    const assigneeAgentId = randomUUID();
+    await db.insert(companies).values({
+      id: companyId,
+      name: "Paperclip",
+      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      requireBoardApprovalForNewAgents: false,
+    });
+    await db.insert(agents).values({
+      id: assigneeAgentId,
+      companyId,
+      name: "CodexCoder",
+      role: "engineer",
+      status: "active",
+      adapterType: "codex_local",
+      adapterConfig: {},
+      runtimeConfig: {},
+      permissions: {},
+    });
+
+    const blockerId = randomUUID();
+    const blockedId = randomUUID();
+    await db.insert(issues).values([
+      { id: blockerId, companyId, title: "Blocker", status: "todo", priority: "medium" },
+      {
+        id: blockedId,
+        companyId,
+        title: "Blocked dependent",
+        status: "blocked",
+        priority: "medium",
+        assigneeAgentId,
+      },
+    ]);
+    await svc.update(blockedId, { blockedByIssueIds: [blockerId] });
+
+    await expect(svc.checkout(blockedId, assigneeAgentId, ["blocked"], randomUUID())).rejects.toMatchObject({
+      status: 422,
+    });
+
+    await svc.update(blockerId, { status: "done" });
+    const resumed = await svc.checkout(blockedId, assigneeAgentId, ["blocked"], randomUUID());
+    expect(resumed.status).toBe("in_progress");
+  });
+
   it("wakes parents only when all direct children are terminal", async () => {
     const companyId = randomUUID();
     const assigneeAgentId = randomUUID();

@@ -46,8 +46,10 @@ export function buildCodexExecArgs(
     asBoolean(record.dangerouslyBypassSandbox, false),
   );
   const extraArgs = readExtraArgs(record);
+  const hasSkipGitRepoCheck = extraArgs.includes("--skip-git-repo-check");
 
   const args = ["exec", "--json"];
+  if (!hasSkipGitRepoCheck) args.push("--skip-git-repo-check");
   if (search) args.unshift("--search");
   if (bypass) args.push("--dangerously-bypass-approvals-and-sandbox");
   if (model) args.push("--model", model);

@@ -1,0 +1,301 @@
+{
+  "course_slug": "mobile-app-marketing-performance",
+  "toc_locked": true,
+  "chapters": [
+    {
+      "num": 1,
+      "slug": "mobile-marketing-fundamentals-travel-tech",
+      "title": "Mobile App Marketing Fundamentals & the Travel-Tech Context",
+      "owns": [
+        "mobile marketing funnel stages: awareness → install → activation → retention → revenue",
+        "funnel-stage KPI mapping: what metric belongs to each stage and why",
+        "DAU/MAU ratio, install-to-event rate, ROAS, LTV — definitions and what each signals about campaign health",
+        "role distinction: organic ASO vs paid UA vs in-app engagement within a single growth strategy",
+        "primary mobile marketing channels: app stores, push, in-app messages, paid social, deep links — overview only",
+        "tool landscape overview per channel: MMPs, engagement platforms, ASO tools, paid campaign managers",
+        "travel-tech app context: how EaseMyTrip's funnel and revenue model shapes mobile KPI priorities",
+        "mobile ecosystem overview: iOS App Store vs Google Play distribution mechanics"
+      ],
+      "does_not_cover": [
+        "ASO keyword metadata and creative optimization — ch2 owns all store listing tactics",
+        "MMP SDK integration and attribution event taxonomy — ch3 owns all MMP setup",
+        "push notification and in-app message campaign creation — ch4 owns campaign build",
+        "GA4 property configuration and GTM for apps — ch5 owns GA4/GTM instrumentation",
+        "Google App Campaigns and Meta App Ads campaign setup — ch6 owns paid UA execution",
+        "unified dashboard construction and reporting templates — ch7 owns cross-source reporting"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "correct order of the five mobile marketing funnel stages and which KPI belongs to each",
+        "difference between DAU/MAU ratio and install-to-event rate as health signals",
+        "what ROAS measures and why it differs from CPI as a campaign success metric",
+        "which channel — ASO, paid UA, or in-app engagement — impacts the activation stage most directly",
+        "why LTV is the north-star metric for a subscription-model travel app vs a transactional one"
+      ],
+      "notebooklm_source_focus": [
+        "mobile app marketing funnel and growth strategy framework 2025–2026",
+        "DAU/MAU, LTV, ROAS, CPI mobile KPI definitions and benchmarks",
+        "iOS App Store vs Google Play distribution mechanics and market share 2026",
+        "travel-tech mobile app marketing case studies and funnel benchmarks"
+      ],
+      "dossier_path": "vault/research/courses/mobile-app-marketing-performance/01-mobile-marketing-fundamentals-travel-tech.md"
+    },
+    {
+      "num": 2,
+      "slug": "aso-ranking-converting-ios-google-play",
+      "title": "App Store Optimization (ASO): Ranking & Converting on iOS and Google Play",
+      "owns": [
+        "keyword-optimized metadata for App Store: title (30 chars), subtitle (30 chars), keyword field (100 chars) — 2026 indexing rules",
+        "keyword-optimized metadata for Google Play: title (30 chars), short description (80 chars), long description (4000 chars) — 2026 indexing rules",
+        "iOS vs Google Play metadata differences: indexing mechanics, field weights, and limits",
+        "screenshot set design: 3-second visual test, OCR-readable captions indexed by Apple, device-framing conventions",
+        "app preview video production: autoplay standards, first-3-second retention rule, localization considerations",
+        "Google Play Store Listing Experiments: setup, statistical significance thresholds, and interpreting test results",
+        "Apple Custom Product Pages: creation, audience targeting, and A/B testing creatives",
+        "review solicitation timing: correct in-app moment (post-positive action) vs negative-friction moments to avoid",
+        "responding to negative reviews: response templates, escalation criteria, and impact on rating",
+        "rating trend monitoring via App Store Connect and Google Play Console dashboards",
+        "ASO tools landscape: Sensor Tower, AppFollow, AppTweak — use cases and data types"
+      ],
+      "does_not_cover": [
+        "mobile marketing funnel overview and channel role distinction — ch1 owns fundamentals",
+        "paid UA campaigns that drive traffic to store listings — ch6 owns paid campaign execution",
+        "MMP tracking links for measuring install attribution from ASO traffic — ch3 owns attribution setup",
+        "deep links that route post-install users to specific in-app screens — ch4 owns deep link configuration",
+        "GA4 reporting on install sources and conversion funnels — ch5 owns GA4 instrumentation"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "maximum character limits for the iOS title, subtitle, and keyword fields — and which fields Apple indexes",
+        "how Google Play's short description differs from the iOS subtitle in terms of indexing weight",
+        "what the 3-second visual test means for screenshot design and how OCR captions affect App Store indexing",
+        "how to determine statistical significance in a Google Play Store Listing Experiment",
+        "the correct in-app moment to trigger a rating prompt and why post-booking is better than post-launch"
+      ],
+      "notebooklm_source_focus": [
+        "App Store Connect and Google Play Console metadata guidelines 2026",
+        "iOS App Store keyword field indexing mechanics and 2026 algorithm updates",
+        "Google Play Store Listing Experiments setup and statistical analysis guide",
+        "Apple Custom Product Pages creation and A/B testing documentation",
+        "ASO screenshot design best practices and OCR caption indexing for iOS 2026"
+      ],
+      "dossier_path": "vault/research/courses/mobile-app-marketing-performance/02-aso-ranking-converting-ios-google-play.md"
+    },
+    {
+      "num": 3,
+      "slug": "mobile-attribution-appsflyer-branch",
+      "title": "Mobile Attribution with AppsFlyer & Branch: Setup, Events & Privacy",
+      "owns": [
+        "MMP selection criteria: AppsFlyer vs Branch feature comparison for a travel-tech use case",
+        "AppsFlyer SDK integration: iOS and Android setup, initialization, and first-launch event verification",
+        "Branch SDK integration: URI scheme, Universal Links, and App Links configuration",
+        "tracking link structure: UTM parameters, campaign naming conventions, ad network configuration",
+        "campaign source configuration for Google UAC, Meta App Ads, and organic — correct naming taxonomy",
+        "in-app event taxonomy design: defining 5–10 critical events (search, booking-initiated, purchase, etc.) mapped to business outcomes",
+        "event verification: confirming events fire correctly in the MMP dashboard and event log",
+        "attribution model comparison: last-click vs multi-touch vs SKAN/privacy-modeled data — what each can and cannot assert",
+        "iOS ATT (App Tracking Transparency) prompt: timing, consent rates, and impact on attribution completeness",
+        "Android Privacy Sandbox: topics API, protected audience, and attribution API implications for MMP data",
+        "SKAN (StoreKit Ad Network) attribution: postback windows, conversion value schema, limitations",
+        "attribution fraud detection: install flooding signal patterns and click injection signal patterns",
+        "fraud prevention settings in AppsFlyer: Protect360 configuration and block rules",
+        "MMP attribution report reading: channel breakdown, cohort view, and data confidence levels"
+      ],
+      "does_not_cover": [
+        "mobile marketing funnel and KPI definitions — ch1 owns those",
+        "GA4 property setup and Firebase-linked audiences — ch5 owns GA4/Firebase instrumentation",
+        "Google App Campaign and Meta App Ads campaign creation — ch6 owns paid UA campaign build",
+        "push notification deep links routing users post-install — ch4 owns post-install engagement deep links",
+        "unified cross-source dashboard joining MMP + GA4 data — ch7 owns the reporting layer",
+        "ASO metadata and store listing optimization — ch2 owns store presence"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "three required components of a correctly structured AppsFlyer tracking link for a Google UAC campaign",
+        "difference between last-click attribution and SKAN privacy-modeled attribution — what each cannot assert",
+        "what install flooding looks like in an MMP attribution report and which Protect360 setting blocks it",
+        "how iOS ATT consent rate affects MMP data completeness and what modeled attribution fills the gap",
+        "why a 'search' in-app event needs to be mapped to a business outcome and not just tracked as a pageview"
+      ],
+      "notebooklm_source_focus": [
+        "AppsFlyer SDK integration guide iOS and Android 2025–2026",
+        "Branch SDK setup Universal Links and App Links configuration guide",
+        "iOS App Tracking Transparency ATT prompt best practices and consent rates 2026",
+        "SKAdNetwork SKAN attribution conversion value schema and postback windows 2026",
+        "AppsFlyer Protect360 fraud detection install flooding and click injection guide"
+      ],
+      "dossier_path": "vault/research/courses/mobile-app-marketing-performance/03-mobile-attribution-appsflyer-branch.md"
+    },
+    {
+      "num": 4,
+      "slug": "push-notifications-in-app-messaging",
+      "title": "Push Notifications & In-App Messaging: Designing Campaigns That Convert",
+      "owns": [
+        "mobile engagement platform selection: CleverTap, MoEngage, and Firebase Cloud Messaging — capability comparison",
+        "user cohort segmentation for push: behavioral, lifecycle-stage, and demographic dimensions",
+        "push notification campaign creation: audience targeting, message copy, scheduling, and send-time optimization",
+        "in-app message formats: banner, modal, and full-screen — when to use each and CTA design",
+        "lifecycle trigger configuration: user action triggers, time-based triggers, and event-sequence triggers for in-app messages",
+        "deep link configuration within push and in-app messages: routing to specific in-app screens (e.g., flight search results)",
+        "deferred deep links for re-engagement: how they differ from standard deep links in push context",
+        "push notification permission prompt timing and permission rate benchmarks by platform",
+        "opt-out rate benchmarks by channel and message frequency",
+        "delivery rate and click-to-open rate benchmarks for mobile push",
+        "alert threshold setup: configuring opt-out rate alerts in CleverTap/MoEngage",
+        "A/B testing push copy and timing in engagement platforms"
+      ],
+      "does_not_cover": [
+        "deep link technical setup (URI schemes, Universal Links) — ch3 owns MMP and SDK-level deep link infrastructure",
+        "mobile marketing funnel and DAU/MAU definitions — ch1 owns fundamentals",
+        "GA4 Firebase-linked audiences used for retargeting — ch5 owns GA4 audience export",
+        "paid re-engagement campaigns on Google or Meta — ch6 owns paid re-engagement campaign creation",
+        "MMP attribution of push-driven installs or re-installs — ch3 owns attribution setup",
+        "ASO or store listing optimization — ch2 owns store presence"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "difference between a lifecycle trigger and a time-based trigger for an in-app message",
+        "when to use a deferred deep link in a push notification vs a standard deep link",
+        "industry benchmark for push opt-out rate that should trigger a campaign frequency review",
+        "which engagement platform capability distinguishes CleverTap from plain Firebase Cloud Messaging for segmentation",
+        "how to A/B test push notification send time in a mobile CRM platform without splitting the user cohort"
+      ],
+      "notebooklm_source_focus": [
+        "CleverTap and MoEngage push notification campaign setup and segmentation documentation 2025–2026",
+        "Firebase Cloud Messaging FCM push notification setup guide",
+        "mobile push notification benchmarks opt-out rates delivery rates click-to-open 2026",
+        "deep links within push notifications routing and deferred deep link setup",
+        "in-app messaging formats banner modal full-screen best practices and CTA design"
+      ],
+      "dossier_path": "vault/research/courses/mobile-app-marketing-performance/04-push-notifications-in-app-messaging.md"
+    },
+    {
+      "num": 5,
+      "slug": "mobile-analytics-ga4-gtm",
+      "title": "Mobile Campaign Analytics: Google Analytics 4 & GTM for Apps",
+      "owns": [
+        "GA4 property creation for a mobile app: data stream setup, Firebase project linking, and app registration",
+        "GA4 DebugView for mobile: verifying custom events flow in from the app",
+        "custom event configuration in GA4: naming conventions, parameter definitions, and event registration",
+        "Google Tag Manager Firebase tag type: deploying and updating event tracking without a new app release",
+        "GTM container setup for mobile (Firebase tag type): how it differs from web GTM containers",
+        "Firebase-linked audiences in GA4: building behavioral audiences (e.g., searched but did not book)",
+        "audience export from GA4 to Google Ads for retargeting — audience eligibility and size thresholds",
+        "GA4 Exploration reports: building funnels that combine channel acquisition, in-app steps, and revenue",
+        "channel-level ROAS calculation in GA4 using acquisition + revenue exploration",
+        "GA4 vs MMP attribution: understanding the relationship and why numbers differ",
+        "Firebase Analytics automatic events: what fires by default vs what requires custom instrumentation"
+      ],
+      "does_not_cover": [
+        "MMP SDK setup, AppsFlyer/Branch event taxonomy, and attribution models — ch3 owns MMP",
+        "push notification and in-app messaging campaigns — ch4 owns engagement tools",
+        "Google App Campaigns and Meta App Ads campaign creation — ch6 owns paid UA",
+        "unified cross-source dashboard joining GA4 + AppsFlyer data in Looker Studio — ch7 owns the unified reporting layer",
+        "ASO or store listing metadata — ch2 owns store optimization",
+        "audience export via MMP (AppsFlyer audiences) — ch7 uses MMP cohort data for reporting; ch3 owns MMP setup; ch5 owns GA4-native audience export only"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "how to link a Firebase project to a GA4 property and why this step is required before data streams activate",
+        "what the GTM Firebase tag type enables that a native SDK call does not — and its limitation",
+        "how to build a GA4 Exploration report that shows the acquisition-to-purchase funnel across channels",
+        "minimum audience size required before a GA4 Firebase-linked audience can be exported to Google Ads",
+        "why GA4-attributed installs differ from MMP-attributed installs and which source to use for budget decisions"
+      ],
+      "notebooklm_source_focus": [
+        "GA4 mobile app data stream and Firebase project linking setup guide 2025–2026",
+        "Google Tag Manager Firebase tag type for mobile event tracking documentation",
+        "GA4 Firebase-linked audiences export to Google Ads for retargeting guide",
+        "GA4 Exploration reports funnel analysis and channel ROAS calculation 2026",
+        "GA4 DebugView mobile app custom event validation documentation"
+      ],
+      "dossier_path": "vault/research/courses/mobile-app-marketing-performance/05-mobile-analytics-ga4-gtm.md"
+    },
+    {
+      "num": 6,
+      "slug": "paid-ua-google-app-campaigns-meta",
+      "title": "Paid Mobile User Acquisition: Google App Campaigns & Meta App Ads",
+      "owns": [
+        "Google App Campaign structure: installs objective, asset groups — headlines, descriptions, images, HTML5, and video",
+        "Firebase/GA4 conversion event linking to Google App Campaign for install attribution",
+        "Google App Campaign bidding: tCPI vs tCPA post-install — when to use each and how to set targets",
+        "asset group quality signals: what the Google Ads dashboard shows about creative performance",
+        "Meta App Ads campaign structure: app installs objective, ad set, and ad-level creative",
+        "SKAdNetwork integration for Meta App Ads: enabling SKAN, verifying postback receipt in AppsFlyer",
+        "App Event Optimization (AEO) in Meta beyond installs: configuring purchase or booking-initiated as the optimization goal",
+        "re-engagement campaign setup on Google (re-engagement app campaign type) or Meta (app re-engagement objective)",
+        "deferred deep links in re-engagement campaigns: routing lapsed users to a specific in-app flow",
+        "MMP cohort data usage for re-engagement targeting: identifying lapsed user segments via AppsFlyer cohort reports",
+        "campaign diagnosis methodology: using MMP install-to-event funnel to pinpoint creative vs audience vs landing-experience drop-offs",
+        "two creative adjustment tactics and two audience adjustment tactics backed by funnel data",
+        "CPI, CPM, CTR, ITR (install-to-event rate) as paid UA diagnostic metrics"
+      ],
+      "does_not_cover": [
+        "MMP SDK setup and AppsFlyer/Branch attribution configuration — ch3 owns MMP infrastructure",
+        "GA4 Firebase-linked audience creation — ch5 owns GA4 audience build; ch6 imports and uses those audiences",
+        "push notification re-engagement campaigns — ch4 owns owned-channel re-engagement",
+        "unified reporting dashboard across channels — ch7 owns the cross-source reporting layer",
+        "ASO optimization for store listing that paid traffic lands on — ch2 owns store listing quality",
+        "Google App Campaign asset creative production guidelines — ch6 covers asset group structure; creative production is out of scope"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "which Firebase/GA4 conversion event type Google App Campaigns require and how to link it in the Google Ads UI",
+        "what SKAdNetwork postback receipt in AppsFlyer confirms about a Meta App Ads campaign",
+        "difference between Google App Campaign tCPI bidding and tCPA post-install bidding and when to graduate between them",
+        "how to identify that a re-engagement campaign underperformance is a creative issue vs an audience targeting issue using MMP funnel data",
+        "what App Event Optimization (AEO) for purchase means for Meta campaign delivery vs standard app installs objective"
+      ],
+      "notebooklm_source_focus": [
+        "Google App Campaigns installs and tCPA bidding setup guide 2025–2026",
+        "Meta App Ads SKAdNetwork integration and App Event Optimization documentation 2026",
+        "AppsFlyer cohort analysis for lapsed user re-engagement targeting guide",
+        "Google App Campaign re-engagement campaign type setup and deferred deep links",
+        "Meta App Ads campaign diagnosis using MMP install-to-event funnel data"
+      ],
+      "dossier_path": "vault/research/courses/mobile-app-marketing-performance/06-paid-ua-google-app-campaigns-meta.md"
+    },
+    {
+      "num": 7,
+      "slug": "measuring-reporting-performance-end-to-end",
+      "title": "Measuring & Reporting Mobile Marketing Performance End-to-End",
+      "owns": [
+        "mobile marketing KPI framework design: acquisition (CPI, organic install share), activation (D1 retention, onboarding completion), monetization (ROAS, LTV), ASO health (keyword rank, CVR)",
+        "AARRR framework applied to mobile: mapping each metric to the Acquisition-Activation-Retention-Revenue-Referral stage",
+        "data export from AppsFlyer: cohort report export methodology and field definitions",
+        "data export from GA4: behavioral data export to BigQuery or CSV for cross-source analysis",
+        "joining AppsFlyer cohort data with GA4 behavioral data: channel-level LTV comparison across three or more acquisition sources",
+        "Google Looker Studio dashboard construction: connecting AppsFlyer and GA4 data sources",
+        "weekly performance report template design: traffic-light thresholds for budget reallocation signals",
+        "KPI threshold setting: what constitutes red/amber/green for each metric tier",
+        "optimization recommendation framework: how to structure a data-backed recommendation covering ASO + paid spend + push",
+        "worked example: diagnosing a 15% booking decline scenario using the dashboard — root-cause identification across channels",
+        "reporting cadence: weekly optimization review vs monthly channel strategy review vs quarterly KPI reset"
+      ],
+      "does_not_cover": [
+        "AppsFlyer SDK setup and attribution model configuration — ch3 owns MMP infrastructure",
+        "GA4 property setup, Firebase linking, and Exploration reports — ch5 owns GA4 instrumentation",
+        "paid campaign execution on Google or Meta — ch6 owns campaign setup and optimization",
+        "push notification campaign creation — ch4 owns engagement campaign build",
+        "ASO metadata writing and store listing experiments — ch2 owns ASO tactics",
+        "MMP fraud detection and SKAN schema — ch3 owns attribution integrity; ch7 reads clean attribution output only"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "which four metric categories belong in a complete mobile KPI framework and one metric example from each",
+        "how to calculate channel-level LTV using joined AppsFlyer cohort data and GA4 behavioral data",
+        "what a traffic-light threshold on opt-out rate in the weekly report should trigger as a next action",
+        "in the 15% booking decline scenario, how to determine whether the root cause is ASO, paid UA, or in-app engagement",
+        "difference between a weekly optimization report and a monthly channel strategy review in terms of decisions made"
+      ],
+      "notebooklm_source_focus": [
+        "mobile marketing KPI framework AARRR and ROAS-to-LTV measurement best practices 2026",
+        "AppsFlyer cohort report export and channel LTV analysis methodology",
+        "Google Looker Studio data source connectors for AppsFlyer and GA4 dashboard templates",
+        "weekly mobile marketing performance report templates and traffic-light threshold design",
+        "mobile marketing attribution data joining BigQuery GA4 and MMP cross-source analysis"
+      ],
+      "dossier_path": "vault/research/courses/mobile-app-marketing-performance/07-measuring-reporting-performance-end-to-end.md"
+    }
+  ]
+}

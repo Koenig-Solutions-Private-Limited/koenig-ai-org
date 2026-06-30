@@ -1,0 +1,240 @@
+{
+  "course_slug": "technical-seo-fundamentals",
+  "toc_locked": true,
+  "chapters": [
+    {
+      "num": 1,
+      "slug": "crawlability-indexation-fundamentals",
+      "title": "Crawlability, Indexation & Site Architecture Fundamentals",
+      "owns": [
+        "robots.txt syntax and allow/disallow rules for Googlebot and AI bots (GPTBot, PerplexityBot, ClaudeBot)",
+        "XML sitemap creation, submission in Google Search Console, and coverage error resolution",
+        "canonical tag mechanics: self-referencing, cross-domain, and conflict resolution",
+        "noindex tag usage and noindex vs canonical decision framework for duplicate content",
+        "crawl budget concepts: crawl demand, crawl capacity, crawl rate",
+        "site URL hierarchy mapping and orphaned page identification",
+        "internal link gap audit as a crawlability diagnostic (not as link equity strategy)",
+        "GSC Index Coverage report: reading status categories (Excluded, Error, Valid, Warning)"
+      ],
+      "does_not_cover": [
+        "Screaming Frog crawl configuration and issue export (ch 2 owns the full audit toolchain)",
+        "Core Web Vitals and page performance metrics (ch 3)",
+        "JSON-LD structured data and on-page rewrites (ch 4 owns schema implementation)",
+        "internal link equity and topic-cluster linking strategy (ch 4 owns link equity distribution)",
+        "backlink profile analysis and disavow (ch 5)",
+        "developer ticket writing and migration checklists (ch 6)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "robots.txt Disallow vs Allow directive precedence",
+        "correct AI bot user-agent names in robots.txt (GPTBot, PerplexityBot)",
+        "when to use noindex vs canonical for near-duplicate pages",
+        "GSC Index Coverage status: difference between Excluded and Error categories",
+        "three signals that indicate a crawl budget problem on a large site"
+      ],
+      "notebooklm_source_focus": [
+        "Google Search Central: robots.txt documentation and AI bot guidance 2026",
+        "Google Search Console Index Coverage report help",
+        "canonical tag implementation guide Google Search Central",
+        "XML sitemap protocol and GSC sitemap submission walkthrough",
+        "crawl budget and large site optimization Google documentation"
+      ],
+      "dossier_path": "vault/research/courses/technical-seo-fundamentals/01-crawlability-indexation-fundamentals.md"
+    },
+    {
+      "num": 2,
+      "slug": "technical-seo-audit-screaming-frog",
+      "title": "Running a Full Technical SEO Audit with Screaming Frog & GSC",
+      "owns": [
+        "Screaming Frog SEO Spider: crawl configuration (user-agent, render mode, custom extraction rules)",
+        "structured issue report export from Screaming Frog",
+        "redirect chain and redirect loop diagnosis from crawl data",
+        "broken internal and external link detection",
+        "duplicate title tag and meta description identification",
+        "thin-content page detection and assessment criteria",
+        "cross-referencing Screaming Frog findings with GSC Page Indexing and Coverage reports",
+        "prioritized fix backlog: traffic-impact scoring, quick-wins vs developer-dependent tasks"
+      ],
+      "does_not_cover": [
+        "robots.txt and canonical tag fundamentals (ch 1 owns crawlability concepts)",
+        "GSC Index Coverage interpretation basics (ch 1 owns the conceptual framework)",
+        "Core Web Vitals measurement (ch 3 owns PageSpeed and CrUX)",
+        "on-page rewrites and structured data (ch 4)",
+        "backlink export and toxic link analysis (ch 5)",
+        "developer ticket authoring (ch 6 owns SEO-to-developer handoff)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "Screaming Frog render mode options: Spider vs JavaScript rendering",
+        "how to identify a redirect chain vs a redirect loop in Screaming Frog",
+        "GSC Page Indexing status types and what each means for a fix priority",
+        "thin-content threshold and when to consolidate vs expand a page",
+        "two criteria used to rank items in a prioritized SEO fix backlog"
+      ],
+      "notebooklm_source_focus": [
+        "Screaming Frog SEO Spider user guide 2025/2026",
+        "Google Search Console Page Indexing report documentation",
+        "technical SEO audit process and prioritization frameworks 2026",
+        "redirect chain diagnosis and resolution best practices",
+        "duplicate content detection methods and resolution strategies"
+      ],
+      "dossier_path": "vault/research/courses/technical-seo-fundamentals/02-technical-seo-audit-screaming-frog.md"
+    },
+    {
+      "num": 3,
+      "slug": "core-web-vitals-performance",
+      "title": "Core Web Vitals & Page Performance Optimization",
+      "owns": [
+        "LCP (<2.5 s), INP (<200 ms), and CLS (<0.1) 2026 thresholds and pass/fail boundaries",
+        "INP vs the deprecated FID metric: conceptual distinction and why INP replaced FID",
+        "PageSpeed Insights: running lab vs field audits, reading CrUX data",
+        "Chrome DevTools Lighthouse panel: performance tab, opportunities, diagnostics",
+        "render-blocking script identification and deferral (defer/async attributes)",
+        "oversized image diagnosis: WebP/AVIF format upgrades, compression tooling",
+        "lazy-load directives for below-the-fold images and iframes",
+        "layout shift culprit identification (reserved space, ad slots, font swap)",
+        "developer performance brief writing: format, specificity, acceptance criteria",
+        "before/after CrUX validation methodology in GSC"
+      ],
+      "does_not_cover": [
+        "crawl-side performance signals like page depth (ch 1)",
+        "Screaming Frog audit workflow (ch 2)",
+        "JSON-LD structured data (ch 4)",
+        "backlink or off-page factors (ch 5)",
+        "developer ticket Jira/Linear workflow (ch 6 owns the delivery mechanic; ch 3 owns the brief content)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "2026 Core Web Vitals thresholds for LCP, INP, and CLS (pass/needs-improvement/poor bands)",
+        "difference between INP and FID and why INP replaced FID in 2024",
+        "how to distinguish lab data from field data in PageSpeed Insights",
+        "three render-blocking patterns Lighthouse flags in the Opportunities section",
+        "correct HTML attribute to defer a non-critical third-party script"
+      ],
+      "notebooklm_source_focus": [
+        "Google Core Web Vitals 2026 thresholds and INP transition documentation",
+        "PageSpeed Insights and CrUX field data guide",
+        "Chrome DevTools Lighthouse performance audit documentation",
+        "image optimization guide: WebP AVIF lazy loading Google Search Central",
+        "CLS layout shift root causes and fixes web.dev"
+      ],
+      "dossier_path": "vault/research/courses/technical-seo-fundamentals/03-core-web-vitals-performance.md"
+    },
+    {
+      "num": 4,
+      "slug": "on-page-optimization-structured-data",
+      "title": "On-Page Optimization & Structured Data Implementation",
+      "owns": [
+        "title tag audit and rewrite: character limits, search-intent alignment, deduplication",
+        "H1 heading structure: one H1 per page rule, heading hierarchy for crawlers and users",
+        "meta description optimization: click-worthy framing within 155-character limit",
+        "JSON-LD structured data: Article, Product, and BreadcrumbList schema types",
+        "Google Rich Results Test and Schema.org validator usage",
+        "E-E-A-T signals: author entity markup, byline schema, bio page linking",
+        "datePublished and dateModified fields for freshness signals",
+        "publisher and organization schema for brand entity disambiguation",
+        "topic-cluster internal linking strategy: pillar-to-spoke link structure, anchor text selection",
+        "link equity distribution from pillar pages to supporting content"
+      ],
+      "does_not_cover": [
+        "crawl-side internal link gap audit (ch 1 owns the diagnostic; ch 4 owns the implementation strategy)",
+        "redirect and broken link remediation (ch 2 owns the audit toolchain)",
+        "Core Web Vitals and page speed (ch 3)",
+        "backlink profile and off-page link strategy (ch 5 owns external backlinks)",
+        "developer ticket writing for SEO changes (ch 6)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "recommended title tag character limit and truncation threshold in Google SERPs",
+        "which JSON-LD schema type to use for a travel destination article vs a bookable product",
+        "three E-E-A-T signals that can be encoded in structured data",
+        "how the pillar-spoke internal link model distributes PageRank",
+        "how to validate JSON-LD schema using Google's Rich Results Test"
+      ],
+      "notebooklm_source_focus": [
+        "Google Search Central: title links and meta descriptions best practices",
+        "Schema.org Article, Product, BreadcrumbList documentation",
+        "Google Rich Results Test and structured data guidelines 2026",
+        "E-E-A-T signals and author schema Google documentation",
+        "internal linking strategy for topic clusters 2026"
+      ],
+      "dossier_path": "vault/research/courses/technical-seo-fundamentals/04-on-page-optimization-structured-data.md"
+    },
+    {
+      "num": 5,
+      "slug": "link-strategy-backlinks",
+      "title": "Link Strategy: Earning, Auditing & Disavowing Backlinks",
+      "owns": [
+        "backlink profile export in Ahrefs and SEMrush: referring domains, anchor text distribution, domain authority/rating",
+        "spam score analysis: Moz Spam Score, Ahrefs domain rating as quality proxy",
+        "anchor text over-optimization detection and natural anchor ratio benchmarks",
+        "link velocity anomalies: sudden spikes and their algorithmic risk",
+        "disavow file format (domain: prefix, .txt, comment syntax) and Google Search Console disavow submission",
+        "disavow decision rationale documentation: criteria for inclusion",
+        "link-earning opportunity identification: resource page prospecting, digital PR angles, competitor backlink gap analysis",
+        "travel/OTA-specific link-earning channels: tourism boards, travel bloggers, destination guides",
+        "outreach template structure and personalization principles",
+        "90-day link acquisition campaign plan with target site tiers and acquisition timeline"
+      ],
+      "does_not_cover": [
+        "internal linking and link equity distribution (ch 4 owns on-page link strategy)",
+        "on-page signals that affect rankings alongside links (ch 4)",
+        "technical crawl issues that can dilute link equity (ch 1 and ch 2)",
+        "developer handoff for link-related fixes like redirect consolidation (ch 6)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "disavow file correct format: domain-level vs URL-level entries and the 'domain:' prefix",
+        "three anchor text patterns that signal over-optimization to Google's algorithm",
+        "how to identify a link velocity anomaly in Ahrefs' referring domain graph",
+        "two OTA-specific link-earning channels suited to a travel brand",
+        "minimum data points needed to justify a domain disavow decision"
+      ],
+      "notebooklm_source_focus": [
+        "Google Search Console disavow links tool documentation 2026",
+        "Ahrefs backlink audit and disavow workflow guide",
+        "SEMrush backlink audit toxic score methodology",
+        "link-earning strategies for travel and OTA vertical 2026",
+        "digital PR link building techniques and outreach templates"
+      ],
+      "dossier_path": "vault/research/courses/technical-seo-fundamentals/05-link-strategy-backlinks.md"
+    },
+    {
+      "num": 6,
+      "slug": "developer-collaboration-seo-change-management",
+      "title": "Developer Collaboration & SEO Change Management",
+      "owns": [
+        "translating technical SEO audit findings into Jira/Linear tickets with developer-ready acceptance criteria",
+        "pre-launch site migration SEO checklist: redirect mapping, staging noindex removal, GSC property re-verification",
+        "post-launch 48-hour audit protocol: crawl access, indexation status, Core Web Vitals regression check",
+        "30-day post-migration GSC and rank-tracking monitoring plan",
+        "stakeholder performance summary report: format, metrics, narrative framing",
+        "communicating SEO risk in a sprint-planning context: priority triage with engineering leads",
+        "scoping implementation effort: developer-dependent vs SEO-team-executable tasks"
+      ],
+      "does_not_cover": [
+        "running Screaming Frog crawls (ch 2 owns the audit toolchain)",
+        "Core Web Vitals brief content (ch 3 owns the performance brief; ch 6 owns the delivery workflow)",
+        "backlink disavow submission (ch 5)",
+        "structured data implementation (ch 4)",
+        "robots.txt and canonicalization fundamentals (ch 1)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "three required elements of a developer-ready SEO ticket with acceptance criteria",
+        "correct order of operations in a site migration SEO checklist (pre-launch vs post-launch)",
+        "how to verify staging noindex is removed before go-live",
+        "two GSC signals to monitor in the 30 days after a site migration",
+        "how to frame SEO priority in a sprint planning context for an engineering audience"
+      ],
+      "notebooklm_source_focus": [
+        "Google Search Central: site migration SEO guide and redirect mapping 2026",
+        "GSC property verification methods and re-verification after migration",
+        "SEO ticket writing and developer collaboration best practices",
+        "post-migration SEO monitoring checklist and GSC signals",
+        "agile SEO: working with engineering teams and sprint planning"
+      ],
+      "dossier_path": "vault/research/courses/technical-seo-fundamentals/06-developer-collaboration-seo-change-management.md"
+    }
+  ]
+}

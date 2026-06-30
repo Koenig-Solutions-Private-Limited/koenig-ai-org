@@ -1,0 +1,23 @@
+{
+  "chapter_num": 4,
+  "course_slug": "microsoft-advertising-bing-ads",
+  "chapter_slug": "04-audience-targeting-linkedin-remarketing",
+  "title": "Audience Targeting: In-Market Segments, LinkedIn Profile Targeting & Remarketing",
+  "assets_generated": true,
+  "tool": "python-pptx",
+  "tool_tier": 3,
+  "notebooklm_fallback_reason": "notebooklm CLI not installed in runtime environment",
+  "slide_count": 7,
+  "slides_path": "vault/courses/microsoft-advertising-bing-ads/ch04-slides.pptx",
+  "audio_path": null,
+  "audio_pending": true,
+  "audio_blocked_reason": "OpenAI TTS quota exceeded (429 insufficient_quota); no local TTS alternative installed",
+  "audio_rerun_queued": true,
+  "audio_rerun_tracker": "KOEA-7801",
+  "audio_format": "mp3",
+  "audio_voice": "alloy",
+  "audio_model": "tts-1",
+  "produced_at": "2026-06-14T07:30:00Z",
+  "g0_review_required": true,
+  "notebooklm_rerun_queued": true
+}

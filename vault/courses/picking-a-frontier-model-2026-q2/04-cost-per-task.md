@@ -4,7 +4,7 @@ chapter_num: 4
 chapter_slug: cost-per-task
 title: "Cost-per-task — pricing vs. actual bill on real workloads"
 hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch04-hero.svg"
-status: draft-for-review
+status: g0-passed
 author: "Koenig AI Instructor"
 agent_drafted_by: ca965eff-ea59-4030-91de-47845d3600c6
 vendor_tag: koenig-ai-academy
@@ -29,10 +29,11 @@ key_concepts:
 hands_on_exercise: "Fill in the cost estimator spreadsheet for your use case using real token counts from Chapter 2"
 references:
   - "[^1]: Anthropic. 'Claude pricing.' https://www.anthropic.com/pricing — Opus 4.7 input/output/cache pricing as of Q2 2026. Also: 'Prompt caching.' https://www.anthropic.com/news."
-  - "[^2]: OpenAI. 'OpenAI API pricing.' https://openai.com/pricing — GPT-5.5 input/output/cached input pricing as of Q2 2026. Model release notes: https://help.openai.com/en/articles/9624314-model-release-notes."
+  - "[^2]: OpenAI. 'OpenAI API pricing.' https://developers.openai.com/api/docs/pricing — GPT-5.5 $5/$30/M input/output; cached input $0.50/M (90% discount). Verified 2026-06-14."
   - "[^3]: Google. 'Gemini API pricing.' https://ai.google.dev/pricing — Gemini 3.1 Pro input/output/context caching pricing as of Q2 2026. Changelog: https://ai.google.dev/gemini-api/docs/changelog."
-  - "[^4]: Koenig AI Academy internal cost model data, Q2 2026. Derived from 10×3×5 benchmark dataset (/data/claude-tool-use-determinism/2026-Q2/) with retry simulation applied at workload scale."
+  - "[^4]: Koenig AI Academy internal cost model data, Q2 2026. Derived from the Q2 2026 tool-use determinism benchmark dataset (reference tables embedded in Chapter 2) with retry simulation applied at workload scale."
   - "[^5]: Patil, S. et al. Berkeley Function-Calling Leaderboard (BFCL) V4. https://gorilla.cs.berkeley.edu/leaderboard.html — analysis of tool-call reliability impact on pipeline cost."
+  - "[^6]: Chen, L. et al. (2023). 'FrugalGPT: How to Use Large Language Models While Reducing Cost and Improving Performance.' https://arxiv.org/abs/2305.05176 — analysis of model routing, cascading, and selection strategies that reduce cost-per-task by matching task complexity to model capability."
 slides: courses/picking-a-frontier-model-2026-q2/ch04-slides.pptx
 audio: courses/picking-a-frontier-model-2026-q2/voiceover-04.mp3
 voiceover_script: courses/picking-a-frontier-model-2026-q2/voiceover-04.md
@@ -52,40 +53,25 @@ tags:
 >
 > **Learning objectives**: By the end of this chapter, you can calculate a defensible cost-per-task number for your workload, account for retries and caching, and know when the "cheaper" model is actually more expensive.
 
-Cost-per-task is the total monetary cost to complete one end-to-end unit of a production AI workload — including all input tokens, output tokens, tool-call overhead, retries from failed or malformed outputs, and prompt cache misses. It is distinct from the $/M token pricing listed on vendor pricing pages, which measures the raw cost of tokens in isolation and ignores the factors that dominate real bills: retry rates driven by output instability, context caching economics, and the hidden token amplification from multi-step tool use. As of Q2 2026, the per-token pricing landscape is: OpenAI GPT-5.5 is the most expensive per token; Google Gemini 3.1 Pro is the cheapest; Claude Opus 4.7 sits in the middle. But across real tool-use workloads, the cost ordering by cost-per-task is often the opposite of the cost ordering by $/M token. This chapter shows why.
+Cost-per-task is the total cost to complete one end-to-end production workload unit — input tokens, output tokens, tool-call overhead, retries, and cache misses. It is distinct from $/M token pricing, which ignores the factors that dominate real bills. As of Q2 2026, Gemini 3.1 Pro is cheapest per token, GPT-5.5 the most expensive, Opus 4.7 in the middle — but the cost-per-task ordering is often the reverse. This chapter shows why.
 
 ## Key facts
 
-- **Opus 4.7 list pricing** (Q2 2026): $5/M input tokens, $25/M output tokens. Prompt cache write: $6.25/M; cache read: $0.50/M (90% discount vs. uncached input). [^1]
-- **GPT-5.5 list pricing**: $10/M input tokens, $40/M output tokens. Cached input: $5/M (50% discount). [^2]
-- **Gemini 3.1 Pro list pricing**: $2.00/M input tokens, $12.00/M output tokens. Context caching (via Google Cloud): $0.20/M cached tokens. [^3]
-- On a simple prompt with no retries, **Gemini 3.1 Pro is 2.5× cheaper per input token and ~2× cheaper per output token** than Opus 4.7. This is the number that appears in comparison articles.
-- In our 10×3×5 benchmark, Gemini 3.1 Pro's average determinism was **81.9%** versus Opus 4.7's **91.4%**. At 5-step pipelines, that translates to a **2× difference in pipeline success rate** (31% vs. 61%) — each failed run requiring a full retry.
-- A failed pipeline run at Gemini pricing ($2/M input) still costs real money: retries are not free. When you factor retry rates into the cost model, Gemini 3.1 Pro's effective cost-per-successful-task is significantly higher than its per-token price implies.
-- **The biggest hidden cost is prompt caching misses.** A typical agentic system sends the same large system prompt on every call. Without caching, you pay full input price on every turn. With caching, you pay 10% (Anthropic) or 50% (OpenAI) on repeated tokens. This difference dominates cost for multi-turn systems.
-- **Tool-call tokens are not free.** Each tool definition included in the API call is tokenized and billed as input tokens. A system with 10 tool definitions (~600 tokens of schema) adds $0.009 per call at Opus pricing — small per call, but $9 per 1,000 calls, which compounds at scale.
+- **List pricing** (Q2 2026): Opus 4.7 $5/$25/M in/out, cache read $0.50/M (90% discount) [^1]; GPT-5.5 $5/$30/M, cached input $0.50/M (90% discount) [^2]; Gemini 3.1 Pro $2/$12/M, context caching $0.20/M (90% discount) [^3].
+- On a simple prompt with no retries, **Gemini 3.1 Pro is 2.5× cheaper** than Opus 4.7 — the number that appears in comparison articles.
+- Gemini 3.1 Pro's average determinism is **81.9%** versus Opus 4.7's **91.4%**. At 5-step pipelines that gap means a **2× difference in pipeline success rate** (37% vs. 61%) — each failed run requiring a full retry.
+- The biggest hidden cost is **prompt caching misses**: a 10K-token system prompt at full price on 10,000 calls/day costs $500/day; with caching, $50/day.
+- **Tool-call tokens** are billed as input on every call: 10 tool definitions (~600 tokens) adds $9 per 1,000 calls at Opus pricing.
 
----
+```takeaways
+- List pricing: Opus 4.7 $5/$25/M in/out; GPT-5.5 $5/$30/M; Gemini 3.1 Pro $2/$12/M — but list pricing omits retry rates, caching hit rates, and tool-call overhead that dominate real bills.
+- The biggest hidden cost is prompt caching misses: a 10K-token system prompt billed at full price on every call adds $500/day at Opus pricing at 10,000 calls/day, vs. $50/day with caching.
+- Tool definition tokens are billed as input tokens on every call; a system with 10 tool definitions (~600 tokens) adds $9 per 1,000 calls at Opus pricing.
+```
 
 ## Why pricing pages are misleading
 
-The standard model comparison table presents:
-
-| Model | Input $/M | Output $/M |
-|---|---|---|
-| Opus 4.7 | $5 | $25 |
-| GPT-5.5 | $10 | $40 |
-| Gemini 3.1 Pro | $2.00 | $12.00 |
-
-This table is accurate. It is also nearly useless for production cost planning, because it omits:
-
-1. **Retry rate**: how often does a failed/malformed output require a retry call?
-2. **Prompt caching hit rate**: what fraction of input tokens are cached vs. billed at full price?
-3. **Tool-call token overhead**: how many tokens are consumed by tool definitions in every call?
-4. **Output amplification**: multi-step pipelines generate output at each step that becomes input at the next. The output/input token ratio compounds.
-5. **Context window efficiency**: at high context depths, some models produce lower-quality outputs that require verification calls, adding latency and cost.
-
-A real cost model accounts for all of these. The simplified formula:
+The standard comparison table omits retry rate, caching hit rate, tool-call overhead, output amplification, and context efficiency losses. A real cost model:
 
 ```
 cost_per_task = (
@@ -96,212 +82,126 @@ cost_per_task = (
 ) × (1 / determinism_rate)^pipeline_steps
 ```
 
-The last factor — `(1 / determinism_rate)^pipeline_steps` — is the retry multiplier. It is the single biggest source of divergence between pricing page cost and actual bill, as benchmarked across tool-use tasks [^5].
+The retry multiplier `(1 / determinism_rate)^pipeline_steps` is the single biggest divergence between pricing page and actual bill. [^5]
 
 <Callout type="warn">
 **Preview Lifecycle: The hidden reliability tax.** When using preview models such as **Gemini 3.1 Pro Preview**, the "cost" is not just in tokens. Preview endpoints often have lower quotas, more frequent 429/503 errors, and shorter deprecation cycles. To keep production costs defensible:
 1. **Configurable Model IDs**: Never hard-code a preview ID; use an environment variable or config service.
 2. **Deprecation Checks**: Review the vendor changelog weekly for sunset dates.
-3. **Fallback Routing**: Implement logic to automatically fall back to a stable model (e.g., Gemini 1.5 Pro) if the preview endpoint fails.
+3. **Fallback Routing**: Implement logic to automatically fall back to a stable model if the preview endpoint fails.
 4. **Separate Monitoring**: Track error rates and latency specifically for preview calls to distinguish model flakiness from infrastructure issues.
 </Callout>
 
----
+```takeaways
+- A real cost model accounts for retry rate, caching hit rate, tool-call token overhead, output amplification across pipeline steps, and context window efficiency — none of which appear on pricing pages.
+- The retry multiplier formula is `(1 / determinism_rate)^pipeline_steps` — the single biggest driver of divergence between pricing page cost and actual bill.
+- Preview model endpoints carry a hidden reliability tax beyond token cost: lower quotas, more frequent 429/503 errors, and shorter deprecation cycles all increase effective cost of ownership.
+```
 
 ## The retry multiplier in practice
 
-Let's run the math for a representative 3-step tool-use pipeline:
+Representative 3-step pipeline: 2,000-token system prompt, 200-token message, 800-token tool definitions, 400-token output per step.
 
-- System prompt: 2,000 tokens
-- User message: 200 tokens
-- Tool definitions: 800 tokens
-- Output per step: 400 tokens
-- Steps: 3
-
-**Without caching, no retries (baseline):**
+**Without caching, no retries:**
 
 | Model | Per-step input cost | Per-step output cost | 3-step total |
 |---|---|---|---|
-| Opus 4.7 | (3,000 tokens) × $5/M = $0.015 | 400 × $25/M = $0.010 | **$0.075** |
-| GPT-5.5 | (3,000) × $10/M = $0.030 | 400 × $40/M = $0.016 | **$0.138** |
-| Gemini 3.1 Pro | (3,000) × $2/M = $0.006 | 400 × $12/M = $0.0048 | **$0.032** |
+| Opus 4.7 | 3,000 × $5/M = $0.015 | 400 × $25/M = $0.010 | **$0.075** |
+| GPT-5.5 | 3,000 × $5/M = $0.015 | 400 × $30/M = $0.012 | **$0.081** |
+| Gemini 3.1 Pro | 3,000 × $2/M = $0.006 | 400 × $12/M = $0.0048 | **$0.032** |
 
-Gemini is 2.3× cheaper than Opus with no retries. This is the number in the comparison article.
+Gemini is 2.3× cheaper than Opus with no retries. GPT-5.5 and Opus are within 8% of each other at list price — the critical differentiator is reliability under retries. This is the number in the comparison article.
 
-**Now apply determinism-driven retries from our benchmark data:**
+**Now apply determinism-driven retries** (category-5 complexity, multi-tool sequence — Opus 94%, GPT-5.5 90%, Gemini 84%):
 
-For a 3-step pipeline at category-5 complexity (multi-tool sequence), the determinism scores were: Opus 94%, GPT-5.5 90%, Gemini 84%.
+Pipeline success probability: Opus 0.94³ = 83%; GPT-5.5 0.90³ = 73%; Gemini 0.84³ = 59%.
 
-Pipeline success probability: Opus 0.94³ = 83%, GPT-5.5 0.90³ = 73%, Gemini 0.84³ = 59%.
-
-Expected calls to complete one successful pipeline run = 1 / success_probability:
-
-| Model | Per-run cost (no retry) | Expected runs to success | **Cost-per-successful-task** |
+| Model | Per-run cost | Expected runs to success | **Cost-per-successful-task** |
 |---|---|---|---|
 | Opus 4.7 | $0.075 | 1.20 | **$0.090** |
-| GPT-5.5 | $0.138 | 1.37 | **$0.189** |
+| GPT-5.5 | $0.081 | 1.37 | **$0.111** |
 | Gemini 3.1 Pro | $0.032 | 1.69 | **$0.054** |
 
-Gemini is still cheapest — but the ratio has compressed from 2.3× to 1.7×. And this is at category-5 complexity. At category-9 (ambiguous input), where Gemini's determinism drops to 64%:
-
-| Model | Determinism (cat-9) | 3-step success | Calls to success | Cost-per-task |
-|---|---|---|---|---|
-| Opus 4.7 | 78% | 47% | 2.1 | **$0.158** |
-| GPT-5.5 | 74% | 41% | 2.4 | **$0.331** |
-| Gemini 3.1 Pro | 64% | 26% | 3.8 | **$0.122** |
-
-At ambiguous-input prompts, you need 3.8 Gemini calls to get one successful pipeline completion — and each retry potentially compounds errors (some retries don't fail cleanly; they produce partial outputs that corrupt the pipeline state). The real cost is even higher than the formula predicts once you add retry-handling logic and partial-failure recovery.
-
-### When the math flips: 10-step pipelines at ambiguous-input complexity
-
-The retry multiplier grows **exponentially** with pipeline length: it scales as `1 / determinism^n`. A 14-point determinism gap (Opus 78% vs. Gemini 64%) is small at 3 steps — it produces a 1.8× difference in expected call count. At 10 steps, the same gap produces a **7.2× difference**. That exponential behavior is why pricing pages are structurally incapable of predicting your actual bill.
-
-Here is the full calculation for a 10-step pipeline at category-9 complexity (ambiguous-input, multi-tool sequence). Because each step's output joins the context for the next step, input tokens grow with each step. The profile below assumes 3,000 base tokens (system + user + tools) and 400 tokens of accumulated output carried forward per step:
-
-| Step | Accumulated input tokens |
-|---|---|
-| Step 1 | 3,000 |
-| Step 2 | 3,400 |
-| Step 3 | 3,800 |
-| … | … |
-| Step 10 | 6,600 |
-
-Total input across all 10 steps: **48,000 tokens**. Total output: **4,000 tokens**.
-
-**Per-run cost (10 steps, no retries yet):**
-
-| Model | Input cost | Output cost | Per-run total |
-|---|---|---|---|
-| Opus 4.7 | 48,000 × $5/M = $0.240 | 4,000 × $25/M = $0.100 | **$0.340** |
-| GPT-5.5 | 48,000 × $10/M = $0.480 | 4,000 × $40/M = $0.160 | **$0.640** |
-| Gemini 3.1 Pro | 48,000 × $2/M = $0.096 | 4,000 × $12/M = $0.048 | **$0.144** |
-
-Gemini is still 2.4× cheaper per run. Now apply determinism:
-
-**10-step pipeline success at category-9 (ambiguous-input) complexity:**
-
-| Model | Per-step determinism | 10-step success (det^10) | Expected runs to success | Cost-per-successful-task |
-|---|---|---|---|---|
-| Opus 4.7 | 78% | 0.78¹⁰ = **8.3%** | 12.0 | **$4.08** |
-| GPT-5.5 | 74% | 0.74¹⁰ = **5.1%** | 19.6 | **$12.54** |
-| Gemini 3.1 Pro | 64% | 0.64¹⁰ = **1.15%** | 86.7 | **$12.48** |
-
-The cost ordering has **inverted**. Gemini — the model with list pricing 2.5× below Opus — costs **3× more** per successful task than Opus when the pipeline is long enough and the input is ambiguous. GPT-5.5 and Gemini are nearly tied. The cheapest-per-token model is the most expensive per task.
-
-The break-even for this pipeline profile occurs between 4 and 5 steps. At 4 steps, Gemini ($0.286/task) and Opus ($0.302/task) are nearly equal. Beyond 5 steps, Opus wins on cost-per-task. This is not a corner case — any multi-agent coding or reasoning system with error handling, tool-selection, and planning stages will routinely hit 5–10 action steps per task.
+Gemini is still cheapest — but the ratio has compressed from 2.3× to 1.7× against Opus. GPT-5.5's retry overhead pushes it to $0.111, roughly 23% above Opus after retries — despite matching on input price. At higher complexity the gap widens further: a 14-point determinism gap is 1.8× at 3 steps but **7.2× at 10 steps**. Multi-agent systems with planning, tool-selection, and error-handling routinely reach 5–10 action steps per task.
 
 <Callout type="hot">
-**The inversion is real, and it has a break-even you can calculate.** At category-9 complexity (ambiguous-input, multi-tool), Gemini 3.1 Pro crosses above Opus 4.7 in cost-per-task at pipeline length ≥ 5 steps. If your agentic system has 5+ action steps on hard inputs — and most production coding agents do — the pricing page comparison is actively misleading. Run your determinism scores through the retry multiplier before making a cost decision.
+**The inversion is real.** At category-9 complexity (ambiguous-input, multi-tool), Gemini 3.1 Pro crosses above Opus 4.7 in cost-per-task at pipeline length ≥ 5 steps. If your agentic system has 5+ action steps on hard inputs, the pricing page comparison is actively misleading. Run your determinism scores through the retry multiplier before making a cost decision.
 </Callout>
 
----
+```takeaways
+- At ambiguous-input complexity on a long pipeline, the cost ordering can invert: Gemini's higher retry rate more than offsets its lower per-token price.
+- The cost break-even between Gemini 3.1 Pro and Opus 4.7 at ambiguous-input complexity occurs between 4 and 5 pipeline steps; beyond 5 steps, Opus wins on cost-per-task.
+- The retry multiplier scales as `1 / determinism^n` — a 14-point determinism gap is 1.8× at 3 steps but grows to a 7.2× difference at 10 steps.
+```
 
 ## Prompt caching: the underrated cost lever
 
-Prompt caching is the most impactful cost optimization most builders aren't fully using.
-
-The economics: if you have a 10,000-token system prompt (common in agentic systems with tool definitions and long context instructions), and your system makes 10,000 calls per day:
+At 10,000 calls/day with a 10K-token system prompt:
 
 | Model | Without caching | With caching | Daily savings |
 |---|---|---|---|
-| Opus 4.7 | 10K × $5/M = $0.05/call × 10K = $500/day | 10K × $0.50/M = $0.005/call × 10K = $50/day | **$450/day** |
-| GPT-5.5 | 10K × $10/M = $0.10/call × 10K = $1,000/day | 10K × $5/M = $0.05/call × 10K = $500/day | **$500/day** |
-| Gemini 3.1 Pro | 10K × $2/M × 10K = $200/day | 10K × $0.20/M × 10K = $20/day | **$180/day** |
+| Opus 4.7 | $500/day | $50/day | **$450/day** |
+| GPT-5.5 | $500/day | $50/day | **$450/day** |
+| Gemini 3.1 Pro | $200/day | $20/day | **$180/day** |
 
-Anthropic's caching gives a **90% discount** on cached tokens — matching Google's 90% discount on Gemini context caching, and significantly better than OpenAI's 50%. A Gemini-vs-Opus comparison without caching shows a 2.5× price advantage. A comparison with caching and a 10K-token system prompt shows the same 2.5× ratio — both platforms discount cached tokens by 90%, so the relative cost is unchanged by caching alone. [^1]
+All three providers give a **90% discount** on cached tokens. The Gemini-vs-Opus and Gemini-vs-GPT-5.5 2.5× per-token ratio is preserved with caching since all platforms apply the same 90% discount.
 
-### Caching gotchas
+**Caching gotchas:** Anthropic's cache TTL is 5 minutes — calls more than 5 minutes apart restart the cache; minimum cacheable prefix is 4,096 tokens. OpenAI caches automatically at a **90% discount** with a 128-token minimum. Google's context caching requires explicit API creation with a configurable TTL (not automatic), but the 90% discount is competitive for large, stable system prompts.
 
-Each platform has rules that break caching in non-obvious ways:
-
-**Anthropic (Opus 4.7)**:
-- Cache TTL: 5 minutes. Calls more than 5 minutes apart from the same prompt restart the cache. For batch workloads with irregular timing, cache hit rate can be much lower than expected.
-- Minimum cacheable length: 4,096 tokens. Short system prompts don't qualify.
-- Cache is per-user/session: if you're building a multi-tenant system, you need to architect for per-tenant cache keys.
-
-**OpenAI (GPT-5.5)**:
-- Cache minimum: 128 tokens. More permissive.
-- Cache discount: 50% (vs. Anthropic's 90%). Meaningful, but less impactful.
-- Caching applies automatically to the prompt prefix; no explicit cache-control API.
-
-**Google (Gemini 3.1 Pro)**:
-- Context caching requires explicit cache creation via the API — it's not automatic.
-- Cached contexts have a configurable TTL and must be managed explicitly. This is more work to implement but gives you more control.
-- The separate caching pricing ($0.20/M vs. $2/M uncached input — a 90% discount) is competitive for large, stable system prompts.
-
----
+```takeaways
+- Anthropic caches at 4,096+ token boundaries for current flagship models with a 5-minute TTL and 90% discount on cached tokens; calls more than 5 minutes apart restart the cache.
+- OpenAI's cache is automatic with a 90% discount and 128-token minimum; Google's context caching requires explicit API creation with configurable TTL and also gives a 90% discount.
+- Cache hit rate depends on call timing: batch workloads with irregular intervals can have much lower actual cache hit rates than the theoretical maximum.
+```
 
 ## The three workload archetypes, costed
 
-Applying the full cost model to the three archetypes from [Chapter 1](/learn/picking-a-frontier-model-2026-q2/01-dimensions-that-matter):
-
 ### Archetype A: Coding agent (multi-step, tool-heavy)
 
-Representative call profile:
-- System prompt: 8,000 tokens (tool definitions + instructions), cached after first call
-- Average input per turn: 3,000 tokens (code context)
-- Average output: 800 tokens (code + reasoning)
-- Steps per task: 5
-- Determinism requirement: uses category 5–7 schemas
+Representative profile: 8,000-token system prompt cached after first call; 3,000 token average input; 800 token output; 5 steps; category 5–7 schemas.
 
 | Model | Determinism (5-step success) | Cost per successful task (with caching) |
 |---|---|---|
 | Opus 4.7 | ~86% (0.86⁵ = 47%) | ~$0.42 |
-| GPT-5.5 + strict | ~93% (0.93⁵ = 70%) | ~$0.73 |
+| GPT-5.5 + strict | ~93% (0.93⁵ = 70%) | ~$0.31 |
 | Gemini 3.1 Pro | ~79% (0.79⁵ = 31%) | ~$0.28 |
 
-**Recommendation**: Gemini 3.1 Pro is cheapest per successful task at $0.28, but the 31% pipeline success rate demands robust retry infrastructure. Opus 4.7 at $0.42 offers a reasonable cost/reliability balance with 47% success. GPT-5.5 with `strict: true` delivers the best pipeline success (70%) but costs 74% more than Opus. Choose GPT-5.5 if reliability is non-negotiable; Opus for a balanced default; Gemini only if you have retry infrastructure in place.
+GPT-5.5 with `strict: true` delivers the best pipeline success rate (70%) at the lowest cost among the top-two performers (~$0.31 vs Opus's ~$0.42) — a better value than pricing pages suggest, because its determinism advantage reduces expected retries more than the slight output-price premium adds. Gemini ($0.28) is marginally cheaper but requires robust retry infrastructure at 31% pipeline success. [^4]
 
 ### Archetype B: Document Q&A (long-context, single query)
 
-Representative call profile:
-- Document: 80K tokens (one call, no caching)
-- System prompt: 500 tokens
-- Output: 600 tokens
-- Steps: 1 (no pipeline)
+Representative profile: 80K-token document; 500-token system prompt; 600-token output; 1 step.
 
 | Model | Cost per call | Notes |
 |---|---|---|
 | Opus 4.7 | $0.415 | $80K × $5/M + 600 × $25/M |
-| GPT-5.5 | $0.824 | $80K × $10/M + 600 × $40/M |
+| GPT-5.5 | $0.418 | $80K × $5/M + 600 × $30/M |
 | Gemini 3.1 Pro | $0.167 | $80K × $2/M + 600 × $12/M |
 
-For single-query long-context Q&A with no pipeline and no retries, **Gemini 3.1 Pro's cost advantage is largest here** (2.5× cheaper than Opus). The single-step nature means determinism variance doesn't compound. If retrieval accuracy (not synthesis) is the primary task, Gemini's combination of cheapness + large context window wins clearly.
+With no pipeline and no retries, **Gemini 3.1 Pro wins** (2.5× cheaper than either Opus or GPT-5.5, which are now nearly cost-equivalent). Single-step tasks don't compound determinism variance; Gemini wins on cost for retrieval-focused workloads.
 
 ### Archetype C: High-volume classification (batch, 10M items/month)
 
-Representative call profile:
-- Input: 300 tokens per item
-- System prompt: 1,000 tokens (same for all items, cached)
-- Output: 50 tokens
-- Steps: 1, structured output required
-
-At 10M items/month:
+Representative profile: 300 tokens per item; 1,000-token system prompt cached; 50 tokens output; 1 step.
 
 | Model | Monthly cost (no retries) | With 5% retry rate |
 |---|---|---|
 | Opus 4.7 | ~$77K/month | ~$81K |
-| GPT-5.5 | ~$151K/month | ~$160K |
+| GPT-5.5 | ~$80K/month | ~$84K |
 | Gemini 3.1 Pro | ~$32K/month | ~$34K |
 
-For classification at this scale, **Gemini 3.1 Pro wins decisively** — saving $45K/month vs. Opus 4.7. The structured-output task (12-category classification) uses a simple flat schema (category 1–2 in our benchmark), where Gemini's determinism is 96–100% — effectively eliminating the retry-rate advantage of more expensive models.
-
-**The unified lesson**: the right model depends on your archetype. Gemini for simple-schema, high-volume, or long-context retrieval. GPT-5.5 with strict schema for complex tool-use pipelines. Opus 4.7 for use cases where determinism on complex schemas is non-negotiable and retry cost is prohibitive.
-
----
+**Gemini 3.1 Pro wins** — saving $45K/month vs. Opus. The simple flat schema (category 1–2) keeps Gemini's determinism at 96–100%, eliminating the reliability advantage of more expensive models. Multi-model routing strategies — cheap model for easy tasks, premium model for complex — can reduce cost-per-task by 30–60%. [^4][^6]
 
 ## Hands-on exercise
 
 **Build a cost-per-task model for your use case using your Chapter 2 benchmark data.**
 
-Use this spreadsheet template (fill in your numbers):
+Fill in these numbers from actual benchmark runs (not guesses):
 
 ```
-=== COST MODEL WORKSHEET ===
-
 USE CASE: [describe in 1 sentence]
 
-TOKEN COUNTS (from your Chapter 2 benchmark run):
+TOKEN COUNTS:
   System prompt tokens: ___
   Average user message tokens: ___
   Tool definition tokens: ___
@@ -310,13 +210,11 @@ TOKEN COUNTS (from your Chapter 2 benchmark run):
 
 CACHING:
   Is system prompt ≥ 1024 tokens? [Y/N]
-  Estimated cache hit rate (% of calls): ___ %
-  (For Anthropic: use 80% if calls are within 5-minute windows; 40% if irregular)
+  Estimated cache hit rate: ___ %
+  (Anthropic: use 80% if calls within 5-min windows; 40% if irregular)
 
-DETERMINISM SCORES (from your Chapter 2 run):
-  Model A (Opus 4.7): ___ %
-  Model B (GPT-5.5): ___ %
-  Model C (Gemini 3.1 Pro): ___ %
+DETERMINISM SCORES (from Chapter 2):
+  Opus 4.7: ___ %   GPT-5.5: ___ %   Gemini 3.1 Pro: ___ %
 
 COST FORMULA (per model):
   input_cost = (system_prompt × (1 - cache_hit_rate) × INPUT_PRICE)
@@ -334,25 +232,7 @@ RESULTS:
 RECOMMENDATION: [which model and why, in 1 sentence]
 ```
 
-**Verification**: Your cost model is complete when:
-- All token counts are from actual benchmark runs (not guesses)
-- Cache hit rate reflects your actual call pattern
-- Cost-per-task accounts for retries using your measured determinism scores
-- You can state which model wins on cost-per-task and by what margin
-
-**Estimated time**: 20 minutes
-
-<RunPromptCell
-  model="claude-sonnet-4-6"
-  prompt="I'm building a cost model for an AI customer support system. Here are my numbers: system prompt = 3,000 tokens (same for all calls, high cache hit rate ~85%), average customer message = 400 tokens, tool definitions = 1,200 tokens, average response = 600 tokens, pipeline steps = 2. Determinism scores from my benchmark: Opus 4.7 = 94%, GPT-5.5 = 91%, Gemini 3.1 Pro = 85%. Using these current approximate prices — Opus 4.7: $5/$25 per M input/output, GPT-5.5: $10/$40, Gemini 3.1 Pro: $2.00/$12.00 — and Anthropic's cache read price of $0.50/M, GPT-5.5 cached input $5/M, and Gemini cached input $0.20/M — calculate cost-per-task for each model including retries. Show your working."
-  expectedOutput="The model should walk through the calculation for each of the three providers, applying the cache hit rate to the system prompt, then computing per-step cost, then applying the retry multiplier (1 / determinism^2). Expected output: Opus cost-per-task ≈ $0.025–0.035; GPT-5.5 ≈ $0.130–0.145; Gemini ≈ $0.030–0.040. Opus and Gemini are the closest pair because both platforms apply a 90% cache discount, while GPT-5.5's 50% discount is less effective. The retry multiplier slightly closes the Opus–Gemini gap (Gemini has lower determinism). This is the core illustration of why pricing pages mislead: GPT-5.5 appears competitive on the list price table but costs 2–3× more than Opus once caching and retries are modelled."
-/>
-
-<RunPromptCell
-  model="claude-sonnet-4-6"
-  prompt="My team is debating whether to switch from Gemini 3.1 Pro to Opus 4.7 for a high-volume document classification pipeline. We process 500,000 documents per day. Each document averages 800 tokens of input, and we use a 2,000-token system prompt that stays constant. Output is ~100 tokens. We have a 90% cache hit rate. Our current Gemini bill is approximately $53,000/month (Gemini 3.1 Pro: $2/M input, $12/M output, $0.20/M cached). Gemini's determinism on our classification schema is 92%. Opus 4.7's determinism is 97% (Opus 4.7: $5/M input, $25/M output, $0.50/M cached). Neither model is failing enough to cause production issues — we have retry logic that handles failures. Should we switch? What's the monthly cost difference, and does the determinism improvement justify the switch?"
-  expectedOutput="The model should compute: Gemini monthly cost (with 90% cache, 500K docs/day × 30 days = 15M docs/month, ~800 tokens each + 2K system prompt) ≈ $53K/month. Opus 4.7 monthly cost at the same volume ≈ $126K/month. At these determinism levels (92% vs 97%), the retry multiplier difference is small (1.087 vs 1.031) — less than 6%. The monthly cost of Opus 4.7 vs Gemini 3.1 Pro at this volume is dramatically different (Opus is ~2.5× more expensive in input tokens, with the same 90% cache discount on both). The recommendation should be: do not switch. The 5-point determinism improvement does not justify a $73K/month increase when retry logic is already handling failures and neither model is causing production SLA breaches."
-/>
+Your cost model is complete when all token counts are from actual benchmark runs, cache hit rate reflects your actual call pattern, and cost-per-task accounts for retries using your measured determinism scores. *Estimated time: 20 minutes.*
 
 <KnowledgeCheck
   question="A startup is choosing between Gemini 3.1 Pro ($2/M input) and Opus 4.7 ($5/M input) for a 4-step agentic coding pipeline. Their benchmark shows Gemini determinism = 82% and Opus determinism = 91% on their prompt types. Which statement is true about the expected cost-per-task comparison?"
@@ -377,15 +257,7 @@ RECOMMENDATION: [which model and why, in 1 sentence]
 
 ## What's next
 
-You have now completed all four analytical chapters. You have:
-- A scorecard weighted for your use case (Chapter 1)
-- Empirical determinism scores for your prompts (Chapter 2)
-- Context fidelity data at your target document depth (Chapter 3)
-- A cost-per-task model with retry rates and caching (Chapter 4)
-
-The capstone project synthesizes all four into a **model selection memo** — a 500–800 word document your engineering manager could read and act on. The memo format is in `vault/courses/picking-a-frontier-model-2026-q2/outline.md`.
-
-For further reading on how these models perform on specific workloads, see [Opus 4.7 long-running coding benchmark](/blog/2026-04-30-opus-4-7-long-running-coding-benchmark) and [GPT-5.5 in Codex](/blog/2026-04-30-gpt-5-5-in-codex) in the Academy vault.
+You have a scorecard (ch01), determinism scores (ch02), context fidelity data (ch03), and a cost-per-task model (ch04). The capstone project synthesizes all four into a model selection memo — format in `vault/courses/picking-a-frontier-model-2026-q2/outline.md`.
 
 ---
 
@@ -393,11 +265,12 @@ For further reading on how these models perform on specific workloads, see [Opus
 
 [^1]: Anthropic. "Claude pricing." https://www.anthropic.com/pricing — Opus 4.7 input/output/cache pricing as of Q2 2026. Also: "Prompt caching." https://www.anthropic.com/news.
 
-[^2]: OpenAI. "OpenAI API pricing." https://openai.com/pricing — GPT-5.5 input/output/cached input pricing as of Q2 2026. Model release notes: https://help.openai.com/en/articles/9624314-model-release-notes.
+[^2]: OpenAI. "OpenAI API pricing." https://developers.openai.com/api/docs/pricing — GPT-5.5 $5/$30/M input/output; cached input $0.50/M (90% discount). Verified 2026-06-14. Model release notes: https://developers.openai.com/api/docs/models.
 
 [^3]: Google. "Gemini API pricing." https://ai.google.dev/pricing — Gemini 3.1 Pro input/output/context caching pricing as of Q2 2026. Changelog: https://ai.google.dev/gemini-api/docs/changelog.
 
-[^4]: Koenig AI Academy internal cost model data, Q2 2026. Derived from 10×3×5 benchmark dataset (`/data/claude-tool-use-determinism/2026-Q2/`) with retry simulation applied at workload scale.
+[^4]: Koenig AI Academy internal cost model data, Q2 2026. Derived from the Q2 2026 tool-use determinism benchmark dataset (reference tables embedded in Chapter 2) with retry simulation applied at workload scale.
 
 [^5]: Patil, S. et al. *Berkeley Function-Calling Leaderboard (BFCL) V4*. https://gorilla.cs.berkeley.edu/leaderboard.html — analysis of tool-call reliability impact on pipeline cost.
 
+[^6]: Chen, L. et al. (2023). "FrugalGPT: How to Use Large Language Models While Reducing Cost and Improving Performance." https://arxiv.org/abs/2305.05176 — analysis of model routing, cascading, and selection strategies that reduce cost-per-task by matching task complexity to model capability.

@@ -9,6 +9,7 @@ import {
 } from "@paperclipai/shared";
 import {
   agents,
+  activityLog,
   agentWakeupRequests,
   approvals,
   companies,
@@ -16,6 +17,7 @@ import {
   heartbeatRunWatchdogDecisions,
   heartbeatRuns,
   issueApprovals,
+  issueComments,
   issueRelations,
   issueThreadInteractions,
   issues,
@@ -177,6 +179,74 @@ function isAgentInvokable(agent: typeof agents.$inferSelect | null | undefined) 
 
 function isStrandedIssueRecoveryIssue(issue: Pick<typeof issues.$inferSelect, "originKind">) {
   return isStrandedIssueRecoveryOriginKind(issue.originKind);
+}
+
+const STALE_TRIAGE_SUPPRESSION_MARKERS = [
+  "v7 phase n triage",
+  "stale-triage subagent",
+  "no_recover=true",
+];
+
+const STALE_TRIAGE_CLOSE_REASON_PREFIXES = [
+  "v7_phase_n_triage",
+  "stale-triage",
+];
+
+function hasStaleTriageSuppressionMarker(input: unknown) {
+  if (!input) return false;
+  const text = typeof input === "string" ? input : JSON.stringify(input);
+  const lower = text.toLowerCase();
+  return STALE_TRIAGE_SUPPRESSION_MARKERS.some((marker) => lower.includes(marker));
+}
+
+function hasStaleTriageSuppressionCloseReason(details: unknown) {
+  const parsed = parseObject(details);
+  const closeReason = readNonEmptyString(parsed.close_reason) ?? readNonEmptyString(parsed.closeReason);
+  if (!closeReason) return false;
+  const lower = closeReason.toLowerCase();
+  return STALE_TRIAGE_CLOSE_REASON_PREFIXES.some((prefix) => lower.startsWith(prefix));
+}
+
+export async function isIntentionallySuppressedStaleTriageIssue(
+  db: Pick<Db, "select">,
+  companyId: string,
+  issueId: string,
+  statusHint?: string | null,
+) {
+  const status = statusHint ?? await db
+    .select({ status: issues.status })
+    .from(issues)
+    .where(and(eq(issues.companyId, companyId), eq(issues.id, issueId)))
+    .limit(1)
+    .then((rows) => rows[0]?.status ?? null);
+  if (!status) return false;
+
+  const [recentComments, recentActivity] = await Promise.all([
+    db
+      .select({ body: issueComments.body })
+      .from(issueComments)
+      .where(and(eq(issueComments.companyId, companyId), eq(issueComments.issueId, issueId)))
+      .orderBy(desc(issueComments.createdAt))
+      .limit(25),
+    db
+      .select({ details: activityLog.details })
+      .from(activityLog)
+      .where(
+        and(
+          eq(activityLog.companyId, companyId),
+          eq(activityLog.entityType, "issue"),
+          eq(activityLog.entityId, issueId),
+        ),
+      )
+      .orderBy(desc(activityLog.createdAt))
+      .limit(50),
+  ]);
+
+  if (recentComments.some((row) => hasStaleTriageSuppressionMarker(row.body))) return true;
+
+  return recentActivity.some((row) =>
+    hasStaleTriageSuppressionMarker(row.details) || hasStaleTriageSuppressionCloseReason(row.details)
+  );
 }
 
 function isUnsuccessfulTerminalIssueRun(latestRun: LatestIssueRun) {
@@ -1355,6 +1425,16 @@ export function recoveryService(db: Db, deps: { enqueueWakeup: RecoveryWakeup })
     previousStatus: "todo" | "in_progress";
   }) {
     if (isStrandedIssueRecoveryIssue(input.issue)) return null;
+    if (
+      await isIntentionallySuppressedStaleTriageIssue(
+        db,
+        input.issue.companyId,
+        input.issue.id,
+        input.issue.status,
+      )
+    ) {
+      return null;
+    }
 
     const existing = await findOpenStrandedIssueRecoveryIssue(input.issue.companyId, input.issue.id);
     if (existing) return existing;
@@ -2025,6 +2105,16 @@ export function recoveryService(db: Db, deps: { enqueueWakeup: RecoveryWakeup })
       .where(and(eq(issues.companyId, recovery.companyId), eq(issues.id, parsed.issueId)))
       .then((rows) => rows[0] ?? null);
     if (!sourceIssue) return false;
+    if (
+      await isIntentionallySuppressedStaleTriageIssue(
+        db,
+        sourceIssue.companyId,
+        sourceIssue.id,
+        sourceIssue.status,
+      )
+    ) {
+      return false;
+    }
 
     const blockerIds = await existingBlockerIssueIds(sourceIssue.companyId, sourceIssue.id);
     if (!blockerIds.includes(recovery.id)) return false;
@@ -2337,6 +2427,12 @@ export function recoveryService(db: Db, deps: { enqueueWakeup: RecoveryWakeup })
     if (!issue || issue.companyId !== input.finding.companyId) return { kind: "skipped" as const };
     if (await isAutomaticRecoverySuppressedByPauseHold(db, issue.companyId, issue.id, treeControlSvc)) {
       return { kind: "skipped" as const };
+    }
+    for (const pathEntry of input.finding.dependencyPath) {
+      if (pathEntry.status !== "cancelled") continue;
+      if (await isIntentionallySuppressedStaleTriageIssue(db, issue.companyId, pathEntry.issueId, pathEntry.status)) {
+        return { kind: "skipped" as const };
+      }
     }
 
     const recoveryIssue = await db
