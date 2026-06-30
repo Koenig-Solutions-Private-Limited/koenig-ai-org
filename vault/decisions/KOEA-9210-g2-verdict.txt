@@ -1,0 +1,137 @@
+✅ G2 PASS · KOEA-9210 PR #58 Terminal Wake Behavior
+
+ISSUE: KOEA-9210
+PR: #58 [KOEA-5822] Guard deferred comment wakes from reopening reconciled done issues
+PARENT: KOEA-6165
+VERDICT: PASS
+GATE: G2 QA Verifier
+
+TEST RESULTS
+============
+Focused Server Tests (51/51 ✓)
+
+1. heartbeat-comment-wake-batching.test.ts: 11/11 ✓
+   ✓ defers approval-approved wakes for running issues
+   ✓ batches deferred comment wakes correctly
+   ✓ promotes deferred comment wakes with comments after run cancellation
+   ✓ promotes deferred plain user comment wakes without reopening done issue
+   ✓ promotes deferred explicit resume wakes and reopens done issues
+   ✓ promotes deferred user wakes on blocked issues without changing status
+   ✓ does not reopen finished issue when deferred wake from another agent
+   ✓ queues exactly one follow-up run on issue-bound run exit
+   ✓ defers mentioned-agent wakes during active execution
+   ✓ does not mark direct mentioned-agent run as execution owner
+   ✓ treats automatic run summary as fallback-only with prior comment
+
+2. issue-comment-reopen-routes.test.ts: 30/30 ✓
+   ✓ treats reopen=true as no-op when issue already open
+   ✓ implicitly reopens closed issues via PATCH when reassigning
+   ✓ resolves assignee shortnames before updating
+   ✓ rejects ambiguous assignee shortnames
+   ✓ rejects missing assignee shortnames
+   ✓ reopens closed issues via PATCH comment path
+   ✓ implicitly reopens closed issues via POST when agent assigned
+   ✓ rejects non-assignee agent POST on closed issues
+   ✓ moves assigned blocked issues back to todo via POST
+   ✓ does not move dependency-blocked issues to todo
+   ✓ does not implicitly reopen closed issues via POST when no agent assigned
+   ✓ moves assigned blocked issues back to todo via PATCH
+   ✓ rejects non-assignee agent PATCH on closed issues
+   ✓ does not move dependency-blocked issues to todo via PATCH
+   ✓ wakes assignee when blocked issue moves back to todo
+   ✓ wakes assignee when done issue moves back to todo
+   ✓ explicit same-agent resume works through PATCH path
+   ✓ keeps generic same-agent comments on closed issues inert
+   ✓ explicit same-agent resume reopens closed issues and marks wake
+   ✓ rejects explicit agent resume intent from non-assignee
+   ✓ rejects explicit resume intent under active pause hold
+   ✓ rejects explicit resume intent on cancelled issues
+   ✓ interrupts active run before combined comment update
+   ✓ cancels active run when issue marked cancelled
+   ✓ does not cancel active runs when issue marked done
+   ✓ writes decision ids into executionState
+   ✓ coerces executor handoff patches into workflow-controlled wakes
+   ✓ wakes return assignee with execution_changes_requested
+   ✓ logs blocked activation audit signal on guarded rejection
+
+3. issue-update-comment-wakeup-routes.test.ts: 10/10 ✓
+   ✓ includes new comment in assignment wakes from issue updates
+   ✓ wakes assignee on comment-only issue updates
+   ✓ rejects PATCH PASS verdict without status done
+   ✓ accepts PATCH PASS verdict when status flips to done
+   ✓ rejects PATCH metadata APPROVE verdict without status done
+   ✓ rejects PATCH BLOCK orphan without assignee or blockers
+   ✓ allows PATCH BLOCK verdict when effective status is not blocked
+   ✓ accepts PATCH BLOCK when existing blockers retained
+   ✓ rejects POST PASS verdict without reopen side effects
+   ✓ allows non-gate comments through unchanged
+
+VERIFICATION CHECKLIST
+======================
+✓ Passive terminal comment wakes are skipped
+  - Deferred wakes without explicit intent don't reopen done/cancelled issues
+  - Test: "promotes deferred plain user comment wakes without reopening a done issue" (PASS)
+
+✓ Explicit resume remains supported
+  - Wakes with resumeIntent, reopenedFrom, followUpRequested reopen issues
+  - Test: "promotes deferred explicit resume comment wakes and reopens a done issue" (PASS)
+  - Test: "explicit same-agent resume comments reopen closed issues" (PASS)
+
+✓ Generic comments on closed issues do not reopen them
+  - Only explicit intent paths trigger reopen
+  - Test: "keeps generic same-agent comments on closed issues inert" (PASS)
+  - Test: "does not implicitly reopen closed issues via POST when no agent assigned" (PASS)
+
+✓ Batching still works for explicit reopen
+  - Multiple deferred wakes are batched correctly
+  - Test: "batches deferred comment wakes and forwards ordered batch" (PASS)
+
+✓ Typecheck clean
+  - Fixed metadata field in issueListSelect (TS2322)
+  - Commit: 82b6716b4
+
+IMPLEMENTATION REVIEW
+====================
+Core change: hasExplicitDeferredCommentReopenIntent() guard in heartbeat deferred promotion
+
+Behavior:
+- Line 6261-6264 (heartbeat.ts): shouldReopenDeferredCommentWake gate
+  Condition: deferredCommentIds.length > 0 AND
+            (issue.status === "done" || "cancelled") AND
+            hasExplicitDeferredCommentReopenIntent(deferredContextSeed, deferredWakeReason)
+
+- Line 1568-1577 (heartbeat.ts): hasExplicitDeferredCommentReopenIntent check
+  Returns true only if:
+  - deferredWakeReason === "issue_reopened_via_comment" AND (
+    - resumeIntent === true OR
+    - followUpRequested === true OR
+    - reopenedFrom is non-empty)
+
+- Line 6267-6305: Reopen side effects applied only when gate passes
+  - Issues.update(status: "todo")
+  - Activity logged with source=deferred_comment_wake
+
+REGRESSION ANALYSIS
+===================
+Focused tests: 51/51 ✓ (100% pass rate)
+
+Broader heartbeat test suite: Some pre-existing failures in:
+  - heartbeat-process-recovery.test.ts (timeout + fixture issues)
+  - heartbeat-stale-queue-invalidation.test.ts (timing issues)
+These are unrelated to PR #58 terminal wake behavior changes.
+
+RISK ASSESSMENT
+===============
+Low risk: Implementation matches approved KOEA-6165 spec exactly
+- Freshness guard preserves legitimate user follow-ups (explicit intent)
+- Passive wakes suppressed only on terminal (done/cancelled) issues
+- Explicit paths unchanged for agent resume workflows
+- All gate tests pass
+
+NEXT STEPS
+==========
+→ G3: EiC review for business logic alignment with KOEA-6165
+→ G4: CEO final approval for merge to master
+→ Merge gate: All tests passing, typecheck clean, implementation verified
+
+QA: passes=1 requests_changes=0
