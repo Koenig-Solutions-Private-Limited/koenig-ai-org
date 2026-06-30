@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: microsoft-advertising-bing-ads
 title: "Importing & Auditing Google Ads Campaigns into Microsoft Advertising"
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-10
 positions: []
 duration_min: 22

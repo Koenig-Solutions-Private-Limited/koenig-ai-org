@@ -2,7 +2,7 @@
 chapter_num: 5
 course_slug: microsoft-advertising-bing-ads
 title: "Performance Max on Microsoft Advertising: Setup, Asset Groups & AI Optimization"
-status: g0-passed
+status: g3-passed
 duration_min: 22
 vendor_tag: Microsoft Advertising
 learning_objectives:

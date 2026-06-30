@@ -2,7 +2,7 @@
 chapter_num: 7
 course_slug: microsoft-advertising-bing-ads
 title: "Cross-Platform Budget Allocation: Splitting Spend Between Google Ads and Microsoft Advertising"
-status: g0-passed
+status: g3-passed
 duration_min: 12
 vendor_tag: Microsoft Advertising
 learning_objectives:

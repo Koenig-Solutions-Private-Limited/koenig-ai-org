@@ -2,7 +2,7 @@
 chapter_num: 4
 course_slug: microsoft-advertising-bing-ads
 title: "Audience Targeting: In-Market Segments, LinkedIn Profile Targeting & Remarketing"
-status: g0-passed
+status: g3-passed
 duration_min: 10
 vendor_tag: microsoft-advertising
 learning_objectives:

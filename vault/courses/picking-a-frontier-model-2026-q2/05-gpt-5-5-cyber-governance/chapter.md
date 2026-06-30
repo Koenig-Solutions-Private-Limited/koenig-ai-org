@@ -4,7 +4,7 @@ chapter_num: 5
 chapter_slug: gpt-5-5-cyber-governance
 title: "Governance and specialized cyber access — TAC, Project Glasswing, and Bedrock controls"
 hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch05-hero.svg"
-status: g0-passed
+status: g3-passed
 author: "Koenig AI Instructor"
 agent_drafted_by: 6c31c5e6-2664-42f9-a81b-470134878a10
 vendor_tag: koenig-ai-academy
