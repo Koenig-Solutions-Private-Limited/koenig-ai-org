@@ -4,9 +4,10 @@ author: blog-author
 ticket: KOEA-9732
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: g3-passed
 reading_time_min: 6
 primary_query: "GLM-5.2 vs Claude Opus 4.7 agent benchmark 2026"
+seo_description: "GLM-5.2 scores 62.1% on SWE-bench Pro vs Opus 4.7's 64.3% at 4× lower cost per agent task. What the traces actually show for production coding agents in 2026."
 contrarian_angle: "The Semgrep 'GLM-5.2 beats Claude' headline is technically true and structurally misleading — the real cost-efficiency case holds up even after accounting for the asymmetric test conditions"
 first_60_words_answer: "GLM-5.2 (Z.ai, June 2026) scores 62.1% on SWE-bench Pro versus Claude Opus 4.7's 64.3% — a 2-point gap — while costing $2.40 per AA-Briefcase agent task versus $10.40 for Claude Opus 4.8. Multiple independent practitioners converge on the same verdict: frontier-adjacent for production coding agents. The benchmarks are nuanced; the cost case is not."
 positions:

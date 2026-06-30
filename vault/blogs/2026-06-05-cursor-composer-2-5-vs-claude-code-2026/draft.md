@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-7352
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: g3-passed
 reading_time_min: 8
 primary_query: "cursor composer 2.5 vs claude code"
 contrarian_angle: "Composer 2.5's benchmark scores nearly match Claude Code — the decision isn't the numbers, it's whether your agent loop needs to outlive a browser tab"

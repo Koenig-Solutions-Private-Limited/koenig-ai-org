@@ -4,9 +4,10 @@ author: blog-author
 ticket: KOEA-7355
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: g3-passed
 reading_time_min: 8-12
 primary_query: "codex cli vs claude code vs cursor 2026"
+seo_description: "Codex CLI, Claude Code, and Cursor: our trace data shows Claude Code at 42s vs Codex at 267s on the same task. 2026 Q2 fitness matrix by job shape."
 contrarian_angle: "The winner depends on the job shape, not the benchmark leaderboard — and our own trace data shows Claude Code finishing in 42s on tasks where Codex CLI took 267s"
 first_60_words_answer: "Codex CLI, Claude Code, and Cursor Composer 2 are not competing products doing the same thing. Codex CLI wins for headless, batch, and CI-pipeline automation. Claude Code wins for terminal-native pair programming with tight context and the fastest time-to-viable-diff in our Q2 2026 benchmarks. Cursor Composer 2 wins when your team lives in VS Code and values low per-token cost above portability."
 original_data: true
