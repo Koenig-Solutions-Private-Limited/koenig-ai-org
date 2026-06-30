@@ -6,7 +6,7 @@ prerequisites_chapters: [1, 2]
 duration_min: 60
 reading_time_min: 60
 date: 2026-04-30
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-14
 author: Koenig AI Academy
 agent_drafted_by: course-author

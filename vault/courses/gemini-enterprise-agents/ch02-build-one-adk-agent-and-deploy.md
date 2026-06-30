@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: gemini-enterprise-agents
 title: "Build one ADK agent and deploy it with a real lifecycle"
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-12
 duration_min: 55
 vendor_tag: google

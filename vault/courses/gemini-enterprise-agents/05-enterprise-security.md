@@ -12,7 +12,7 @@ content_type: chapter
 chapter: 5
 parent_course: gemini-enterprise-agents
 ticket: KOEA-25
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-10
 vendor_tag: google
 learning_objectives:
