@@ -25,7 +25,7 @@ positions:
   - id: mcp-as-interoperability-moat
     engagement: defends
 tags: [A2A, MCP, tool-sharing, resource-injection, multi-agent, orchestration, tool-proxy, protocol-composition]
-status: g0-passed
+status: g3-passed
 sources:
   - https://arxiv.org/html/2603.05637v1 # retrieved 2026-06-15
   - https://www.anthropic.com/engineering/code-execution-with-mcp # retrieved 2026-06-15

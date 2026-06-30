@@ -22,7 +22,7 @@ learning_objectives:
   - Describe the A2A spec's security surface (AgentCard securitySchemes, header-only credentials, Agent Card access controls) versus implementation hardening patterns
   - Implement a security middleware layer that validates identity, scope, replay protection, and prompt injection before handing an inbound A2A task to the agent's LLM core
 tags: [A2A, security, DPoP, OAuth, mTLS, delegated-trust, prompt-injection, zero-trust, agent-sandboxing, token-exchange]
-status: g0-passed
+status: g3-passed
 positions: [audit-trail-as-enterprise-gate]
 sources:
   - url: "https://tyk.io/learning-center/a2a-protocol-architecture-and-technical-specification"

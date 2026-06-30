@@ -22,7 +22,7 @@ learning_objectives:
 positions:
   - audit-trail-as-enterprise-gate
 tags: [observability, OpenTelemetry, Langfuse, distributed-tracing, A2A, multi-agent, debugging]
-status: g0-passed
+status: g3-passed
 sources:
   - url: https://langfuse.com/docs/observability/overview
     title: "Langfuse Observability Overview"

@@ -5,7 +5,7 @@ chapter_title: "The Internet of Agents — AGNTCY & Global Discovery (2026)"
 author: course-author
 ticket: KOEA-6946
 date: 2026-05-31
-status: g0-passed
+status: g3-passed
 level: Advanced
 duration_min: 50
 reading_time_min: 12

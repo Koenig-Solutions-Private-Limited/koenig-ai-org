@@ -7,7 +7,7 @@ description: "Trace every field in an A2A message envelope, implement the four-s
 author: course-author
 ticket: KOEA-6950
 date: 2026-05-31
-status: g0-passed
+status: g3-passed
 level: Advanced
 duration_min: 45
 reading_time_min: 12

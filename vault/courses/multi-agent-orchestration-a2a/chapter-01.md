@@ -22,7 +22,7 @@ learning_objectives:
 positions:
   - mcp-as-interoperability-moat
 tags: [A2A, multi-agent, orchestration, protocol, agent-interoperability]
-status: g0-passed
+status: g3-passed
 sources:
   - https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/ # retrieved 2026-06-12
   - https://a2a-protocol.org/latest/specification/ # retrieved 2026-06-12

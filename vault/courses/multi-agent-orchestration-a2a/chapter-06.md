@@ -25,7 +25,7 @@ positions:
   - id: mcp-as-interoperability-moat
     engagement: neutral
 tags: [A2A, multi-agent, orchestration, hub-and-spoke, peer-to-peer, dynamic-mesh, topology, linear-chain, orchestrator-bottleneck]
-status: g0-passed
+status: g3-passed
 sources:
   - https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/ # retrieved 2026-05-12
   - https://a2a-protocol.org/latest/specification/ # retrieved 2026-05-12

@@ -25,7 +25,7 @@ positions:
   - id: mcp-as-interoperability-moat
     engagement: defends
 tags: [A2A, multi-agent, orchestration, role-design, capability-advertisement, specialist-agents, rejection-logic]
-status: g0-passed
+status: g3-passed
 sources:
   - https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/ # retrieved 2026-06-15
   - https://github.com/a2aproject/A2A/releases/tag/v1.0.0 # retrieved 2026-06-15

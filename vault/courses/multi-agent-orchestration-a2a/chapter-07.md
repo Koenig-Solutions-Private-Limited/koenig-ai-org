@@ -3,7 +3,7 @@ chapter_num: 7
 course_slug: multi-agent-orchestration-a2a
 title: "Resilience, State, and Asynchrony"
 description: "Fire-and-forget fails in multi-agent systems because downstream agent state cannot be replayed. This chapter shows how to implement A2A checkpointing, minimal-sufficient context passing, and idempotent retry to build workflows that survive network failures and agent crashes."
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-15
 duration_min: 45
 vendor_tag: Google A2A

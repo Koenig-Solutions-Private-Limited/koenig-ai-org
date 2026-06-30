@@ -23,7 +23,7 @@ learning_objectives:
   - Prove Writer resumability — the Market Data Specialist is invoked exactly once per root contextId even after Writer failure and re-dispatch
   - Connect all four agents under a single OpenTelemetry trace and inspect the full timeline in Langfuse
 tags: [A2A, capstone, sovereign-agent, MCP, DPoP, OAuth, resumability, OpenTelemetry, Langfuse, multi-agent]
-status: g0-passed
+status: g3-passed
 positions: []  # capstone synthesis — no adversarial stance declared
 sources:
   - url: "https://a2a-protocol.org"
