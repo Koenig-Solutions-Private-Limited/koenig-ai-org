@@ -7,7 +7,7 @@ ticket: KOEA-7030
 vendor_tag: community
 content_type: comparison
 slug: 2026-06-01-browser-use-vs-playwright-ai-agents
-status: awaiting-g0
+status: g3-passed
 reading_time_min: 9
 primary_query: "browser-use vs playwright AI agents"
 first_60_words_answer: "browser-use and Playwright are frequently compared as competing tools for web automation. They are not competitors — browser-use is built on top of Playwright. The real question is which abstraction layer is right for your use case: the low-level browser control that Playwright provides, or the LLM-driven agent loop that browser-use adds on top of it."
@@ -73,7 +73,7 @@ positions:
     engagement: refines
   - id: benchmark-theater-vs-agent-trace-evaluation
     engagement: neutral
-seo_description: "browser-use vs Playwright for AI agents: architecture comparison, decision matrix, and code examples. Learn when each tool wins and how to integrate browser-use with an LLM agent in under 15 lines."
+seo_description: "browser-use vs Playwright for AI agents: architecture comparison, decision matrix, and code examples. When each wins and how to integrate with an LLM agent."
 description: "browser-use vs Playwright for AI agents: architecture comparison, decision matrix, and code examples. Learn when each tool wins and how to integrate browser-use with an LLM agent in under 15 lines."
 schema_type: Article
 mini_series: tools-we-actually-use

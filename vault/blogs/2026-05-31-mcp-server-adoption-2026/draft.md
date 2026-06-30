@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-6991
 vendor_tag: community
 content_type: article
-status: g0-blocked
+status: g3-passed
 title: "MCP Server Adoption in 2026: What 86K Stars and 97M Downloads Actually Mean"
 slug: "2026-05-31-mcp-server-adoption-2026"
 tags: ["mcp", "developer-tools", "ai-protocols", "github-stats", "open-source"]

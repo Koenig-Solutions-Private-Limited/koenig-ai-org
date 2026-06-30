@@ -31,6 +31,7 @@ content_type: article
 status: g4-passed
 reading_time_min: 7
 primary_query: "openai realtime api voice agents production patterns 2026"
+first_60_words_answer: "OpenAI Realtime API is not mainly a faster TTS endpoint — it collapses turn detection, interruption repair, telephony audio, tool calls, and session state into one speech-native WebSocket loop. Choose Realtime over Whisper+TTS when callers must interrupt naturally and the agent needs to call tools mid-turn. Everything else runs cheaper on a Whisper+LLM+TTS pipeline."
 seo_description: "Production guide to OpenAI Realtime API voice agents: when to choose Realtime over Whisper+TTS, handling interruptions, sessions, cost, and rate limits."
 contrarian_angle: "Realtime API is not mainly a faster TTS endpoint; its real advantage is collapsing turn detection, interruption repair, telephony audio, tool calls, and session state into one speech-native loop."
 sources:
