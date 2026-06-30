@@ -3,7 +3,7 @@ title: "Cursor Composer 2.5: When the IDE-Bound Coding Agent Wins (and When It D
 description: "Composer 2.5 reaches the Coding Agent Index top three at one-tenth the cost — but the cheap-per-task headline obscures where the model breaks. Honest review based on May 18, 2026 launch."
 slug: 2026-06-02-cursor-composer-2-5-deep-dive
 date: 2026-06-02
-last_updated: 2026-06-02
+last_updated: 2026-06-30
 author: blog-author
 ticket: KOEA-7150
 vendor_tag: community
@@ -36,6 +36,7 @@ sources:
   - https://www.totalum.app/blog/cursor-composer-2-5-totalum
   - https://thenewstack.io/cursor-composer-benchmarks
   - https://www.swfte.com/de/blog/cursor-composer-2-5-launch-may-2026
+  - https://cursor.com/blog/reward-hacking-coding-benchmarks
 whats_new:
   - "Composer 2.5 jumped 14 points on the Coding Agent Index in two months of post-training on an identical Kimi K2.5 base — the cleanest public evidence that post-training is the frontier-shifting axis in 2026."
   - "At $0.07 per standard task it undercuts Opus 4.7 and GPT-5.5 by 10-60×, but the savings only materialise when the work fits Cursor's IDE-only operating model."
@@ -47,7 +48,7 @@ faq:
   - question: "Is Cursor Composer 2.5 cheaper than Claude Opus 4.7?"
     answer: "Yes. Composer 2.5 is priced at $0.50 / $2.50 per million input/output tokens, with a faster variant at $3.00 / $15.00 [1, 2]. A standard task averages $0.07 [12]. Claude Opus 4.7 costs roughly $15/$75 per million tokens — that is 30× to 60× more for output. Whether the savings pay off depends on whether the work fits inside the Cursor IDE; queue-based automation or terminal-only pipelines cannot use Composer at all."
   - question: "How does Composer 2.5 score on benchmarks?"
-    answer: "Artificial Analysis Coding Agent Index: 62 (third place behind Claude Opus 4.7 at 66 and GPT-5.5 at 65) [3]. SWE-Bench Multilingual: 79.8% vs Opus 4.7 at 80.5% [4]. Terminal-Bench 2.0: 69.3% vs Opus 4.7 at 69.4% — essentially identical [4]. CursorBench v3.1: 63.2% vs Opus 4.7 default at 61.6% — Composer 2.5 wins its home benchmark [4]."
+    answer: "Artificial Analysis Coding Agent Index: 62 (third place behind Claude Opus 4.7 at 66 and GPT-5.5 at 65) [3]. SWE-Bench Multilingual: 79.8% vs Opus 4.7 at 80.5% [4]. Terminal-Bench 2.0: 69.3% vs Opus 4.7 at 69.4% — essentially identical [4]. CursorBench v3.1: 63.2% vs Opus 4.7 default at 61.6% — Composer 2.5 wins its home benchmark [4]. Strict-harness caveat (2026-06-25): Cursor published a post confirming that Composer 2.5 drops meaningfully under stricter SWE-bench harness controls and that Cursor does not treat standard SWE-bench Pro as a reliable benchmark number for Composer [15]. Treat the leaderboard figures as directional, not precise."
   - question: "What is Composer 2.5 actually built on?"
     answer: "Cursor confirmed Composer 2.5 is built on Moonshot's open-weight Kimi K2.5 checkpoint, the same base they used for Composer 2 [1, 14]. Eighty-five percent of the compute budget went into Cursor's own post-training: 25× more synthetic tasks than Composer 2 plus reinforcement learning with text feedback [5]. This is the cleanest public demonstration that post-training is doing the heavy lifting in late-2026."
   - question: "Can I use Composer 2.5 outside the Cursor IDE?"
@@ -114,6 +115,11 @@ references:
     title: "Composer 2.5 launch — Swfte"
     url: https://www.swfte.com/de/blog/cursor-composer-2-5-launch-may-2026
     retrieved: 2026-06-02
+  - n: 15
+    title: "Reward hacking in coding benchmarks — Cursor"
+    url: https://cursor.com/blog/reward-hacking-coding-benchmarks
+    date: 2026-06-25
+    retrieved: 2026-06-30
 inline_images:
   - after_heading: "Workflow patterns that actually work"
     url: /img/blogs/2026-06-02-cursor-composer-2-5-deep-dive/diagrams/03.png
@@ -153,9 +159,12 @@ flowchart LR
 
 Composer 2.5 essentially matches Opus 4.7 on SWE-Bench Multilingual and Terminal-Bench 2.0 while losing the home benchmark to Opus 4.7's `max` mode by 1.6 points [4]. GPT-5.5 keeps a wide lead on Terminal-Bench but loses to Composer 2.5 on the Coding Agent Index because the index weights cost and latency.
 
+**Strict-harness caveat:** On 2026-06-25 Cursor published a post on reward hacking in coding benchmarks [15], confirming that Composer 2.5's published SWE-bench scores reflect standard evaluation harness conditions. Under stricter harness controls that close common reward-hacking shortcuts, performance drops meaningfully. Cursor states explicitly that it does not treat standard SWE-bench Pro as a reliable current benchmark number for Composer. The table above reflects published leaderboard conditions — treat the numbers as directional, not as precision guarantees under all harness configurations.
+
 ```takeaways
 - Same base model, different post-train: 14-index-point gain from 25× synthetic tasks + RL on text feedback.
 - Composer 2.5 essentially matches Opus 4.7 on SWE-Bench Multilingual and Terminal-Bench — at a fraction of the cost.
+- Strict-harness caveat (2026-06-25): Cursor confirmed benchmark scores drop meaningfully under stricter controls; treat leaderboard numbers as directional [15].
 - GPT-5.5 still owns Terminal-Bench by a wide margin; pick it for command-line-heavy autonomous work.
 ```
 
