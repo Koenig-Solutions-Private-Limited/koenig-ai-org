@@ -5,7 +5,7 @@ author: blog-author
 ticket: KOEA-7354
 vendor_tag: anthropic
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 9
 primary_query: "claude prompt caching 90% cache hit savings math"
 contrarian_angle: "At a 90% cache hit rate, net effective savings are 78.5% — not 90%. The write premium on misses caps real-world gains below the headline figure, and the break-even point shifts dramatically between TTL tiers."

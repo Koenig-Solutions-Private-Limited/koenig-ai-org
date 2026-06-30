@@ -7,7 +7,7 @@ author: blog-author
 ticket: KOEA-6776
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 6
 primary_query: "context engineering vs prompt engineering 2026"
 contrarian_angle: "Prompt engineering isn't dead — it moved inside a bigger control system you now have to design first"

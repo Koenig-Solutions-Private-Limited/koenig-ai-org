@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-2090
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 title: "Ship fixes faster than Mythos-speed exploit chains can arrive (2026)"
 slug: "2026-05-14-sub-hour-zero-days-aisi-mythos-autonomous-cyber-developers"
 description: "AISI's Claude Mythos and GPT-5.5 cyber evaluations crossed a practical developer threshold: the bottleneck is no longer finding vulnerabilities, but safely shipping fixes before exploit chains compress to hours."
@@ -21,6 +21,7 @@ positions:
 seo_description: "AISI Mythos and GPT-5.5 crossed the autonomous cyber threshold. Here's how developers build remediation pipelines that ship fixes in hours, not weeks."
 reading_time_min: 11
 primary_query: "AISI Claude Mythos GPT-5.5 autonomous cyber benchmark developers"
+first_60_words_answer: "AISI's evaluations of Claude Mythos and GPT-5.5 confirmed that AI systems can now complete real-world exploit chains end-to-end — not just find CVEs. The developer response isn't a new detection tool: it's a faster remediation pipeline. Teams that can ship a validated fix in under 8 hours are ahead of the threshold; teams on 30-day cycles are not."
 contrarian_angle: "The model benchmark is not the point; remediation speed is now the defensive bottleneck."
 sources:
   - https://www.aisi.gov.uk/blog/our-evaluation-of-claude-mythos-previews-cyber-capabilities

@@ -8,12 +8,13 @@ agent_drafted_by: blog-author
 ticket: KOEA-1338
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 seo_description: "Langfuse self-hosted setup for AI agent observability: six-container stack, OTLP export from Claude Code and Codex, cost tracking, and LangSmith comparison."
 reading_time_min: 8
 hero_image: auto:flux
 tags: [langfuse, observability, self-host, otel, agents, llmops]
 primary_query: "Langfuse production setup for AI agent observability"
+first_60_words_answer: "Langfuse is the right observability backend for mixed AI agent stacks when deployed as a six-container self-hosted instance with OTLP ingestion. Set OTEL_EXPORTER_OTLP_ENDPOINT to your Langfuse OTLP endpoint, then any agent that emits standard OpenTelemetry traces — Claude Code, Codex CLI, OpenCode — lands in the same dashboard automatically. Cost tracking and session grouping require no extra instrumentation beyond the OTLP export."
 contrarian_angle: "Langfuse is most useful in production when you treat it as your OTLP backend for mixed agent stacks, not as one more dashboard to maintain"
 sources:
   - https://langfuse.com/self-hosting

@@ -5,7 +5,7 @@ author: blog-author
 ticket: KOEA-7012
 vendor_tag: google
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 9
 slug: 2026-06-14-gemini-2-5-flash-vs-claude-sonnet-4-6-benchmarks
 primary_query: "gemini 2.5 flash vs claude sonnet 4.6 developer benchmarks 2026"

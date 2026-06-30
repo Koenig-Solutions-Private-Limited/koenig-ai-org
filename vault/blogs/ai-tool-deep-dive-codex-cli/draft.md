@@ -7,7 +7,7 @@ author: blog-author
 ticket: KOEA-7152
 vendor_tag: openai
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 10
 seo_description: "Codex CLI 5.4 review 2026: 74.9% SWE-bench Verified, open-source, terminal-native. Best for async CI automation; wrong choice for IDE pair-programming."
 primary_query: "codex cli review 2026"

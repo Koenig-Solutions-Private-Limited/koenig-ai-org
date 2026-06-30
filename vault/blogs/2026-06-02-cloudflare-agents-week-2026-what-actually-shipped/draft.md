@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-7177
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 7-9
 primary_query: "Cloudflare Agents Week 2026 what shipped"
 contrarian_angle: "Cloudflare shipped 20+ products in a week — but scored 33% on its own readiness tool, and the DO hibernation trap will cost you $406/month before the marketing hype does"

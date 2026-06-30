@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-6990
 vendor_tag: anthropic
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 7
 primary_query: "claude prompt caching cost savings 2026"
 contrarian_angle: "Most teams enable caching and see 5–15% savings; the gap to Anthropic's internal 90% hit-rate standard isn't a feature flag — it's a structural refactor, and a silent March 2026 TTL change quietly reversed gains for bursty workloads"

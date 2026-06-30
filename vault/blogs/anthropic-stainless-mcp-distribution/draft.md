@@ -8,7 +8,7 @@ author: blog-author
 ticket: KOEA-7083
 vendor_tag: anthropic
 content_type: article
-status: g0-passed
+status: g3-passed
 seo_description: "Anthropic's Stainless acquisition owns the OpenAPI pipeline that generates SDKs, CLIs, docs, and OAuth-ready MCP server tooling from a single spec."
 reading_time_min: 10-14
 primary_query: "MCP server tooling Anthropic Stainless SDK generation API distribution 2026"

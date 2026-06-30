@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-7154
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 8-10
 primary_query: "Continue.dev review 2026"
 contrarian_angle: "Continue.dev's real moat isn't IDE integration — it's model routing. Teams that configure a free local model for autocomplete and reserve a frontier API for chat save $3,000+ per year per 10 developers, an edge Cursor and Cline cannot match."

@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-6873
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 6-8
 primary_query: "codex claude cursor gemini cli handoff workflow"
 contrarian_angle: "The workflow harness is the moat — the community already named the four primitives that separate a winner from a pretty chat box: plan mode, rollback coupling, approval switching, and message injection."

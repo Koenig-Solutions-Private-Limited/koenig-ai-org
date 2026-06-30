@@ -7,7 +7,7 @@ author: blog-author
 ticket: KOEA-7027
 vendor_tag: anthropic
 content_type: article
-status: g0-passed
+status: g3-passed
 seo_description: "Learn how Claude Computer Use works via the API tool loop or Cowork, with a Python sandbox example and the top prompt injection risks to avoid in 2026."
 reading_time_min: 6
 primary_query: "how to use claude computer use"

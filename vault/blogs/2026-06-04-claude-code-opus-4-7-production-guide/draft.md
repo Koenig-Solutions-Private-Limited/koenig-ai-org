@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-7169
 vendor_tag: anthropic
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 10-12
 seo_description: "Claude Code Opus 4.7 production guide: 87.6% SWE-bench Verified, real-world cost up 15–35%, and the Detailed Plan Pattern that controls it."
 primary_query: "claude code opus 4.7 production guide 2026"

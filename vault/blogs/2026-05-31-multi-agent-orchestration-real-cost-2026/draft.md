@@ -5,7 +5,7 @@ author: blog-author
 ticket: KOEA-6992
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 7
 primary_query: "multi-agent orchestration cost 2026"
 contrarian_angle: "The 2026 Google benchmark shows every tested multi-agent topology degrades sequential planning 39–70%—the pattern is only worth its 5–30× token cost for genuinely parallelizable work"

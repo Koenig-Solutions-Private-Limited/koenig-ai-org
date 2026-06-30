@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-6942
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 9-11
 primary_query: "agent control surface rollback hooks readable artifacts 2026"
 contrarian_angle: "The bottleneck is not model intelligence — it's the missing control plane between proposal and execution that almost no framework ships"

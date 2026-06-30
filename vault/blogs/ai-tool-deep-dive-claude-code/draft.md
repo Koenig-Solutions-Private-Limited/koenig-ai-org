@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-7151
 vendor_tag: anthropic
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 10
 seo_description: "Claude Code 2026: terminal-native coding agent with Opus 4.7, MCP integration, and git worktree isolation. Best for autonomous, auditable pipeline work."
 primary_query: "claude code review 2026 is it worth it"
