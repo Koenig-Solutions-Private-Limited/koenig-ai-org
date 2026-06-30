@@ -4,9 +4,10 @@ author: blog-author
 ticket: KOEA-7359
 vendor_tag: anthropic
 content_type: article
-status: draft-for-review
+status: g3-passed
 title: "Claude Code Subagent: When to Spawn vs Inline (2026 Guide)"
 meta_description: "The spawn vs inline decision comes down to context budget, not task size. Use this 7-signal matrix to protect your parent agent's reasoning quality in 2026."
+seo_description: "The spawn vs inline decision comes down to context budget, not task size. Use this 7-signal matrix to protect your parent agent's reasoning quality in 2026."
 reading_time_min: 8-10
 primary_query: "claude code subagent when to spawn vs inline"
 contrarian_angle: "Most developers spawn subagents for parallelism and speed — the real value is protecting the parent agent's reasoning quality by shielding the main context window from exploration waste"
