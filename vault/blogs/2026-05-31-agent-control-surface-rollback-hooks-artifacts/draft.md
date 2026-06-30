@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-6938
 vendor_tag: community
 content_type: article
-status: reviewed
+status: g3-passed
 reading_time_min: 8
 title: "The agent control surface developers actually need in 2026: rollback, hooks, readable artifacts"
 description: "Three Hacker News build logs reveal the same practitioner gap: AI agents are hard to supervise, debug, and correct mid-run. Here is what a real agent control surface looks like — rollback checkpoints, lifecycle hooks, human-readable artifacts — and where current tooling falls short."
@@ -23,7 +23,8 @@ faq:
   - question: "What is the difference between a lifecycle hook and an observability callback?"
     answer: "A lifecycle hook fires before execution and has the authority to block, modify, or substitute an action — it is a control primitive. An observability callback fires after execution and records what happened — it is a monitoring primitive. For agent control work you need pre-execution hooks with block/deny responses; post-execution logging is necessary but insufficient for real-time intervention."
 original_data: false
-last_updated: 2026-05-31
+last_updated: 2026-06-30
+seo_description: "Agent control surface guide: vault-backed rollback, lifecycle hooks, readable artifacts. What AI frameworks are missing in 2026 and tools that fill the gap."
 hero_image:
   url: /img/blogs/2026-05-31-agent-control-surface-rollback-hooks-artifacts/hero.png
   alt: "Three-layer agent control surface diagram: vault-backed rollback beneath the agent, PreToolUse hooks intercepting tool calls in-flight, and human-readable artifact logs accumulating in the working directory"
