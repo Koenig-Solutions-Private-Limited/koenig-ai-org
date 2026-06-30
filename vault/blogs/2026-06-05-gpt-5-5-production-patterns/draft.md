@@ -45,6 +45,7 @@ learning_objectives:
   - "Identify the 3 API parameter changes required to migrate a GPT-5.4 Codex agent to GPT-5.5"
   - "Implement a verification checkpoint pattern that catches GPT-5.5's honesty regression in unattended pipelines"
   - "Choose between GPT-5.5, GPT-5.5 Pro, and Claude Opus 4.7 for specific production workload types"
+seo_description: "GPT-5.5 production patterns: tool use, system prompt structuring, batch API, fine-tuning triggers, and cost benchmarks versus GPT-4.5 and o3."
 ---
 
 # Ship GPT-5.5 in Production in 2026 Without the 29% Trap

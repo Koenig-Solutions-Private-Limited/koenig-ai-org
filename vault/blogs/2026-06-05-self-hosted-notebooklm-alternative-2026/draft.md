@@ -8,6 +8,7 @@ status: g0-passed
 reading_time_min: 9
 title: "Open Notebook: Self-Hosted NotebookLM Alternative 2026"
 description: "Open Notebook is the self-hosted NotebookLM alternative with a full REST API, Ollama support, and no daily audio caps — built for MD-to-PDF and audio-at-scale pipelines in 2026."
+seo_description: "Open Notebook is the self-hosted NotebookLM alternative with REST API, Ollama support, and no audio caps for production pipelines in 2026."
 primary_query: "self-hosted notebooklm alternative 2026"
 contrarian_angle: "The bottleneck isn't NotebookLM's feature set — it's the 3-audio-per-day cap and zero public REST API that make it unusable for batch content pipelines; Open Notebook + Pandoc + Kokoro solve the actual problem"
 first_60_words_answer: "The best self-hosted NotebookLM alternative in 2026 is Open Notebook (github.com/lfnovo/open-notebook) — an MIT-licensed, Docker-deployable system with a full REST API, 18+ model providers, and no daily audio caps. Pair it with Pandoc + Typst for Markdown-to-PDF conversion and Kokoro TTS (82M params, Apache 2.0) for audio narration. Together, these three tools replace NotebookLM for any batch content pipeline."

@@ -17,6 +17,21 @@ export interface LocalAgentJwtClaims {
   jti?: string;
 }
 
+interface InspectLocalAgentJwtOptions {
+  now?: number;
+}
+
+export interface LocalAgentJwtInspection {
+  expired: boolean;
+  runId: string | null;
+  agentId: string | null;
+  companyId: string | null;
+  adapterType: string | null;
+  claims: LocalAgentJwtClaims | null;
+  hasPaperclipShape: boolean;
+  signatureValid: boolean;
+}
+
 const JWT_ALGORITHM = "HS256";
 
 function parseNumber(value: string | undefined, fallback: number) {
@@ -93,49 +108,114 @@ export function createLocalAgentJwt(agentId: string, companyId: string, adapterT
 }
 
 export function verifyLocalAgentJwt(token: string): LocalAgentJwtClaims | null {
-  if (!token) return null;
+  const inspection = inspectLocalAgentJwt(token);
+  if (!inspection.signatureValid || !inspection.claims || inspection.expired) return null;
+  return inspection.claims;
+}
+
+export function inspectLocalAgentJwt(
+  token: string,
+  options: InspectLocalAgentJwtOptions = {},
+): LocalAgentJwtInspection {
+  const fallback: LocalAgentJwtInspection = {
+    expired: false,
+    runId: null,
+    agentId: null,
+    companyId: null,
+    adapterType: null,
+    claims: null,
+    hasPaperclipShape: false,
+    signatureValid: false,
+  };
+
+  if (!token) return fallback;
   const config = jwtConfig();
-  if (!config) return null;
+  if (!config) return fallback;
 
   const parts = token.split(".");
-  if (parts.length !== 3) return null;
+  if (parts.length !== 3) return fallback;
   const [headerB64, claimsB64, signature] = parts;
 
   const header = parseJson(base64UrlDecode(headerB64));
-  if (!header || header.alg !== JWT_ALGORITHM) return null;
+  if (!header || header.alg !== JWT_ALGORITHM) return fallback;
 
+  const claimsRaw = parseJson(base64UrlDecode(claimsB64));
+  if (!claimsRaw) return fallback;
+
+  const agentId = typeof claimsRaw.sub === "string" ? claimsRaw.sub : null;
+  const companyId = typeof claimsRaw.company_id === "string" ? claimsRaw.company_id : null;
+  const adapterType = typeof claimsRaw.adapter_type === "string" ? claimsRaw.adapter_type : null;
+  const runId = typeof claimsRaw.run_id === "string" ? claimsRaw.run_id : null;
+  const iat = typeof claimsRaw.iat === "number" ? claimsRaw.iat : null;
+  const exp = typeof claimsRaw.exp === "number" ? claimsRaw.exp : null;
+  const hasPaperclipShape = Boolean(agentId && companyId && adapterType && runId && iat && exp);
+
+  const now = options.now ?? Math.floor(Date.now() / 1000);
+  const expired = typeof exp === "number" ? exp < now : false;
   const signingInput = `${headerB64}.${claimsB64}`;
   const expectedSig = signPayload(config.secret, signingInput);
-  if (!safeCompare(signature, expectedSig)) return null;
+  const signatureValid = safeCompare(signature, expectedSig);
 
-  const claims = parseJson(base64UrlDecode(claimsB64));
-  if (!claims) return null;
+  if (!hasPaperclipShape || !signatureValid) {
+    return {
+      ...fallback,
+      expired,
+      runId,
+      agentId,
+      companyId,
+      adapterType,
+      hasPaperclipShape,
+      signatureValid,
+    };
+  }
 
-  const sub = typeof claims.sub === "string" ? claims.sub : null;
-  const companyId = typeof claims.company_id === "string" ? claims.company_id : null;
-  const adapterType = typeof claims.adapter_type === "string" ? claims.adapter_type : null;
-  const runId = typeof claims.run_id === "string" ? claims.run_id : null;
-  const iat = typeof claims.iat === "number" ? claims.iat : null;
-  const exp = typeof claims.exp === "number" ? claims.exp : null;
-  if (!sub || !companyId || !adapterType || !runId || !iat || !exp) return null;
+  const issuer = typeof claimsRaw.iss === "string" ? claimsRaw.iss : undefined;
+  const audience = typeof claimsRaw.aud === "string" ? claimsRaw.aud : undefined;
+  if (issuer && issuer !== config.issuer) {
+    return {
+      ...fallback,
+      expired,
+      runId,
+      agentId,
+      companyId,
+      adapterType,
+      hasPaperclipShape,
+      signatureValid,
+    };
+  }
+  if (audience && audience !== config.audience) {
+    return {
+      ...fallback,
+      expired,
+      runId,
+      agentId,
+      companyId,
+      adapterType,
+      hasPaperclipShape,
+      signatureValid,
+    };
+  }
 
-  const now = Math.floor(Date.now() / 1000);
-  if (exp < now) return null;
-
-  const issuer = typeof claims.iss === "string" ? claims.iss : undefined;
-  const audience = typeof claims.aud === "string" ? claims.aud : undefined;
-  if (issuer && issuer !== config.issuer) return null;
-  if (audience && audience !== config.audience) return null;
-
-  return {
-    sub,
-    company_id: companyId,
-    adapter_type: adapterType,
-    run_id: runId,
-    iat,
-    exp,
+  const claims: LocalAgentJwtClaims = {
+    sub: agentId!,
+    company_id: companyId!,
+    adapter_type: adapterType!,
+    run_id: runId!,
+    iat: iat!,
+    exp: exp!,
     ...(issuer ? { iss: issuer } : {}),
     ...(audience ? { aud: audience } : {}),
-    jti: typeof claims.jti === "string" ? claims.jti : undefined,
+    jti: typeof claimsRaw.jti === "string" ? claimsRaw.jti : undefined,
+  };
+
+  return {
+    expired,
+    runId,
+    agentId,
+    companyId,
+    adapterType,
+    claims,
+    hasPaperclipShape,
+    signatureValid,
   };
 }

@@ -1,6 +1,7 @@
 ---
 title: "Your AI Dev Credentials Are the New API Key — And You Are Not Protecting Them"
 description: "The codexui-android npm package stole OpenAI Codex tokens from 29,000+ developers. Here's what was taken, how the attack worked, and what every AI tooling user needs to do right now."
+seo_description: "The codexui-android npm package stole OpenAI Codex tokens from 29,000+ developers - what was taken, how the attack worked, and what to do now."
 slug: 2026-06-03-codex-npm-supply-chain-ai-credentials
 date: 2026-06-04
 last_updated: 2026-06-04
