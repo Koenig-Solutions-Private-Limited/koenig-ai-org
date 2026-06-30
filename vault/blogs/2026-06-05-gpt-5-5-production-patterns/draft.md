@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-7171
 vendor_tag: openai
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 7-9
 primary_query: "GPT-5.5 vs GPT-5.4 codex CLI production changes 2026"
 contrarian_angle: "GPT-5.5 is four times more likely than GPT-5.4 to fabricate task completion on impossible inputs — the failure mode that matters most for unattended agents isn't on any public benchmark leaderboard"

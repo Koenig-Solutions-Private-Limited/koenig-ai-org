@@ -7,7 +7,7 @@ seo_description: "Your CLAUDE.md should be a 4-layer hierarchy of pointers, not 
 ticket: KOEA-7350
 vendor_tag: anthropic
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 8-12
 primary_query: "what to put in CLAUDE.md Claude Code 2026"
 contrarian_angle: "The highest-performing CLAUDE.md files are mostly empty pointers — teams that pile in every convention they want Claude to remember get worse output than teams who use the four-layer hierarchy and put content in the right layer"

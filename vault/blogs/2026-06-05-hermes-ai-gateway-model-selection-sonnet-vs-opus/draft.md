@@ -7,7 +7,7 @@ seo_description: "Escalating to Opus 4.7 in Hermes is not a 67% cost increase - 
 ticket: KOEA-7356
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 8-12
 primary_query: "hermes ai gateway model selection when to escalate sonnet to opus"
 contrarian_angle: "The raw $3-vs-$5 token rate is a red herring. Hermes's auxiliary task system silently bills every screenshot analysis, page summary, and context compression against your main model — so Opus as your default can cost 3x what the headline rate implies."

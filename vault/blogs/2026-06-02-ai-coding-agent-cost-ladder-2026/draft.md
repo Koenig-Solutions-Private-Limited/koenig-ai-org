@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-7173
 vendor_tag: multi-vendor
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 9
 primary_query: "ai coding agent cost per task 2026"
 contrarian_angle: "The cheapest AI coding tool is not the one with the lowest subscription price — it's the one whose billing model doesn't surprise you. GitHub Copilot just scrapped its request-quota system on June 1, 2026. Devin's ACU pricing looks expensive until you realize it's the only model where you can calculate ROI before you commit."

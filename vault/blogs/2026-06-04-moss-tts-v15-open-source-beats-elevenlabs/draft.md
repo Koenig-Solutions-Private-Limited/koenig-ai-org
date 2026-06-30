@@ -8,7 +8,7 @@ reading_time_min: 8
 date: 2026-06-04
 last_updated: 2026-06-04
 tags: [tts, voice-cloning, open-source, moss-tts, kokoro, elevenlabs, ai-infra, audio]
-status: g0-passed
+status: g3-passed
 g0_pass: true
 description: "MOSS-TTS v1.5 from OpenMOSS ships Apache 2.0 TTS that outscores commercial alternatives on speaker similarity benchmarks. Here's the full comparison — and what it means for developers who've been paying for ElevenLabs."
 seo_description: "MOSS-TTS v1.5 ships Apache 2.0 TTS that outscores commercial alternatives on speaker similarity benchmarks - full comparison and developer implications."

@@ -8,13 +8,14 @@ author: koenig-ai-academy
 ticket: KOEA-6586
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 11
 hero_image: auto:flux
 positions:
   - tools-coding-agents-workflow-first
 tags: [ai-coding-tools, claude-code, codex-cli, cursor, gemini-cli, agent-harnesses, workflow-primitives]
 primary_query: "AI coding agent workflow"
+first_60_words_answer: "In 2026, the four leading AI coding agents — Codex, Claude Code, Cursor, and Gemini CLI — have converged on similar chat surfaces. The real comparison is on five workflow primitives: repo context ingestion, plan generation, approval gates, test verification, and background execution. Which agent maps to your team's primitives determines productivity, not which model topped the latest benchmark."
 contrarian_angle: "The chat interface is a distraction. The useful 2026 comparison is which agent's workflow harness maps to your team's actual primitives — repo context, plans, approval gates, test loops, and background execution."
 sources:
   - https://pub.towardsai.net/claude-code-vs-codex-cli-vs-gemini-cli-vs-opencode-the-real-differences-after-convergence-fe71401f3f8e
