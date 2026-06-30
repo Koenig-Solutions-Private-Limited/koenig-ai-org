@@ -1,0 +1,220 @@
+{
+  "course_slug": "claude-agent-sdk-zero-to-production",
+  "toc_locked": true,
+  "chapters": [
+    {
+      "num": 1,
+      "slug": "ship-the-smallest-useful-claude-agent-sdk-app",
+      "title": "Ship the smallest useful Claude Agent SDK app",
+      "owns": [
+        "Claude Agent SDK installation and authentication",
+        "minimal Agent.run application",
+        "streaming versus blocking response modes",
+        "model tier selection for task class and cost"
+      ],
+      "does_not_cover": [
+        "persistent harness design (ch 2 owns it)",
+        "MCP tools and permissions (ch 3 owns it)",
+        "resumable run artifacts (ch 4 owns it)",
+        "channel-scoped multi-user agents (ch 7 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "Agent.run parameters",
+        "streaming versus blocking mode",
+        "model tier trade-offs",
+        "basic CLI error handling"
+      ],
+      "notebooklm_source_focus": [
+        "Claude Agent SDK TypeScript quickstart",
+        "Anthropic model and pricing documentation",
+        "SDK streaming examples"
+      ],
+      "dossier_path": "vault/research/courses/claude-agent-sdk-zero-to-production/01-ship-the-smallest-useful-claude-agent-sdk-app.md"
+    },
+    {
+      "num": 2,
+      "slug": "turn-a-prompt-script-into-a-controllable-agent-harness",
+      "title": "Turn a prompt script into a controllable agent harness",
+      "owns": [
+        "session resume and state model for a single agent harness",
+        "dynamic system prompts and environment-driven personas",
+        "Agent SDK harness versus raw Anthropic SDK decision criteria",
+        "multi-persona configuration from one codebase"
+      ],
+      "does_not_cover": [
+        "minimal SDK installation (ch 1 owns it)",
+        "MCP server integration and permissions (ch 3 owns it)",
+        "external artifact stores and crash resume (ch 4 owns it)",
+        "shared channel context across users (ch 7 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "session IDs",
+        "dynamic system prompts",
+        "persona configuration",
+        "Agent SDK versus raw SDK"
+      ],
+      "notebooklm_source_focus": [
+        "Claude Agent SDK session docs",
+        "Anthropic SDK comparison examples",
+        "system prompt configuration examples"
+      ],
+      "dossier_path": "vault/research/courses/claude-agent-sdk-zero-to-production/02-turn-a-prompt-script-into-a-controllable-agent-harness.md"
+    },
+    {
+      "num": 3,
+      "slug": "add-safe-tools-with-mcp-and-explicit-permissions",
+      "title": "Add safe tools with MCP and explicit permissions",
+      "owns": [
+        "MCP server wiring for Agent SDK agents",
+        "tool schema design for idempotent narrow tools",
+        "read-only versus write-allowed tool permissions",
+        "sandboxed tool execution and credential containment"
+      ],
+      "does_not_cover": [
+        "basic SDK application setup (ch 1 owns it)",
+        "persona harness design (ch 2 owns it)",
+        "run artifact persistence (ch 4 owns it)",
+        "channel-level permission inheritance and audit logs (ch 7 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "MCP server configuration",
+        "tool schema boundaries",
+        "read versus write permission gates",
+        "sandbox failure modes"
+      ],
+      "notebooklm_source_focus": [
+        "Claude Agent SDK MCP documentation",
+        "Anthropic MCP documentation",
+        "Claude Agent SDK permissions documentation"
+      ],
+      "dossier_path": "vault/research/courses/claude-agent-sdk-zero-to-production/03-add-safe-tools-with-mcp-and-explicit-permissions.md"
+    },
+    {
+      "num": 4,
+      "slug": "preserve-context-with-sessions-artifacts-and-resumable-runs",
+      "title": "Preserve context with sessions, artifacts, and resumable runs",
+      "owns": [
+        "session ID and run ID storage model",
+        "R2, S3, and local filesystem artifact persistence",
+        "crash-resumable run reconstruction",
+        "prompt caching and cache control for cost reduction"
+      ],
+      "does_not_cover": [
+        "dynamic persona harnesses (ch 2 owns it)",
+        "MCP permissions (ch 3 owns it)",
+        "eval and tracing pipelines (ch 5 owns it)",
+        "multi-user shared memory boundaries (ch 7 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "session ID versus run ID",
+        "artifact storage trade-offs",
+        "crash resume checkpoints",
+        "prompt caching cost controls"
+      ],
+      "notebooklm_source_focus": [
+        "Claude Agent SDK session and run concepts",
+        "object storage patterns for agent artifacts",
+        "Anthropic prompt caching docs"
+      ],
+      "dossier_path": "vault/research/courses/claude-agent-sdk-zero-to-production/04-preserve-context-with-sessions-artifacts-and-resumable-runs.md"
+    },
+    {
+      "num": 5,
+      "slug": "evaluate-observe-and-debug-the-agent-before-users-do",
+      "title": "Evaluate, observe, and debug the agent before users do",
+      "owns": [
+        "synthetic and golden eval suites",
+        "Langfuse and OTEL tracing",
+        "cost attribution per run and tool call",
+        "run inspector pattern for mid-run debugging"
+      ],
+      "does_not_cover": [
+        "resumable artifact storage (ch 4 owns it)",
+        "deployment entrypoints and runbooks (ch 6 owns it)",
+        "admin audit logs for channel agents (ch 7 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "golden eval design",
+        "trace spans for tool calls",
+        "cost attribution",
+        "run inspector use cases"
+      ],
+      "notebooklm_source_focus": [
+        "Claude Agent SDK testing guidance",
+        "Langfuse tracing documentation",
+        "OpenTelemetry tracing concepts"
+      ],
+      "dossier_path": "vault/research/courses/claude-agent-sdk-zero-to-production/05-evaluate-observe-and-debug-the-agent-before-users-do.md"
+    },
+    {
+      "num": 6,
+      "slug": "deploy-the-incident-triage-agent-with-production-guardrails",
+      "title": "Deploy the incident-triage agent with production guardrails",
+      "owns": [
+        "incident-triage capstone integration",
+        "HTTP and CLI entrypoints",
+        "cost circuit breaker implementation",
+        "operator runbook for failover, override, and escalation"
+      ],
+      "does_not_cover": [
+        "single-feature eval design (ch 5 owns it)",
+        "channel-scoped collaboration adapter (ch 7 owns it)",
+        "admin audit log event schema (ch 7 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "HTTP and CLI deployment surfaces",
+        "liveness verification",
+        "cost circuit breakers",
+        "operator runbook essentials"
+      ],
+      "notebooklm_source_focus": [
+        "Claude Agent SDK production deployment examples",
+        "Express HTTP service patterns",
+        "operator runbook examples for AI agents"
+      ],
+      "dossier_path": "vault/research/courses/claude-agent-sdk-zero-to-production/06-deploy-the-incident-triage-agent-with-production-guardrails.md"
+    },
+    {
+      "num": 7,
+      "slug": "build-channel-scoped-agents-for-multi-user-teams",
+      "title": "Build channel-scoped agents for multi-user teams",
+      "owns": [
+        "per-user sessions versus per-task runs versus channel-scoped shared agent context",
+        "Slack-style channel adapter identity mapping across workspace, channel, thread, user, task, session, run, and artifact IDs",
+        "channel-scoped memory boundaries and permission inheritance",
+        "admin audit log event schema for reads, decisions, tool calls, writes, spend, and requester attribution",
+        "Claude Tag as the production reference pattern for multiplayer delegation, ambient context, budget limits, and channel-level logs"
+      ],
+      "does_not_cover": [
+        "basic SDK setup or model selection (ch 1 owns it)",
+        "single-user persona harnesses and session resume (ch 2 owns it)",
+        "MCP tool schema and basic read/write gates (ch 3 owns it)",
+        "artifact storage and crash resume mechanics (ch 4 owns it)",
+        "generic evals and traces (ch 5 owns it)",
+        "HTTP/CLI deployment and operator runbook basics (ch 6 owns it)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "channel-scoped versus user-scoped context",
+        "workspace/channel/thread/user identity mapping",
+        "audit log event fields",
+        "cross-channel leakage tests",
+        "Claude Tag reference architecture"
+      ],
+      "notebooklm_source_focus": [
+        "Anthropic Claude Tag announcement",
+        "Claude Agent SDK TypeScript docs",
+        "Claude Agent SDK permissions docs",
+        "MCP docs for tool boundaries",
+        "enterprise audit logging patterns for AI agents"
+      ],
+      "dossier_path": "vault/research/courses/claude-agent-sdk-zero-to-production/07-build-channel-scoped-agents-for-multi-user-teams.md"
+    }
+  ]
+}

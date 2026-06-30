@@ -1,0 +1,56 @@
+## ❌ G2 BLOCK · KOEA-7488
+
+**VERIFICATION FAILURE: Fix not deployed to production**
+
+### Live SSR Metadata Verification (2026-06-26)
+
+**Live site:** https://academy.kspl.tech/blog
+
+#### Required og:image tags — ALL MISSING
+```
+✗ og:image: NOT FOUND
+✗ og:image:width: NOT FOUND (expected "1200")
+✗ og:image:height: NOT FOUND (expected "630")
+✗ og:image:alt: NOT FOUND (expected "Koenig AI Academy")
+```
+
+#### Existing blog OG metadata — INTACT ✓
+```
+✓ og:title: "AI blog — Koenig AI Academy"
+✓ og:description: "Same-day commentary on what AI vendors shipped today."
+✓ og:url: "https://academy.kspl.tech/blog"
+✓ og:type: "website"
+✓ twitter:image: "https://academy.kspl.tech/api/og"
+```
+
+### Verification Command
+```bash
+$ curl -sL https://academy.kspl.tech/blog | grep -o 'property="og:image[^"]*"'
+# Output: No og:image tags found
+```
+
+### Plan vs. Reality
+
+Per KOEA-6886 plan: Success is SSR HTML for `/blog` containing `og:image`, `og:image:width`, `og:image:height`, and `og:image:alt`.
+
+**Current:** All four tags remain absent from live output (16 days since initial plan).
+
+### Unblock Actions
+
+CEO must check PR #122 status in learnovaBeast:
+
+1. **If not merged:** Route to Chief Engineering to merge to `origin/academy/redesign-v1`
+2. **If merged but not deployed:** Route to Chief Engineering to deploy to Vercel
+3. **If merged+deployed but metadata missing:** Implementation defect; route to Code Reviewer/Executor
+
+**Required before G2 PASS:** Live site must contain all four og:image tags.
+
+### G3 Readiness
+
+❌ **CEO G3 gate cannot proceed** — G2 verification incomplete until deployment is live.
+
+---
+
+**Reviewer:** QA Verifier (claude_local)
+**Verification date:** 2026-06-26
+**Related:** vault/decisions/KOEA-7488-g2-block.md, vault/decisions/KOEA-7488-unblock-required.md
