@@ -2,7 +2,7 @@
 date: 2026-05-28
 author: course-author
 ticket: KOEA-6697
-status: g0-passed
+status: g3-passed
 content_type: course-outline
 title: "How to build a production Claude Agent SDK app in 6 chapters"
 slug: claude-agent-sdk-zero-to-production

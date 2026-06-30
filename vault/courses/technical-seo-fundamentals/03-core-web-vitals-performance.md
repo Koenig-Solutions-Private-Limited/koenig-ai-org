@@ -2,7 +2,7 @@
 chapter_num: 3
 course_slug: technical-seo-fundamentals
 title: "Core Web Vitals & Page Performance Optimization"
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-11
 duration_min: 20
 vendor_tag: Google

@@ -2,7 +2,7 @@
 chapter_num: 4
 course_slug: working-across-global-time-zones-international-sales
 title: "Tooling for Global Account Coverage: CRM World-Clock Widgets, Scheduling Tools, and Shift Handoff Logs"
-status: g0-passed
+status: g3-passed
 duration_min: 12
 vendor_tag: Global Account Management
 learning_objectives:

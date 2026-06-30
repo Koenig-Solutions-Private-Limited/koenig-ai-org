@@ -2,7 +2,7 @@
 chapter_num: 5
 course_slug: working-across-global-time-zones-international-sales
 title: "Demonstrating Shift Flexibility in Interviews and Candidate Profiles: Evidencing Global Readiness"
-status: g0-passed
+status: g3-passed
 duration_min: 14
 vendor_tag: Global Account Management
 learning_objectives:

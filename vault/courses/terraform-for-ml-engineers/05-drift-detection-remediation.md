@@ -2,7 +2,7 @@
 chapter_num: 5
 course_slug: terraform-for-ml-engineers
 title: "Detecting and Remediating Infrastructure Drift in a Live ML Environment"
-status: g0-passed
+status: g3-passed
 duration_min: 13
 vendor_tag: HashiCorp Terraform
 learning_objectives:

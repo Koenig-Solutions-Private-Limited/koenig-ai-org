@@ -1,7 +1,7 @@
 ---
 course_slug: performance-marketing-budget-management
 title: "Performance Marketing Budget Allocation & Bid Strategy at Scale: From Channel Silos to Cross-Channel ROI"
-status: g0-passed
+status: g3-passed
 author: course-author
 level: Practitioner
 vendor_tag: google-ads meta microsoft-ads

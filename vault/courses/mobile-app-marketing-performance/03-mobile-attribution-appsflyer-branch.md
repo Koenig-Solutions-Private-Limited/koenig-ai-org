@@ -2,7 +2,7 @@
 chapter_num: 3
 course_slug: mobile-app-marketing-performance
 title: "Mobile Attribution with AppsFlyer & Branch: Setup, Events & Privacy"
-status: g0-passed
+status: g3-passed
 duration_min: 30
 vendor_tag: AppsFlyer | Branch
 learning_objectives:

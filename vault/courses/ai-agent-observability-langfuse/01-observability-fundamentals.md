@@ -19,7 +19,7 @@ whats_new:
   - "End-to-end Python agent trace integration with Langfuse SDK + OTel OTLP export"
   - "Annotated cost_details payload walkthrough for non-standard model cost tracking"
   - "Langfuse Dashboard trace analysis workflow — finding slow spans, filtering by session, setting cost alerts"
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-15
 reading_time_min: 55
 duration_min: 55

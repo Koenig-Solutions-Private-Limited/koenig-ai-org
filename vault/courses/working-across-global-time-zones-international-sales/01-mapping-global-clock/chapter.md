@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: working-across-global-time-zones-international-sales
 title: "Mapping the Global Clock: Time Zone Arithmetic and Shift Structures for Client-Facing Roles"
-status: g0-passed
+status: g3-passed
 word_count: 1199
 duration_min: 18
 vendor_tag: global-sales-readiness

@@ -50,7 +50,7 @@ notebooklm_source_focus:
   - "written communication adaptation for global IT training sales contexts"
 word_budget: { min: 800, max: 1200 }
 word_count: 1098
-status: g0-passed
+status: g3-passed
 quiz:
   - question: "A Tokyo client has reviewed your IT training proposal twice verbally. You need sign-off by Friday. Which email approach is appropriate for a high-context Japanese audience?"
     options:

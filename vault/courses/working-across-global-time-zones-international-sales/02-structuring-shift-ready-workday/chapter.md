@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: working-across-global-time-zones-international-sales
 title: "Structuring a Shift-Ready Workday: Time Blocking, Async Protocols, and Availability Signalling"
-status: g0-passed
+status: g3-passed
 duration_min: 10
 vendor_tag: Global Account Management
 learning_objectives:

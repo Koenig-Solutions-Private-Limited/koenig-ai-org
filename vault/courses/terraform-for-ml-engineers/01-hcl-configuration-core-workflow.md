@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: terraform-for-ml-engineers
 title: "Writing and Applying Your First HCL Configuration with Terraform 1.15"
-status: g0-passed
+status: g3-passed
 duration_min: 12
 vendor_tag: HashiCorp Terraform
 learning_objectives:

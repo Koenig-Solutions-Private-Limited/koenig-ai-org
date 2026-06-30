@@ -2,7 +2,7 @@
 chapter_num: 4
 course_slug: mobile-app-marketing-performance
 title: "Push Notifications & In-App Messaging: Designing Campaigns That Convert"
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-11
 duration_min: 35
 vendor_tag: CleverTap · MoEngage · Firebase

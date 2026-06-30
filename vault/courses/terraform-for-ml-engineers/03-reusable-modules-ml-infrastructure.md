@@ -2,7 +2,7 @@
 chapter_num: 3
 course_slug: terraform-for-ml-engineers
 title: "Building Reusable Modules for ML Infrastructure Components"
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-12
 duration_min: 12
 vendor_tag: HashiCorp Terraform

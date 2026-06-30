@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: terraform-for-ml-engineers
 title: "Managing Shared Remote State with Locking for Multi-Engineer ML Teams"
-status: g0-passed
+status: g3-passed
 duration_min: 13
 vendor_tag: HashiCorp Terraform
 learning_objectives:

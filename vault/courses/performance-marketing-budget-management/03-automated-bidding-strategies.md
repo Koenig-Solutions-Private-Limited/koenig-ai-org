@@ -2,7 +2,7 @@
 chapter_num: 3
 course_slug: performance-marketing-budget-management
 title: "Automated Bidding Strategies — tCPA, tROAS, Max Conversions, and When to Go Manual"
-status: g0-passed
+status: g3-passed
 author: course-author
 ticket: KOEA-7478
 learning_objectives:

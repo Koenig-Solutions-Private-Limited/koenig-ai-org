@@ -2,7 +2,7 @@
 chapter_num: 4
 course_slug: technical-seo-fundamentals
 title: "On-Page Optimization & Structured Data Implementation"
-status: g0-passed
+status: g3-passed
 last_updated: 2026-06-11
 duration_min: 20
 vendor_tag: Google Search Central
