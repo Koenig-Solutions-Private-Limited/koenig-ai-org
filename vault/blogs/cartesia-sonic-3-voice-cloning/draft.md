@@ -7,6 +7,7 @@ content_type: article
 status: published
 title: "How to Clone a Voice with Cartesia Sonic 3 for Production Voice Agents (2026)"
 description: Choose between Cartesia Sonic 3 instant voice cloning and Pro Voice Cloning before you build a production voice agent.
+seo_description: "Choose between Cartesia Sonic 3 instant voice cloning and Pro Voice Cloning before you build a production voice agent."
 slug: 2026-05-14-cartesia-sonic-3-voice-cloning
 tags:
   - cartesia-sonic-3

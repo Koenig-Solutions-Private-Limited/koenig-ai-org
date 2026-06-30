@@ -12,7 +12,7 @@ content_type: article
 status: g3-passed
 reading_time_min: 7
 seo_title: "Gemma 4 vs Llama 4 vs Qwen3: Best Open-Weights LLM 2026"
-seo_description: "Gemma 4 wins edge and single-GPU, Llama 4 Scout wins long-context RAG, Qwen3 wins cloud-batch. Pick the best open-weights LLM by deployment shape, not benchmarks."
+seo_description: "Gemma 4 wins edge and single-GPU, Llama 4 Scout wins long-context RAG, Qwen3 wins cloud-batch. Pick the best open-weights LLM by deployment shape."
 primary_query: "gemma 4 vs llama 4 vs qwen3 best open weights llm 2026"
 contrarian_angle: "Benchmark leaderboards are the wrong lens — deployment shape (edge, single-GPU, cloud-batch) determines the winner before you read a single accuracy number"
 first_60_words_answer: "Choose your open-weights LLM by deployment shape: Gemma 4 (26B/31B, 256K context, Apache 2.0) leads on edge and single-GPU; Llama 4 Scout (10M-token context, fits H100 INT4) wins long-context RAG; Qwen3-235B-A22B (MoE, 22B active params) wins cloud-batch economics. Benchmark rankings are the wrong starting point — hardware constraints decide the race first."

@@ -41,7 +41,7 @@ import { publishLiveEvent } from "./live-events.js";
 import { getRunLogStore, type RunLogHandle } from "./run-log-store.js";
 import { getServerAdapter, requireServerAdapter, runningProcesses } from "../adapters/index.js";
 import type { AdapterExecutionResult, AdapterInvocationMeta, AdapterSessionCodec, UsageSummary } from "../adapters/index.js";
-import { createLocalAgentJwt } from "../agent-auth-jwt.js";
+import { createLocalAgentJwt, inspectLocalAgentJwt } from "../agent-auth-jwt.js";
 import { parseObject, asBoolean, asNumber, appendWithByteCap, MAX_EXCERPT_BYTES } from "../adapters/utils.js";
 import { costService } from "./costs.js";
 import { trackAgentFirstHeartbeat } from "@paperclipai/shared/telemetry";
@@ -1274,6 +1274,52 @@ function parseIssueAssigneeAdapterOverrides(
   return {
     adapterConfig,
     useProjectWorkspace,
+  };
+}
+
+interface BuildLocalAgentJwtSafeRuntimeConfigInput {
+  runtimeConfig: Record<string, unknown>;
+  adapterSupportsLocalAgentJwt: boolean;
+  expected: {
+    runId: string;
+    agentId: string;
+    companyId: string;
+    adapterType: string;
+  };
+  freshAuthToken: string | null;
+  nowSeconds: number;
+}
+
+export function buildLocalAgentJwtSafeRuntimeConfig(
+  input: BuildLocalAgentJwtSafeRuntimeConfigInput,
+): Record<string, unknown> {
+  const { runtimeConfig, adapterSupportsLocalAgentJwt, expected, freshAuthToken, nowSeconds } = input;
+  if (!adapterSupportsLocalAgentJwt || !freshAuthToken) return runtimeConfig;
+
+  const runtimeEnv = parseObject(runtimeConfig.env);
+  const explicitApiKey = typeof runtimeEnv.PAPERCLIP_API_KEY === "string" ? runtimeEnv.PAPERCLIP_API_KEY : null;
+  if (!explicitApiKey) return runtimeConfig;
+
+  const inspection = inspectLocalAgentJwt(explicitApiKey, { now: nowSeconds });
+  if (!inspection.signatureValid || !inspection.hasPaperclipShape) {
+    return runtimeConfig;
+  }
+
+  const runMismatch = inspection.runId !== expected.runId;
+  const agentMismatch = inspection.agentId !== expected.agentId;
+  const companyMismatch = inspection.companyId !== expected.companyId;
+  const adapterMismatch = inspection.adapterType !== expected.adapterType;
+  const shouldReplace =
+    inspection.expired || runMismatch || agentMismatch || companyMismatch || adapterMismatch;
+
+  if (!shouldReplace) return runtimeConfig;
+
+  return {
+    ...runtimeConfig,
+    env: {
+      ...runtimeEnv,
+      PAPERCLIP_API_KEY: freshAuthToken,
+    },
   };
 }
 
@@ -5586,10 +5632,11 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
       };
 
       const adapter = requireServerAdapter(agent.adapterType);
-      const authToken = adapter.supportsLocalAgentJwt
+      const nowSeconds = Math.floor(Date.now() / 1000);
+      const rawAuthToken = adapter.supportsLocalAgentJwt
         ? createLocalAgentJwt(agent.id, agent.companyId, agent.adapterType, run.id)
         : null;
-      if (adapter.supportsLocalAgentJwt && !authToken) {
+      if (adapter.supportsLocalAgentJwt && !rawAuthToken) {
         logger.warn(
           {
             companyId: agent.companyId,
@@ -5600,11 +5647,38 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
           "local agent jwt secret missing or invalid; running without injected PAPERCLIP_API_KEY",
         );
       }
+      const authInspection = rawAuthToken ? inspectLocalAgentJwt(rawAuthToken, { now: nowSeconds }) : null;
+      const authToken = authInspection?.claims && !authInspection.expired && authInspection.signatureValid
+        ? rawAuthToken
+        : null;
+      if (adapter.supportsLocalAgentJwt && rawAuthToken && !authToken) {
+        logger.warn(
+          {
+            companyId: agent.companyId,
+            agentId: agent.id,
+            runId: run.id,
+            adapterType: agent.adapterType,
+          },
+          "local agent jwt creation produced a token that failed immediate API-clock validation; running without injected PAPERCLIP_API_KEY",
+        );
+      }
+      const adapterRuntimeConfig = buildLocalAgentJwtSafeRuntimeConfig({
+        runtimeConfig,
+        adapterSupportsLocalAgentJwt: adapter.supportsLocalAgentJwt === true,
+        expected: {
+          runId: run.id,
+          agentId: agent.id,
+          companyId: agent.companyId,
+          adapterType: agent.adapterType,
+        },
+        freshAuthToken: authToken,
+        nowSeconds,
+      });
       const adapterResult = await adapter.execute({
         runId: run.id,
         agent,
         runtime: runtimeForAdapter,
-        config: runtimeConfig,
+        config: adapterRuntimeConfig,
         context,
         executionTarget,
         executionTransport: remoteExecution

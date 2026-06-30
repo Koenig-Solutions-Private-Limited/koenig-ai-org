@@ -3,6 +3,7 @@ date: 2026-06-05
 title: "Hermes AI Gateway Model-Selection in 2026: When to Escalate Sonnet to Opus"
 author: blog-author
 description: "Escalating from Sonnet 4.6 to Opus 4.7 in Hermes is not a 67% cost increase — it's 3x once auxiliary tasks bill at main-model rates. Here's the measurable trigger and the config that fixes it."
+seo_description: "Escalating to Opus 4.7 in Hermes is not a 67% cost increase - it is 3x once auxiliary tasks bill at main-model rates. Here is the measurable trigger."
 ticket: KOEA-7356
 vendor_tag: community
 content_type: article

@@ -24,6 +24,7 @@ faq:
     answer: "Anthropic's engineering team targets 90%+ cache hit rate and treats anything below this threshold as a SEV-class incident. Most developers see 7–15% on first implementation. The gap is structural: dynamic content (timestamps, user IDs, session tokens) inside the cached prefix invalidates every request. Moving that content below the cache_control breakpoint routinely raises hit rates from 7% to 74%+ in a single deploy. [Source: TowardsAI / Anthropic engineering blog, retrieved 2026-05-31]"
 original_data: true
 description: "At 90% cache hit rate, Claude Sonnet 4.6 caching saves 78.5% on input costs — not 90%. Break-even math, TTL thresholds, and the March 2026 regression fix."
+seo_description: "At 90% cache hit rate, Claude Sonnet 4.6 caching saves 78.5% on input costs - not 90%. Break-even math, TTL thresholds, and the 2026 regression fix."
 last_updated: 2026-06-05
 hero_image:
   url: /img/blogs/2026-06-05-claude-prompt-caching-90-percent-hit-math/hero.png

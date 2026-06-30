@@ -1,6 +1,7 @@
 ---
 title: "Coding agents win on workflow, not chat UI — Codex, Claude Code, Cursor, and Gemini CLI compared on five primitives"
 description: "The four leading AI coding agents compared on the workflow primitives that actually determine daily productivity: repo context, plan generation, approval gates, test verification, and background execution."
+seo_description: "AI coding agents compared on workflow primitives: repo context, plan generation, approval gates, test verification, and background execution."
 slug: 2026-06-01-ai-coding-agent-workflow-primitives
 date: 2026-06-01
 author: koenig-ai-academy
