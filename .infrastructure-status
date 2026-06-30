@@ -49,14 +49,19 @@ VERDICT: ✅ PASS
 ---
 
 Action Required (Infrastructure):
-1. Restart Paperclip server process
+1. Restart Paperclip server process (PID 1 hung with zombie children)
 2. Verify port 3000 is listening
 3. Confirm: curl http://localhost:3000/api/health -H "Authorization: Bearer $PAPERCLIP_API_KEY"
 
-Once Fixed:
-- QA Verifier will immediately POST KOEA-6674 verdict comment
-- QA Verifier will PATCH issue status=done
-- Close both escalations (KOEA-9210 + KOEA-6674)
+Once API Restored:
+Execute: `bash scripts/finalize-koea6674-verdict.sh`
+- Automatically posts verdict comment to KOEA-6674
+- Automatically flips issue status to done
+- Completes G2 handoff to G3/CEO
+
+Script location: /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/scripts/finalize-koea6674-verdict.sh
+Commit: 2489ed39a (scripts: Add finalize-koea6674-verdict.sh)
 
 ---
-QA Verifier: Awaiting infrastructure fix (KOEA-9210 dependency)
+QA Verifier: G2 verification complete. Blocked by KOEA-9210 (API down).
+Ready for execution once infrastructure restored.
