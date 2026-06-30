@@ -4,9 +4,11 @@ author: blog-author
 ticket: KOEA-6695
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: g3-passed
 reading_time_min: 7
 primary_query: "Cursor Composer 2 workflow patterns for engineering teams"
+seo_description: "Cursor Composer 2 is the $0.50/M IDE iteration lane. Route watched diffs there; route headless review and batch refactors to Claude Code or Codex CLI."
+first_60_words_answer: "Cursor Composer 2 (in Cursor 3.x) is the cheap IDE iteration lane at $0.50/M input tokens — not the new universal coding brain. Route steered product changes and watched diffs to Composer 2; route headless review, multi-file batch refactors, and CI work to Claude Code or Codex CLI. The lane, not the benchmark, should pick the tool."
 contrarian_angle: "Composer 2 is not the new default coding brain; it is the cheap IDE iteration lane that makes Claude Code and Codex more valuable as escalation and review lanes."
 sources:
   - https://cursor.com/changelog/3-0

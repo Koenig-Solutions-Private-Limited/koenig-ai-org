@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-6694
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: g3-passed
 reading_time_min: 7
 title: "How to Architect Cloudflare Agents on Workers Around Durable Objects (2026 Production Guide)"
 description: "A production architecture guide for Cloudflare Agents on Workers, Durable Objects, AI Gateway, R2, Vectorize, and Workflows: where the stack wins, where it breaks, and what to build first."
@@ -30,6 +30,8 @@ howto:
     - name: "Step 7: Spot the production cases where Workers loses"
       text: "If a single task needs minutes of CPU, large GPU access, conventional process supervision, or massive local node_modules, Cloudflare Agents is the wrong runtime. Move that workload to a container or VM and keep the Agent as the stateful coordinator that calls it."
 primary_query: "Cloudflare Agents Workers production architecture"
+seo_description: "Cloudflare Agents production guide: Durable Object control plane, AI Gateway routing, R2, Vectorize, hibernation. Where Workers wins and loses."
+first_60_words_answer: "Cloudflare Agents runs on Durable Objects — not Lambda. Each Agent gets its own SQL database, WebSocket session, and scheduler. Route model calls through AI Gateway, push artifacts to R2, use Vectorize for embeddings, hand long-running steps to Workflows. Design for hibernation from day one: 100 always-on WebSocket Agents cost $416/month vs $10 with hibernation."
 contrarian_angle: "Cloudflare Agents is strongest when you stop treating Workers as cheap Lambda and use Durable Objects as the stateful control plane; it loses when you force CPU-heavy jobs into the Agent itself."
 research_source: vault/research/_synthesis/cloudflare-agents-week-2026-build-deep-dive.md
 sources:
