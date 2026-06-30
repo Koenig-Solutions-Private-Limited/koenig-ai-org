@@ -2,7 +2,7 @@
 chapter_num: 4
 course_slug: piping-engineering-fundamentals-asme-b31
 title: "Interpreting Stress-Intensification Factors (SIFs) Under ASME B31J: Tees, Bends, and Trunnions"
-status: awaiting-g0
+status: g3-passed
 duration_min: 12
 vendor_tag: "ASME B31J · CAESAR II v14"
 learning_objectives:

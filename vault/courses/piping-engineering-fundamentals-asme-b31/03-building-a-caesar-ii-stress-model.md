@@ -2,7 +2,7 @@
 chapter_num: 3
 course_slug: piping-engineering-fundamentals-asme-b31
 title: "Building a Pipe Stress Model in CAESAR II v14: Geometry, Supports, and Load Cases"
-status: g0-passed
+status: g3-passed
 duration_min: 15
 vendor_tag: "CAESAR II v14 (Hexagon PPM)"
 learning_objectives:
