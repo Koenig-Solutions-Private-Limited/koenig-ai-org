@@ -13,7 +13,8 @@ whats_new:
   - GPT-5.5 model with 400K token context window in Codex (1M via API; API access announced as "coming very soon").
   - Major plugin ecosystem overhaul in Codex Desktop.
   - Native reasoning controls and multi-agent tracing.
-status: g0-blocked
+status: g3-passed
+first_60_words_answer: "GPT-5.5 shifts Codex from autocomplete toward multi-step reasoning: the model simulates execution paths before writing code, holds 400K tokens of repository context, and achieves 82.7% on Terminal-Bench 2.0. The practical outcome is fewer execution-fix-execution loops on multi-file refactors. The plugin marketplace in Codex Desktop v0.125.0 extends this to CI pipelines, test runners, and API actions in a single supervised session."
 title: "GPT-5.5 in Codex — what changed and why it matters"
 slug: "2026-04-30-gpt-5-5-in-codex"
 description: "GPT-5.5, released April 23 2026, introduces native multi-step reasoning tokens, a 400K-token context window in Codex Desktop, and a major plugin ecosystem overhaul for software engineering."

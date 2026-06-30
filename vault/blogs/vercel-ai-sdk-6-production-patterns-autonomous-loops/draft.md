@@ -4,7 +4,9 @@ author: blog-author
 ticket: KOEA-2231
 vendor_tag: community
 content_type: article
-status: g0-blocked
+status: g3-passed
+seo_description: "Vercel AI SDK 6 autonomous loops: ToolLoopAgent, typed tools, approval gates, MCP tools, and Langfuse telemetry. Production patterns for bounded agent loops."
+first_60_words_answer: "Vercel AI SDK 6 introduces ToolLoopAgent to replace manual multi-step orchestration in TypeScript. Use ToolLoopAgent when the model must choose tools, observe results, and continue for multiple steps. The production advantage is not autonomy — it is keeping every loop step bounded, typed, observable, and approvable. Use plain generateText for one-shot extraction, classification, or structured output."
 reading_time_min: 8
 title: "Vercel AI SDK 6: Production Patterns for Autonomous Loops"
 description: "Build Vercel AI SDK 6 autonomous loops with ToolLoopAgent, typed tools, approval gates, MCP tools, streaming output, and telemetry that survives production."
