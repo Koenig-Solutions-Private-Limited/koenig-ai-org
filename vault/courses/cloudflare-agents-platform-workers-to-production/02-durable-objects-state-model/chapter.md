@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: cloudflare-agents-platform-workers-to-production
 title: "Durable Objects 2026: Your Cloudflare Agent's State Model"
-status: g0-passed
+status: g3-passed
 author: course-author
 ticket: KOEA-7068
 learning_objectives:

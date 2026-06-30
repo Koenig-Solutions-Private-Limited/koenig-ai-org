@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: cloudflare-agents-platform-workers-to-production
 title: "What the Cloudflare Agents Platform Actually Is — and Isn't (2026)"
-status: g0-passed
+status: g3-passed
 author: course-author
 ticket: KOEA-6699
 learning_objectives:

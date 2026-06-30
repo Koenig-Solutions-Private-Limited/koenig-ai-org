@@ -2,7 +2,7 @@
 chapter_num: 5
 course_slug: cloudflare-agents-platform-workers-to-production
 title: "AI Gateway: LLM Routing for Production Cloudflare Agents (2026)"
-status: g0-passed
+status: g3-passed
 author: course-author
 ticket: KOEA-6699
 learning_objectives:

@@ -2,7 +2,7 @@
 chapter_num: 3
 course_slug: cloudflare-agents-platform-workers-to-production
 title: "Designing Tools for the Cloudflare Workers Runtime (2026)"
-status: g0-passed
+status: g3-passed
 author: course-author
 ticket: KOEA-6699
 learning_objectives:
