@@ -2,7 +2,7 @@
 chapter_num: 3
 course_slug: piping-engineering-fundamentals-asme-b31
 title: "Building a Pipe Stress Model in CAESAR II v14: Geometry, Supports, and Load Cases"
-status: awaiting-g0
+status: g0-passed
 duration_min: 15
 vendor_tag: "CAESAR II v14 (Hexagon PPM)"
 learning_objectives:
@@ -19,8 +19,6 @@ sources:
     title: "Spring Hanger Selection and Design Guidelines in Caesar II — What Is Piping"
   - url: "https://jscengineers.com/pipe-support-design-anchors-guides-springs/"
     title: "Pipe Support Design: Anchors, Guides & Spring Hangers — JSC Engineers"
-  - url: "https://blog.projectmaterials.com/epc-projects/software/caesar-ii/"
-    title: "CAESAR II Pipe Stress Analysis — Projectmaterials"
 owns:
   - "Creating a CAESAR II v14 single-branch piping model from node coordinates, pipe properties, temperatures, pressure, and material inputs"
   - "Applying anchors, guides, rests, and spring hangers inside the stress model and checking their effect on sustained stress ratio"
