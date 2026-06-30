@@ -4,9 +4,10 @@ author: blog-author
 ticket: KOEA-8720
 vendor_tag: anthropic
 content_type: article
-status: draft-for-review
+status: g3-passed
 reading_time_min: 6-8
 primary_query: "claude authors 80 percent anthropic code 2026"
+seo_description: "Claude authors 80%+ of Anthropic's production code as of May 2026. What the 76% autonomous success rate and 12-hour task horizons mean for AI engineering teams."
 contrarian_angle: "Anthropic is calling for a global pause while internally racing toward week-long autonomous tasks and writing 80% of its own code with AI — the tension between the public appeal and the internal velocity is the actual story."
 first_60_words_answer: "As of May 2026, Claude authors more than 80% of the code merged into Anthropic's production codebase — up from low single digits when Claude Code launched in February 2025. Engineers now merge 8× more code per day than in 2024. Claude's success rate on complex open-ended engineering tasks hit 76% in May 2026, up 50 percentage points in six months. Task horizons have been doubling every four months."
 original_data: false

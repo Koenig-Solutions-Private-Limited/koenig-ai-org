@@ -4,9 +4,10 @@ author: blog-author
 ticket: KOEA-8721
 vendor_tag: openai
 content_type: article
-status: draft-for-review
+status: g3-passed
 reading_time_min: 7
 primary_query: "OpenAI Lockdown Mode prompt injection agentic AI 2026"
+seo_description: "Lockdown Mode is OpenAI's admission that model-level prompt injection defenses aren't enough. What agentic AI teams should build instead in 2026."
 contrarian_angle: "Lockdown Mode is a product-level concession that model-level defenses can't secure agentic features — disabling your most powerful tools is not an architecture"
 first_60_words_answer: "OpenAI's Lockdown Mode, available to all ChatGPT accounts as of June 6, 2026, disables live web browsing, image retrieval, Deep Research, and Agent Mode to reduce prompt injection–based data exfiltration. OpenAI explicitly warns the feature does not guarantee protection. Every tool it disables is an admission: agentic capabilities that read untrusted content cannot currently be secured at the model level."
 positions:
