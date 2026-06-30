@@ -2,7 +2,7 @@
 chapter_num: 6
 course_slug: piping-engineering-fundamentals-asme-b31
 title: "Integrating a Complete Piping Package: From P&ID Mark-Up to Code-Compliant Stress Sign-Off"
-status: awaiting-g0
+status: g3-passed
 duration_min: 14
 vendor_tag: Hexagon CAESAR II v14
 learning_objectives:
@@ -97,7 +97,7 @@ Every piping stress deliverable begins the same way: a P&ID mark-up, a stack of 
 
 The data sheet is a formal declaration that the stress model reproduces actual design-document intent. Three source documents must be reconciled before a single node is entered.
 
-**From the P&ID**, decode the line number: 6" NPS, crude service (CS), unit 1055, pipe class A1B, insulation code H1 (hot-insulated). The fluid service is **Normal** — crude oil at these conditions does not meet the temperature or pressure thresholds for Category D, and it is not a lethal service requiring Category M treatment.
+**From the P&ID**, decode the line number: 6" NPS, crude service (CS), unit 1055, pipe class A1B, insulation code H1 (hot-insulated). The fluid service is **Normal**: crude oil at these conditions does not meet Category D thresholds and is not a Category M lethal service.
 
 **From the process datasheet**: operating temperature = 305°C, operating pressure = 24 bar gauge, fluid density = 820 kg/m³.
 
@@ -105,7 +105,7 @@ The data sheet is a formal declaration that the stress model reproduces actual d
 
 Verify wall adequacy using B31.3 §304.1.2: t = PD/2(SE + PY). With design pressure 28 bar, OD 168.3 mm, S ≈ 117 MPa at 320°C (illustrative — confirm from current B31.3 Table A-1), and Y = 0.4 for ferritic steel below 482°C, calculated t ≈ 2.0 mm. Adding 3 mm corrosion allowance gives 5.0 mm; dividing by 0.875 for the 12.5% mill under-tolerance gives a **required nominal wall of 5.7 mm**. Schedule 80 at 10.97 mm passes with large margin — the schedule driver here is corrosion allowance, not pressure alone.
 
-Flag one open item before closing the sheet: the process datasheet does not confirm an upset temperature for the relief-valve scenario. Note it as a **missing-data query** and do not proceed to modeling with an assumed value. According to the [Checklist for Piping Stress Analysis — What Is Piping](https://whatispiping.com/stress-check-list/), assumed inputs that survive into the final run are the most common source of rework on EPC projects.
+Flag one open item: the process datasheet has no upset temperature for the relief-valve scenario. Mark it as a **missing-data query** — do not proceed with an assumed value. Assumed inputs that survive into the final run are the most common source of rework on EPC projects.
 
 <KnowledgeCheck question="Which field on a piping input data sheet is sourced exclusively from the process datasheet?" options={["Operating temperature and pressure", "Corrosion allowance", "Nominal pipe schedule", "Fluid service classification"]} correctIdx={0} explanation="Operating temperature and pressure come from the process datasheet. Corrosion allowance and schedule come from the pipe class spec. Fluid service classification is determined from the P&ID and the project hazard assessment."/>
 
@@ -141,7 +141,7 @@ If an expansion joint is used in any service, install a rigid anchor directly up
 
 Re-run CAESAR II with the loop inserted. Expansion stress ratio at the E-101 nozzle: **0.78 — passes**.
 
-The [Piping Thermal Expansion Design Guide — EPCLand](https://epcland.com/piping-thermal-expansion-design-guide/) ranks the design hierarchy: natural directional changes first, fabricated offsets second, U-loops third, and bellows joints only as a last resort. Follow this priority before reaching for a manufactured component.
+Design remedies follow this hierarchy: natural directional changes first, fabricated offsets second, U-loops third, bellows joints only as a last resort.
 
 ## Compiling the Final Design-Review Package
 
