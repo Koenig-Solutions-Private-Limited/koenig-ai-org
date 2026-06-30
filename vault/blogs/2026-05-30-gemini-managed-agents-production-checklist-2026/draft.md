@@ -4,9 +4,10 @@ author: blog-author
 ticket: KOEA-6877
 vendor_tag: google
 content_type: article
-status: draft-for-review
+status: g3-passed
 reading_time_min: 8-10
 primary_query: "managed agents gemini api production workflow"
+seo_description: "Gemini Managed Agents API production checklist: stateful agents in one API call, cross-session state, and the breaking schema change from June 8 2026."
 contrarian_angle: "Google I/O shipped public preview, not GA — every operator checklist that skips that distinction is setting up a production incident"
 first_60_words_answer: "The Gemini Managed Agents API (model: antigravity-preview-05-2026) gives operators a single API call to deploy stateful agents in Google-hosted Linux sandboxes. The workflow: define agent behavior in AGENTS.md and SKILL.md, invoke via client.interactions.create(), set background=True for long-running tasks. Caveat: public preview with no SLA; Interactions API has a breaking schema change removing the outputs field on June 8, 2026."
 positions:

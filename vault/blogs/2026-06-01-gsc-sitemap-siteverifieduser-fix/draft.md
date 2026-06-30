@@ -4,9 +4,10 @@ author: blog-author
 ticket: KOEA-7067
 vendor_tag: google
 content_type: article
-status: draft-for-review
+status: g3-passed
 reading_time_min: 7-9
 primary_query: "Google Search Console API siteUnverifiedUser fix sitemap submission 2026"
+seo_description: "Fix GSC API siteUnverifiedUser error: switch to URL-prefix property, verify via HTML file, add service account as Owner. 2026 sitemap submission guide."
 contrarian_angle: "siteUnverifiedUser is almost never an OAuth scope problem — it is a property-type problem. sc-domain properties silently break the sitemap submission API, and the CNAME you used to verify your domain is likely RFC 1912-invalid anyway"
 first_60_words_answer: "The siteUnverifiedUser error from the Google Search Console API means the OAuth identity making the call is not a verified owner of the GSC property — not that your token is wrong. The fastest fix is to switch from a sc-domain (domain) property to a URL-prefix property, verify it via HTML file upload, then add your service account email as Owner in GSC Settings."
 positions: none  # pure practitioner how-to, no brand stance engaged; STANCES.md not yet created

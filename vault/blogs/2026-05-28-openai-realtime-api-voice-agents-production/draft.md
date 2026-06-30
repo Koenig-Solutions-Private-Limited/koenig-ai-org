@@ -4,9 +4,10 @@ author: blog-author
 ticket: KOEA-6693
 vendor_tag: openai
 content_type: article
-status: draft-for-review
+status: g3-passed
 reading_time_min: 7
 primary_query: "OpenAI Realtime API voice agents production"
+seo_description: "OpenAI Realtime API for voice agents: WebRTC vs WebSocket, audio loop budgeting, VAD tuning, session cost ($32/1M tokens). 2026 production guide."
 contrarian_angle: "Realtime voice agents fail in production less because speech-to-speech is hard and more because teams under-budget the always-on audio loop."
 first_60_words_answer: "OpenAI Realtime API voice agents are production-ready when you treat them as live audio systems: pick the transport (WebRTC, WebSocket, or SIP), keep tools server-controlled, tune VAD, and budget cost by session length—not per-call. GPT-Realtime-2 audio costs $32/1M input tokens and $64/1M output tokens. The production risk is the persistent audio session, not the model quality."
 positions:

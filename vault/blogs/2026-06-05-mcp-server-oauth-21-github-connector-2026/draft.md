@@ -4,9 +4,10 @@ author: blog-author
 ticket: KOEA-7351
 vendor_tag: anthropic
 content_type: article
-status: draft-for-review
+status: g3-passed
 reading_time_min: 9-11
 primary_query: "MCP server OAuth 2.1 production example GitHub"
+seo_description: "MCP server OAuth 2.1 for GitHub: four required endpoints, Dynamic Client Registration, PKCE — and why GitHub's own MCP server can't connect to Claude.ai."
 first_60_words_answer: "A production MCP server that connects to GitHub via Claude.ai needs four OAuth 2.1 endpoints: /.well-known/oauth-authorization-server, /register (Dynamic Client Registration, RFC 7591), /authorize, and /token. You proxy GitHub's OAuth flow to issue your own bearer tokens. Without Dynamic Client Registration, Claude.ai's connector refuses to connect — which is exactly why GitHub's own remote MCP server cannot connect to Claude.ai today without workarounds."
 contrarian_angle: "GitHub's own remote MCP server skips Dynamic Client Registration — so Claude.ai can't connect to it directly. The server that popularized MCP-as-GitHub-tool is itself non-compliant with the OAuth spec MCP requires."
 positions:

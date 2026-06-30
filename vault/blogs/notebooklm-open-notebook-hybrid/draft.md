@@ -6,9 +6,10 @@ author: blog-author
 ticket: KOEA-1770
 vendor_tag: google+community
 content_type: article
-status: draft-for-review
+status: g3-passed
 reading_time_min: 6
 primary_query: "notebooklm vs open notebook 2026 hybrid setup"
+seo_description: "NotebookLM and Open Notebook solve opposite halves of the AI learning workflow: NotebookLM for polished output, Open Notebook for pipeline control."
 contrarian_angle: "The NotebookLM vs Open Notebook comparison is the wrong question — they solve opposite halves of the same workflow, and picking one means giving up something real"
 positions:
   - id: cli-first-workflows-for-production-teams
