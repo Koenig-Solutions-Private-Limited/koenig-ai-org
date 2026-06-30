@@ -2,7 +2,12 @@
 chapter_num: 1
 course_slug: piping-engineering-fundamentals-asme-b31
 title: "Reading P&IDs and Piping Drawings: Extracting Engineering Intent from Plant Documentation"
-status: awaiting-g0
+status: g0-blocked
+g0_review_date: 2026-06-30
+g0_reviewer: QA Verifier (reassigned from Content Reviewer)
+g0_blockers:
+  - "Word budget exceeded: 1,850 words measured vs 800–1,200 spec (54% over); trim required"
+  - "Source unavailability: ANSI Blog ISA 5.1 URL returns 403 Forbidden; replace with ISA direct or InstruNexus"
 duration_min: 12
 vendor_tag: ISA / PIP PIC001
 learning_objectives:
