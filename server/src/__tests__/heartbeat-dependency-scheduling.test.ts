@@ -356,6 +356,99 @@ describeEmbeddedPostgres("heartbeat dependency-aware queued run selection", () =
     expect(blockedWakeRequestCount).toBeGreaterThanOrEqual(2);
   });
 
+  it("auto-checks out a blocked-status issue on issue_blockers_resolved wake", async () => {
+    // Regression: the broad guard at shouldAutoCheckoutIssueForWake suppressed auto-checkout for
+    // every blocked issue unless wakeReason === "issue_reopened_via_comment". That prevented
+    // issue_blockers_resolved and issue_children_completed from checking out executable work.
+    const companyId = randomUUID();
+    const agentId = randomUUID();
+    const blockerId = randomUUID();
+    const blockedIssueId = randomUUID();
+
+    await db.insert(companies).values({
+      id: companyId,
+      name: "Paperclip",
+      issuePrefix: `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      requireBoardApprovalForNewAgents: false,
+    });
+    await db.insert(agents).values({
+      id: agentId,
+      companyId,
+      name: "TaskRunner",
+      role: "engineer",
+      status: "active",
+      adapterType: "codex_local",
+      adapterConfig: {},
+      runtimeConfig: {
+        heartbeat: {
+          wakeOnDemand: true,
+          maxConcurrentRuns: 1,
+        },
+      },
+      permissions: {},
+    });
+    await db.insert(issues).values([
+      {
+        id: blockerId,
+        companyId,
+        title: "Blocker Task",
+        status: "done",
+        priority: "high",
+      },
+      {
+        id: blockedIssueId,
+        companyId,
+        title: "Blocked Task",
+        status: "blocked",
+        priority: "medium",
+        assigneeAgentId: agentId,
+      },
+    ]);
+    await db.insert(issueRelations).values({
+      companyId,
+      issueId: blockerId,
+      relatedIssueId: blockedIssueId,
+      type: "blocks",
+    });
+
+    const resolvedWake = await heartbeat.wakeup(agentId, {
+      source: "automation",
+      triggerDetail: "system",
+      reason: "issue_blockers_resolved",
+      payload: { issueId: blockedIssueId, resolvedBlockerIssueId: blockerId },
+      contextSnapshot: {
+        issueId: blockedIssueId,
+        wakeReason: "issue_blockers_resolved",
+        resolvedBlockerIssueId: blockerId,
+      },
+    });
+    expect(resolvedWake).not.toBeNull();
+
+    const runSucceeded = await waitForCondition(async () => {
+      const run = await db
+        .select({ status: heartbeatRuns.status })
+        .from(heartbeatRuns)
+        .where(eq(heartbeatRuns.id, resolvedWake!.id))
+        .then((rows) => rows[0] ?? null);
+      return run?.status === "succeeded";
+    });
+    expect(runSucceeded).toBe(true);
+
+    const resolvedRun = await db
+      .select({
+        status: heartbeatRuns.status,
+        contextSnapshot: heartbeatRuns.contextSnapshot,
+      })
+      .from(heartbeatRuns)
+      .where(eq(heartbeatRuns.id, resolvedWake!.id))
+      .then((rows) => rows[0] ?? null);
+
+    // Must be a real execution, not a context-only dependency-blocked interaction.
+    expect(resolvedRun?.contextSnapshot).not.toMatchObject({ dependencyBlockedInteraction: true });
+    expect(resolvedRun?.contextSnapshot).toMatchObject({ paperclipHarnessCheckedOut: true });
+    expect(mockAdapterExecute).toHaveBeenCalledTimes(1);
+  });
+
   it("honors maxConcurrentRuns 1 by leaving a second assignment wake queued", async () => {
     const companyId = randomUUID();
     const agentId = randomUUID();
