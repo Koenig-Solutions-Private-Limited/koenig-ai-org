@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-9596
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: g3-passed
 reading_time_min: 6-8
 primary_query: "five eyes AI cyber threat advisory 2026 enterprise security"
 contrarian_angle: "The Five Eyes are not telling enterprises to buy AI security tools — they're saying your 30-day patch cycle is already a liability and your legacy systems are strategic risks. The 'get the basics right' message is an implicit rebuke of the AI security tooling market."
