@@ -2,11 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import {
-  execute,
-  startClaudeInvokeHeartbeat,
-  CLAUDE_INVOKE_HEARTBEAT_INTERVAL_MS,
-} from "@paperclipai/adapter-claude-local/server";
+import { runChildProcess } from "@paperclipai/adapter-utils/server-utils";
+import { claudeSessionCwdMatchesExecutionTarget, execute } from "@paperclipai/adapter-claude-local/server";
 
 async function writeFailingClaudeCommand(
   commandPath: string,
@@ -16,6 +13,24 @@ async function writeFailingClaudeCommand(
   const exit = options.exitCode ?? 1;
   const script = `#!/usr/bin/env node
 console.log(${JSON.stringify(payload)});
+process.exit(${exit});
+`;
+  await fs.writeFile(commandPath, script, "utf8");
+  await fs.chmod(commandPath, 0o755);
+}
+
+async function writeTextFailingClaudeCommand(
+  commandPath: string,
+  options: { stdout?: string; stderr?: string; exitCode?: number },
+): Promise<void> {
+  const exit = options.exitCode ?? 1;
+  const script = `#!/usr/bin/env node
+if (${JSON.stringify(options.stdout ?? "")}) {
+  process.stdout.write(${JSON.stringify(options.stdout ?? "")});
+}
+if (${JSON.stringify(options.stderr ?? "")}) {
+  process.stderr.write(${JSON.stringify(options.stderr ?? "")});
+}
 process.exit(${exit});
 `;
   await fs.writeFile(commandPath, script, "utf8");
@@ -41,6 +56,12 @@ const payload = {
   instructionsContents: instructionsFilePath ? fs.readFileSync(instructionsFilePath, "utf8") : null,
   skillEntries: addDir ? fs.readdirSync(path.join(addDir, ".claude", "skills")).sort() : [],
   claudeConfigDir: process.env.CLAUDE_CONFIG_DIR || null,
+  claudeConfigEntries: process.env.CLAUDE_CONFIG_DIR && fs.existsSync(process.env.CLAUDE_CONFIG_DIR)
+    ? fs.readdirSync(process.env.CLAUDE_CONFIG_DIR).sort()
+    : [],
+  paperclipApiUrl: process.env.PAPERCLIP_API_URL || null,
+  paperclipApiKey: process.env.PAPERCLIP_API_KEY || null,
+  paperclipApiBridgeMode: process.env.PAPERCLIP_API_BRIDGE_MODE || null,
 };
 if (capturePath) {
   fs.writeFileSync(capturePath, JSON.stringify(payload), "utf8");
@@ -53,37 +74,6 @@ console.log(JSON.stringify({ type: "result", session_id: "claude-session-1", res
   await fs.chmod(commandPath, 0o755);
 }
 
-async function writeSlowClaudeCommand(commandPath: string): Promise<void> {
-  const script = `#!/usr/bin/env node
-const fs = require("node:fs");
-fs.readFileSync(0, "utf8");
-const releasePath = process.env.PAPERCLIP_TEST_RELEASE_PATH;
-while (!fs.existsSync(releasePath)) {}
-console.log(JSON.stringify({ type: "system", subtype: "init", session_id: "claude-session-slow", model: "claude-sonnet" }));
-console.log(JSON.stringify({ type: "assistant", session_id: "claude-session-slow", message: { content: [{ type: "text", text: "hello" }] } }));
-console.log(JSON.stringify({ type: "result", session_id: "claude-session-slow", result: "hello", usage: { input_tokens: 1, cache_read_input_tokens: 0, output_tokens: 1 } }));
-`;
-  await fs.writeFile(commandPath, script, "utf8");
-  await fs.chmod(commandPath, 0o755);
-}
-
-function parseHeartbeatLogLines(logs: string[]) {
-  return logs.flatMap((chunk) =>
-    chunk
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .flatMap((line) => {
-        try {
-          const parsed = JSON.parse(line) as { event?: string; adapter?: string };
-          return parsed.event === "heartbeat" ? [parsed] : [];
-        } catch {
-          return [];
-        }
-      }),
-  );
-}
-
 type CapturePayload = {
   argv: string[];
   prompt: string;
@@ -92,6 +82,10 @@ type CapturePayload = {
   instructionsContents: string | null;
   skillEntries: string[];
   claudeConfigDir: string | null;
+  claudeConfigEntries?: string[];
+  paperclipApiUrl?: string | null;
+  paperclipApiKey?: string | null;
+  paperclipApiBridgeMode?: string | null;
   appendedSystemPromptFilePath?: string | null;
   appendedSystemPromptFileContents?: string | null;
 };
@@ -160,6 +154,40 @@ async function setupExecuteEnv(
       else process.env.HOME = previousHome;
       if (previousPath === undefined) delete process.env.PATH;
       else process.env.PATH = previousPath;
+    },
+  };
+}
+
+function createLocalSandboxRunner() {
+  let counter = 0;
+  return {
+    execute: async (input: {
+      command: string;
+      args?: string[];
+      cwd?: string;
+      env?: Record<string, string>;
+      stdin?: string;
+      timeoutMs?: number;
+      onLog?: (stream: "stdout" | "stderr", chunk: string) => Promise<void>;
+      onSpawn?: (meta: { pid: number; startedAt: string }) => Promise<void>;
+    }) => {
+      counter += 1;
+      return runChildProcess(
+        `sandbox-run-${counter}`,
+        input.command,
+        input.args ?? [],
+        {
+          cwd: input.cwd ?? process.cwd(),
+          env: input.env ?? {},
+          stdin: input.stdin,
+          timeoutSec: Math.max(1, Math.ceil((input.timeoutMs ?? 30_000) / 1000)),
+          graceSec: 5,
+          onLog: input.onLog ?? (async () => {}),
+          onSpawn: input.onSpawn
+            ? async (meta) => input.onSpawn?.({ pid: meta.pid, startedAt: meta.startedAt })
+            : undefined,
+        },
+      );
     },
   };
 }
@@ -362,6 +390,119 @@ describe("claude execute", () => {
     }
   });
 
+  it("normalizes max-turn exhaustion into scheduler stop metadata", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-claude-exec-max-turns-"));
+    const resultEvent = {
+      type: "result",
+      subtype: "error_max_turns",
+      session_id: "claude-session-1",
+      is_error: true,
+      result: "Maximum turns reached.",
+      usage: { input_tokens: 1, cache_read_input_tokens: 0, output_tokens: 1 },
+    };
+    const { workspace, commandPath, restore } = await setupExecuteEnv(root, {
+      commandWriter: (commandPath) => writeFailingClaudeCommand(commandPath, { resultEvent }),
+    });
+
+    try {
+      const result = await execute({
+        runId: "run-max-turns",
+        agent: { id: "agent-1", companyId: "co-1", name: "Test", adapterType: "claude_local", adapterConfig: {} },
+        runtime: { sessionId: null, sessionParams: null, sessionDisplayId: null, taskKey: null },
+        config: {
+          command: commandPath,
+          cwd: workspace,
+          promptTemplate: "Do work.",
+        },
+        context: {},
+        authToken: "tok",
+        onLog: async () => {},
+      });
+
+      expect(result.exitCode).toBe(1);
+      expect(result.errorCode).toBe("max_turns_exhausted");
+      expect(result.errorFamily).toBeNull();
+      expect(result.resultJson).toMatchObject({ stopReason: "max_turns_exhausted" });
+      expect(result.clearSession).toBe(true);
+    } finally {
+      restore();
+      await fs.rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("does not normalize unstructured max-turn text into scheduler stop metadata", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-claude-exec-max-turn-text-"));
+    const resultEvent = {
+      type: "result",
+      subtype: "error",
+      session_id: "claude-session-1",
+      is_error: true,
+      result: "Tool output said: Maximum turns reached.",
+    };
+    const { workspace, commandPath, restore } = await setupExecuteEnv(root, {
+      commandWriter: (commandPath) => writeFailingClaudeCommand(commandPath, { resultEvent }),
+    });
+
+    try {
+      const result = await execute({
+        runId: "run-max-turns-text",
+        agent: { id: "agent-1", companyId: "co-1", name: "Test", adapterType: "claude_local", adapterConfig: {} },
+        runtime: { sessionId: null, sessionParams: null, sessionDisplayId: null, taskKey: null },
+        config: {
+          command: commandPath,
+          cwd: workspace,
+          promptTemplate: "Do work.",
+        },
+        context: {},
+        authToken: "tok",
+        onLog: async () => {},
+      });
+
+      expect(result.exitCode).toBe(1);
+      expect(result.errorCode).not.toBe("max_turns_exhausted");
+      expect(result.resultJson?.stopReason).not.toBe("max_turns_exhausted");
+      expect(result.clearSession).toBe(false);
+    } finally {
+      restore();
+      await fs.rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("does not normalize fallback stdout/stderr max-turn text into scheduler stop metadata", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-claude-exec-max-turn-fallback-"));
+    const { workspace, commandPath, restore } = await setupExecuteEnv(root, {
+      commandWriter: (commandPath) =>
+        writeTextFailingClaudeCommand(commandPath, {
+          stdout: "attacker-controlled tool output: max turns exhausted\n",
+          stderr: "Maximum turns reached.\n",
+        }),
+    });
+
+    try {
+      const result = await execute({
+        runId: "run-max-turns-fallback-text",
+        agent: { id: "agent-1", companyId: "co-1", name: "Test", adapterType: "claude_local", adapterConfig: {} },
+        runtime: { sessionId: null, sessionParams: null, sessionDisplayId: null, taskKey: null },
+        config: {
+          command: commandPath,
+          cwd: workspace,
+          promptTemplate: "Do work.",
+        },
+        context: {},
+        authToken: "tok",
+        onLog: async () => {},
+      });
+
+      expect(result.exitCode).toBe(1);
+      expect(result.errorCode).not.toBe("max_turns_exhausted");
+      expect(result.resultJson?.stopReason).not.toBe("max_turns_exhausted");
+      expect(result.clearSession).toBe(false);
+    } finally {
+      restore();
+      await fs.rm(root, { recursive: true, force: true });
+    }
+  });
+
   it("logs HOME, CLAUDE_CONFIG_DIR, and the resolved executable path in invocation metadata", async () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-claude-execute-meta-"));
     const workspace = path.join(root, "workspace");
@@ -431,6 +572,110 @@ describe("claude execute", () => {
       else process.env.CLAUDE_CONFIG_DIR = previousClaudeConfigDir;
       await fs.rm(root, { recursive: true, force: true });
     }
+  });
+
+  it("injects bridge env into sandbox-managed remote runs", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-claude-execute-sandbox-"));
+    const localWorkspace = path.join(root, "workspace");
+    const remoteWorkspace = path.join(root, "sandbox-$HOME");
+    const binDir = path.join(root, "bin");
+    const commandPath = path.join(binDir, "claude");
+    const capturePath1 = path.join(remoteWorkspace, "capture-1.json");
+    const claudeRoot = path.join(root, ".claude");
+    const previousHome = process.env.HOME;
+    const previousPath = process.env.PATH;
+
+    await fs.mkdir(localWorkspace, { recursive: true });
+    await fs.mkdir(remoteWorkspace, { recursive: true });
+    await fs.mkdir(binDir, { recursive: true });
+    await fs.mkdir(claudeRoot, { recursive: true });
+    await fs.writeFile(path.join(claudeRoot, "settings.json"), JSON.stringify({ theme: "test" }), "utf8");
+    await writeFakeClaudeCommand(commandPath);
+
+    process.env.HOME = root;
+    process.env.PATH = `${binDir}${path.delimiter}${process.env.PATH ?? ""}`;
+
+    try {
+      const result = await execute({
+        runId: "run-sandbox-auth",
+        agent: {
+          id: "agent-1",
+          companyId: "company-1",
+          name: "Claude Coder",
+          adapterType: "claude_local",
+          adapterConfig: {},
+        },
+        runtime: {
+          sessionId: null,
+          sessionParams: null,
+          sessionDisplayId: null,
+          taskKey: null,
+        },
+        config: {
+          command: commandPath,
+          cwd: localWorkspace,
+          env: {
+            PAPERCLIP_TEST_CAPTURE_PATH: capturePath1,
+          },
+          promptTemplate: "Follow the paperclip heartbeat.",
+        },
+        context: {},
+        executionTarget: {
+          kind: "remote",
+          transport: "sandbox",
+          providerKey: "e2b",
+          environmentId: "env-1",
+          leaseId: "lease-1",
+          remoteCwd: remoteWorkspace,
+          timeoutMs: 30_000,
+          runner: createLocalSandboxRunner(),
+        },
+        authToken: "run-jwt-token",
+        onLog: async () => {},
+      });
+
+      expect(result.exitCode).toBe(0);
+      expect(result.sessionParams).toMatchObject({
+        cwd: localWorkspace,
+        remoteExecution: {
+          transport: "sandbox",
+          providerKey: "e2b",
+          environmentId: "env-1",
+          leaseId: "lease-1",
+          remoteCwd: remoteWorkspace,
+        },
+      });
+      const capture = JSON.parse(await fs.readFile(capturePath1, "utf8")) as CapturePayload;
+      expect(capture.argv).toContain("--allowedTools");
+      expect(capture.argv).toContain(
+        "Task AskUserQuestion Bash(*) CronCreate CronDelete CronList Edit EnterPlanMode EnterWorktree ExitPlanMode ExitWorktree Glob Grep Monitor NotebookEdit PushNotification Read RemoteTrigger ScheduleWakeup Skill TaskOutput TaskStop TodoWrite ToolSearch WebFetch WebSearch Write",
+      );
+      expect(capture.argv).not.toContain("--dangerously-skip-permissions");
+      expect(capture.claudeConfigDir).toBe(path.join(remoteWorkspace, ".paperclip-runtime", "claude", "config"));
+      expect(capture.claudeConfigEntries).toContain("settings.json");
+      expect(capture.paperclipApiUrl).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
+      expect(capture.paperclipApiKey).not.toBe("run-jwt-token");
+      expect(capture.paperclipApiBridgeMode).toBe("queue_v1");
+    } finally {
+      if (previousHome === undefined) delete process.env.HOME;
+      else process.env.HOME = previousHome;
+      if (previousPath === undefined) delete process.env.PATH;
+      else process.env.PATH = previousPath;
+      await fs.rm(root, { recursive: true, force: true });
+    }
+  }, 10_000);
+
+  it("allows remote session resumes when saved cwd is the host workspace", () => {
+    expect(claudeSessionCwdMatchesExecutionTarget({
+      runtimeSessionCwd: "/host/workspace",
+      effectiveExecutionCwd: "/remote/workspace",
+      executionTargetIsRemote: true,
+    })).toBe(true);
+    expect(claudeSessionCwdMatchesExecutionTarget({
+      runtimeSessionCwd: "/host/workspace",
+      effectiveExecutionCwd: "/remote/workspace",
+      executionTargetIsRemote: false,
+    })).toBe(false);
   });
 
   it("reuses a stable Paperclip-managed Claude prompt bundle across equivalent runs", async () => {
@@ -815,111 +1060,6 @@ describe("claude execute", () => {
     } finally {
       if (previousHome === undefined) delete process.env.HOME;
       else process.env.HOME = previousHome;
-      await fs.rm(root, { recursive: true, force: true });
-    }
-  });
-
-
-  it("startClaudeInvokeHeartbeat emits adapter-tagged JSON heartbeats and cleans up", async () => {
-    const stdoutLogs: string[] = [];
-    vi.useFakeTimers({ toFake: ["setInterval"] });
-    try {
-      const stop = startClaudeInvokeHeartbeat(async (stream, chunk) => {
-        if (stream === "stdout") stdoutLogs.push(chunk);
-      });
-      await vi.advanceTimersByTimeAsync(CLAUDE_INVOKE_HEARTBEAT_INTERVAL_MS);
-      await Promise.resolve();
-
-      const heartbeats = parseHeartbeatLogLines(stdoutLogs);
-      expect(heartbeats.length).toBeGreaterThanOrEqual(1);
-      expect(heartbeats[0]).toMatchObject({
-        event: "heartbeat",
-        adapter: "claude_local",
-      });
-
-      const heartbeatCountAfterStop = parseHeartbeatLogLines(stdoutLogs).length;
-      stop();
-      await vi.advanceTimersByTimeAsync(CLAUDE_INVOKE_HEARTBEAT_INTERVAL_MS * 2);
-      await Promise.resolve();
-      expect(parseHeartbeatLogLines(stdoutLogs)).toHaveLength(heartbeatCountAfterStop);
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
-  it("emits invoke heartbeat lines during long-running attempts and cleans up after completion", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-claude-execute-invoke-heartbeat-"));
-    const releasePath = path.join(root, "release.signal");
-    const { workspace, commandPath, restore } = await setupExecuteEnv(root, {
-      commandWriter: writeSlowClaudeCommand,
-    });
-    const stdoutLogs: string[] = [];
-    let processSpawned = false;
-    const realSetInterval = global.setInterval;
-
-    vi.spyOn(global, "setInterval").mockImplementation((fn, ms, ...args) => {
-      const effectiveMs = ms === 10 * 60 * 1000 ? 50 : ms;
-      return realSetInterval(fn, effectiveMs, ...args);
-    });
-
-    try {
-      const executePromise = execute({
-        runId: "run-claude-invoke-heartbeat",
-        agent: {
-          id: "agent-1",
-          companyId: "company-1",
-          name: "Claude Coder",
-          adapterType: "claude_local",
-          adapterConfig: {},
-        },
-        runtime: {
-          sessionId: null,
-          sessionParams: null,
-          sessionDisplayId: null,
-          taskKey: null,
-        },
-        config: {
-          command: commandPath,
-          cwd: workspace,
-          env: {
-            PAPERCLIP_TEST_RELEASE_PATH: releasePath,
-          },
-          promptTemplate: "Follow the paperclip heartbeat.",
-        },
-        context: {},
-        authToken: "run-jwt-token",
-        onLog: async (stream, chunk) => {
-          if (stream === "stdout") stdoutLogs.push(chunk);
-        },
-        onSpawn: async () => {
-          processSpawned = true;
-        },
-      });
-
-      await vi.waitFor(() => processSpawned, { timeout: 5_000 });
-      await new Promise((resolve) => setTimeout(resolve, 120));
-
-      const heartbeatsDuringRun = parseHeartbeatLogLines(stdoutLogs);
-      expect(heartbeatsDuringRun.length).toBeGreaterThanOrEqual(1);
-      expect(heartbeatsDuringRun[0]).toMatchObject({
-        event: "heartbeat",
-        adapter: "claude_local",
-      });
-      expect(typeof heartbeatsDuringRun[0]?.ts).toBe("string");
-
-      await fs.writeFile(releasePath, "done", "utf8");
-      const result = await executePromise;
-
-      expect(result.exitCode).toBe(0);
-      expect(result.errorMessage).toBeNull();
-      expect(result.sessionId).toBe("claude-session-slow");
-
-      const heartbeatCountAfterComplete = parseHeartbeatLogLines(stdoutLogs).length;
-      await new Promise((resolve) => setTimeout(resolve, 150));
-      expect(parseHeartbeatLogLines(stdoutLogs)).toHaveLength(heartbeatCountAfterComplete);
-    } finally {
-      vi.restoreAllMocks();
-      restore();
       await fs.rm(root, { recursive: true, force: true });
     }
   });

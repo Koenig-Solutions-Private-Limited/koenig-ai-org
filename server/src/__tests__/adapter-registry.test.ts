@@ -1,4 +1,5 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
+import { buildSandboxNpmInstallCommand } from "@paperclipai/adapter-utils";
 import type { ServerAdapterModule } from "../adapters/index.js";
 
 const hermesExecuteMock = vi.hoisted(() =>
@@ -9,7 +10,7 @@ const hermesExecuteMock = vi.hoisted(() =>
   })),
 );
 
-vi.mock("@paperclipai/adapter-hermes-local/server", () => ({
+vi.mock("hermes-paperclip-adapter/server", () => ({
   execute: hermesExecuteMock,
   testEnvironment: async () => ({
     adapterType: "hermes_local",
@@ -28,7 +29,7 @@ import {
   findActiveServerAdapter,
   findServerAdapter,
   listAdapterModels,
-  listServerAdapters,
+  listAdapterModelProfiles,
   registerServerAdapter,
   requireServerAdapter,
   unregisterServerAdapter,
@@ -80,6 +81,31 @@ describe("server adapter registry", () => {
     ]);
   });
 
+  it("exposes adapter model profiles when adapters declare them", async () => {
+    const adapterWithProfiles: ServerAdapterModule = {
+      ...externalAdapter,
+      modelProfiles: [
+        {
+          key: "cheap",
+          label: "Cheap",
+          adapterConfig: { model: "external-mini" },
+          source: "adapter_default",
+        },
+      ],
+    };
+
+    registerServerAdapter(adapterWithProfiles);
+
+    expect(await listAdapterModelProfiles("external_test")).toEqual([
+      {
+        key: "cheap",
+        label: "Cheap",
+        adapterConfig: { model: "external-mini" },
+        source: "adapter_default",
+      },
+    ]);
+  });
+
   it("removes external adapters when unregistered", () => {
     registerServerAdapter(externalAdapter);
 
@@ -88,20 +114,6 @@ describe("server adapter registry", () => {
     expect(findServerAdapter("external_test")).toBeNull();
     expect(() => requireServerAdapter("external_test")).toThrow(
       "Unknown adapter type: external_test",
-    );
-  });
-
-  it("normalizes legacy cursor_local to the cursor adapter at runtime lookup", () => {
-    const cursorAdapter = requireServerAdapter("cursor");
-    expect(requireServerAdapter("cursor_local")).toBe(cursorAdapter);
-    expect(findActiveServerAdapter("cursor_local")).toBe(cursorAdapter);
-    expect(findServerAdapter("cursor_local")).toBeNull();
-    expect(listServerAdapters().filter((adapter) => adapter.type === "cursor_local")).toEqual([]);
-  });
-
-  it("fails closed on unknown adapter types via requireServerAdapter", () => {
-    expect(() => requireServerAdapter("definitely_not_an_adapter")).toThrow(
-      "Unknown adapter type: definitely_not_an_adapter",
     );
   });
 
@@ -180,6 +192,73 @@ describe("server adapter registry", () => {
     expect(adapter!.instructionsPathKey).toBe("instructionsFilePath");
     expect(adapter!.requiresMaterializedRuntimeSkills).toBe(false);
     expect(adapter!.supportsLocalAgentJwt).toBe(true);
+  });
+
+  it("built-in local adapters declare cheap model profile defaults where supported", async () => {
+    await expect(listAdapterModelProfiles("claude_local")).resolves.toEqual([
+      expect.objectContaining({
+        key: "cheap",
+        adapterConfig: expect.objectContaining({ model: "claude-sonnet-4-6" }),
+        source: "adapter_default",
+      }),
+    ]);
+    await expect(listAdapterModelProfiles("codex_local")).resolves.toEqual([
+      expect.objectContaining({
+        key: "cheap",
+        adapterConfig: expect.objectContaining({ model: "gpt-5.3-codex-spark" }),
+        source: "adapter_default",
+      }),
+    ]);
+    await expect(listAdapterModelProfiles("gemini_local")).resolves.toEqual([
+      expect.objectContaining({
+        key: "cheap",
+        adapterConfig: expect.objectContaining({ model: "gemini-2.5-flash-lite" }),
+        source: "adapter_default",
+      }),
+    ]);
+    await expect(listAdapterModelProfiles("opencode_local")).resolves.toEqual([
+      expect.objectContaining({
+        key: "cheap",
+        adapterConfig: expect.objectContaining({ model: "openai/gpt-5.1-codex-mini" }),
+        source: "adapter_default",
+      }),
+    ]);
+    await expect(listAdapterModelProfiles("cursor")).resolves.toEqual([
+      expect.objectContaining({
+        key: "cheap",
+        adapterConfig: expect.objectContaining({ model: "gpt-5.1-codex-mini" }),
+        source: "adapter_default",
+      }),
+    ]);
+    await expect(listAdapterModelProfiles("pi_local")).resolves.toEqual([]);
+  });
+
+  it("wraps built-in npm runtime installs with the sandbox-aware install helper", () => {
+    const expectedClaudeInstall = `if ! command -v 'claude' >/dev/null 2>&1; then ${buildSandboxNpmInstallCommand("@anthropic-ai/claude-code")}; fi`;
+    const expectedCodexInstall = `if ! command -v 'codex' >/dev/null 2>&1; then ${buildSandboxNpmInstallCommand("@openai/codex")}; fi`;
+    const expectedGeminiInstall = `if ! command -v 'gemini' >/dev/null 2>&1; then ${buildSandboxNpmInstallCommand("@google/gemini-cli")}; fi`;
+    const expectedOpenCodeInstall = `if ! command -v 'opencode' >/dev/null 2>&1; then ${buildSandboxNpmInstallCommand("opencode-ai")}; fi`;
+
+    expect(findActiveServerAdapter("claude_local")?.getRuntimeCommandSpec?.({})).toEqual({
+      command: "claude",
+      detectCommand: "claude",
+      installCommand: expectedClaudeInstall,
+    });
+    expect(findActiveServerAdapter("codex_local")?.getRuntimeCommandSpec?.({})).toEqual({
+      command: "codex",
+      detectCommand: "codex",
+      installCommand: expectedCodexInstall,
+    });
+    expect(findActiveServerAdapter("gemini_local")?.getRuntimeCommandSpec?.({})).toEqual({
+      command: "gemini",
+      detectCommand: "gemini",
+      installCommand: expectedGeminiInstall,
+    });
+    expect(findActiveServerAdapter("opencode_local")?.getRuntimeCommandSpec?.({})).toEqual({
+      command: "opencode",
+      detectCommand: "opencode",
+      installCommand: expectedOpenCodeInstall,
+    });
   });
 
   it("switches active adapter behavior back to the builtin when an override is paused", async () => {

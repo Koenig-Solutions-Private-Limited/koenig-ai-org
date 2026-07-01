@@ -20,6 +20,8 @@ export interface ActiveRunForIssue {
   status: string;
   invocationSource: string;
   triggerDetail: string | null;
+  contextCommentId?: string | null;
+  contextWakeCommentId?: string | null;
   startedAt: string | Date | null;
   finishedAt: string | Date | null;
   createdAt: string | Date;
@@ -42,6 +44,8 @@ export interface LiveRunForIssue {
   status: string;
   invocationSource: string;
   triggerDetail: string | null;
+  contextCommentId?: string | null;
+  contextWakeCommentId?: string | null;
   startedAt: string | null;
   finishedAt: string | null;
   createdAt: string;

@@ -67,6 +67,7 @@ export {
   listOpenCodeModels,
   discoverOpenCodeModels,
   ensureOpenCodeModelConfiguredAndAvailable,
+  requireOpenCodeModelId,
   resetOpenCodeModelsCacheForTests,
   __setDiscoveryImplForTests,
 } from "./models.js";
