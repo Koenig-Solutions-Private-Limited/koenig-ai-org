@@ -163,6 +163,13 @@ export function adapterExecutionTargetUsesManagedHome(
   return target?.kind === "remote" && target.transport === "sandbox";
 }
 
+/** @deprecated Property removed in v2026.609.0; always returns null for hermes-local compatibility. */
+export function adapterExecutionTargetPaperclipApiUrl(
+  _target: AdapterExecutionTarget | null | undefined,
+): string | null {
+  return null;
+}
+
 export function adapterExecutionTargetRemoteCwd(
   target: AdapterExecutionTarget | null | undefined,
   localCwd: string,
