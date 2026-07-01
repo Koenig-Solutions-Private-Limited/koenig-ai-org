@@ -3190,12 +3190,12 @@ describeEmbeddedPostgres("issueService blockers and dependency wake readiness", 
     ]);
     await svc.update(blockedId, { blockedByIssueIds: [blockerId] });
 
-    await expect(svc.checkout(blockedId, assigneeAgentId, ["blocked"], randomUUID())).rejects.toMatchObject({
+    await expect(svc.checkout(blockedId, assigneeAgentId, ["blocked"], null)).rejects.toMatchObject({
       status: 422,
     });
 
     await svc.update(blockerId, { status: "done" });
-    const resumed = await svc.checkout(blockedId, assigneeAgentId, ["blocked"], randomUUID());
+    const resumed = await svc.checkout(blockedId, assigneeAgentId, ["blocked"], null);
     expect(resumed.status).toBe("in_progress");
   });
 
