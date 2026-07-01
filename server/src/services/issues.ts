@@ -2014,6 +2014,7 @@ const issueListSelect = {
   executionWorkspacePreference: issues.executionWorkspacePreference,
   executionWorkspaceSettings: sql<null>`null`,
   sourceTrust: issues.sourceTrust,
+  metadata: issues.metadata,
   startedAt: issues.startedAt,
   completedAt: issues.completedAt,
   cancelledAt: issues.cancelledAt,
