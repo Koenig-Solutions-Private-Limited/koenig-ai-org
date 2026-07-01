@@ -16,7 +16,6 @@ describe("buildCodexExecArgs", () => {
       "--search",
       "exec",
       "--json",
-      "--skip-git-repo-check",
       "--model",
       "gpt-5.4",
       "-c",
@@ -39,7 +38,6 @@ describe("buildCodexExecArgs", () => {
     expect(result.args).toEqual([
       "exec",
       "--json",
-      "--skip-git-repo-check",
       "--model",
       "gpt-5.5",
       "-c",
@@ -64,6 +62,23 @@ describe("buildCodexExecArgs", () => {
     expect(result.args).toEqual([
       "exec",
       "--json",
+      "--model",
+      "gpt-5.3-codex",
+      "-",
+    ]);
+  });
+
+  it("adds --skip-git-repo-check when requested", () => {
+    const result = buildCodexExecArgs(
+      {
+        model: "gpt-5.3-codex",
+      },
+      { skipGitRepoCheck: true },
+    );
+
+    expect(result.args).toEqual([
+      "exec",
+      "--json",
       "--skip-git-repo-check",
       "--model",
       "gpt-5.3-codex",
@@ -72,10 +87,13 @@ describe("buildCodexExecArgs", () => {
   });
 
   it("does not duplicate --skip-git-repo-check when supplied by user args", () => {
-    const result = buildCodexExecArgs({
-      model: "gpt-5.5",
-      extraArgs: ["--skip-git-repo-check", "--some-flag"],
-    });
+    const result = buildCodexExecArgs(
+      {
+        model: "gpt-5.5",
+        extraArgs: ["--skip-git-repo-check", "--some-flag"],
+      },
+      { skipGitRepoCheck: true },
+    );
 
     expect(result.args).toEqual([
       "exec",

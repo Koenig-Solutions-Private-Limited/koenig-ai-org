@@ -1,5 +1,5 @@
 {
-  "id": "84b66081-0962-4863-ae2f-d0c215b215e1",
+  "id": "fdc9cd8b-5423-4d64-b255-9bc1497fdd6a",
   "prevId": "12b3d91e-98ee-4a48-aecb-891f5bde6eda",
   "version": "7",
   "dialect": "postgresql",
@@ -11096,12 +11096,6 @@
           "primaryKey": false,
           "notNull": false
         },
-        "metadata": {
-          "name": "metadata",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false
-        },
         "assignee_adapter_overrides": {
           "name": "assignee_adapter_overrides",
           "type": "jsonb",
@@ -11117,6 +11111,43 @@
         "execution_state": {
           "name": "execution_state",
           "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "monitor_next_check_at": {
+          "name": "monitor_next_check_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "monitor_wake_requested_at": {
+          "name": "monitor_wake_requested_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "monitor_last_triggered_at": {
+          "name": "monitor_last_triggered_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "monitor_attempt_count": {
+          "name": "monitor_attempt_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "monitor_notes": {
+          "name": "monitor_notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "monitor_scheduled_by": {
+          "name": "monitor_scheduled_by",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -11354,6 +11385,27 @@
             },
             {
               "expression": "execution_workspace_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "issues_company_monitor_due_idx": {
+          "name": "issues_company_monitor_due_idx",
+          "columns": [
+            {
+              "expression": "company_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "monitor_next_check_at",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
