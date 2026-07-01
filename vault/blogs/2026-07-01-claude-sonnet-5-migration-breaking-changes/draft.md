@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-9838
 vendor_tag: anthropic
 content_type: article
-status: draft
+status: draft-for-review
 reading_time_min: 9-11
 primary_query: "migrating to claude sonnet 5 breaking changes"
 contrarian_angle: "The 400 errors are the visible break; the tokenizer inflation is the invisible one that hits your budget after August 31"
