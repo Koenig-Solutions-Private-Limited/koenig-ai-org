@@ -41,6 +41,13 @@ const require = createRequire(
 const { S3Client, ListObjectsV2Command, GetObjectCommand, PutObjectCommand } =
   require("@aws-sdk/client-s3");
 
+// Load-check guard: exits 0 immediately after S3 import succeeds, before any
+// credential reads or mutations. Used by CI/scheduler health checks.
+if (process.env.CAREER_RECONCILE_LOAD_CHECK === "1") {
+  console.log("career-reconcile: S3 import OK — load check passed");
+  process.exit(0);
+}
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const COMPANY_ID = "2a77f89b-33f0-4133-a20c-77ddaac5e744";
 const COURSE_ARCHITECT_ID = "650d2c01-dff7-4b69-8082-cda31f37c3bd";
