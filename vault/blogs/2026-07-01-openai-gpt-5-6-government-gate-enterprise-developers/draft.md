@@ -6,6 +6,10 @@ vendor_tag: openai
 content_type: article
 status: draft-for-review
 reading_time_min: 6-8
+title: "GPT-5.6 Sol Is Live — But the US Government Controls Who Gets Access in 2026"
+description: "OpenAI's GPT-5.6 Sol launched under a US government-managed access list — the first frontier model gated this way. Here is what the Trump executive order means for enterprise developers waiting for API access."
+slug: "2026-07-01-openai-gpt-5-6-government-gate-enterprise-developers"
+tags: [openai, gpt-5-6, government-ai-policy, enterprise-ai, ai-regulation]
 primary_query: "openai gpt-5.6 restrictions enterprise developers"
 first_60_words_answer: "GPT-5.6 (Sol, Terra, Luna) launched June 26, 2026, but access is restricted to approximately 20 US government-vetted organizations. A Trump executive order directed government early review of frontier AI models flagged for advanced cyber capabilities. General availability is promised in 'coming weeks' — no hard date. Enterprise developers outside the approved list cannot access Sol, Terra, or Luna via the OpenAI API today."
 contrarian_angle: "The EO is technically voluntary — but OpenAI complied anyway, and is now building a repeatable process with the administration. The gate will open for GPT-5.6. The framework that created it will not."
@@ -69,9 +73,9 @@ OpenAI launched three models under the GPT-5.6 family on June 26, 2026: **Sol** 
 | Terra | $2.50 | $15.00 | GPT-5.5 replacement at 2× lower cost |
 | Luna  | $1.00 | $6.00  | Fast, lowest cost |
 
-All three include a revamped prompt caching protocol: explicit cache breakpoints, 30-minute minimum guaranteed cache lifetime, and a **90% discount on cache reads** — a meaningful cost reduction for RAG pipelines and multi-turn agents with repetitive query patterns. Cache writes are billed at 1.25× the uncached input rate on the first pass. For high-repetition workloads, the economics shift significantly toward Sol and Terra relative to GPT-5.5. [(9to5Mac, 2026-06-29)](https://9to5mac.com/2026/06/26/openai-upgrading-chatgpt-and-codex-with-new-gpt-5-6-models-in-limited-release/)
+All three include a revamped [[glossary/prompt-caching]] protocol: explicit cache breakpoints, 30-minute minimum guaranteed cache lifetime, and a **90% discount on cache reads** — a meaningful cost reduction for RAG pipelines and multi-turn agents with repetitive query patterns. Cache writes are billed at 1.25× the uncached input rate on the first pass. For high-repetition workloads, the economics shift significantly toward Sol and Terra relative to GPT-5.5. [(9to5Mac, 2026-06-29)](https://9to5mac.com/2026/06/26/openai-upgrading-chatgpt-and-codex-with-new-gpt-5-6-models-in-limited-release/)
 
-OpenAI also confirmed Sol will be deployed on Cerebras infrastructure at up to **750 tokens per second** in July 2026, targeting latency-sensitive enterprise workloads where current output speeds create user-experience constraints.
+OpenAI also confirmed Sol will be deployed on Cerebras infrastructure at up to **750 tokens per second** in July 2026, targeting latency-sensitive enterprise workloads where current output speeds create user-experience constraints. [(OpenAI, 2026-06-26)](https://openai.com/index/previewing-gpt-5-6-sol)
 
 ## How the Government Gate Works
 
@@ -79,7 +83,7 @@ Access to GPT-5.6 during the preview period is not a pricing tier. It is not gat
 
 Approximately 20 organizations received access, each individually approved by the US government: *"Each one was approved by name through the government, not by signing up on a pricing page."* [(APIdog, 2026-06-29)](https://apidog.com/blog/gpt-5-6-government-preview/) The names are not public. There is no self-serve path to request inclusion. The trigger was Sol's advanced cybersecurity capabilities — the Trump administration cited the model's potential for cyber-offense applications as the reason for restricted initial release. [(Axios, 2026-06-29)](https://www.axios.com/2026/06/26/openai-gpt-sol-terra-luna-trump)
 
-The Next Web confirmed the historical significance: *"This is the first time an American AI company has launched a frontier model under a government-managed access list."* [(The Next Web, 2026-06-29)](https://thenextweb.com/news/openai-gpt-5-6-sol-limited-preview-government-approved-partners)
+The Next Web confirmed the historical significance: *"This is the first time an American AI company has launched a [[glossary/frontier-model]] under a government-managed access list."* [(The Next Web, 2026-06-29)](https://thenextweb.com/news/openai-gpt-5-6-sol-limited-preview-government-approved-partners)
 
 ## The EO Is Voluntary on Paper — and That's the Part That Should Worry You
 
