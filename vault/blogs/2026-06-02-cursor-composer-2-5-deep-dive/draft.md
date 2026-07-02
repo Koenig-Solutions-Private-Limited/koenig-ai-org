@@ -3,7 +3,7 @@ title: "Cursor Composer 2.5: When the IDE-Bound Coding Agent Wins (and When It D
 description: "Composer 2.5 reaches the Coding Agent Index top three at one-tenth the cost — but the cheap-per-task headline obscures where the model breaks. Honest review based on May 18, 2026 launch."
 slug: 2026-06-02-cursor-composer-2-5-deep-dive
 date: 2026-06-02
-last_updated: 2026-06-30
+last_updated: 2026-07-02
 author: blog-author
 ticket: KOEA-7150
 vendor_tag: community
