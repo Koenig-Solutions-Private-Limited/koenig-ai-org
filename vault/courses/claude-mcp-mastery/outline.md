@@ -1,5 +1,6 @@
 ---
 date: 2026-05-27
+last_updated: 2026-07-02
 author: content-author
 vendor_tag: anthropic
 content_type: course-outline
@@ -17,7 +18,7 @@ learning_objectives:
   - "Design prompt and review loops that keep creative taste, rights, and approvals with the human operator"
   - "Build production checklists for connector permissions, file handling, auditability, and fallback workflows"
 whats_new:
-  - "Anthropic announced Claude for Creative Work on 2026-04-28 with connectors for Ableton, Adobe Creative Cloud, Affinity by Canva, Autodesk Fusion, Blender, Resolume, SketchUp, and Splice."
+  - "Anthropic announced Claude for Creative Work on 2026-04-28 with connectors for Ableton, Adobe Creative Cloud, Affinity by Canva, Autodesk Fusion, Blender, Resolume Arena, Resolume Wire, SketchUp, and Splice."
   - "Anthropic says the Blender connector is built on MCP and can expose Blender's Python API through natural language."
   - "The course reframes creative connectors as workflow infrastructure, not as a replacement for creative direction."
 sources:
@@ -36,7 +37,7 @@ related_courses:
 
 ## Why this course exists
 
-Anthropic's 2026-04-28 Claude for Creative Work announcement moved Claude connectors from generic productivity into professional creative tools: Ableton, Adobe Creative Cloud, Affinity by Canva, Autodesk Fusion, Blender, Resolume, SketchUp, and Splice.[^anthropic] The Research Editor's 2026-04-30 daily brief flagged this as a hot course-delta and blog signal for `[[courses/claude-tool-use-from-zero]]`, especially because it turns MCP from an abstract integration standard into something visible in real creative workflows.[^brief]
+Anthropic's 2026-04-28 Claude for Creative Work announcement moved Claude connectors from generic productivity into professional creative tools: Ableton, Adobe Creative Cloud, Affinity by Canva, Autodesk Fusion, Blender, Resolume Arena, Resolume Wire, SketchUp, and Splice.[^anthropic] The Research Editor's 2026-04-30 daily brief flagged this as a hot course-delta and blog signal for `[[courses/claude-tool-use-from-zero]]`, especially because it turns MCP from an abstract integration standard into something visible in real creative workflows.[^brief]
 
 This course should teach learners how to use the connectors as production assistants, not magic buttons. Anthropic describes Claude's creative role as helping with learning tools, writing scripts/plugins, bridging formats, exploring options, and reducing repetitive production work.[^anthropic] The Model Context Protocol documentation frames MCP as a standard way for AI applications to connect to external systems, including data sources, tools, and workflows.[^mcp] The course therefore treats each connector as a scoped interface with permissions, file-state assumptions, review checkpoints, and fallback paths.
 
@@ -129,6 +130,6 @@ Learners design a reviewable creative workflow for a fictional studio brief: gen
 - Chief Content should approve structure before chapter drafting because this is a new-course outline.
 - Content Reviewer G0 should review chapters only after the outline is approved and individual chapter drafts exist.
 
-[^brief]: Research Editor daily brief, `vault/research/_daily/2026-04-30.md`, "Anthropic shipped 8 creative connectors."
+[^brief]: Research Editor daily brief, `vault/research/_daily/2026-04-30.md`. The brief noted 8 creative connectors; Anthropic's official announcement (https://www.anthropic.com/news/claude-for-creative-work) lists 9, because Resolume comprises two separate connectors: Resolume Arena and Resolume Wire.
 [^anthropic]: Anthropic, "Claude for Creative Work," 2026-04-28, updated 2026-05-01, https://www.anthropic.com/news/claude-for-creative-work?lang=us
 [^mcp]: Model Context Protocol documentation, "What is the Model Context Protocol (MCP)?", https://modelcontextprotocol.io/docs/getting-started/intro
