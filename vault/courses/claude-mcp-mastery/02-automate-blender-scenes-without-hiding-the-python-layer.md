@@ -10,7 +10,7 @@ chapter_num: 2
 title: "Automate Blender scenes in 2026 without hiding the Python layer"
 slug: 02-automate-blender-scenes-without-hiding-the-python-layer
 description: "Learn to write bounded, reviewable prompts for Claude's Blender MCP connector, review generated Python before execution, and protect production .blend files with versioned asset copies and non-destructive edit patterns."
-status: g1-passed
+status: g3-passed
 reading_time_min: 9
 positions: []
 chapter_primary_query: "how to automate Blender scenes with Claude MCP connector"

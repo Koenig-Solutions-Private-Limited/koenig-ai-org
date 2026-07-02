@@ -9,7 +9,7 @@ chapter_num: 6
 title: "Ship connector workflows with permissions, audit, and rollback"
 slug: 06-ship-connector-workflows-with-permissions-audit-and-rollback
 description: "Before enabling Claude creative connectors for a team, define per-tool permission boundaries, add approval gates for destructive and licensed actions, build a cross-tool rollback plan, and decide when a local connector session is sufficient versus when a gateway is required."
-status: g1-passed
+status: g3-passed
 last_updated: 2026-06-14
 reading_time_min: 9
 positions:

@@ -10,7 +10,7 @@ chapter_num: 4
 title: "Ground Ableton help and music workflows in official Live 12 documentation (2026)"
 slug: 04-ground-ableton-help-and-music-workflows-in-official-documentation
 description: "Learn to use Claude's Ableton connector as a documentation-grounded workflow assistant: write context-rich prompts for troubleshooting, routing, and export questions that include your Ableton version and project state, and separate documentation-grounded guidance from subjective musical decisions."
-status: g1-passed
+status: g3-passed
 reading_time_min: 9
 chapter_primary_query: "How do I use the Claude Ableton connector for documentation-grounded Live help?"
 first_60_words_answer: "Write prompts that include your Ableton Live version, OS, and Push model, then ask about documented features — routing, MIDI, effects, and export. The connector navigates official Ableton documentation rather than drawing from training data, so answers on feature behavior are reliable. Use a pre-change checklist before modifying your session; redirect creative or taste decisions to yourself."
