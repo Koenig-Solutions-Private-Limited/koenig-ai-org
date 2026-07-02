@@ -4,12 +4,13 @@ author: blog-author
 ticket: KOEA-8723
 vendor_tag: anthropic
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 9-11
 title: "The 80% Threshold (2026): What It Means When Claude Authors Most of Its Own Production Code"
 slug: anthropic-80-percent-code-threshold-2026-06-16
 tags: ["anthropic", "ai-engineering", "agent-security", "claude-code", "ai-coding-agents"]
 description: "What does it mean when >80% of a frontier AI lab's production code is written by its own AI? Anthropic's 2026 benchmarks — 76% success on complex tasks, 52× speedup, 12-hour task horizons — translated for AI engineering teams."
+seo_description: "Anthropic's 2026 benchmarks — 80% AI-authored code, 76% task success, 52× speedup, 12-hour horizons — translated for AI engineering teams."
 primary_query: "anthropic ai authored code 80 percent production 2026"
 contrarian_angle: "The 80% code-authoring threshold is not a milestone to celebrate or fear — it's a calibration point. If Claude is already at 76% on complex open-ended engineering tasks with 12-hour horizons, the question for your team isn't whether to adopt AI-assisted development, it's whether your security posture was designed for a world where the AI can now run for half a workday unsupervised."
 first_60_words_answer: "Anthropic disclosed in June 2026 that Claude now authors more than 80% of the code merged into its own production codebase — up from low single digits before Claude Code launched in early 2025. Benchmarks show a 76% success rate on complex open-ended engineering tasks, task horizons that have doubled every four months, and a 52× speedup on optimization work with Claude Mythos Preview."
