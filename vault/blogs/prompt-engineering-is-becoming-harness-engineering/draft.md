@@ -6,7 +6,7 @@ author: blog-author
 ticket: KOEA-6583
 vendor_tag: community
 content_type: article
-status: g3-passed
+status: g0-blocked
 reading_time_min: 6-8
 primary_query: "prompt engineering vs harness engineering AI agents 2026"
 contrarian_angle: "The bottleneck was never your prompts — it was the absence of a system around them"
@@ -23,17 +23,18 @@ faq:
   - question: "What are the components of a minimal AI harness for a solo builder?"
     answer: "A minimal solo harness has four parts: (1) a [SPEC or CLAUDE.md file](https://platform.claude.com/docs/en/release-notes/overview) that captures the task contract, not just system-prompt prose; (2) a plan-first checkpoint where the model proposes before it executes; (3) at least one automated verification step (unit test, schema check, or diff review) before any output is committed; and (4) a fallback path — what happens when the primary model call fails, is rate-limited, or returns a refusal. Anything without these four components is a prompt, not a harness."
 original_data: false
-last_updated: 2026-06-16
+last_updated: 2026-07-02
 hero_image: auto:flux
 sources:
   - https://www.reddit.com/r/PromptEngineering/comments/1t95hyf/is_prompt_engineering_actually_dead_or_are_we/
   - https://np.reddit.com/r/ClaudeAI/comments/1rozbqb/are_agents_actually_useful_for_complex_tasks/
-  - https://www.reddit.com/r/LocalLLaMA/comments/1swifke/switched_from_qwen36_35ba3b_to_qwen36_27b_mid/
   - https://daringfireball.net/2026/05/ai_is_technology_not_a_product
   - https://openai.github.io/openai-agents-python/
   - https://www.anthropic.com/research/building-effective-agents
+  - https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents
   - https://platform.claude.com/docs/en/release-notes/overview
   - https://ai.google.dev/gemini-api/docs/changelog
+  - https://www.epsilla.com/blogs/harness-engineering-evolution-prompt-context-autonomous-agents
 whats_new:
   - Harness engineering — specs, loops, test gates, and fallback — compounds where prompt tuning plateaus
 learning_objectives:
@@ -68,13 +69,15 @@ A harness is the process that wraps your model calls. It has five components:
 
 **4. Test and verification gates** — Automated checks run *before* output is committed, merged, or sent downstream. Schema validation, unit tests, diff reviews, assertion checks. The gate is cheap; reverting a bad agentic action is expensive.
 
-**5. Fallback and recovery logic** — What happens when the primary model fails, returns a refusal, or hits a rate limit? Vendor reliability is not guaranteed: [OpenAI's status feed](https://status.openai.com/feed.rss) (retrieved 2026-05-18) logged a performance degradation incident during the same research period. A harness that can route to a fallback model or gracefully degrade is more reliable than any single model, however capable.
+**5. Fallback and recovery logic** — What happens when the primary model fails, returns a refusal, or hits a rate limit? Vendor reliability is not guaranteed. Anthropic's own eval engineering guidance explicitly recommends [building CI fallback logic](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) (retrieved 2026-06-30) to handle the reality that model behavior changes on vendor release cycles — not yours. A harness that can route to a fallback model or gracefully degrade is more reliable than any single model, however capable.
 
 ## Workflow Over Model Size
 
-One of the clearest signals in the community data is a r/LocalLLaMA report where [Qwen3.6 27B outperformed a larger 35B-A3B setup](https://www.reddit.com/r/LocalLLaMA/comments/1swifke/switched_from_qwen36_35ba3b_to_qwen36_27b_mid/) (retrieved 2026-05-18) for a real coding workflow. *Treat this as anecdotal community evidence, not a universal benchmark.* But the pattern it illustrates is consistent with the broader shift: harness design (context management, task decomposition, verification steps) often matters more than raw model size.
+[Epsilla's March 2026 analysis](https://www.epsilla.com/blogs/harness-engineering-evolution-prompt-context-autonomous-agents) (retrieved 2026-06-30) documented a team using identical models, data, and prompts that improved programming benchmark success from 42% to 78% by modifying only the runtime environment. The model didn't change. The harness did.
 
-John Gruber's framing at [Daring Fireball](https://daringfireball.net/2026/05/ai_is_technology_not_a_product) (retrieved 2026-05-18) — "AI is technology, not a product" — captures the same idea from a different angle. Value comes from how teams integrate AI into their process. Model access is commodity; process design is proprietary.
+At production scale, the same principle holds. OpenAI's Codex team deployed an agent that generated approximately one million lines of code and 1,500 pull requests over five months, with zero human-written code — seven engineers, no interactive prompting, a harness. Stripe's Minions system autonomously merges over 1,300 pull requests weekly by separating deterministic orchestration nodes from agentic nodes.
+
+John Gruber's framing at [Daring Fireball](https://daringfireball.net/2026/05/ai_is_technology_not_a_product) (retrieved 2026-05-18) — "AI is technology, not a product" — captures the same idea: value comes from how teams integrate AI into their process. Model access is commodity; process design is proprietary.
 
 ## The Solo Builder Harness Blueprint
 
@@ -127,7 +130,7 @@ The teams shipping reliable AI products in 2026 are not the ones with the best p
 
 ---
 
-*Community signal note: The "prompt engineering is dead" framing and the Qwen3.6 27B > 35B-A3B workflow result are drawn from community threads (r/PromptEngineering, r/LocalLLaMA). They are included as practitioner signal, not as universal industry benchmarks.*
+*Sources note: The "prompt engineering is dead" framing is drawn from r/PromptEngineering community threads and is consistent with the established three-era vocabulary now documented by Red Hat, Anthropic, LangChain, and Epsilla. Production statistics from OpenAI's Codex team and Stripe Minions are cited via Epsilla's March 2026 analysis.*
 
 ---
 
