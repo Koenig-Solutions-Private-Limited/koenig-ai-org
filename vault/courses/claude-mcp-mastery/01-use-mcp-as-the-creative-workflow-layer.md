@@ -5,11 +5,11 @@ vendor_tag: anthropic
 content_type: course-chapter
 course_slug: claude-mcp-mastery
 chapter_num: 1
-title: "Use MCP as the creative workflow layer"
+title: "Use MCP as the creative workflow layer (2026)"
 slug: 01-use-mcp-as-the-creative-workflow-layer
 description: "Learn how to design safe, human-approved Claude MCP connector workflows for creative software including Blender, Adobe for creativity, Ableton, and Splice without surrendering creative direction to the model."
-status: g3-passed
-last_updated: 2026-06-14
+status: g0-passed
+last_updated: 2026-07-02
 reading_time_min: 9
 tags:
   - mcp
@@ -25,6 +25,15 @@ whats_new:
   - "Anthropic announced Claude for Creative Work on 2026-04-28 with nine creative connectors: Ableton, Adobe for creativity, Affinity by Canva, Autodesk Fusion, Blender, Resolume Arena, Resolume Wire, SketchUp, and Splice."
   - "Anthropic describes Blender's connector as MCP-based and connected to Blender's Python API."
   - "This chapter turns the connector launch into a production workflow model for creative teams."
+chapter_primary_query: "How to use Claude MCP connectors in creative workflows 2026"
+first_60_words_answer: "Claude MCP connectors move the assistant from advice to action inside professional creative software. Anthropic's April 2026 launch named nine connectors — Blender, Adobe for creativity, Ableton, Splice, SketchUp, Autodesk Fusion, Resolume Arena, Resolume Wire, and Affinity by Canva. The production lesson is not 'let Claude make the art' but 'use Claude as a workflow layer' with human checkpoints for taste, rights, and final approval."
+positions:
+  - id: mcp-as-interoperability-moat
+    engagement: defends
+  - id: human-in-the-loop-as-workflow-step
+    engagement: defends
+  - id: audit-trail-as-enterprise-gate
+    engagement: neutral
 faq:
   - question: "What is the difference between advice mode and action mode?"
     answer: "Advice mode asks Claude to reason from supplied context without changing files or triggering any external system; action mode lets Claude invoke a connector-exposed tool, creating an explicit protocol event that can modify real creative assets. The Claude tool-use documentation notes that the model requests tool use, receives results, and continues reasoning — meaning action mode produces observable, traceable side effects that advice mode never does (source: https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview)."
@@ -42,11 +51,11 @@ sources:
   - "https://modelcontextprotocol.io/specification/2025-06-18/server/tools"
   - "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview"
   - "https://docs.blender.org/api/current/"
-  - "https://cdn-resources.ableton.com/resources/pdfs/live-manual/12/2026-03-20/live12-manual-en.pdf"
+  - "https://help.ableton.com/hc/en-us/articles/206769450-Live-Manual"
   - "https://support.splice.com/hc/en-us/articles/360025013734-Splice-Sounds-Licensing-FAQ"
 ---
 
-# Use MCP as the creative workflow layer
+# Use MCP as the creative workflow layer (2026)
 
 Creative connectors matter because they move Claude from "person in the chat who gives advice" to "assistant that can act inside the tools where the work already lives." Anthropic's April 28, 2026 Claude for Creative Work announcement named nine connectors: Ableton, Adobe for creativity, Affinity by Canva, Autodesk Fusion, Blender, Resolume Arena, Resolume Wire, SketchUp, and Splice.[^anthropic] The same launch made MCP concrete for creative professionals: Blender scenes, Adobe assets, Ableton workflows, 3D design handoffs, and sample search are easier to understand than another abstract enterprise integration.
 
@@ -280,5 +289,5 @@ In the next chapter, we will apply this pattern to Blender. Blender is the clear
 [^mcp-tools]: Model Context Protocol specification, "Tools," version 2025-06-18, retrieved 2026-05-27, https://modelcontextprotocol.io/specification/2025-06-18/server/tools
 [^claude-tools]: Anthropic Claude docs, "Tool use with Claude," retrieved 2026-05-27, https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview
 [^blender-api]: Blender Python API documentation, current branch, retrieved 2026-05-27, https://docs.blender.org/api/current/
-[^ableton-manual]: Ableton, "Live 12 Reference Manual," PDF path dated 2026-03-20, retrieved 2026-05-27, https://cdn-resources.ableton.com/resources/pdfs/live-manual/12/2026-03-20/live12-manual-en.pdf
+[^ableton-manual]: Ableton, "Live 12 Manual," retrieved 2026-07-02, https://help.ableton.com/hc/en-us/articles/206769450-Live-Manual
 [^splice-license]: Splice Support, "Splice Sounds Licensing FAQ," retrieved 2026-05-27, https://support.splice.com/hc/en-us/articles/360025013734-Splice-Sounds-Licensing-FAQ
