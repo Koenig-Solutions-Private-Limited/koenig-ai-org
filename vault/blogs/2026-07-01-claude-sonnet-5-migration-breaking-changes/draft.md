@@ -24,7 +24,7 @@ faq:
   - question: "How do I disable adaptive thinking in Claude Sonnet 5?"
     answer: "Pass thinking: {type: 'disabled'} in your API request body alongside the model parameter. Without this field, Sonnet 5 enables adaptive thinking by default, which increases output token counts, adds first-token latency, and changes response characteristics relative to Sonnet 4.6 behavior."
   - question: "Is Claude Sonnet 5 available on Priority Tier?"
-    answer: "No. Priority Tier service is not available for Claude Sonnet 5 as of the June 30, 2026 launch. If your application requires Priority Tier SLA guarantees, you must continue using Claude Sonnet 4.6 or Claude Opus 4.8."
+    answer: "No. Priority Tier service is not available for Claude Sonnet 5 as of the June 30, 2026 launch. If your application requires Priority Tier SLA guarantees, you must continue using Claude Sonnet 4.6."
 original_data: false
 last_updated: 2026-07-01
 hero_image:
@@ -99,7 +99,7 @@ Per the [official Sonnet 5 migration guide](https://platform.claude.com/docs/en/
 
 For most workloads, this is the right move. Temperature hacking was a proxy for "I want more or less creative output" — a blunt instrument. With effort-level control over extended thinking, Sonnet 5 handles this more precisely. If you were using `temperature=0` for determinism, that was never a true guarantee anyway. Switch to structured output schemas via response format constraints, which provide consistent output structure without relying on sampling parameters Sonnet 5 no longer accepts.
 
-One important caveat from the [Sonnet 5 announcement](https://www.anthropic.com/news/claude-sonnet-5): **Priority Tier service is not available on Sonnet 5** at launch. If your production SLA requires Priority Tier guarantees, stay on Sonnet 4.6 or Opus 4.8 until Anthropic adds Priority Tier support.
+One important caveat from the [Sonnet 5 announcement](https://www.anthropic.com/news/claude-sonnet-5): **Priority Tier service is not available on Sonnet 5** at launch. If your production SLA requires Priority Tier guarantees, stay on Sonnet 4.6 until Anthropic adds Priority Tier support for Sonnet 5.
 
 **Grep to find all affected call sites:**
 
@@ -112,7 +112,7 @@ rg -n 'temperature|top_p|top_k' --glob '*.{py,ts,js,mjs}' src/
 
 ## Breaking Change #2: Rewrite Extended Thinking Calls
 
-If your code used the extended thinking feature, it is broken. The `budget_tokens` syntax was deprecated on Sonnet 4.6 and now returns HTTP 400 on Sonnet 5. The replacement is an `output_config.effort` field.
+If your code used the extended thinking feature, it is broken. The `budget_tokens` syntax was deprecated on Sonnet 4.6 and now returns HTTP 400 on Sonnet 5. The primary replacement is `thinking: {type: "adaptive"}`, with `output_config.effort` controlling reasoning depth.
 
 **What fails:**
 
@@ -129,19 +129,20 @@ response = client.messages.create(
 )
 ```
 
-**The fix — switch to `output_config.effort`:**
+**The fix — use `thinking: {type: "adaptive"}` with `output_config.effort`:**
 
 ```python
-# Sonnet 5 extended thinking: effort levels replace budget_tokens
+# Sonnet 5 extended thinking: thinking=adaptive is primary, effort controls depth
 response = client.messages.create(
     model="claude-sonnet-5",
     max_tokens=8000,
-    output_config={"effort": "high"},   # "low", "medium", or "high"
+    thinking={"type": "adaptive"},      # Primary: explicitly enable adaptive thinking
+    output_config={"effort": "high"},   # "low", "medium", "high", "xhigh", or "max"
     messages=[{"role": "user", "content": "Debug this race condition..."}]
 )
 ```
 
-The `effort` parameter maps to the intent behind `budget_tokens`: `"low"` for quick tasks, `"medium"` for standard reasoning, `"high"` for complex multi-step problem-solving. You no longer set an explicit token ceiling — Anthropic allocates internally based on effort level.
+The `effort` parameter maps to the intent behind `budget_tokens`: `"low"` for quick tasks, `"medium"` for standard reasoning, `"high"` for complex multi-step problem-solving, `"xhigh"` for extended deep reasoning, and `"max"` for maximum reasoning capacity. You no longer set an explicit token ceiling — Anthropic allocates internally based on effort level.
 
 This is an improvement in API ergonomics. Choosing a `budget_tokens` value was guesswork: too low and the model reasoned incompletely; too high and you paid for unused thinking capacity. Effort levels abstract this into a practical tradeoff developers can actually make.
 
@@ -293,8 +294,8 @@ response_standard = client.messages.create(
 response_thinking = client.messages.create(
     model="claude-sonnet-5",
     max_tokens=8000,
-    output_config={"effort": "high"},   # REPLACE budget_tokens with this
-    # thinking: adaptive is the default; no need to set explicitly
+    thinking={"type": "adaptive"},      # ADD: explicit adaptive thinking
+    output_config={"effort": "high"},   # REPLACE budget_tokens with this ("low"–"max")
     messages=[{"role": "user", "content": "Complex multi-step task here"}]
 )
 ```
@@ -303,13 +304,13 @@ response_thinking = client.messages.create(
 
 - [ ] Replace `claude-sonnet-4-6` with `claude-sonnet-5` in all model parameters
 - [ ] Remove `temperature`, `top_p`, and `top_k` from all Sonnet 5 call sites
-- [ ] Replace `thinking: {type: "enabled", budget_tokens: N}` with `output_config: {effort: "high" | "medium" | "low"}`
+- [ ] Replace `thinking: {type: "enabled", budget_tokens: N}` with `thinking: {type: "adaptive"}` and `output_config: {effort: "low" | "medium" | "high" | "xhigh" | "max"}`
 - [ ] Add `thinking: {type: "disabled"}` to calls that do not need extended reasoning
 - [ ] Re-count tokens with `client.beta.messages.count_tokens(model="claude-sonnet-5", ...)` on your production prompts
 - [ ] Multiply Sonnet 4.6 token estimates by 1.27–1.40 for English/Spanish to update cost forecasts
 - [ ] Rebaseline `max_tokens` ceilings if previously set based on Sonnet 4.6 output length expectations
 - [ ] Update cost circuit breakers and dashboards before August 31 when introductory pricing ends
-- [ ] Confirm whether your application requires Priority Tier — if yes, hold on Sonnet 4.6 or Opus 4.8 for now
+- [ ] Confirm whether your application requires Priority Tier — if yes, hold on Sonnet 4.6 for now (Priority Tier not confirmed for other models at Sonnet 5 launch)
 
 The [Claude Code v2.1.197 release](https://github.com/anthropics/claude-code/releases/tag/v2.1.197) ships Sonnet 5 as the new default model in Claude Code sessions. If your team uses Claude Code for code generation that feeds into tests or CI, the model default change is already in effect — review any sampling parameter usage in code generation prompts immediately.
 
