@@ -21,11 +21,13 @@ sources:
   - https://docs.anthropic.com/en/docs/claude-code/sdk/sdk-mcp
   - https://docs.anthropic.com/en/docs/claude-code/sdk/sdk-permissions
   - https://docs.anthropic.com/en/docs/mcp
+  - https://www.anthropic.com/news/claude-sonnet-5
+  - https://platform.claude.com/docs/en/about-claude/models/whats-new-sonnet-5
 ---
 
 # How to build a production Claude Agent SDK app in 6 chapters
 
-Course outline persisted by operator on 2026-05-28 (Course Author hit `bwrap: No permissions to create a new namespace` sandboxing failure — outline is intact from the agent's draft). Revised 2026-06-12 for KOEA-8039 (G0 structural blockers from KOEA-8028).
+Course outline persisted by operator on 2026-05-28 (Course Author hit `bwrap: No permissions to create a new namespace` sandboxing failure — outline is intact from the agent's draft). Revised 2026-06-12 for KOEA-8039 (G0 structural blockers from KOEA-8028). Revised 2026-07-01 for KOEA-9865, using KOEA-9823 engineering handoff and KOEA-9837 research memo, to isolate Claude Sonnet 5 migration breakages: ch 3 owns sampling-parameter removal; ch 6 owns adaptive thinking, tokenizer, `max_tokens`, and pricing-window migration.
 
 ## Chapters
 
@@ -40,6 +42,8 @@ Course outline persisted by operator on 2026-05-28 (Course Author hit `bwrap: No
 2. Implement a minimal five-line agent using `Agent.run()` and explain each parameter
 3. Compare streaming vs. blocking response modes and choose the right one for a given use case
 4. Select the appropriate model tier (Haiku / Sonnet / Opus 4.7) based on task class and cost
+
+> **Sonnet 5 migration note (2026-Q3):** If you are running these exercises on Claude Sonnet 5, omit temperature, top_p, and top_k (Sonnet 5 returns HTTP 400 for non-default values). Sonnet 5 also enables adaptive thinking by default — pass `thinking: {type: "disabled"}` if you need concise, non-extended responses. The Sonnet 5 tokenizer produces ~30% more tokens for equivalent text, so rebaseline your `max_tokens` budgets. Manual `thinking: {type: "enabled", budget_tokens: N}` syntax is rejected on Sonnet 5.
 
 **Topics:**
 - Install + auth (Anthropic API + Claude subscription)
@@ -93,6 +97,8 @@ Course outline persisted by operator on 2026-05-28 (Course Author hit `bwrap: No
 
 **Hands-on exercise:** Add a `search_linear_issues` MCP tool (read-only) and a `create_linear_comment` tool (write-allowed) to the Chapter 2 harness; implement permission checks that block the write tool unless `ALLOW_WRITES=true` is set.
 
+> **Sonnet 5 migration note:** When migrating this chapter's tool-agent request examples to `claude-sonnet-5`, remove `temperature`, `top_p`, and `top_k` entirely. Sonnet 5 returns HTTP 400 for non-default sampling parameters; use system prompt wording, tool schemas, permission gates, and evals for behavior control instead of sampling knobs.
+
 ---
 
 ### Chapter 4 — Preserve context with sessions, artifacts, and resumable runs
@@ -104,7 +110,7 @@ Course outline persisted by operator on 2026-05-28 (Course Author hit `bwrap: No
 **Learning objectives:**
 1. Implement artifact storage using R2, S3, or local FS and explain the trade-offs between each
 2. Configure resumable runs that reconstruct agent state after a crash or process restart
-3. Apply prompt caching and cache control headers to reduce per-run token cost by ≥30%
+3. Apply prompt caching and cache control headers to reduce per-run token cost by ≥30% *(Sonnet 5 note: the tokenizer produces ~30% more tokens for the same text — recount your cached prompt lengths and cost estimates when migrating from 4.x)*
 4. Explain the SDK's session ID + run ID model and how it maps to external storage keys
 
 **Topics:**
@@ -148,7 +154,7 @@ Course outline persisted by operator on 2026-05-28 (Course Author hit `bwrap: No
 **Learning objectives:**
 1. Build the capstone incident-triage agent that integrates all prior chapters into a deployable artifact
 2. Deploy HTTP and CLI entrypoints and verify liveness under simulated load
-3. Configure a cost circuit-breaker that halts the agent when a per-run budget is exceeded
+3. Configure a cost circuit-breaker that halts the agent when a per-run budget is exceeded *(Sonnet 5 note: adaptive thinking adds text-only decision turns that accumulate cost; if migrating to Sonnet 5, rebaseline circuit-breaker thresholds and account for the ~30% tokenizer uplift)*
 4. Write an operator runbook covering failover, manual override, and on-call escalation procedures
 
 **Topics:**
@@ -158,6 +164,8 @@ Course outline persisted by operator on 2026-05-28 (Course Author hit `bwrap: No
 - On-call playbook for agent escalations
 
 **Hands-on exercise:** Wire the incident-triage agent to an Express HTTP endpoint (`POST /triage`), add a `MAX_COST_USD` env guard that returns HTTP 402 when exceeded, and write a one-page operator runbook as `docs/runbook.md` covering restart, rollback, and manual override procedures.
+
+> **Sonnet 5 migration note:** Replace manual extended-thinking calls such as `thinking: {type: "enabled", budget_tokens: N}` with adaptive thinking (`thinking: {type: "adaptive"}`) and `output_config.effort` when the capstone needs deeper reasoning. Omit `thinking` only if adaptive thinking is intended; set `thinking: {type: "disabled"}` for concise routing, liveness, and low-latency guardrail turns. Recount prompts with the Sonnet 5 tokenizer before setting `MAX_COST_USD` or `max_tokens`: Anthropic's migration guide says equivalent text produces about 30% more tokens, and the launch pricing is $2/$10 per million input/output tokens through August 31, 2026 before standard $3/$15 pricing takes effect on September 1, 2026.
 
 ---
 
