@@ -4,8 +4,8 @@ agent: course-author
 type: course-draft
 course_slug: pi-agent-setup-and-usage-2026
 chapter_num: 1
-title: "Chapter 1: What Is Pi Agent + Why It Matters"
-status: awaiting-g0
+title: "Chapter 1: What Pi Is and How to Start Safely"
+status: g0-passed
 author: course-author
 ticket: KOEA-7194
 level: Intermediate
@@ -14,100 +14,99 @@ reading_time_min: 30
 tags:
   - course/pi-agent-setup-and-usage-2026
 prerequisites_chapters: []
-chapter_primary_query: "What is Pi agent and how do I install it?"
-first_60_words_answer: "Pi agent is an open-source, provider-agnostic AI coding agent that routes tasks across local models (via Ollama), Anthropic Claude, and OpenAI from a single CLI and config file. Install it with `npm install -g @pi-ai/cli`, point it at one or more providers in `~/.pi/config.toml`, and run `pi chat` to start. Pi owns the agent loop; you choose the model."
+chapter_primary_query: "What is Pi coding agent and how do I install it?"
+first_60_words_answer: "Pi is a minimal terminal coding agent for developers who want a small, extensible harness instead of a large opinionated framework. Install the current package with `npm install -g --ignore-scripts @mariozechner/pi-coding-agent`, start it with `pi`, authenticate through `/login` or an API key, and configure JSON files under `~/.pi/agent/`."
 learning_objectives:
-  - "Explain Pi's architecture and why it differs from single-provider coding agents"
-  - "Install Pi agent and confirm it runs against at least one provider"
-  - "Read and modify the core config file to wire a provider"
-  - "Run a one-shot code explanation task with `pi chat`"
+  - "Explain Pi's minimal-agent philosophy and the four default tools"
+  - "Install Pi with the current package name and recognize the active package scope"
+  - "Launch Pi, authenticate one provider, and run a first session"
+  - "Locate the JSON settings, model, auth, and project-instruction files Pi actually uses"
 faq:
-  - question: "What problem does Pi agent solve?"
-    answer: "Pi solves model-fragmentation: teams using Claude Code, Codex CLI, and Aider end up maintaining three separate configs, three context models, and three billing dashboards. Pi provides a single agent loop with a swappable provider layer, so you change one field in config.toml to switch models without changing your workflow."
+  - question: "What problem does Pi solve?"
+    answer: "Pi gives developers a small terminal coding harness that can work across providers while staying extensible. Its default tool surface is intentionally narrow: read, write, edit, and bash. More behavior comes from instructions, skills, prompt templates, extensions, or packages."
   - question: "Does Pi replace Claude Code or Codex CLI?"
-    answer: "Not necessarily. Pi is designed to interop with both. In Chapter 3 you will see how Pi hands off execution to Claude Code via plan-mode, then verifies the result. Think of Pi as the router and orchestrator; Claude Code and Codex CLI can be downstream executors."
-  - question: "Is Pi agent open source?"
-    answer: "Yes. Pi is MIT-licensed. The core packages are @pi-ai/cli (CLI), @pi-ai/core (agent loop), and @pi-ai/provider-* (provider adapters). Source is at github.com/pi-agent/pi."
-  - question: "What Node version does Pi require?"
-    answer: "Node.js 20 LTS or later. Pi uses the native fetch API and structured-clone, both stable since Node 18 but best supported on 20+."
-  - question: "Can I use Pi without an internet connection?"
-    answer: "Yes — if you configure only the ollama provider, every Pi invocation hits your local Ollama daemon and never makes an outbound API call. Internet access is required only when an anthropic or openai provider block is active."
+    answer: "Not necessarily. Pi is a separate terminal harness with its own agent loop, provider abstraction, sessions, and extension system. It can use Anthropic, OpenAI, subscription-backed providers, and local OpenAI-compatible endpoints, but it does not clone every workflow from Claude Code or Codex CLI."
+  - question: "Is Pi open source?"
+    answer: "Yes. The current project lives at github.com/badlogic/pi and is MIT-licensed. The main packages are @mariozechner/pi-coding-agent, @mariozechner/pi-agent-core, @mariozechner/pi-ai, and @mariozechner/pi-tui."
+  - question: "Which package scope should I use?"
+    answer: "Use the @mariozechner npm scope. New installs should use @mariozechner/pi-coding-agent unless the upstream project publishes a newer official migration note."
+  - question: "Does Pi support MCP natively?"
+    answer: "No. Pi's core stance is to avoid native MCP because large tool manifests add context overhead. Teams that need MCP can evaluate the community pi-mcp-adapter extension, but MCP is not part of the core agent."
 inline_assets:
   - type: diagram
-    id: pi-architecture
-    alt: "Pi agent architecture: provider adapters at the bottom feed into the core agent loop, which drives the plan engine and MCP tool layer above"
+    id: pi-package-stack
+    alt: "Pi package stack: pi-coding-agent CLI on top of pi-agent-core, pi-ai, and pi-tui"
   - type: diagram
-    id: first-run-sequence
-    alt: "Sequence diagram for a first pi chat invocation: CLI → config loader → provider adapter → Ollama → response → CLI output"
-last_updated: 2026-06-02
+    id: first-session-sequence
+    alt: "First Pi session: install package, launch pi, authenticate, load instructions, send first request, run tools"
+last_updated: 2026-07-02
 schema:
   "@context": "https://schema.org"
   "@type": "HowTo"
-  name: "How to install and configure Pi agent"
-  description: "Step-by-step guide to installing Pi agent, writing a provider config, and running a first AI coding task from the terminal."
+  name: "How to install and start Pi Coding Agent"
+  description: "Step-by-step guide to installing Pi, authenticating a provider, adding project instructions, and running a first terminal agent session."
   totalTime: "PT30M"
   step:
     - "@type": "HowToStep"
-      name: "Install Node.js 20+"
-      text: "Download and install Node.js 20 LTS from nodejs.org, or use a version manager: `nvm install 20 && nvm use 20`."
+      name: "Install Pi"
+      text: "Run `npm install -g --ignore-scripts @mariozechner/pi-coding-agent`."
     - "@type": "HowToStep"
-      name: "Install Pi agent globally"
-      text: "Run `npm install -g @pi-ai/cli`. Verify with `pi --version`."
+      name: "Start Pi in a project"
+      text: "Change into a Git repository or practice folder, then run `pi`."
     - "@type": "HowToStep"
-      name: "Install Ollama and pull a model"
-      text: "Install Ollama from ollama.com, then run `ollama pull llama3.1:8b` to get the smallest usable local model."
+      name: "Authenticate a provider"
+      text: "Run `/login` inside Pi, or set an API key such as `ANTHROPIC_API_KEY` before launch."
     - "@type": "HowToStep"
-      name: "Write ~/.pi/config.toml"
-      text: "Create the config file with one provider block targeting your local Ollama daemon."
+      name: "Add project instructions"
+      text: "Create an `AGENTS.md` file in the project with the checks, style rules, and boundaries Pi should follow."
     - "@type": "HowToStep"
-      name: "Run your first pi chat"
-      text: "Pipe a source file into `pi chat` with a plain-English prompt. Confirm you see a model response."
+      name: "Run a first task"
+      text: "Ask Pi to summarize the repository and explain how to run its checks."
 ---
 
-# Chapter 1: What Is Pi Agent + Why It Matters
+# Chapter 1: What Pi Is and How to Start Safely
 
-> **Chapter 1 of 4 · 90 min (30 min reading + 60 min hands-on)**
+> **Chapter 1 of 4 - 90 min (30 min reading + 60 min hands-on)**
 
-Pi agent is a provider-agnostic, open-source AI coding agent that routes tasks across local models, Anthropic Claude, and OpenAI from a single CLI and a single config file. Install it with `npm install -g @pi-ai/cli`, point it at one or more providers in `~/.pi/config.toml`, and run `pi chat` to start. Pi owns the agent loop; you choose the model — and you can change that choice per session, per task, or based on an auto-escalation budget rule.
+Pi is a minimal terminal coding agent for developers who want a small, extensible harness instead of a large opinionated framework. Install the current package with `npm install -g --ignore-scripts @mariozechner/pi-coding-agent`, start it with `pi`, authenticate through `/login` or an API key, and configure JSON files under `~/.pi/agent/`.
 
-This chapter covers what Pi is, why it exists, how its architecture works, and how to get from a blank terminal to a running first task in under 30 minutes.
-
----
-
-## 1.1 The Problem: Model Fragmentation in 2026
-
-If you have been using AI coding tools for more than six months, you have probably accumulated a small graveyard of configuration files. `.cursorrules`. `AGENTS.md`. `CLAUDE.md`. A `codex.toml` somewhere. An `.aider.conf.yml` you forgot about.
-
-Each tool has its own:
-
-- **Context model** — how it understands your project (file-tree reading, embeddings, explicit pinning)
-- **Config format** — TOML, YAML, JSON, bespoke markdown headers
-- **CLI surface** — `claude`, `codex`, `aider`, `cursor`, each with different flags
-- **Billing dashboard** — separate API keys, separate spend alerts, separate monthly invoices
-
-When your team decides to add a local-model option for sensitive code, you add a fourth tool. When you need GPT-5.5 for a long-context reasoning task, you context-switch to a fifth interface. The cognitive overhead compounds quickly, and the operational overhead — keeping configs in sync across team members, managing API key rotation, auditing which tool spent what — becomes a real maintenance burden.
-
-**Pi's answer:** a single agent loop with a swappable provider layer underneath. You write one config file, use one CLI, and Pi routes each invocation to the right model based on your rules.
+This chapter gets the product surface right before you touch a real repository. Pi is not configured with TOML provider blocks, it does not launch through a chat subcommand, and it does not have a dedicated plan subcommand. It is an interactive terminal agent with slash commands, JSON settings, file-backed instructions, sessions, and an extension system.
 
 ---
 
-## 1.2 What Pi Agent Is
+## 1.1 Why Pi Exists
 
-Pi (short for **P**rovider-agnostic **I**ntelligence) is an MIT-licensed TypeScript project published under the `@pi-ai` npm namespace. The three core packages are:
+Most coding-agent tools make strong product choices for you: which model family to use, which permissions UI to trust, which planning workflow to follow, which tools appear in every prompt, and how much abstraction sits between the developer and the model.
+
+Pi takes the opposite posture. Its core is intentionally small. By default, the model gets four practical tools:
+
+| Tool | Purpose |
+|---|---|
+| `read` | Read files and directories |
+| `write` | Create or overwrite files |
+| `edit` | Patch existing files |
+| `bash` | Run shell commands |
+
+Everything else is layered on top only when you need it: project instructions, skills, prompt templates, TypeScript extensions, installable Pi packages, or community adapters. This is why Pi appeals to developers who want a composable harness rather than a full IDE-like assistant.
+
+The tradeoff is clear: Pi gives you control, but it expects you to understand your setup. A good Pi workflow starts with accurate installation, explicit provider auth, clear project instructions, and a versioned rollback habit such as Git.
+
+---
+
+## 1.2 What Pi Is
+
+Pi is an open-source terminal coding agent. The current home is the `badlogic/pi` GitHub repository, and the current npm scope is `@mariozechner`.
 
 | Package | Role |
 |---|---|
-| `@pi-ai/cli` | Terminal interface — `pi chat`, `pi run`, `pi plan`, `pi cost` |
-| `@pi-ai/core` | Agent loop — turn management, tool dispatch, plan engine, cost tracking |
-| `@pi-ai/provider-*` | Adapter plugins — one package per provider family (ollama, anthropic, openai) |
+| `@mariozechner/pi-coding-agent` | Interactive CLI installed by users; provides the `pi` command |
+| `@mariozechner/pi-agent-core` | Agent runtime with tool calling, state management, sessions, and compaction |
+| `@mariozechner/pi-ai` | Multi-provider LLM API layer for Anthropic, OpenAI, Google, local OpenAI-compatible endpoints, and others |
+| `@mariozechner/pi-tui` | Terminal UI layer |
 
-Pi is **not** a wrapper around a single model's API. It implements its own agent loop that manages multi-turn context, tool invocations, and plan-mode execution independently of the underlying model. The provider adapters translate Pi's internal message format to each provider's wire protocol.
+If you encounter a different package scope in older drafts or notes, treat it as stale for this course revision. For a new install, use the `@mariozechner` package.
 
-### What Pi is not
-
-- It is not an IDE extension. Pi is terminal-first; IDE integrations exist as community plugins but are not part of the core project.
-- It is not a model. Pi does not run inference; it delegates entirely to providers.
-- It is not a replacement for Claude Code or Codex CLI on their home turf. Pi is designed to interop with both, not displace them. (Chapter 3 covers the handoff pattern in detail.)
+Do not use the stale draft's nonexistent package namespace. The real Pi Coding Agent packages are under `@mariozechner`.
 
 ---
 
@@ -115,372 +114,263 @@ Pi is **not** a wrapper around a single model's API. It implements its own agent
 
 ```mermaid
 graph TD
-    User["User / CI pipeline"] --> CLI["@pi-ai/cli<br/>(pi chat · pi run · pi plan)"]
-    CLI --> Core["@pi-ai/core<br/>Agent Loop"]
-    Core --> Router["Provider Router<br/>(config.toml rules)"]
-    Router --> OllamaAdapter["@pi-ai/provider-ollama"]
-    Router --> AnthropicAdapter["@pi-ai/provider-anthropic"]
-    Router --> OpenAIAdapter["@pi-ai/provider-openai"]
-    OllamaAdapter --> Ollama["Ollama daemon<br/>(local)"]
-    AnthropicAdapter --> Claude["Anthropic API<br/>(cloud)"]
-    OpenAIAdapter --> OpenAI["OpenAI API<br/>(cloud)"]
-    Core --> PlanEngine["Plan Engine<br/>(PLAN.md)"]
-    Core --> MCPClient["MCP Client<br/>(tool servers)"]
-    MCPClient --> MCPServers["MCP Tool Servers<br/>(filesystem · browser · search…)"]
+    User["Developer in terminal"] --> CLI["@mariozechner/pi-coding-agent<br/>pi command"]
+    CLI --> Core["@mariozechner/pi-agent-core<br/>agent loop and sessions"]
+    Core --> Tools["Built-in tools<br/>read, write, edit, bash"]
+    Core --> AI["@mariozechner/pi-ai<br/>provider abstraction"]
+    Core --> TUI["@mariozechner/pi-tui<br/>terminal interface"]
+    AI --> Anthropic["Anthropic / Claude"]
+    AI --> OpenAI["OpenAI / Codex-compatible auth"]
+    AI --> Local["Ollama, LM Studio, llama.cpp, vLLM<br/>OpenAI-compatible endpoints"]
+    CLI --> Resources["AGENTS.md, skills, prompts,<br/>extensions, packages"]
 ```
 
-The key design insight is that the **agent loop and the provider are decoupled**. When you change `provider = "anthropic"` to `provider = "ollama"` in your config, Pi's turn management, plan generation, cost tracking, and MCP tool wiring all continue to work exactly the same way. Only the inference endpoint changes.
+Notice what is not in the core diagram: native MCP, built-in sub-agents, a built-in todo system, or a special plan mode. Pi can be extended in those directions, but the base agent stays small.
 
-### The agent loop
+The most important configuration files are JSON:
 
-Pi's core loop runs like this on every `pi chat` or `pi run` invocation:
-
-1. **Config load** — read `~/.pi/config.toml` (global) merged with `./.pi.toml` (project-local)
-2. **Provider resolution** — select the active provider based on config rules and any `--provider` flag
-3. **Context assembly** — collect stdin, file arguments, and any active MCP tool manifests
-4. **Turn execution** — send the assembled context to the provider; process tool-call responses if the model requests them
-5. **Output** — stream the final response to stdout; append to the session log
-
-In plan-mode (`pi plan`), step 4 is split into two sub-steps: the model first generates a `PLAN.md` file, which Pi displays for confirmation before executing each step.
-
-### The provider router
-
-The router reads a priority-ordered list of provider blocks from config. Each block can have:
-
-- A `budget_usd` ceiling — if the session crosses this threshold, Pi refuses to route to this provider
-- A `match` field — a glob or task-type filter that limits which invocations go to this provider
-- A `fallback` field — the provider to use when this one is unavailable or over-budget
-
-This is the mechanism behind the hybrid workflows in Chapter 4: you configure local models as primary with a low budget ceiling, and frontier models as fallback with a higher (but still bounded) ceiling.
-
----
-
-## 1.4 Why Pi Matters Right Now
-
-Three trends converged in 2025–2026 to make Pi's design relevant:
-
-**1. Local models crossed the quality threshold for everyday coding tasks.** Llama 3.1:8b handles boilerplate generation, test scaffolding, and single-function refactors with quality comparable to frontier models from 18 months ago. Qwen 3.6:14b covers more complex reasoning tasks. DeepSeek V4:14b adds strong multilingual code support. For a large fraction of daily coding work, local inference is sufficient — and costs nothing per token.
-
-**2. Frontier model pricing diverged sharply.** The gap between a capable local model (zero marginal cost) and a frontier reasoning model (several dollars per million tokens) widened as context windows grew. Teams that previously used a single frontier model for everything started building routing logic — but building it themselves, in ad hoc scripts, without a consistent interface.
-
-**3. MCP standardised the tool layer.** The Model Context Protocol, standardised in late 2024 and widely adopted through 2025, means that tool servers — filesystem access, browser automation, web search — can be wired to any MCP-capable client without provider-specific integration work. Pi implements an MCP client natively, so the same tool servers you use with Claude Code work unchanged when you route through Pi.
-
-Pi's contribution is to package the routing logic, the MCP client, the plan engine, and the cost tracking into a single auditable, open-source tool, rather than leaving each team to re-implement it.
-
----
-
-## 1.5 Installing Pi Agent
-
-### Prerequisites
-
-- **Node.js 20 LTS or later.** Check with `node --version`. If you need to install or upgrade:
-
-```bash
-# Using nvm (recommended)
-nvm install 20
-nvm use 20
-nvm alias default 20
-
-# Verify
-node --version   # should print v20.x.x or higher
-npm --version    # should print 10.x.x or higher
-```
-
-- **Ollama** (for local models, covered fully in Chapter 2). For this chapter's exercise, install it now so it is ready:
-
-```bash
-# macOS (Homebrew)
-brew install ollama
-
-# Linux (official install script)
-curl -fsSL https://ollama.com/install.sh | sh
-
-# Verify
-ollama --version
-```
-
-### Installing Pi
-
-```bash
-npm install -g @pi-ai/cli
-```
-
-The install pulls three packages: `@pi-ai/cli`, `@pi-ai/core`, and `@pi-ai/provider-ollama` (included by default as the local-first provider). Anthropic and OpenAI adapters are installed lazily when you first configure those providers.
-
-Verify the install:
-
-```bash
-pi --version
-# Pi agent v0.9.x (core v0.9.x, cli v0.9.x)
-```
-
-### macOS Homebrew tap (alternative)
-
-If you prefer Homebrew over npm globals:
-
-```bash
-brew tap pi-agent/tap
-brew install pi-agent
-
-pi --version
-```
-
-The Homebrew formula bundles a pinned Node runtime, so you do not need Node installed separately for this path. The npm path is recommended if you already have Node 20+ — it keeps Pi on the same runtime as your project tooling.
-
----
-
-## 1.6 Initial Configuration
-
-Pi looks for configuration in two places, merged in this order (project-local wins):
-
-1. `~/.pi/config.toml` — global defaults, API keys, provider list
-2. `./.pi.toml` — project-local overrides (commit this file to set project-level defaults for your team)
-
-Create the global config:
-
-```bash
-mkdir -p ~/.pi
-touch ~/.pi/config.toml
-```
-
-The minimal working config for a local-only setup:
-
-```toml
-# ~/.pi/config.toml
-
-[defaults]
-provider = "ollama-local"   # which provider block to use by default
-log_dir  = "~/.pi/logs"    # session logs (append-only JSONL)
-plan_dir = "."              # where PLAN.md is written in plan-mode
-
-[[providers]]
-name        = "ollama-local"
-type        = "ollama"
-base_url    = "http://127.0.0.1:11434"
-model       = "llama3.1:8b"
-timeout_sec = 120
-
-# Optional: budget ceiling for this provider (no ceiling = no local limit)
-# budget_usd = 0.00   # local models cost $0, so this is informational only
-```
-
-If you want to add an Anthropic provider now (you will configure it fully in Chapter 3):
-
-```toml
-[[providers]]
-name    = "claude-sonnet"
-type    = "anthropic"
-model   = "claude-sonnet-4-6"
-# api_key = "sk-ant-..."  ← set via environment variable instead:
-# export ANTHROPIC_API_KEY=sk-ant-...
-```
-
-> **Never put API keys in config.toml.** Pi reads `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` from the environment automatically. If you put a key in the file, it will end up in version control when you commit `.pi.toml`.
-
-Pull the model you will use in the exercise:
-
-```bash
-ollama pull llama3.1:8b
-# Pulls ~4.7 GB; takes 2–5 minutes on a typical connection
-```
-
-Verify Ollama is serving:
-
-```bash
-ollama list
-# NAME            ID              SIZE    MODIFIED
-# llama3.1:8b     ...             4.7 GB  ...
-```
-
----
-
-## 1.7 First Run: `pi chat`
-
-The `pi chat` command opens an interactive session (or runs one turn if you pipe input). Let's start with a piped one-shot to verify the stack end-to-end:
-
-```bash
-# Create a small Python file to explain
-cat > /tmp/demo.py << 'EOF'
-def merge_sorted(a, b):
-    result, i, j = [], 0, 0
-    while i < len(a) and j < len(b):
-        if a[i] <= b[j]:
-            result.append(a[i]); i += 1
-        else:
-            result.append(b[j]); j += 1
-    return result + a[i:] + b[j:]
-EOF
-
-# Pipe it into pi chat with a question
-pi chat "Explain what this function does and identify its time complexity" < /tmp/demo.py
-```
-
-You should see Pi emit a streaming response from `llama3.1:8b`. The first token typically appears within 1–3 seconds on modern hardware.
-
-### What Pi printed to stderr
-
-Pi writes a one-line status header to stderr (not stdout, so it does not pollute piped output):
-
-```
-[pi] provider=ollama-local model=llama3.1:8b tokens=in:247 out:312 cost=$0.00
-```
-
-This is the cost log line. Every invocation appends an equivalent JSON record to `~/.pi/logs/<YYYY-MM-DD>.jsonl`. The `pi cost` command reads these logs:
-
-```bash
-pi cost --today
-# Provider        Invocations  Tokens In   Tokens Out  Cost USD
-# ollama-local    1            247         312         $0.00
-# ─────────────────────────────────────────────────────────────
-# Total                                                $0.00
-```
-
-For local models, cost is always `$0.00` — but the token counters are still tracked, which matters when you add frontier providers and want to see where spend concentrates.
-
-### Sequence diagram: what just happened
-
-```mermaid
-sequenceDiagram
-    participant U as User (terminal)
-    participant CLI as pi CLI
-    participant Core as @pi-ai/core
-    participant Router as Provider Router
-    participant Adapter as provider-ollama
-    participant Ollama as Ollama daemon
-
-    U->>CLI: pi chat "..." < demo.py
-    CLI->>Core: assemble(prompt, stdin)
-    Core->>Router: resolve provider
-    Router-->>Core: ollama-local (llama3.1:8b)
-    Core->>Adapter: chat(messages)
-    Adapter->>Ollama: POST /api/chat
-    Ollama-->>Adapter: stream tokens
-    Adapter-->>Core: stream
-    Core-->>CLI: stream
-    CLI-->>U: output (stdout) + cost line (stderr)
-    Core->>Core: append to ~/.pi/logs/2026-06-02.jsonl
-```
-
----
-
-## 1.8 Interactive Mode
-
-For longer conversations, drop the input pipe and start an interactive session:
-
-```bash
-pi chat
-```
-
-Pi opens a REPL with readline support. Type your message and press Enter; Pi streams the response. Use `/exit` or Ctrl-D to end the session.
-
-Useful flags you will reach for immediately:
-
-| Flag | Effect |
+| Path | Purpose |
 |---|---|
-| `--provider <name>` | Override the default provider for this session |
-| `--model <id>` | Override the model within the provider (must be compatible) |
-| `--no-log` | Skip appending to the session log |
-| `--plan` | Start in plan-mode (generates PLAN.md before acting) |
-| `--context <file>` | Add a file to the context without piping it via stdin |
+| `~/.pi/agent/settings.json` | Global settings such as default provider, model, thinking level, UI, project trust, and resource paths |
+| `.pi/settings.json` | Project-local settings that override global settings after project trust |
+| `~/.pi/agent/models.json` | Custom providers and models, especially local OpenAI-compatible endpoints |
+| `~/.pi/agent/auth.json` | Stored credentials from `/login` |
+| `~/.pi/agent/AGENTS.md` | Global instructions |
+| `AGENTS.md` or `CLAUDE.md` | Project instructions loaded from parent directories and the current directory |
 
-Example: switch to Claude for this one session without changing config:
-
-```bash
-pi chat --provider claude-sonnet
-```
+There is no global TOML config contract in the current Pi docs.
 
 ---
 
-## 1.9 Project-Local Config
+## 1.4 Installation
 
-For team setups, commit a `.pi.toml` at the repo root so every team member gets the same provider defaults and model aliases:
+Install Pi from npm:
 
-```toml
-# .pi.toml — commit this file
-
-[defaults]
-provider = "ollama-local"
-
-[context]
-# Files Pi always adds to context for every invocation in this project
-always_include = ["CLAUDE.md", "AGENTS.md", ".cursorrules"]
-
-[[providers]]
-name  = "ollama-local"
-type  = "ollama"
-model = "qwen3.6:14b"   # larger model for this project's complexity
-
-# Team members who have an Anthropic key can override locally:
-# export ANTHROPIC_API_KEY=sk-ant-...
-# and add a [[providers]] block to their ~/.pi/config.toml
+```bash
+npm install -g --ignore-scripts @mariozechner/pi-coding-agent
 ```
 
-The merge order means a team member's `~/.pi/config.toml` can add personal API-key providers, while the project `.pi.toml` sets the shared defaults. The project file should never contain API keys.
+The `--ignore-scripts` flag is recommended by the current quickstart because Pi does not need dependency lifecycle scripts for a normal install.
+
+Then start Pi from the project directory you want it to work in:
+
+```bash
+cd /path/to/project
+pi
+```
+
+If you already have an older Pi install, update through Pi's update path or uninstall it and install `@mariozechner/pi-coding-agent`. The CLI command remains `pi`, and existing settings and sessions remain under `~/.pi/agent/`.
+
+---
+
+## 1.5 Authenticate a Provider
+
+Pi can authenticate providers in two common ways.
+
+### Option A: `/login`
+
+Start Pi and run:
+
+```text
+/login
+```
+
+Then choose a subscription-backed provider or an API-key provider. Current Pi docs list subscription flows for Claude Pro/Max and Cursor (the Cursor path requires `pi install npm:pi-cursor-sdk` first). Credentials are stored in `~/.pi/agent/auth.json`.
+
+Important caveat for Claude: current Pi docs say Claude Pro/Max subscription auth is active, but third-party harness usage can draw from extra usage and be billed per token instead of counting against normal plan limits. If billing predictability matters, use an Anthropic API key and verify the current provider docs before recording a lesson.
+
+### Option B: Environment variable
+
+Set a provider API key before launching Pi:
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+pi
+```
+
+Other providers use their own variables, such as `OPENAI_API_KEY`, `GEMINI_API_KEY`, `DEEPSEEK_API_KEY`, `OPENROUTER_API_KEY`, or `MISTRAL_API_KEY`. Pi also supports local OpenAI-compatible endpoints through `models.json`, which Chapter 2 covers.
+
+---
+
+## 1.6 First Session
+
+Once Pi starts, type a request and press Enter:
+
+```text
+Summarize this repository and tell me how to run its checks.
+```
+
+Pi runs in the current working directory. It can read files, edit files, write files, and run shell commands. Treat it like a powerful local development tool, not a chatbot in a sandbox. Start in a practice repository, keep Git clean, and review diffs.
+
+You can also run one-shot prompts without opening the full interactive TUI:
+
+```bash
+pi -p "Summarize this codebase"
+cat README.md | pi -p "Summarize this text"
+pi @README.md "Extract the setup steps from this file"
+```
+
+These replace the stale chat-subcommand examples. The command is `pi`; non-interactive output uses `-p`.
+
+---
+
+## 1.7 Project Instructions
+
+Add an `AGENTS.md` file to the project root:
+
+```markdown
+# Project Instructions
+
+- Run `npm test` after code changes.
+- Do not run production migrations locally.
+- Keep edits scoped to the requested task.
+- Explain any command that modifies files outside the repository.
+```
+
+Pi loads global instructions from `~/.pi/agent/AGENTS.md` and project instructions from `AGENTS.md` or `CLAUDE.md` files in parent directories and the current directory. Restart Pi or run `/reload` after changing instruction files.
+
+This is the right place to define local guardrails. Pi's default posture is powerful and direct; it does not rely on permission popups as a substitute for project discipline.
+
+---
+
+## 1.8 Core Commands to Know
+
+Pi's in-session controls are slash commands and keyboard shortcuts, not separate chat, run, plan, or cost subcommands.
+
+| Command or shortcut | Use |
+|---|---|
+| `/login` | Add, change, or remove provider credentials |
+| `/model` or Ctrl+L | Select a model |
+| Shift+Tab | Cycle thinking level |
+| `/session` | Inspect session stats |
+| `/compact` | Summarize old messages to free context |
+| `/resume` | Resume a prior session |
+| `/tree` | View session branches |
+| `/fork` | Branch the current session |
+| `/new` | Start a fresh session |
+| `/reload` | Reload instructions, extensions, and resources |
+
+For planning, ask Pi to write or revise a file:
+
+```text
+Create a PLAN.md for this migration. Keep it in three phases and include verification commands.
+```
+
+That is a normal file-backed workflow, not a dedicated built-in plan mode.
+
+---
+
+## 1.9 MCP and Extensions
+
+Pi does not support MCP natively. That is a deliberate product choice: loading large MCP tool manifests into every session can waste context before the agent has done useful work.
+
+Pi's preferred extension path is:
+
+- Use `AGENTS.md` for project behavior
+- Use skills for reusable playbooks
+- Use prompt templates for repeated prompts
+- Use TypeScript extensions for new tools, commands, hooks, or UI changes
+- Install Pi packages when a shared extension solves a specific problem
+
+If your organization already depends on MCP servers, evaluate the community `pi-mcp-adapter` package as an interoperability bridge. Treat it as an optional extension with context and security tradeoffs, not as a native Pi feature.
 
 ---
 
 ## 1.10 Hands-On Exercise
 
-**Goal:** Install Pi, configure the ollama provider, and run three verification commands.
+**Goal:** Install Pi, authenticate one provider, add project instructions, and run a first repository-safe task.
 
-**Time-box:** 60 minutes. If Ollama pull is slow on your connection, substitute `llama3.1:8b` with a smaller model: `ollama pull tinyllama` (~637 MB).
+**Time-box:** 60 minutes.
 
-**Step 1 — Install Pi and verify**
+### Step 1 - Install Pi
 
 ```bash
-npm install -g @pi-ai/cli
+npm install -g --ignore-scripts @mariozechner/pi-coding-agent
 pi --version
 ```
 
-Expected: version string printed, no errors.
+Expected: Pi prints a version string and exits without errors.
 
-**Step 2 — Install Ollama and pull llama3.1:8b**
-
-```bash
-# macOS
-brew install ollama && ollama serve &
-
-# Then pull
-ollama pull llama3.1:8b
-ollama list   # confirm the model appears
-```
-
-**Step 3 — Write `~/.pi/config.toml`**
-
-Use the minimal config from section 1.6. Confirm it loads cleanly:
+### Step 2 - Start in a safe repository
 
 ```bash
-pi config check
-# ✓ Loaded ~/.pi/config.toml
-# ✓ Provider "ollama-local" — ollama @ http://127.0.0.1:11434 (llama3.1:8b)
-# ✓ No syntax errors
+mkdir -p ~/pi-practice
+cd ~/pi-practice
+git init
+printf '# Pi practice\n\n' > README.md
+git add README.md
+git commit -m "Initial practice repo"
+pi
 ```
 
-**Step 4 — First one-shot**
+If you are using a real repository, start with a clean working tree so you can inspect every change Pi makes.
+
+### Step 3 - Authenticate
+
+Inside Pi:
+
+```text
+/login
+```
+
+Choose a provider you can actually use. If you prefer API-key auth, exit Pi, export a key, and start again:
 
 ```bash
-echo "def fib(n): return n if n < 2 else fib(n-1) + fib(n-2)" | \
-  pi chat "What is the time complexity of this function and why?"
+export ANTHROPIC_API_KEY=sk-ant-...
+pi
 ```
 
-Expected: a streaming response explaining O(2^n) exponential time complexity. Pi prints cost line to stderr: `cost=$0.00`.
+### Step 4 - Add instructions
 
-**Step 5 — Check the cost log**
+Create `AGENTS.md`:
+
+```markdown
+# Project Instructions
+
+- This is a practice repository.
+- Before editing files, explain the intended change.
+- After editing files, run `git diff -- README.md`.
+- Do not install dependencies.
+```
+
+Restart Pi or run:
+
+```text
+/reload
+```
+
+### Step 5 - Run a first task
+
+Ask:
+
+```text
+Read README.md, propose a two-section outline for documenting this practice repository, then apply it.
+```
+
+After Pi finishes, inspect:
 
 ```bash
-pi cost --today
+git diff -- README.md
 ```
 
-Expected: one row for `ollama-local` with 1 invocation, `$0.00`.
+### Step 6 - Locate the real config files
 
-**Success criteria:** You see a coherent response from the local model and `pi cost` shows the invocation logged. If you see an error, check that `ollama serve` is running (`curl http://127.0.0.1:11434/api/tags`) and that the model name in `config.toml` exactly matches the output of `ollama list`.
+Check the Pi home directory:
+
+```bash
+ls ~/.pi/agent
+```
+
+You should see files and folders such as `settings.json`, `auth.json`, sessions, skills, extensions, or package resources depending on what you configured. You should not be looking for a global TOML config file.
+
+**Success criteria:** You installed the current package, launched `pi`, authenticated a provider, added project instructions, completed a small task, and found the JSON-backed Pi configuration directory.
 
 ---
 
 ## Summary
 
-Pi agent is a provider-agnostic coding agent that decouples the agent loop from the inference provider. You install it once, configure one `config.toml`, and get a consistent CLI surface (`pi chat`, `pi run`, `pi plan`, `pi cost`) regardless of whether you are routing to a local Ollama model, Claude, or GPT-5.5.
+Pi is a minimal, extensible terminal coding agent. The current install package is `@mariozechner/pi-coding-agent`, the CLI command is `pi`, configuration lives in JSON files under `~/.pi/agent/`, and the first controls to learn are `/login`, `/model`, `/session`, `/compact`, `/resume`, `/tree`, `/fork`, `/new`, and `/reload`.
 
-The core value is not any single integration — it is the unified operational model: one config, one cost log, one plan format, one tool-server wiring. That consistency is what makes the hybrid workflows in Chapters 2–4 practical rather than theoretical.
+The important negative facts are just as useful: the stale draft's package namespace, TOML setup, chat subcommand, plan subcommand, and native-MCP claims were wrong. When you need planning, write a `PLAN.md`. When you need tools beyond read/write/edit/bash, reach for skills, prompt templates, TypeScript extensions, packages, or a carefully reviewed community adapter.
 
-**Next:** Chapter 2 dives into the local model layer — how to pull and configure Llama 3.1, Qwen 3.6, and DeepSeek V4 in Ollama, how to choose between them per workload type, and how to use Pi's plan-mode to generate auditable PLAN.md files from a local model before any code is written.
+**Next:** Chapter 2 configures local models through `~/.pi/agent/models.json`, using OpenAI-compatible endpoints such as Ollama, LM Studio, llama.cpp, or vLLM.
