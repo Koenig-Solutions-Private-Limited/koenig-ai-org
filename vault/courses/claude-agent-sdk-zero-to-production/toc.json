@@ -14,8 +14,9 @@
       ],
       "does_not_cover": [
         "persistent harness design (ch 2 owns it)",
-        "MCP tools and permissions (ch 3 owns it)",
+        "MCP tools and permissions, including Sonnet 5 sampling-parameter constraints for tool-agent calls (ch 3 owns it)",
         "resumable run artifacts (ch 4 owns it)",
+        "Sonnet 5 adaptive-thinking defaults, tokenizer rebasing, max_tokens sizing, and pricing-window migration math (ch 6 owns it)",
         "channel-scoped multi-user agents (ch 7 owns it)"
       ],
       "word_budget": { "min": 800, "max": 1200 },
@@ -70,12 +71,14 @@
         "MCP server wiring for Agent SDK agents",
         "tool schema design for idempotent narrow tools",
         "read-only versus write-allowed tool permissions",
-        "sandboxed tool execution and credential containment"
+        "sandboxed tool execution and credential containment",
+        "Sonnet 5 migration rule that temperature, top_p, and top_k must be omitted from migrated tool-agent requests"
       ],
       "does_not_cover": [
         "basic SDK application setup (ch 1 owns it)",
         "persona harness design (ch 2 owns it)",
         "run artifact persistence (ch 4 owns it)",
+        "Sonnet 5 adaptive-thinking syntax, tokenizer/cost math, max_tokens sizing, and Aug 31 2026 pricing transition (ch 6 owns it)",
         "channel-level permission inheritance and audit logs (ch 7 owns it)"
       ],
       "word_budget": { "min": 800, "max": 1200 },
@@ -88,7 +91,8 @@
       "notebooklm_source_focus": [
         "Claude Agent SDK MCP documentation",
         "Anthropic MCP documentation",
-        "Claude Agent SDK permissions documentation"
+        "Claude Agent SDK permissions documentation",
+        "Anthropic Claude Sonnet 5 migration guide sampling-parameter constraints"
       ],
       "dossier_path": "vault/research/courses/claude-agent-sdk-zero-to-production/03-add-safe-tools-with-mcp-and-explicit-permissions.md"
     },
@@ -159,10 +163,12 @@
         "incident-triage capstone integration",
         "HTTP and CLI entrypoints",
         "cost circuit breaker implementation",
-        "operator runbook for failover, override, and escalation"
+        "operator runbook for failover, override, and escalation",
+        "Sonnet 5 adaptive-thinking syntax, default thinking behavior, tokenizer rebasing, max_tokens sizing, and Aug 31 2026 pricing-window migration math"
       ],
       "does_not_cover": [
         "single-feature eval design (ch 5 owns it)",
+        "Sonnet 5 sampling-parameter removal for MCP/tool-agent request examples (ch 3 owns it)",
         "channel-scoped collaboration adapter (ch 7 owns it)",
         "admin audit log event schema (ch 7 owns it)"
       ],
@@ -175,6 +181,7 @@
       ],
       "notebooklm_source_focus": [
         "Claude Agent SDK production deployment examples",
+        "Anthropic Claude Sonnet 5 announcement and migration guide",
         "Express HTTP service patterns",
         "operator runbook examples for AI agents"
       ],

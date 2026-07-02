@@ -2,7 +2,8 @@
 chapter_num: 7
 course_slug: claude-agent-sdk-zero-to-production
 title: "Build channel-scoped agents for multi-user teams"
-status: awaiting-g0
+status: g0-passed
+last_updated: "2026-07-02"
 duration_min: 55
 vendor_tag: anthropic
 learning_objectives:
@@ -44,7 +45,17 @@ notebooklm_source_focus:
   - "Claude Agent SDK permissions docs"
   - "MCP docs for tool boundaries"
   - "enterprise audit logging patterns for AI agents"
+chapter_primary_query: "How do I build channel-scoped agents for multi-user teams with the Claude Agent SDK?"
+first_60_words_answer: "Channel-scoped agents share a single SDK session across all users in a Slack channel, enforced at the channel_id boundary. This chapter adds the channel adapter, memory isolation rules, and an admin audit log to the incident-triage agent from ch 6, using Claude Tag as the production reference pattern for multiplayer delegation and per-channel budget controls."
+positions: []
 word_budget: { min: 800, max: 1200 }
+faq:
+  - question: "How do multiple users share agent context in a Slack channel?"
+    answer: "All users in a channel share a single SDK session keyed to the `channel_id`. The adapter captures `session_id` from the first run's init `SystemMessage` and passes it to `resume:` on every subsequent `query()` call for that channel, so every team member's messages accumulate into the same conversation history — Claude picks up from where the last person left off. See [Claude Agent SDK — Sessions](https://code.claude.com/docs/en/agent-sdk/sessions) for full session lifecycle details."
+  - question: "Why is `continue: true` unsafe in a multi-channel deployment?"
+    answer: "When `continue: true` is passed to `query()`, the SDK resumes whichever session was most recently written in the current working directory. In a multi-channel deployment that is non-deterministic — the last run in any channel wins, and a request for `#marketing` could resume an `#infra-oncall` session instead, exposing privileged context. The [Claude Agent SDK — Sessions](https://code.claude.com/docs/en/agent-sdk/sessions) docs note that `continue: true` is designed for single-process interactive use, not concurrent multi-channel adapters."
+  - question: "What fields must an admin audit log record for full requester attribution?"
+    answer: "Every `AuditEvent` must include `requesterId` (the platform user ID of the person who triggered the task), `channelId`, `sessionId`, `taskId`, `runId`, and `timestamp`. The `requesterId` must be injected by your adapter layer at task creation time — never derived from model output, because the model can be wrong or prompted to lie. The [Claude Agent SDK — Hooks](https://code.claude.com/docs/en/agent-sdk/hooks) docs describe `PreToolUse` and `PostToolUse` payloads used to populate `toolName`, `toolInput`, and `toolOutput`."
 quiz:
   - question: "Multiple users in a Slack channel share a single Claude agent session. Which SDK option correctly implements this channel-scoped model?"
     options:
@@ -93,7 +104,7 @@ quiz:
     section_anchor: "claude-tag-the-production-reference"
 ---
 
-When your incident-triage agent graduates from a solo operator to a shared team tool, a new class of bugs appears: one engineer's context bleeds into another's session, audit logs miss the requester who triggered the action, and a rogue tool call in `#infra` should never be possible from `#marketing`. This chapter closes the loop by adding channel-scoped context, a full identity adapter, and an admin audit log to the agent you deployed in ch 6.
+Channel-scoped agents share a single SDK session across all users in a Slack channel, enforced at the `channel_id` boundary. This chapter adds the channel adapter, memory isolation rules, and an admin audit log to the incident-triage agent from ch 6, using [Claude Tag](https://www.anthropic.com/news/introducing-claude-tag) as the production reference pattern for multiplayer delegation and per-channel budget controls.
 
 ## The Three Execution Contexts
 
@@ -120,7 +131,7 @@ Claude Tag expresses the full multiplayer architecture:
 
 - **Channel-level permissions.** Admins define which tools and information each channel can access. A `#security-incidents` channel might have `Bash`; `#marketing-copy` does not. Permission sets are fully independent per channel, not per user.
 - **Isolated channel identities.** The agent instance for the sales channel has zero access to engineering-channel history — enforced at the channel permission boundary, not the user level.
-- **Two-tier budget controls.** Admins set token-spend limits at both the organization level and per channel. In SDK terms: a global cap plus a per-channel `maxBudgetUsd` you enforce by accumulating `ResultMessage.total_cost_usd` across runs.
+- **Two-tier budget controls.** Admins set token-spend limits at both the organization level and per channel. In SDK terms: a global cap plus a per-channel `maxBudgetUsd` you enforce by accumulating `ResultMessage.total_cost_usd` across runs. *(Sonnet 5 migration note: the Sonnet 5 tokenizer produces ~30% more tokens for equivalent prompts, and adaptive thinking creates additional text-only decision turns that count toward `total_cost_usd`. Rebaseline your per-channel budget thresholds when migrating from Sonnet 4.x.)*
 - **Full activity log with requester attribution.** Admins view everything Claude did and who requested each task — the audit schema you will implement below.
 - **Ambient mode.** When enabled, Claude proactively flags relevant updates and schedules tasks for itself over hours or days. This requires a persistent harness with an event-driven wake mechanism; it is not covered in this chapter.
 
