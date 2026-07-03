@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: fixed-income-ldi-structured-products-for-operations-analysts
 title: "Bond Pricing Mechanics: Calculating Yield, Duration, and Convexity from Scratch"
-status: awaiting-g0
+status: g0-passed
 duration_min: 35
 vendor_tag: Fixed Income / Investment Operations
 learning_objectives:
@@ -15,10 +15,10 @@ learning_objectives:
 sources:
   - url: "https://www.pimco.com/en-us/resources/education"
     title: "Understanding Duration — PIMCO Education"
-  - url: "https://docs.microsoft.com/en-us/office/vba/api/excel.worksheetfunction.price"
+  - url: "https://learn.microsoft.com/en-us/office/vba/api/excel.worksheetfunction.price"
     title: "Excel PRICE Function Reference — Microsoft"
-  - url: "https://www.cfainstitute.org/en/membership/professional-development/refresher-readings/introduction-to-fixed-income-valuation"
-    title: "CFA Institute: Introduction to Fixed Income Valuation"
+  - url: "https://www.cfainstitute.org/insights/professional-learning/refresher-readings"
+    title: "CFA Institute: Fixed Income Refresher Readings"
 owns:
   - "Fixed-rate bond cash-flow schedule construction from coupon, par, maturity, and payment frequency"
   - "Discounted cash-flow bond price calculation in Excel using spot or flat yield assumptions"
@@ -44,6 +44,7 @@ notebooklm_source_focus:
   - "Excel fixed income DCF modeling examples for fixed-rate bonds"
   - "Institutional bond reporting examples using modified duration and convexity"
 word_budget: { min: 800, max: 1200 }
+positions: []
 quiz:
   - question: "A bond pays a 4% annual coupon, has $1,000 par value, 5-year maturity, and semi-annual payments. At a 5% YTM, what is its approximate clean price?"
     options:
@@ -79,7 +80,7 @@ quiz:
       - "It reduces the predicted price loss, because the positive convexity correction adds back a price offset"
       - "It turns the predicted loss into a net price gain for any yield move exceeding 150 basis points"
     correct_idx: 2
-    explanation: "The convexity term is +0.5 × Convexity × (Δy)², which is always positive. For Δy = 0.02 and Convexity = 22.5, the correction is +0.45%, trimming the duration-only −8.74% estimate to −8.29% — versus the actual DCF result of −8.22%. The convexity term always adds to the price estimate, in both directions."
+    explanation: "The convexity term is +0.5 × Convexity × (Δy)², which is always positive. For Δy = 0.02 and Convexity = 22.5, the correction is +0.45%, trimming the duration-only −8.74% estimate to −8.29% — versus the actual DCF result of −8.47%. The convexity term always adds to the price estimate, in both directions."
     section_anchor: convexity-correcting-durations-error-on-large-moves
   - question: "An ops analyst needs to verify a bond's modified duration and DV01 against the risk system. Which Bloomberg page provides these analytics?"
     options:
@@ -117,7 +118,7 @@ In Excel, two approaches work for flat-yield pricing:
 =PRICE(settlement, maturity, coupon, YTM, 100, 2)   ← production-ready; handles day count
 ```
 
-The [Excel PRICE function](https://docs.microsoft.com/en-us/office/vba/api/excel.worksheetfunction.price) returns clean price per $100 par and handles settlement date and day-count conventions automatically. Traders quote clean price; settlement uses the dirty price (clean + accrued interest). Bloomberg YAS shows both.
+The [Excel PRICE function](https://learn.microsoft.com/en-us/office/vba/api/excel.worksheetfunction.price) returns clean price per $100 par and handles settlement date and day-count conventions automatically. Traders quote clean price; settlement uses the dirty price (clean + accrued interest). Bloomberg YAS shows both.
 
 <KnowledgeCheck question="A bond pays a 4% annual coupon, has $1,000 par value, 5-year maturity, and semi-annual payments. At a 5% YTM, what is its approximate clean price?" options={["$1,000.00 — par value, reached only when the YTM equals the annual coupon rate of 4%", "$956.25 — a discount below par, because the 5% market yield exceeds the 4% coupon rate", "$1,045.79 — a premium above par, matching the price implied by a 3% YTM on this bond", "$978.35 — the dirty price after adding one period's accrued coupon interest to the clean figure"]} correctIdx={1} explanation="DCF discounts ten $20 coupon payments and the $1,020 final cash flow at r = 2.5% per period. The sum is $956.25. The bond trades at a discount because the market yield (5%) exceeds the coupon rate (4%); the price shortfall is the concession that brings the buyer's total return to 5%." />
 
@@ -170,9 +171,11 @@ For the anchor bond (Convexity ≈ 22.5), on a **200 bps yield increase** (Δy =
 | Duration effect | −4.37 × 0.02 = −8.74% |
 | Convexity correction | +0.5 × 22.5 × (0.02)² = +0.45% |
 | Total estimate | **−8.29%** |
-| Actual DCF result | **−8.22%** |
+| Actual DCF result | **−8.47%** |
+| Error (duration-only) | −8.74% vs −8.47% = **27 bps overstate** |
+| Error (dur+convexity) | −8.29% vs −8.47% = **−18 bps understate** |
 
-The convexity correction cuts the error from 52 bps to 7 bps. The term is always positive: it reduces losses on yield rises and amplifies gains on yield falls — the asymmetric advantage that makes high-convexity bonds command a premium.
+The convexity correction cuts the error from **27 bps** to **18 bps**. The term is always positive: it reduces losses on yield rises and amplifies gains on yield falls — the asymmetric advantage that makes high-convexity bonds command a premium.
 
 Negative convexity, where callable bonds and mortgage-backed securities lose price upside as yields fall, is covered in [[04-structured-products-mbs-abs-cmbs-clo-tranching]].
 

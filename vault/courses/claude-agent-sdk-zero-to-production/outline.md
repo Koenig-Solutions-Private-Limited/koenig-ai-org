@@ -4,14 +4,14 @@ author: course-author
 ticket: KOEA-6697
 status: g3-passed
 content_type: course-outline
-title: "How to build a production Claude Agent SDK app in 6 chapters"
+title: "How to build a production Claude Agent SDK app in 7 chapters"
 slug: claude-agent-sdk-zero-to-production
-total_duration_min: 360
+total_duration_min: 415
 target_audience: "engineers + tech leads building agent products on the Claude Agent SDK in 2026"
 prerequisites:
   - "TypeScript fluency"
   - "Basic familiarity with the Anthropic API"
-capstone: "Production-ready TypeScript incident-triage agent with SDK streaming, MCP tools, least-privilege permissions, resumable run artifacts, evals, HTTP/CLI entrypoints, and an operator runbook"
+capstone: "Production-ready TypeScript incident-triage agent with SDK streaming, MCP tools, least-privilege permissions, resumable run artifacts, evals, HTTP/CLI entrypoints, channel-scoped collaboration, admin audit logs, and an operator runbook"
 tags:
   - claude-agent-sdk
   - typescript
@@ -23,11 +23,12 @@ sources:
   - https://docs.anthropic.com/en/docs/mcp
   - https://www.anthropic.com/news/claude-sonnet-5
   - https://platform.claude.com/docs/en/about-claude/models/whats-new-sonnet-5
+  - https://www.anthropic.com/news/introducing-claude-tag
 ---
 
-# How to build a production Claude Agent SDK app in 6 chapters
+# How to build a production Claude Agent SDK app in 7 chapters
 
-Course outline persisted by operator on 2026-05-28 (Course Author hit `bwrap: No permissions to create a new namespace` sandboxing failure — outline is intact from the agent's draft). Revised 2026-06-12 for KOEA-8039 (G0 structural blockers from KOEA-8028). Revised 2026-07-01 for KOEA-9865, using KOEA-9823 engineering handoff and KOEA-9837 research memo, to isolate Claude Sonnet 5 migration breakages: ch 3 owns sampling-parameter removal; ch 6 owns adaptive thinking, tokenizer, `max_tokens`, and pricing-window migration.
+Course outline persisted by operator on 2026-05-28 (Course Author hit `bwrap: No permissions to create a new namespace` sandboxing failure — outline is intact from the agent's draft). Revised 2026-06-12 for KOEA-8039 (G0 structural blockers from KOEA-8028). Revised 2026-07-01 for KOEA-9865, using KOEA-9823 engineering handoff and KOEA-9837 research memo, to isolate Claude Sonnet 5 migration breakages: ch 3 owns sampling-parameter removal; ch 6 owns adaptive thinking, tokenizer, `max_tokens`, and pricing-window migration. Revised 2026-07-02 for KOEA-9200 to append a G3-passed Claude Tag-inspired channel-scoped agents module without restructuring chapters 1-6.
 
 ## Chapters
 
@@ -169,6 +170,30 @@ Course outline persisted by operator on 2026-05-28 (Course Author hit `bwrap: No
 
 ---
 
+### Chapter 7 — Build channel-scoped agents for multi-user teams
+
+**Duration:** 55 min
+
+**Prerequisites:** Chapters 1–6
+
+**Learning objectives:**
+1. Distinguish per-task runs, per-user sessions, and channel-scoped shared context and choose the right model for a given team workflow
+2. Map Slack-style workspace, channel, thread, user, task, session, run, and artifact IDs to SDK primitives
+3. Enforce channel memory isolation using explicit tool permissions, channel-scoped namespaces, and stable session IDs
+4. Instrument an admin audit log with full requester attribution for reads, decisions, tool calls, writes, and spend
+
+**Topics:**
+- Claude Tag as the production reference pattern for channel-scoped Claude agents
+- Shared channel context vs. private direct-message context
+- Identity mapping: workspace, channel, thread, user, task, session, run, and artifact IDs
+- Channel-scoped memory boundaries and permission inheritance
+- Admin audit log schema for reads, decisions, tool calls, writes, spend, and requester attribution
+- Failure modes: cross-channel leakage, stale shared memory, ambiguous requester authority, and missing audit evidence
+
+**Hands-on exercise:** Extend the Chapter 6 incident-triage agent with a Slack-style channel adapter that keeps a channel-scoped context store, accepts requests from multiple users in one channel, records every read/decision/tool/write event to an admin query log, and proves through tests that private-channel or unrelated-channel data cannot appear in the shared context.
+
+---
+
 ## Capstone
 
 A production-ready TypeScript incident-triage agent that:
@@ -176,8 +201,10 @@ A production-ready TypeScript incident-triage agent that:
 - Uses 3 MCP tools (Linear, PagerDuty, GitHub) with least-privilege scopes
 - Persists run artifacts to R2 + writes resumable state to Durable Objects
 - Has eval suite + Langfuse tracing
+- Supports Slack-style channel-scoped collaboration without cross-channel memory leakage
+- Emits admin-queryable audit logs for reads, decisions, tool calls, writes, requester attribution, and spend
 - Comes with an operator runbook
 
-## Awaiting G0 (Content Reviewer review)
+## G3 Status
 
-@content-reviewer please G0 this outline. Revised for KOEA-8039 to address all 7 structural blockers from KOEA-8028.
+Chapter 7 delta G3 passed via KOEA-9539 after G0 review and blocker resolution. Chapters 1-6 remain covered by the prior course outline and the 2026-07-01 Sonnet 5 migration update.

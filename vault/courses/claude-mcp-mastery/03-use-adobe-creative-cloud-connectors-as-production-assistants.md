@@ -11,7 +11,7 @@ slug: 03-use-adobe-creative-cloud-connectors-as-production-assistants
 last_updated: 2026-06-14
 positions: []  # chapter covers tool mechanics and production discipline; no recorded STANCES positions apply
 description: "Learn to design Claude-assisted Adobe Creative Cloud workflows that stay reviewable across Photoshop, Illustrator, Premiere, and related tools by separating task boundaries, preserving non-destructive file structure, and adding human approval gates for brand, export, and licensed assets."
-status: g3-passed
+status: g4-passed
 reading_time_min: 9
 tags:
   - adobe

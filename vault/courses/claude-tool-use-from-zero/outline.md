@@ -21,6 +21,8 @@ description: "Master Claude tool use from basics to production: function calling
 
 # Course outline: Claude Tool Use from Zero
 
+> **Model pinning note (2026-Q3):** All `RunPromptCell` examples in this course are pinned to `claude-sonnet-4-6` for exercise reproducibility. If you run these exercises on Claude Sonnet 5, be aware of three changes: (1) Sonnet 5 rejects non-default temperature, top_p, and top_k — omit these parameters entirely; (2) Sonnet 5 enables adaptive thinking by default — pass `thinking: {type: "disabled"}` if you want concise, non-extended text responses; (3) the Sonnet 5 tokenizer produces ~30% more tokens for equivalent text, so rebaseline any `max_tokens` budgets. The tool-use patterns taught here remain valid across model versions.
+
 ## Chapter 1: Introduction to Claude's Tool Use
 - Learning objectives: Understand the tool use pattern, configure initial setup, execute basic function calling.
 - Duration: 40 min

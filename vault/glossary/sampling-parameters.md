@@ -11,3 +11,5 @@ When an LLM predicts the next token, it produces a probability distribution over
 Top-p (nucleus sampling) truncates the distribution to the smallest set of tokens whose cumulative probability reaches p, then samples from that subset. Top-k simply keeps the k most probable tokens. These two filters are often combined to avoid both highly improbable tokens and overly greedy selection.
 
 For agentic tasks, low temperature (0.0–0.3) is preferred for tool calls and structured output, where format correctness matters more than creativity. Higher temperature (0.7–1.0) suits brainstorming and content generation. Extended thinking modes in Claude models can sometimes substitute for higher temperature by exploring more reasoning paths at low temperature.
+
+**Claude Sonnet 5 caveat**: Sonnet 5 rejects non-default values for temperature, top_p, and top_k, returning HTTP 400. For Sonnet 5 workloads, omit all three parameters entirely. To control output quality and consistency, use prompt design (explicit format instructions, few-shot examples), output schemas (tool definitions, structured output), or post-generation evals rather than sampling parameter tuning.

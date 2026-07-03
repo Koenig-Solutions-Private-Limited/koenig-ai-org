@@ -2,7 +2,7 @@
 chapter_num: 7
 course_slug: claude-agent-sdk-zero-to-production
 title: "Build channel-scoped agents for multi-user teams"
-status: g0-passed
+status: g3-passed
 last_updated: "2026-07-02"
 duration_min: 55
 vendor_tag: anthropic

@@ -8,7 +8,7 @@ chapter_num: 1
 title: "Use MCP as the creative workflow layer (2026)"
 slug: 01-use-mcp-as-the-creative-workflow-layer
 description: "Learn how to design safe, human-approved Claude MCP connector workflows for creative software including Blender, Adobe for creativity, Ableton, and Splice without surrendering creative direction to the model."
-status: g0-passed
+status: g4-passed
 last_updated: 2026-07-02
 reading_time_min: 9
 tags:

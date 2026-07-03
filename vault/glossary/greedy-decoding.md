@@ -11,3 +11,5 @@ Greedy decoding is the simplest possible decoding strategy: at each step, `argma
 The main weakness is local optimality. Committing to the highest-probability token at step t can foreclose globally higher-probability sequences that required a slightly less probable token at step t. This is most evident in tasks with a clear globally optimal answer (math, code) where an early wrong choice cascades into an incorrect result.
 
 In practice, temperature=0 in modern APIs implements greedy-equivalent decoding. For most agentic tasks—tool calls, structured output, JSON generation—temperature=0 is the recommended setting. The model's capabilities at zero temperature are so high for these structured tasks that sampling variance provides no benefit while complicating reproducibility.
+
+**Claude Sonnet 5 caveat**: Sonnet 5 rejects any non-default value for temperature, top_p, or top_k and returns HTTP 400. For Sonnet 5, omit the temperature parameter entirely — its default output is already greedy-equivalent for structured tasks. Use prompt structure, tool schemas, or output format constraints to achieve determinism instead of setting temperature=0.
