@@ -127,3 +127,33 @@ Oldest committed vault files date to 2026-04-30 (well within 365-day window). No
 - **Sonnet 5 / Opus 4.8 tool-call regression**: Community signal only; no Anthropic statement yet. Monitor for agent-workflow impact in next research sweep.
 - **Meta agents admission**: Enterprise context signal — no action required.
 - **PPC ch06 broken title-wikilink**: Flag to course-architect in KOEA issue or comment; not vault-historian's scope to modify content.
+
+## Post-Retro Addendum (2026-07-06 daily sweep)
+
+Two blog drafts committed after the W28 retro run:
+
+| Slug | Status | Ticket |
+|---|---|---|
+| `build-your-first-mcp-server-python-2026-complete-guide` | draft-for-review | KOEA-10201 |
+| `claude-tool-use-in-5-steps-developer-tutorial` | draft-for-review | KOEA-10202 |
+
+- **KOEA-10201**: MCP server Python tutorial. Contrarian angle: silent breaking change on 2026-07-27 (version-pin line prevents it). Positions: mcp-as-interoperability-moat, mcp-as-agent-peer-protocol, prompt-injection-defense-at-boundary. Reading time: 6 min.
+- **KOEA-10202**: Claude tool-use 5-step tutorial. Contrarian angle: Sonnet 5 silently rejects sampling params that every older tutorial uses. Positions: stance:harness-over-model. Reading time: 6 min. Parent: KOEA-10189.
+
+Decision plan committed: `decisions/KOEA-10161-plan.md` — Planner spec for G4 chat route repair (Slack + Teams). Estimated complexity: small.
+
+Audit JSONL files staged: `research/community/_audit/2026-07-01-trending.jsonl`, `2026-07-02-trending.jsonl`, `2026-07-04-trending.jsonl` — raw signal source data for the corresponding community daily notes.
+
+Updated blog pipeline state:
+
+| Slug | Status | Ticket |
+|---|---|---|
+| google-brain-drain-enterprise-ai-2026 | g3-passed | KOEA-10099 |
+| 2026-07-01-openai-jalapeno-chip-inference-costs | g3-passed | KOEA-9973 |
+| build-your-first-mcp-server-python-2026-complete-guide | draft-for-review | KOEA-10201 |
+| claude-tool-use-in-5-steps-developer-tutorial | draft-for-review | KOEA-10202 |
+| 2026-07-01-openai-gpt-5-6-government-gate-enterprise-developers | g0-passed | KOEA-9890 |
+| anthropic-alibaba-claude-distillation-attack-enterprise-security-2026 | g0-passed | KOEA-9403 |
+| anthropic-80-percent-code-threshold-2026-06-16 | g0-passed | KOEA-8794 |
+| what-is-artificial-intelligence-types-history-and-future | g0-passed | KOEA-9630 |
+| sonnet-5-migration (pending slug) | g0 review | KOEA-9884 |

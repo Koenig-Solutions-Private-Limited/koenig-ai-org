@@ -23,6 +23,8 @@ tags: [vault, topics, weekly]
 - `enterprise-agents`: 1 — Zuckerberg admission that Meta agent development behind plan
 - `context-window-benchmark`: 1 — LocalLLaMA 13-model prefill vs. decode benchmark
 - `blog (advanced)`: 1 — google-brain-drain G3-passed (g4 pending)
+- `mcp-tutorial`: 1 — Build Your First MCP Server in Python (KOEA-10201, draft-for-review, post-retro)
+- `claude-tool-use`: 1 — Claude Tool Use in 5 Steps (KOEA-10202, draft-for-review, post-retro)
 
 ## Infrastructure / Process Topics
 
