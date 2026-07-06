@@ -1,23 +1,18 @@
 ---
-title: "Use Google A2A for cross-agent delegation, not as an MCP replacement (2026)"
+title: "Use Google A2A for cross-agent delegation, not as an MCP replacement"
 description: "Google A2A matters in 2026 because it standardizes durable task state, auth interruptions, and artifact exchange across agents, while MCP still handles tools and context inside each agent."
-slug: 2026-05-13-google-a2a-protocol
+slug: google-a2a-protocol-2026
 date: 2026-05-13
 author: vardaan-koenig
 agent_drafted_by: blog-author
 ticket: KOEA-3050
 vendor_tag: google
 content_type: article
-status: g3-passed
+status: awaiting-g0
 reading_time_min: 14
 primary_query: "google a2a protocol explained"
 contrarian_angle: "A2A is not winning by replacing MCP; it is winning by standardizing the state, auth, and resume layer that cross-agent systems kept rebuilding badly."
-first_60_words_answer: "Google's Agent2Agent (A2A) Protocol is an open standard for delegating work between independent agents over a shared task interface. A2A v1.0.0, released March 2026, added task listing, modern OAuth flows, and multi-tenant transport — making it production infrastructure. It complements MCP rather than replacing it: A2A handles cross-agent delegation while MCP handles tools and context inside a single agent."
 tags: [google, a2a, agent-protocols, mcp, agntcy, gemini, multi-agent]
-positions:
-  - id: mcp-as-interoperability-moat
-    engagement: extends
-seo_description: "Google A2A v1.0 standardizes cross-agent task delegation, OAuth interruptions, and artifact exchange. 2026 guide to using A2A alongside MCP in production."
 sources:
   - https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
   - https://cloud.google.com/blog/products/ai-machine-learning/agent2agent-protocol-is-getting-an-upgrade
@@ -40,16 +35,14 @@ learning_objectives:
   - "Recognize when A2A is enough and when a broader coordination fabric like AGNTCY is the better fit."
 faq:
   - question: "Is A2A a replacement for MCP?"
-    answer: "No. [MCP](https://modelcontextprotocol.io/) standardizes tool and context access inside a single agent's world — tools, resources, prompts, and context channels. [A2A](https://a2a-protocol.org/latest/specification/) standardizes delegation between independent agents over a shared task interface, allowing each remote agent to maintain its own permissions and internal execution chain without exposing its internals to the orchestrator."
+    answer: "No. MCP standardizes tool and context access inside an agent. A2A standardizes delegation between agents."
   - question: "Why did A2A matter more in 2026 than at launch?"
-    answer: "Because [v1.0.0](https://github.com/a2aproject/A2A/releases/tag/v1.0.0), released March 12, 2026, added the boring but essential production pieces: transport separation from application protocol, `tasks/list` with filtering and pagination, modern OAuth flows (Device Code and PKCE), and native gRPC multi-tenancy. Those changes make a protocol look like infrastructure rather than a demo — which is why adoption accelerated in 2026."
+    answer: "Because v1.0 added the boring but essential pieces: transport separation, task listing, modern OAuth flows, and stronger multi-tenant support."
   - question: "Can Claude, OpenAI, and Gemini agents speak A2A if they expose compatible endpoints?"
-    answer: "Yes. [A2A](https://a2a-protocol.org/latest/specification/) is vendor-neutral at the protocol layer: the client resolves an Agent Card at `/.well-known/agent-card.json`, sends tasks to the declared interface, and iterates over task state or artifact updates — regardless of whether Claude, OpenAI, or Gemini powers the endpoint. The [official Python SDK](https://github.com/a2aproject/a2a-python) implements spec 1.0 with backward compatibility for 0.3 across JSON-RPC, HTTP+JSON/REST, and gRPC."
+    answer: "Yes. A2A is vendor-neutral at the protocol layer, so the client talks to an Agent Card and task interface rather than a model-specific API shape."
   - question: "Where does AGNTCY fit?"
-    answer: "[AGNTCY](https://agntcy.org/) sits above raw delegation and aims at a fuller internet-of-agents stack — adding discovery through OASF, cryptographically verifiable identity, SLIM messaging, and observability layers that [A2A](https://a2a-protocol.org/latest/specification/) leaves to the implementer. If A2A handles delegating a task to one known agent, AGNTCY is the layer for finding which agent to delegate to, routing across organizational boundaries, and tracking accountability across vendors."
-hero_image:
-  url: auto:flux
-  alt: "Diagram showing A2A protocol handling cross-agent task delegation while MCP manages tools and context within each agent, with task state lifecycle overlay"
+    answer: "AGNTCY sits above raw delegation and aims at a fuller internet-of-agents stack with discovery, identity, messaging, and observability, while A2A stays narrower."
+hero_image: auto:flux
 references:
   - n: 1
     title: "Announcing the Agent2Agent Protocol (A2A)"
@@ -114,7 +107,7 @@ Google's Agent2Agent Protocol is an open agent interoperability standard introdu
 1. Google introduced A2A on April 9, 2025 as a protocol for agent-to-agent interoperability rather than as a replacement for tool protocols such as MCP [1].
 2. A2A v1.0.0 shipped on March 12, 2026 with transport separation, `tasks/list`, PKCE and Device Code OAuth flows, and gRPC multi-tenancy support [4].
 3. The spec requires an Agent Card at `/.well-known/agent-card.json` and centers interaction on tasks, messages, artifacts, and resumable task state [3].
-4. Google's August 1, 2025 upgrade positioned A2A for enterprise use with gRPC support, signed cards, and an ecosystem of more than 150 organizations [2].
+4. Google's July 31, 2025 upgrade positioned A2A for enterprise use with gRPC support, signed cards, and an ecosystem of more than 150 organizations [2].
 5. Gemini Enterprise Agent Platform embedded A2A into Google's broader agent runtime and marketplace story in April 2026 [11][12][13].
 
 The part most teams still miss is where A2A became genuinely useful. The launch story in 2025 was interoperability. The real 2026 story is control plane maturity. Once A2A shipped v1.0.0 with transport separation, `tasks/list`, modern OAuth patterns including PKCE and Device Code, and stronger multi-tenant support, it stopped looking like a clever demo protocol and started looking like infrastructure you could put in front of enterprise workflows [4]. That is the reason to care now.
@@ -133,19 +126,30 @@ Google's launch post made this explicit by positioning A2A as complementary to A
 
 That is why [[mcp-2026-roadmap-explained]] and A2A are best understood together. They solve adjacent problems, not the same one.
 
+## KnowledgeCheck
+
+Question: Your orchestrator needs a finance agent to retrieve data from tools that only the finance team is allowed to use. Which design is correct?
+
+A. Give the orchestrator direct access to the finance agent's internal tools through MCP
+B. Call the finance agent over A2A and let that agent use its own internal tools
+C. Skip protocol boundaries and use shared prompt memory
+D. Replace both with plain webhooks
+
+Answer: B
+
 The point is not elegance. It is blast-radius control. When a remote agent hits `AUTH_REQUIRED` or `INPUT_REQUIRED`, the task model can pause and resume cleanly instead of collapsing into ad hoc error handling [3]. That is a production property, not a philosophical one.
 
 ## Treat 2026 as A2A's production year, not its announcement year
 
 A2A became interesting in April 2025. It became credible in 2026. The launch announcement introduced the core design, said the protocol would be open, and framed it around long-running tasks, capability discovery, and modality-agnostic interaction over HTTP, SSE, and JSON-RPC [1]. Useful. Still early.
 
-The first meaningful stabilization signal came in Google's August 1, 2025 upgrade post. Google said A2A v0.3 was pushing toward enterprise stability, added gRPC support, added signed security cards, improved Python SDK support, and said the ecosystem had grown to more than 150 organizations [2]. Protocols usually fail from lack of operational detail and partner gravity, not lack of cleverness.
+The first meaningful stabilization signal came in Google's July 31, 2025 upgrade post. Google said A2A v0.3 was pushing toward enterprise stability, added gRPC support, added signed security cards, improved Python SDK support, and said the ecosystem had grown to more than 150 organizations [2]. That matters because protocols do not fail from lack of cleverness. They fail from lack of operational detail and partner gravity.
 
 Then v1.0.0 landed on March 12, 2026 under the Linux Foundation-hosted `a2aproject` repository. The release notes are worth reading because the most important changes are exactly the boring ones teams usually postpone until the second rewrite: the application protocol was separated from transport mappings, `tasks/list` gained filtering and pagination, OAuth removed implicit and password grants in favor of Device Code and PKCE, and gRPC gained native multi-tenancy support via additional request scope data [4]. Those are the fingerprints of a protocol leaving adolescence.
 
 The roadmap page, last updated March 10, 2026, reinforces the same story. Near-term work is no longer "prove the idea exists." It is validation, compatibility kits, SDK breadth across five languages, and community best practices [8]. That is what mature infrastructure projects talk about when they expect real deployments.
 
-Google's surrounding platform story also changed in spring 2026. The Gemini Enterprise Agent Platform announcement on April 23, 2026 positioned A2A inside a larger runtime, registry, gateway, identity, and governance system for enterprise agents [12]. The related Gemini Enterprise platform post the same day described an agent development platform that uses open protocols like A2A and MCP alongside runtime, observability, and centralized governance, without making the stronger claim that the post itself labels those protocols "complementary" [12]. That same day, Google announced partner-built agents from the marketplace landing directly inside Gemini Enterprise, with Adobe, Salesforce, ServiceNow, Workday, and others showing up in the agent gallery and procurement flow [13].
+Google's surrounding platform story also changed in spring 2026. The Gemini Enterprise Agent Platform announcement on April 22, 2026 positioned A2A inside a larger runtime, registry, gateway, identity, and governance system for enterprise agents [11]. The related Gemini Enterprise platform post the same day described an agent development platform that uses open protocols like A2A and MCP alongside runtime, observability, and centralized governance, without making the stronger claim that the post itself labels those protocols "complementary" [12]. One day later, Google announced partner-built agents from the marketplace landing directly inside Gemini Enterprise, with Adobe, Salesforce, ServiceNow, Workday, and others showing up in the agent gallery and procurement flow [13].
 
 That sequence is the real milestone. Protocol launch. Stability upgrade. v1 release. Platform embedding. Partner channel. If you are deciding whether A2A is "real," that timeline is the answer.
 
@@ -162,6 +166,17 @@ The official async guidance makes the contract even clearer. If a client can kee
 The v1.0 changes improved this layer in practical ways. The protocol removed some earlier structural awkwardness, formalized `SubscribeToTask`, standardized error handling via `google.rpc.Status`, simplified IDs, removed the `/v1` URL prefix, and clarified how the Agent Card advertises interfaces and versions [4]. If you have ever had to keep a long-running orchestration system alive across dropped sockets, retries, approval pauses, and credential interruptions, those changes are not cosmetic.
 
 This is also why the official Python SDK matters. The `a2a-python` project now implements A2A spec 1.0 with backward compatibility for 0.3 across JSON-RPC, HTTP+JSON/REST, and gRPC. That means the client is talking to one task model even if the transport changes underneath it [5]. The tutorial client resolves the Agent Card from `/.well-known/agent-card.json`, builds a client, sends a message, and then iterates over task or stream chunks rather than assuming one terminal response [6].
+
+## KnowledgeCheck
+
+Question: Which A2A feature matters most when a remote agent needs the user to approve access to a downstream SaaS tool midway through a task?
+
+A. Bigger context windows
+B. `TASK_STATE_AUTH_REQUIRED` plus task resume semantics
+C. More model temperature controls
+D. Inline tool calling from the orchestrator
+
+Answer: B
 
 Once you see A2A as a task protocol instead of a chat wrapper, the design starts to click. It is building the boring middle layer between orchestration logic and remote execution. That is where most multi-agent systems get brittle.
 
@@ -198,7 +213,7 @@ agent_card = AgentCard(
     ),
     supported_interfaces=[
         AgentInterface(
-            url="https://gemini.example.invalid",
+            url="https://gemini.example.com",
             protocol_binding="JSON_RPC",
             protocol_version="1.0",
         )
@@ -228,7 +243,7 @@ Expected output:
   },
   "supportedInterfaces": [
     {
-      "url": "https://gemini.example.invalid",
+      "url": "https://gemini.example.com",
       "protocolBinding": "JSON_RPC",
       "protocolVersion": "1.0"
     }
@@ -247,7 +262,7 @@ from a2a.client import A2ACardResolver, ClientConfig, create_client
 from a2a.types import Message, Part, Role, SendMessageRequest
 
 async def run() -> None:
-    base_url = "https://claude-research.example.invalid"
+    base_url = "https://claude-research.example.com"
 
     async with httpx.AsyncClient(timeout=30) as httpx_client:
         resolver = A2ACardResolver(httpx_client=httpx_client, base_url=base_url)
@@ -276,7 +291,7 @@ artifact_update { artifact { name: "result" ... } }
 status_update { state: TASK_STATE_COMPLETED }
 ```
 
-That pattern is vendor-neutral. The only vendor-specific part is whatever sits behind `https://claude-research.example.invalid` [3][5][6].
+That pattern is vendor-neutral. The only vendor-specific part is whatever sits behind `https://claude-research.example.com` [3][5][6].
 
 The third step is handling async completion. A coding agent backed by OpenAI is a good fit for push notifications because codegen or refactor jobs may outlive a single open HTTP stream. The official async topic shows that the client can attach a `TaskPushNotificationConfig`, let the server notify a webhook on major state changes, and then call `GetTask` with the returned task ID to retrieve the full final state [7]. With the Python SDK types, the request shape looks like this:
 
@@ -294,7 +309,7 @@ from a2a.types import (
 )
 
 async def run() -> None:
-    base_url = "https://openai-code-agent.example.invalid"
+    base_url = "https://openai-code-agent.example.com"
 
     async with httpx.AsyncClient(timeout=30) as httpx_client:
         resolver = A2ACardResolver(httpx_client=httpx_client, base_url=base_url)
@@ -302,7 +317,7 @@ async def run() -> None:
         client = await create_client(agent=card, client_config=ClientConfig(streaming=False))
 
         callback = TaskPushNotificationConfig(
-            url="https://ops.example.invalid/a2a/callback",
+            url="https://ops.example.com/a2a/callback",
             token="demo-shared-secret",
         )
 
@@ -334,7 +349,7 @@ task { state: TASK_STATE_SUBMITTED ... }
 A minimal local webhook receiver for that callback can be as simple as:
 
 ```bash
-curl -X POST https://ops.example.invalid/a2a/callback \
+curl -X POST https://ops.example.com/a2a/callback \
   -H 'content-type: application/json' \
   -d '{"statusUpdate":{"taskId":"task-123","status":{"state":"TASK_STATE_COMPLETED"}}}'
 ```
@@ -344,6 +359,17 @@ Expected output:
 ```json
 {"ok":true}
 ```
+
+## KnowledgeCheck
+
+Question: In the client examples above, what is the portable contract the orchestrator relies on?
+
+A. Provider-specific tool schemas
+B. Agent Card discovery plus `SendMessageRequest` and task state updates
+C. Shared prompt templates across vendors
+D. Matching model weights
+
+Answer: B
 
 If you are building [[multi-agent-orchestration-a2a]], this is the payoff. The orchestrator code stops caring whether the remote agent runs Claude, GPT, Gemini, or something internal. It cares whether the endpoint keeps the A2A contract.
 
