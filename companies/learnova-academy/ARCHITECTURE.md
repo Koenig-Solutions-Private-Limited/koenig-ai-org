@@ -352,7 +352,7 @@ Per `.paperclip.yaml` `inputs.env:` blocks, plus Paperclip's encrypted secrets s
 | `TAVILY_API_KEY` | All 4 researchers (req); blog-author (opt) | Free-tier web search | Paperclip Secrets store |
 | `RESEND_API_KEY` | `ceo` (req for EOD digest + G4 magic-link emails) | Email delivery | Paperclip Secrets store |
 | `SLACK_WEBHOOK_URL` | `ceo` (opt for G4 chat signal) | Optional chat notification route for G4 | Paperclip Secrets store |
-| `TEAMS_WEBHOOK_URL` | none (future/unused) | Reserved for future Teams integration; not an active route | leave unset |
+| `TEAMS_WEBHOOK_URL` | `ceo` (opt — Teams chat fallback) | Optional G4 chat fallback used when Slack is absent or fails; at least one of Slack or Teams should be configured for G4 chat surfacing | Paperclip Secrets store |
 | `GH_TOKEN` | `chief-engineering` (req), `planner` (req), `executor` (req), `code-reviewer` (req); `ceo` (opt) | PR creation + review on `learnovaBeast` | Paperclip Secrets store |
 | `ACADEMY_AGENT_API_KEY` | `blog-author` (req), `course-author` (req — once Phase 1.4 lands) | Bearer token for Convex `agentApi.ts` HTTP action | Paperclip Secrets store + `learnovaBeast/.env` (must match) |
 | `CLOUDFLARE_R2_ACCESS_KEY_ID`, `CLOUDFLARE_R2_SECRET_ACCESS_KEY`, `CLOUDFLARE_R2_BUCKET`, `CLOUDFLARE_R2_ENDPOINT` | `slide-audio-producer`, `voice-producer` (Phase 1.4) | Media uploads (slides, audio) | Paperclip Secrets store |
