@@ -60,11 +60,14 @@ fi
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
   EMAIL_STATUS="skipped_dry_run"
-  CHAT_STATUS="skipped_dry_run"
+  SLACK_STATUS="skipped_dry_run"
+  TEAMS_STATUS="skipped_dry_run"
 else
   EMAIL_STATUS="not_attempted"
-  CHAT_STATUS="not_attempted"
+  SLACK_STATUS="not_attempted"
+  TEAMS_STATUS="not_attempted"
 
+  # ── Email via Resend ────────────────────────────────────────────────────────
   if [[ -z "${RESEND_API_KEY:-}" ]]; then
     EMAIL_STATUS="unavailable_missing_resend_api_key"
   elif [[ "$VALIDATE_RESEND" -eq 1 ]]; then
@@ -80,32 +83,54 @@ else
     EMAIL_STATUS="configured"
   fi
 
-  if [[ -z "${SLACK_WEBHOOK_URL:-}" ]]; then
-    if [[ "$ALLOW_CHAT_UNAVAILABLE" -eq 1 ]]; then
-      CHAT_STATUS="unavailable_allowed"
-    else
-      CHAT_STATUS="unavailable_missing_slack_webhook_url"
-    fi
-  else
-    payload=$(cat <<JSON
+  # ── Slack webhook ───────────────────────────────────────────────────────────
+  if [[ -n "${SLACK_WEBHOOK_URL:-}" ]]; then
+    slack_payload=$(cat <<JSON
 {"text":"G4 approval queued for ${ISSUE_ID} (${APPROVAL_ID}). Review in Paperclip UI."}
 JSON
 )
-    CHAT_HTTP_CODE="$(curl -sS -o /dev/null -w '%{http_code}' \
+    SLACK_HTTP_CODE="$(curl -sS -o /dev/null -w '%{http_code}' \
       -H 'Content-Type: application/json' \
-      --data "$payload" \
+      --data "$slack_payload" \
       "$SLACK_WEBHOOK_URL" || true)"
-    if [[ "$CHAT_HTTP_CODE" =~ ^2[0-9][0-9]$ ]]; then
-      CHAT_STATUS="delivered"
+    if [[ "$SLACK_HTTP_CODE" =~ ^2[0-9][0-9]$ ]]; then
+      SLACK_STATUS="delivered"
     else
-      CHAT_STATUS="delivery_failed_http_${CHAT_HTTP_CODE:-000}"
+      SLACK_STATUS="delivery_failed_http_${SLACK_HTTP_CODE:-000}"
     fi
+  else
+    SLACK_STATUS="unavailable_missing_slack_webhook_url"
+  fi
+
+  # ── Teams webhook (fallback when Slack is not delivered) ────────────────────
+  if [[ "$SLACK_STATUS" == "delivered" ]]; then
+    TEAMS_STATUS="skipped_slack_delivered"
+  elif [[ -n "${TEAMS_WEBHOOK_URL:-}" ]]; then
+    teams_payload=$(cat <<JSON
+{"text":"G4 approval queued for ${ISSUE_ID} (${APPROVAL_ID}). Review in Paperclip UI."}
+JSON
+)
+    TEAMS_HTTP_CODE="$(curl -sS -o /dev/null -w '%{http_code}' \
+      -H 'Content-Type: application/json' \
+      --data "$teams_payload" \
+      "$TEAMS_WEBHOOK_URL" || true)"
+    if [[ "$TEAMS_HTTP_CODE" =~ ^2[0-9][0-9]$ ]]; then
+      TEAMS_STATUS="delivered"
+    else
+      TEAMS_STATUS="delivery_failed_http_${TEAMS_HTTP_CODE:-000}"
+    fi
+  else
+    TEAMS_STATUS="unavailable_missing_teams_webhook_url"
   fi
 fi
 
-if [[ "$CHAT_STATUS" == "unavailable_missing_slack_webhook_url" ]]; then
-  echo "Chat route unavailable. Re-run with --allow-chat-unavailable if intentional." >&2
-  exit 3
+# ── Chat availability gate ──────────────────────────────────────────────────
+# Fail unless at least one chat route delivered, dry-run, or explicitly allowed.
+if [[ "$DRY_RUN" -eq 0 && "$ALLOW_CHAT_UNAVAILABLE" -eq 0 ]]; then
+  if [[ "$SLACK_STATUS" != "delivered" && "$TEAMS_STATUS" != "delivered" ]]; then
+    echo "Chat route unavailable. Re-run with --allow-chat-unavailable if intentional." >&2
+    exit 3
+  fi
 fi
 
 TIMESTAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -121,8 +146,8 @@ cat <<JSON
   "channels": {
     "paperclipUi": "source_of_truth",
     "resendEmail": $(json_escape "$EMAIL_STATUS"),
-    "slack": $(json_escape "$CHAT_STATUS"),
-    "teams": "future_unused"
+    "slack": $(json_escape "$SLACK_STATUS"),
+    "teams": $(json_escape "$TEAMS_STATUS")
   },
   "note": "notification_only_no_publish",
   "timestamp": $(json_escape "$TIMESTAMP")
