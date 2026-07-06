@@ -2,7 +2,7 @@
 chapter_num: 4
 course_slug: ppc-team-leadership-analyst-onboarding-and-workflow-design
 title: "Distributing Campaign Portfolios and Setting Weekly Performance Accountability Rhythms"
-status: awaiting-g0
+status: g0-passed
 duration_min: 18
 vendor_tag: "Google Ads, Meta Ads"
 learning_objectives:
@@ -130,7 +130,7 @@ After scoring, total team weight is 446 points — a mean of approximately 149 p
 
 **Senior analyst (154 pts):** Performance Max (74 pts) and Competitor Conquest Search (80 pts). Both campaigns require experienced interpretation: PMax demands judgment to distinguish algorithm instability from genuine underperformance; Competitor Conquest has volatile exact-match CPCs and only 22 monthly conversions — below the threshold where standard optimizations reliably move outcomes.
 
-**Mid-level analyst (137 pts):** Non-Brand Search (68 pts) and Meta ASC (69 pts). Significant spend, moderate complexity; the ASC suits someone with campaign judgment who can escalate to the senior analyst when needed.
+**Mid-level analyst (137 pts):** Non-Brand Search (68 pts) and Meta ASC (69 pts). Significant spend, moderate complexity; the ASC suits someone with campaign judgment who can escalate to the senior analyst.
 
 **Junior analyst (155 pts):** Brand Search, Display Remarketing, Meta Retargeting, and YouTube Brand Awareness (155 pts combined). Four campaigns, all in stable phases with clear optimization levers and no active learning periods (see [[03-onboarding-analysts-30-60-90-ramp]]).
 
@@ -140,7 +140,7 @@ Total variance from mean: ±6 pts. Within the ±15% target.
 
 ## Campaign-Owner RACI for Cross-Platform Launches
 
-When Google Search, Performance Max, and [Meta ASC](https://bir.ch/blog/advantage-plus-sales-campaigns-guide) go live in the same two-week window, tasks fall to whoever is paying closest attention — unless ownership is made explicit. A RACI matrix solves this.
+When Google Search, Performance Max, and [Meta ASC](https://bir.ch/blog/advantage-plus-sales-campaigns-guide) go live in the same two-week window, tasks fall to whoever is paying closest attention — unless ownership is made explicit.
 
 For a cross-platform launch, the manager holds Accountability (A) for all platform go-lives; execution Responsibility (R) sits with the assigned analyst per platform. The Tracking Specialist is Consulted (C) on creative tasks but holds Responsible for all pixel and tag QA. Junior analysts are Responsible for Day 1–3 anomaly monitoring on their portfolio campaigns; the senior analyst holds Responsible on PMax and Competitor Conquest.
 
