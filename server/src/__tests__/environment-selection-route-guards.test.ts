@@ -22,6 +22,8 @@ const mockIssueService = vi.hoisted(() => ({
   update: vi.fn(),
   getByIdentifier: vi.fn(),
   assertCheckoutOwner: vi.fn(),
+  getRelationSummaries: vi.fn(),
+  getDependencyReadiness: vi.fn(),
 }));
 
 const mockEnvironmentService = vi.hoisted(() => ({
@@ -163,6 +165,10 @@ describe.sequential("execution environment route guards", () => {
     mockIssueService.update.mockReset();
     mockIssueService.getByIdentifier.mockReset();
     mockIssueService.assertCheckoutOwner.mockReset();
+    mockIssueService.getRelationSummaries.mockReset();
+    mockIssueService.getRelationSummaries.mockResolvedValue({ blockedBy: [], blocks: [] });
+    mockIssueService.getDependencyReadiness.mockReset();
+    mockIssueService.getDependencyReadiness.mockResolvedValue({ unresolvedBlockerCount: 0 });
     mockCompanyService.getById.mockReset();
     mockCompanyService.getById.mockResolvedValue({
       id: "company-1",
