@@ -29,14 +29,18 @@ const adapterExecute = vi.hoisted(() => vi.fn(async () => ({
   model: "test-model",
 })));
 
-vi.mock("../adapters/index.js", () => ({
-  getServerAdapter: () => ({
+vi.mock("../adapters/index.js", () => {
+  const mockAdapter = {
     type: "codex_local",
     execute: adapterExecute,
     supportsLocalAgentJwt: false,
-  }),
-  runningProcesses: new Map(),
-}));
+  };
+  return {
+    getServerAdapter: () => mockAdapter,
+    requireServerAdapter: () => mockAdapter,
+    runningProcesses: new Map(),
+  };
+});
 
 const embeddedPostgresSupport = await getEmbeddedPostgresTestSupport();
 const describeEmbeddedPostgres = embeddedPostgresSupport.supported ? describe : describe.skip;
