@@ -29,6 +29,7 @@ SECRET_BINDINGS: dict[str, list[str]] = {
     "XAI_API_KEY": ["researcher-anthropic", "researcher-community"],
     "RESEND_API_KEY": ["ceo"],
     "SLACK_WEBHOOK_URL": ["ceo"],
+    "TEAMS_WEBHOOK_URL": ["ceo"],
     "GH_TOKEN": [
         "ceo",
         "chief-engineering",
@@ -136,7 +137,10 @@ def bind_secret_to_agent(
 
 
 def verify_ceo_bindings(
-    paperclip_url: str, company_id: str, auth_token: str | None
+    paperclip_url: str,
+    company_id: str,
+    auth_token: str | None,
+    require_chat: bool = False,
 ) -> int:
     agents = http("GET", f"{paperclip_url}/api/companies/{company_id}/agents", auth_token)
     by_slug = {a["urlKey"]: a for a in agents}
@@ -147,10 +151,22 @@ def verify_ceo_bindings(
     env = ((ceo.get("adapterConfig") or {}).get("env") or {}).copy()
     has_resend = "RESEND_API_KEY" in env
     has_slack = "SLACK_WEBHOOK_URL" in env
+    has_teams = "TEAMS_WEBHOOK_URL" in env
+    has_chat = has_slack or has_teams
     print("CEO env binding presence (values redacted):")
-    print(f"  RESEND_API_KEY: {'bound' if has_resend else 'missing'}")
+    print(f"  RESEND_API_KEY:    {'bound' if has_resend else 'missing'}")
     print(f"  SLACK_WEBHOOK_URL: {'bound' if has_slack else 'missing_optional'}")
-    return 0 if has_resend else 1
+    print(f"  TEAMS_WEBHOOK_URL: {'bound' if has_teams else 'missing_optional'}")
+    if not has_resend:
+        return 1
+    if require_chat and not has_chat:
+        print(
+            "ERROR: KOEA-10161 verification requires at least one chat route "
+            "(SLACK_WEBHOOK_URL or TEAMS_WEBHOOK_URL)",
+            file=sys.stderr,
+        )
+        return 1
+    return 0
 
 
 def main() -> int:
@@ -160,6 +176,11 @@ def main() -> int:
     ap.add_argument("--company-id", required=True)
     ap.add_argument("--auth-token", default=os.environ.get("PAPERCLIP_API_KEY") or os.environ.get("PAPERCLIP_BOARD_TOKEN"))
     ap.add_argument("--verify-ceo-bindings", action="store_true")
+    ap.add_argument(
+        "--require-chat",
+        action="store_true",
+        help="When verifying CEO bindings, also require at least one chat route (KOEA-10161 verification)",
+    )
     args = ap.parse_args()
 
     env = parse_env_file(args.env_file)
@@ -232,7 +253,10 @@ def main() -> int:
     if args.verify_ceo_bindings:
         print()
         verify_code = verify_ceo_bindings(
-            args.paperclip_url, args.company_id, args.auth_token
+            args.paperclip_url,
+            args.company_id,
+            args.auth_token,
+            require_chat=args.require_chat,
         )
         if verify_code != 0:
             return verify_code
