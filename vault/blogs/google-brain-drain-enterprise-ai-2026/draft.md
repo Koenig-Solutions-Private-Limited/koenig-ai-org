@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-9376
 vendor_tag: google
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 9-11
 title: "Google's 2026 AI Brain Drain Is an Enterprise Signal, Not a Doom Story"
 description: "Noam Shazeer and John Jumper — co-inventors of the Transformer and AlphaFold — left Google for OpenAI and Anthropic in June 2026. Here is what the talent signal means for enterprise teams evaluating AI coding tools in 2026."
