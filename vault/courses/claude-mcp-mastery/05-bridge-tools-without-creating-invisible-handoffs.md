@@ -9,7 +9,7 @@ chapter_num: 5
 title: "Bridge tools without creating invisible handoffs"
 slug: 05-bridge-tools-without-creating-invisible-handoffs
 description: "Learn to plan cross-tool creative workflows across Blender, Adobe Creative Cloud, Ableton, SketchUp, Autodesk Fusion, Resolume, and Splice without losing file provenance — design explicit checkpoints, document what each connector changes, and protect licensed assets across format translations."
-status: g3-passed
+status: g4-passed
 last_updated: 2026-06-14
 reading_time_min: 9
 positions: []

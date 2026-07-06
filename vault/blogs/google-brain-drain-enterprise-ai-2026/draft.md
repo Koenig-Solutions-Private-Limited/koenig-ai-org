@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-9376
 vendor_tag: google
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 9-11
 title: "Google's 2026 AI Brain Drain Is an Enterprise Signal, Not a Doom Story"
 description: "Noam Shazeer and John Jumper — co-inventors of the Transformer and AlphaFold — left Google for OpenAI and Anthropic in June 2026. Here is what the talent signal means for enterprise teams evaluating AI coding tools in 2026."
@@ -165,4 +165,4 @@ That information is now public. Use it.
 >
 > **Answer: b) AI coding tools.** Bloomberg reported — cited by TechCrunch on June 20, 2026 — that Jumper was a key member of Google's AI coding tools team, and that the company has struggled to sell those tools to businesses. This is the detail that converts his departure to Anthropic (whose Claude Code is winning enterprise coding deals) from a symbolic talent story into a direct enterprise product signal.
 
-Ready to apply this kind of competitive signal-reading to your own AI tooling decisions? Koenig AI Academy's [[course/picking-a-frontier-model-2026-q2]] course gives you a structured framework for evaluating AI model providers on the criteria that predict production outcomes — not just benchmark scores. Already narrowed down to a shortlist? [[course/enterprise-ai-evaluation]] walks you through the practitioner-grade evaluation process end-to-end.
+Ready to apply this kind of competitive signal-reading to your own AI tooling decisions? Koenig AI Academy's [[course/picking-a-frontier-model-2026-q2]] course gives you a structured framework for evaluating AI model providers on the criteria that predict production outcomes — not just benchmark scores. Already narrowed down to a shortlist? [[course/claude-agent-sdk-zero-to-production]] walks you through the practitioner-grade build-and-deploy process end-to-end.

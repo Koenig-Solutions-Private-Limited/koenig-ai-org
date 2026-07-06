@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-9972
 vendor_tag: anthropic
 content_type: article
-status: draft
+status: g0-passed
 reading_time_min: 9-11
 target_word_count: 2300
 publish_date: 2026-06-26
@@ -38,6 +38,7 @@ faq:
     answer: "Alibaba did not respond to media requests for comment as of June 26, 2026, per reporting by Bloomberg, CNBC, and Ars Technica. The allegations are Anthropic's characterization of evidence presented in a letter to US senators. Alibaba has not publicly acknowledged or denied the distillation campaign described in the letter."
 original_data: false
 last_updated: 2026-06-26
+seo_description: "Anthropic alleges Alibaba ran 28.8M Claude API calls via fake accounts. Enterprise fix: population-level behavioral fingerprinting beats per-account dashboards."
 hero_image:
   url: /img/blogs/anthropic-alibaba-claude-distillation-attack-enterprise-security-2026/hero.png
   alt: "Diagram showing cross-account behavioral fingerprinting detecting coordinated API traffic patterns across 25,000 fraudulent accounts during the alleged Alibaba Claude distillation campaign in 2026"

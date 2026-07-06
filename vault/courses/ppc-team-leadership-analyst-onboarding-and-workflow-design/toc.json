@@ -1,0 +1,218 @@
+{
+  "course_slug": "ppc-team-leadership-analyst-onboarding-and-workflow-design",
+  "toc_locked": true,
+  "chapters": [
+    {
+      "num": 1,
+      "slug": "designing-ppc-analyst-team-roles",
+      "title": "Designing a 3-4 Person PPC Analyst Team for a Data-Driven Analytics Firm",
+      "owns": [
+        "3-4 person PPC analyst team org design for an analytics-focused firm",
+        "role boundaries for paid media strategist, analytics engineer, tracking specialist, and campaign analyst",
+        "mapping each seat to daily PPC campaign workflows across tracking, analysis, media buying, and reporting",
+        "primary ownership areas for CPA, ROAS, CTR, and conversion-rate accountability",
+        "shared responsibility framework for autonomous analyst decisions versus PPC manager sign-off",
+        "comparing two candidate team configurations against campaign volume and budget complexity"
+      ],
+      "does_not_cover": [
+        "job description writing, interview scorecards, or hiring tasks (ch2 owns hiring process)",
+        "30-60-90 onboarding milestones, access grants, or ramp KPIs (ch3 owns onboarding)",
+        "allocating actual campaign portfolios and weekly accountability rhythms (ch4 owns operating cadence)",
+        "1-on-1 coaching, performance reviews, and improvement plans (ch5 owns analyst development)",
+        "Looker Studio automation, anomaly alerts, or AI-assisted reporting workflows (ch6 owns scaling systems)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "which PPC analyst role owns tracking versus media buying versus reporting",
+        "how to avoid duplicate ownership when designing a 3-4 person PPC analyst unit",
+        "mapping CPA, ROAS, CTR, and conversion-rate KPIs to specific analyst seats",
+        "choosing between two role configurations based on campaign volume and budget scenario",
+        "which decisions an analyst can make autonomously versus which require PPC manager approval"
+      ],
+      "notebooklm_source_focus": [
+        "PPC and performance marketing team structure guidance for 2026",
+        "analytics engineering and tracking specialist roles in paid media teams",
+        "RACI and decision-rights models for small marketing operations teams",
+        "PPC KPI ownership models for CPA, ROAS, CTR, CVR, and reporting accuracy"
+      ],
+      "dossier_path": "vault/research/courses/ppc-team-leadership-analyst-onboarding-and-workflow-design/01-designing-ppc-analyst-team-roles.md"
+    },
+    {
+      "num": 2,
+      "slug": "skills-based-hiring-job-descriptions",
+      "title": "Writing Analyst Job Descriptions and Running a Skills-Based Hiring Process",
+      "owns": [
+        "performance-outcome-anchored PPC analyst job descriptions",
+        "required 2026 PPC platform proficiencies including Google Ads, GA4, and Looker Studio",
+        "skills-based interview scorecard design with pass/fail grading criteria",
+        "30-minute take-home PPC account audit task design using anonymised underperforming-account data",
+        "candidate response evaluation and ranking using structured written justification",
+        "separating candidates who diagnose root causes from candidates who only describe surface metrics"
+      ],
+      "does_not_cover": [
+        "team org chart and role boundary design (ch1 owns team design)",
+        "new-hire ramp milestones, account access checklists, and onboarding KPIs (ch3 owns onboarding)",
+        "weekly campaign portfolio ownership and accountability cadence (ch4 owns operating rhythm)",
+        "coaching existing analysts through performance gaps (ch5 owns coaching)",
+        "reporting automation stack and AI-assisted alerting tools (ch6 owns workflow scale)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "rewriting activity-based job description bullets into measurable PPC outcomes",
+        "which Google Ads, GA4, and Looker Studio skills belong in a PPC analyst job description",
+        "building pass/fail grading criteria for a five-question PPC analyst interview scorecard",
+        "designing a 30-minute take-home audit that tests root-cause diagnosis",
+        "ranking sample candidate responses using evidence from the scorecard"
+      ],
+      "notebooklm_source_focus": [
+        "skills-based hiring practices for marketing analyst and PPC analyst roles",
+        "current Google Ads, GA4, and Looker Studio competency expectations",
+        "structured interview scorecard examples for analytics and performance marketing roles",
+        "take-home audit task design and candidate-evaluation best practices"
+      ],
+      "dossier_path": "vault/research/courses/ppc-team-leadership-analyst-onboarding-and-workflow-design/02-skills-based-hiring-job-descriptions.md"
+    },
+    {
+      "num": 3,
+      "slug": "onboarding-analysts-30-60-90-ramp",
+      "title": "Onboarding Analysts with a 30-60-90 Day Ramp Plan Tied to Campaign Ownership",
+      "owns": [
+        "30-60-90 day onboarding plan for a new PPC analyst",
+        "day-by-day and milestone-based deliverables for account audit, campaign QA, and first optimisation recommendation",
+        "access and permissions checklist for Google Ads, GA4, CRM data connectors, and Looker Studio workspaces",
+        "onboarding KPIs including time-to-first-solo-campaign, QA pass rate, and report accuracy score",
+        "day-45 underperformance diagnosis during onboarding and targeted ramp interventions",
+        "handoff from supervised platform tasks to independent live campaign ownership by day 30"
+      ],
+      "does_not_cover": [
+        "defining which roles exist on the PPC analyst team (ch1 owns role design)",
+        "screening and selecting candidates before hire (ch2 owns hiring)",
+        "ongoing portfolio allocation after analysts are ramped (ch4 owns campaign distribution)",
+        "quarterly performance reviews and regular coaching after ramp (ch5 owns ongoing coaching)",
+        "automated reporting and anomaly-alert infrastructure (ch6 owns workflow scale)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "which deliverables belong at day 30, day 60, and day 90 in a PPC analyst ramp plan",
+        "access grants needed before a PPC analyst can work independently on day one",
+        "defining measurable onboarding KPIs and thresholds",
+        "diagnosing whether a day-45 onboarding issue is caused by access, skill, or workload mismatch",
+        "when a new analyst is ready for first solo live campaign ownership"
+      ],
+      "notebooklm_source_focus": [
+        "PPC analyst onboarding plans and 30-60-90 ramp frameworks",
+        "Google Ads, GA4, CRM connector, and Looker Studio access management",
+        "marketing operations onboarding KPI examples",
+        "campaign QA and first optimisation recommendation workflows for new analysts"
+      ],
+      "dossier_path": "vault/research/courses/ppc-team-leadership-analyst-onboarding-and-workflow-design/03-onboarding-analysts-30-60-90-ramp.md"
+    },
+    {
+      "num": 4,
+      "slug": "campaign-portfolio-accountability-rhythms",
+      "title": "Distributing Campaign Portfolios and Setting Weekly Performance Accountability Rhythms",
+      "owns": [
+        "allocation of live campaign portfolios across 3-4 PPC analysts",
+        "weighted scoring model using spend, platform complexity, conversion volume, and campaign risk",
+        "weekly team operating rhythm covering stand-ups, async reporting artefacts, and escalation triggers",
+        "campaign-owner RACI for cross-platform launches across Google Ads Search, Performance Max, and Meta Advantage+",
+        "manager-level rolled-up KPI dashboard requirements for visibility into analyst performance gaps",
+        "budget pacing anomaly escalation thresholds inside the weekly operating cadence"
+      ],
+      "does_not_cover": [
+        "hiring or interview scorecards for analysts (ch2 owns hiring)",
+        "initial new-hire ramp plans and onboarding KPIs (ch3 owns onboarding)",
+        "individual coaching conversations and performance improvement requests (ch5 owns coaching)",
+        "building automated data pipelines and AI anomaly alert systems (ch6 owns automation implementation)",
+        "team role design before campaigns are allocated (ch1 owns org design)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "using spend, complexity, and conversion volume to allocate eight campaigns across analysts",
+        "designing weekly PPC accountability rituals without micromanaging analysts",
+        "setting escalation thresholds for budget pacing anomalies",
+        "building a campaign-owner RACI for a cross-platform launch",
+        "what manager-level KPIs must be visible in under five minutes"
+      ],
+      "notebooklm_source_focus": [
+        "PPC campaign portfolio allocation and account ownership models",
+        "weekly performance marketing operating rhythms and stand-up structures",
+        "RACI models for cross-platform campaign launches",
+        "budget pacing and campaign escalation threshold best practices"
+      ],
+      "dossier_path": "vault/research/courses/ppc-team-leadership-analyst-onboarding-and-workflow-design/04-campaign-portfolio-accountability-rhythms.md"
+    },
+    {
+      "num": 5,
+      "slug": "coaching-analysts-performance-gaps",
+      "title": "Coaching Analysts Through Performance Gaps and Running Structured 1-on-1s",
+      "owns": [
+        "data-grounded PPC analyst 1-on-1 structure",
+        "coaching brief creation from analyst performance datasets with declining CTR and rising CPA",
+        "diagnosis of skill gaps, tool-access gaps, and workload-distribution problems",
+        "specific, observable, time-bound feedback statements using campaign evidence",
+        "two-week measurable improvement targets for analyst performance gaps",
+        "quarterly PPC analyst performance review scorecard separating KPI outcomes, analysis quality, and process adherence"
+      ],
+      "does_not_cover": [
+        "candidate selection and hiring interviews (ch2 owns hiring)",
+        "onboarding underperformance during the first 90 days except as context (ch3 owns onboarding ramp)",
+        "campaign portfolio allocation rules and team cadence design (ch4 owns operating rhythm)",
+        "automation or dashboard engineering for reporting scale (ch6 owns workflow tooling)",
+        "initial team org design and role boundaries (ch1 owns structure)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "turning campaign performance evidence into a coaching brief",
+        "distinguishing skill gaps from access gaps and workload-distribution issues",
+        "rewriting vague feedback into specific, observable, time-bound improvement requests",
+        "setting measurable two-week improvement targets from CTR and CPA data",
+        "weighting KPI outcomes, analysis quality, and process adherence in a quarterly analyst scorecard"
+      ],
+      "notebooklm_source_focus": [
+        "performance coaching frameworks for marketing and analytics managers",
+        "structured 1-on-1 formats for data-driven teams",
+        "PPC analyst performance review scorecard examples",
+        "feedback models using observable campaign data and measurable improvement targets"
+      ],
+      "dossier_path": "vault/research/courses/ppc-team-leadership-analyst-onboarding-and-workflow-design/05-coaching-analysts-performance-gaps.md"
+    },
+    {
+      "num": 6,
+      "slug": "reporting-automation-ai-assisted-workflows",
+      "title": "Scaling the Team's Output with Reporting Automation and AI-Assisted Workflows",
+      "owns": [
+        "2026-current reporting stack for PPC analyst teams",
+        "Looker Studio dashboard design connected to Google Ads and GA4",
+        "separating modelled conversions from measured conversions in post-cookie-deprecation reporting",
+        "automated weekly report template covering ROAS, CPA, CTR, CVR, impression share, blended CAC, and incrementality estimate",
+        "AI-assisted anomaly alerts for budget pacing deviation and conversion tracking drops",
+        "correcting cross-platform reports that conflate prospecting and retargeting ROAS",
+        "team workflow design that shifts analysts from CSV exports to decision-making"
+      ],
+      "does_not_cover": [
+        "who should sit in each PPC analyst role (ch1 owns team design)",
+        "hiring for platform skills or screening candidates (ch2 owns hiring)",
+        "day-one access checklist except where required for automation context (ch3 owns onboarding access)",
+        "weekly human accountability rituals and campaign-owner RACI (ch4 owns operating rhythm)",
+        "individual coaching conversations and performance reviews (ch5 owns coaching)"
+      ],
+      "word_budget": { "min": 800, "max": 1200 },
+      "quiz_topics": [
+        "separating modelled conversions from measured conversions in a Looker Studio dashboard",
+        "which seven KPIs belong in an automated PPC weekly report",
+        "configuring anomaly alerts for budget pacing deviations and conversion tracking drops",
+        "distinguishing prospecting ROAS from retargeting ROAS in cross-platform recommendations",
+        "using automation to reduce manual CSV work without removing analyst decision ownership"
+      ],
+      "notebooklm_source_focus": [
+        "Looker Studio Google Ads and GA4 connector guidance for 2026",
+        "Google Ads modelled conversions and cookieless attribution reporting",
+        "PPC reporting automation and marketing data pipeline best practices",
+        "AI-assisted anomaly detection for performance marketing teams",
+        "prospecting versus retargeting ROAS segmentation in cross-platform reporting"
+      ],
+      "dossier_path": "vault/research/courses/ppc-team-leadership-analyst-onboarding-and-workflow-design/06-reporting-automation-ai-assisted-workflows.md"
+    }
+  ]
+}

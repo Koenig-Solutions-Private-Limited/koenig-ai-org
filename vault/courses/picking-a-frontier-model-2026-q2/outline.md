@@ -1,7 +1,7 @@
 ---
 course_slug: picking-a-frontier-model-2026-q2
 title: "Picking a Frontier Model: Opus 4.7 vs GPT-5.5 vs Gemini 3.1 Pro — A Builder's Benchmark Guide"
-status: awaiting-g0
+status: g3-passed
 author: course-author
 level: Builder
 vendor_tag: community
@@ -28,6 +28,8 @@ related_blogs:
 sources:
   - https://www.anthropic.com/news
   - https://help.openai.com/en/articles/9624314-model-release-notes
+  - https://developers.openai.com/api/docs/deprecations
+  - https://community.openai.com/t/deprecation-notice-upcoming-model-shutdowns-in-2026/1379553
   - https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/
   - https://deepmind.google/models/model-cards/gemini-3-1-pro/
   - https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview
@@ -56,6 +58,8 @@ This course is built around a different premise: **evaluation is an engineering 
 By the end you will have run real prompts, measured real variance, modeled real cost, and written a memo that a skeptical engineering manager would accept. That's the bar.
 
 **Gemini 3.1 course-delta note, verified 2026-05-28**: this course treats `gemini-3.1-pro-preview` as Google's current preview reasoning and long-context model for benchmark comparison, not as an audio-generation model. Google's launch post says Gemini 3.1 Pro began rolling out on 2026-02-19 across developer, enterprise, and consumer surfaces; the DeepMind model card documents text, image, audio, and video inputs with text output; and the Gemini API model page documents 1,048,576 input tokens, 65,536 output tokens, function calling, structured outputs, caching, code execution, and no audio generation. Scripted audio belongs to the separate `gemini-3.1-flash-tts-preview` surface described in Google's Flash TTS launch post and speech-generation guide. Any lab that uses a preview model ID must keep that ID configurable and require a changelog/deprecation check before production use.
+
+**OpenAI July 23 model-shutdown audit, verified 2026-07-02**: OpenAI's deprecations page lists July 23, 2026 API shutdowns for older computer-use, audio/realtime/search/TTS, Codex/chat-latest, and deep-research snapshots, including `computer-use-preview-2025-03-11`, `gpt-4o-audio-preview-2024-12-17`, `gpt-4o-mini-audio-preview-2024-12-17`, `gpt-4o-mini-realtime-preview-2024-12-17`, `gpt-4o-mini-search-preview-2025-03-11`, `gpt-4o-mini-tts-2025-03-20`, `gpt-4o-search-preview-2025-03-11`, `gpt-5-chat-latest`, `gpt-5-codex`, `gpt-5.1-chat-latest`, `gpt-5.1-codex`, `gpt-5.1-codex-max`, `gpt-5.1-codex-mini`, `gpt-5.2-codex`, `gpt-audio-mini-2025-10-06`, `gpt-realtime-mini-2025-10-06`, `o3-deep-research-2025-06-26`, and `o4-mini-deep-research-2025-06-26`. This course audit found no active recommendation of those Wave 1 model IDs in the chapter markdown/json files; existing `GPT-5.5` / `gpt-5-5` references are not the deprecated `gpt-5` or `gpt-5.1` preview aliases. Keep future lab model IDs configurable and re-check the OpenAI deprecations page before running or publishing model-specific examples.
 
 ## The contrarian angle
 

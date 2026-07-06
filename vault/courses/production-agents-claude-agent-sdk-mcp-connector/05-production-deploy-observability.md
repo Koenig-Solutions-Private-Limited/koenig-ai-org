@@ -168,6 +168,8 @@ options = ClaudeAgentOptions(
 
 When `circuit_breaker.check_cost` returns `permissionDecision: "deny"`, the current tool call is blocked before it executes and Claude receives the denial reason as feedback. The session JSONL is preserved, so you can inspect exactly what happened.
 
+> **Sonnet 5 migration note:** If you switch to `claude-sonnet-5`, rebaseline your `max_input_tokens` cap. The Sonnet 5 tokenizer produces ~30% more tokens for equivalent text, and adaptive thinking creates additional text-only decision turns that accumulate input tokens. A cap calibrated for Sonnet 4.x will fire significantly earlier on Sonnet 5 workloads with equivalent prompts.
+
 <Callout type="hot">
 Do NOT block silently inside hooks. When a hook denies a tool call in production, you need the context to diagnose it. Log the full `input_data`, `tool_use_id`, and denial reason before returning `permissionDecision: "deny"`.
 </Callout>

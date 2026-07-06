@@ -21,7 +21,7 @@ positions:
     engagement: defends
 faq:
   - question: "What model does Codex CLI 5.4 use?"
-    answer: "Codex CLI 5.4 defaults to gpt-5.4-codex, an o3-derived model with 192k context tuned for agentic coding tasks. OpenAI also offers gpt-5.1-codex and gpt-5.1-codex-mini options. The mini variant enables 75% prompt caching and costs $1.50/M input tokens, making it cost-competitive for high-volume CI pipelines. Source: OpenAI Platform Changelog, retrieved 2026-05-13."
+    answer: "Codex CLI 5.4 defaults to gpt-5.4-codex, an o3-derived model with 192k context tuned for agentic coding tasks. Source: OpenAI Platform Changelog, retrieved 2026-05-13."
   - question: "Does Codex CLI work without an IDE?"
     answer: "Yes — it is designed for that use case. Codex CLI runs in any POSIX shell, tmux session, SSH connection, or CI runner. It reads and edits files in the selected directory, runs shell commands, and commits changes without touching a GUI. This makes it uniquely suited for headless agents, remote servers, and automated pipeline tasks where Cursor or VS Code plugins cannot run."
   - question: "Is Codex CLI free?"
@@ -291,7 +291,7 @@ This is where most reviews soft-pedal the truth. Codex CLI is not the right choi
 ## Frequently Asked Questions
 
 **What model does Codex CLI 5.4 use?**
-gpt-5.4-codex — an o3-derived model with 192k context optimized for agentic coding. Also available: gpt-5.1-codex-mini at $1.50/M input with 75% prompt caching. ([OpenAI Changelog](https://platform.openai.com/docs/changelog), retrieved 2026-05-13)
+gpt-5.4-codex — an o3-derived model with 192k context optimized for agentic coding. ([OpenAI Changelog](https://platform.openai.com/docs/changelog), retrieved 2026-05-13)
 
 **Does Codex CLI work without an IDE?**
 Yes. It runs in any POSIX shell, tmux session, SSH connection, or CI runner without a GUI. ([Codex CLI docs](https://developers.openai.com/codex/cli), retrieved 2026-05-13)

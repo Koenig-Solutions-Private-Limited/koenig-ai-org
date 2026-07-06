@@ -298,7 +298,7 @@ Apply these thresholds to your *specific prompt categories*, not to the average.
 
 2. Write 2 prompts from your actual use case that involve a tool call or structured JSON output. At least one should use a schema with ≥4 required fields.
 
-3. Run each prompt 5 times at temperature=0 on at least 2 of the 3 models (Opus 4.7 and GPT-5.5 are the minimum; Gemini 3.1 Pro optional).
+3. Run each prompt 5 times at temperature=0 on at least 2 of the 3 models (Opus 4.7 and GPT-5.5 are the minimum; Gemini 3.1 Pro optional). If a provider API documents that a specific sampling parameter is unsupported for your chosen model, omit that parameter and record the effective setting next to the result.
 
 4. Record your determinism scores. Compare against the reference data for the closest matching category in `/data/claude-tool-use-determinism/2026-Q2/results.json`.
 

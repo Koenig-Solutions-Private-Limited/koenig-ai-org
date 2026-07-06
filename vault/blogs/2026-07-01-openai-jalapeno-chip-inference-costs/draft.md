@@ -7,7 +7,7 @@ author: blog-author
 ticket: KOEA-9595
 vendor_tag: openai
 content_type: article
-status: g0-passed
+status: g3-passed
 seo_description: "OpenAI's Jalapeño chip targets 50% cheaper inference — Broadcom CEO Hock Tan's claim, not OpenAI's own, and no API price cuts before 2028."
 reading_time_min: 6
 tags: [openai, inference, custom-silicon, ai-infrastructure, developer-economics]

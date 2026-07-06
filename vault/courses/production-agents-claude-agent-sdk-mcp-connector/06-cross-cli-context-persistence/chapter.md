@@ -190,6 +190,10 @@ async function runWithResumption(prompt: string): Promise<string> {
   let result = "";
   let newSessionId = "";
 
+  // Note: this example uses Opus 4.7. If migrating to Sonnet 5, revisit max_tokens:
+  // Sonnet 5 adaptive thinking shares the hard output limit with text — thinking tokens
+  // count against max_tokens, leaving fewer tokens for the final answer. Increase
+  // max_tokens or pass thinking:{type:"disabled"} for concise non-thinking responses.
   for await (const event of client.beta.agents.query({
     model: "claude-opus-4-7-20251101",
     max_tokens: 8096,

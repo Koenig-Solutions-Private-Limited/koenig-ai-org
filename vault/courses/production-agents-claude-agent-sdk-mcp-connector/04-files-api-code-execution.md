@@ -186,10 +186,13 @@ Using an image `file_id` in a `document` block (or vice versa) returns a `400 in
 
 Storage operations are free. Every Messages call that references a `file_id` bills the file content as input tokens — 100 queries against the same PDF cost 100× the document's token price. Code execution adds container runtime cost on top. Use extended prompt caching (1-hour TTL) when querying the same document many times in one session to drop repeated calls to ~10% of full input price. For session-level cost controls and PreToolUse circuit breakers, see [[course/production-agents-claude-agent-sdk-mcp-connector/05-production-deploy-observability|Chapter 5]].
 
+> **Sonnet 5 migration note:** The Sonnet 5 tokenizer produces approximately 30% more tokens for the same file content compared to Sonnet 4.x. If you migrate these examples to `claude-sonnet-5`, re-measure the per-file token count and rebaseline any cost estimates, `max_tokens` budgets, and prompt caching thresholds before deploying to production.
+
 ```takeaways
 - File storage operations (upload, download, list, metadata, delete) are free; file content is billed as input tokens every time a `file_id` is referenced in a Messages request.
 - The "upload once" pitch saves bandwidth and latency but not token cost — 100 queries against the same file cost 100× the document's token price.
 - Enable 1-hour extended prompt caching when running many queries against the same document in one session to reduce per-call costs to approximately 10% of full input price.
+- **Sonnet 5 caveat**: tokenizer produces ~30% more tokens per equivalent document — rebaseline cost estimates when migrating from 4.x.
 ```
 
 ## Code execution with the Files API

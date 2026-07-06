@@ -66,9 +66,9 @@ If a blog ticket arrives at this skill, **return immediately with a routing erro
 
    **Paperclip UI queue** — task surfaces in `/g4-queue` with the same content; one-click approve buttons (https://paperclip.kspl.tech/g4-queue when V3-9 Cloudflare Tunnel lands; ngrok in interim)
 
-   **Slack webhook** (optional) — send same brief when `SLACK_WEBHOOK_URL` is configured.
+   **Slack webhook** (optional) — send same brief when `SLACK_WEBHOOK_URL` is configured. Preferred chat route.
 
-   **Teams webhook** — future/unused in this runtime. Do not treat Teams as an active route.
+   **Teams webhook** (optional fallback) — send same brief when `TEAMS_WEBHOOK_URL` is configured and `SLACK_WEBHOOK_URL` is absent. At least one of Slack or Teams should be configured for G4 chat surfacing; the helper tries Slack first and falls back to Teams automatically.
 
 4. **Write sanitized status comment** — after each routing attempt, comment per-channel status back to the driving issue and the target G4 issue. Include route availability (`resendEmail`, `slack`, `teams`) without recipient addresses, webhook URLs, bearer tokens, approval links, or message body.
 
@@ -95,7 +95,7 @@ If a blog ticket arrives at this skill, **return immediately with a routing erro
 
 - 1 email sent
 - 1 Paperclip queue entry
-- (optional) 1 Slack webhook message
+- (optional) 1 Slack or Teams webhook message (Slack preferred; Teams as fallback)
 - Approval state captured + downstream action triggered
 
 ## Never do
