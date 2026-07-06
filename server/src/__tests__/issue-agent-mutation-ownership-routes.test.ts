@@ -492,6 +492,54 @@ describe("agent issue mutation checkout ownership", () => {
     expect(mockIssueService.update).not.toHaveBeenCalled();
   });
 
+  it("rejects G5 patch with only g5_verified_at (missing g5_verdict)", async () => {
+    mockIssueService.getById.mockResolvedValue(makeIssue({ status: "done", assigneeAgentId: ownerAgentId }));
+    mockAccessService.hasPermission.mockImplementation(async (
+      _companyId: string,
+      _principalType: string,
+      principalId: string,
+      permissionKey: string,
+    ) => principalId === peerAgentId && permissionKey === "tasks:write_publish_verifications");
+
+    const res = await request(await createApp(peerActor()))
+      .patch(`/api/issues/${issueId}`)
+      .send({
+        comment: "✅ G5 PASS - verification complete",
+        metadataPatch: {
+          g5_verified_at: "2026-05-13T00:00:00.000Z",
+        },
+      });
+
+    expect(res.status, JSON.stringify(res.body)).toBe(403);
+    expect(res.body.error).toBe("Agent cannot mutate another agent's issue");
+    expect(mockIssueService.assertCheckoutOwner).not.toHaveBeenCalled();
+    expect(mockIssueService.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects G5 patch with only g5_verdict (missing g5_verified_at)", async () => {
+    mockIssueService.getById.mockResolvedValue(makeIssue({ status: "done", assigneeAgentId: ownerAgentId }));
+    mockAccessService.hasPermission.mockImplementation(async (
+      _companyId: string,
+      _principalType: string,
+      principalId: string,
+      permissionKey: string,
+    ) => principalId === peerAgentId && permissionKey === "tasks:write_publish_verifications");
+
+    const res = await request(await createApp(peerActor()))
+      .patch(`/api/issues/${issueId}`)
+      .send({
+        comment: "✅ G5 PASS - verification complete",
+        metadataPatch: {
+          g5_verdict: "pass",
+        },
+      });
+
+    expect(res.status, JSON.stringify(res.body)).toBe(403);
+    expect(res.body.error).toBe("Agent cannot mutate another agent's issue");
+    expect(mockIssueService.assertCheckoutOwner).not.toHaveBeenCalled();
+    expect(mockIssueService.update).not.toHaveBeenCalled();
+  });
+
   it.each([
     ["todo", "patch", (app: express.Express) => request(app).patch(`/api/issues/${issueId}`).send({ title: "Todo update" })],
     ["todo", "comment", (app: express.Express) => request(app).post(`/api/issues/${issueId}/comments`).send({ body: "Todo noise" })],

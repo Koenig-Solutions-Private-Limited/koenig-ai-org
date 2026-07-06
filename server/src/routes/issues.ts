@@ -661,21 +661,17 @@ export function issueRoutes(
     return true;
   }
 
-  function isG5DoneMetadataPatch(value: unknown): value is { g5_verified_at?: string; g5_verdict?: "pass" | "block" } {
+  function isG5DoneMetadataPatch(value: unknown): value is { g5_verified_at: string; g5_verdict: "pass" | "block" } {
     if (!value || typeof value !== "object" || Array.isArray(value)) return false;
     const patch = value as Record<string, unknown>;
     const keys = Object.keys(patch);
-    if (keys.length === 0) return false;
+    if (!keys.includes("g5_verified_at") || !keys.includes("g5_verdict")) return false;
     if (!keys.every((key) => key === "g5_verified_at" || key === "g5_verdict")) return false;
-    if (patch.g5_verified_at !== undefined) {
-      if (typeof patch.g5_verified_at !== "string" || Number.isNaN(Date.parse(patch.g5_verified_at))) {
-        return false;
-      }
+    if (typeof patch.g5_verified_at !== "string" || Number.isNaN(Date.parse(patch.g5_verified_at as string))) {
+      return false;
     }
-    if (patch.g5_verdict !== undefined) {
-      if (typeof patch.g5_verdict !== "string" || !G5_VERDICTS.has(patch.g5_verdict)) {
-        return false;
-      }
+    if (typeof patch.g5_verdict !== "string" || !G5_VERDICTS.has(patch.g5_verdict as string)) {
+      return false;
     }
     return true;
   }
