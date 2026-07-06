@@ -62,6 +62,8 @@ PY
 SLACK_PORT_FILE="$(mktemp)"
 TEAMS_PORT_FILE="$(mktemp)"
 MOCK_PIDS=()
+SLACK_FAIL_COMBINED=""
+TEAMS_FAIL_COMBINED=""
 
 cleanup() {
   for pid in "${MOCK_PIDS[@]:-}"; do
@@ -132,12 +134,40 @@ validate_json "$TEAMS_OUTPUT"
 assert_contains "$TEAMS_OUTPUT" '"slack": "unavailable_missing_slack_webhook_url"'
 assert_contains "$TEAMS_OUTPUT" '"teams": "delivered"'
 
+# ── Case 6: Slack transport error → delivery_failed, URL not leaked to output ─
+# hooks.slack.com.test.invalid resolves to NXDOMAIN (RFC 2606 .invalid TLD);
+# without 2>/dev/null the hostname would appear in curl -sS stderr.
+set +e
+SLACK_FAIL_COMBINED="$(SLACK_WEBHOOK_URL="http://hooks.slack.com.test.invalid/" run_helper --allow-chat-unavailable 2>&1)"
+SLACK_FAIL_CODE=$?
+set -e
+if [[ "$SLACK_FAIL_CODE" -ne 0 ]]; then
+  echo "ASSERT FAILED: case 6 should exit 0 with --allow-chat-unavailable" >&2
+  exit 1
+fi
+assert_contains "$SLACK_FAIL_COMBINED" '"slack": "delivery_failed_http_'
+assert_not_contains "$SLACK_FAIL_COMBINED" "hooks.slack.com.test.invalid"
+
+# ── Case 7: Teams transport error → delivery_failed, URL not leaked to output ─
+set +e
+TEAMS_FAIL_COMBINED="$(unset SLACK_WEBHOOK_URL; TEAMS_WEBHOOK_URL="http://webhook.office.com.test.invalid/" run_helper --allow-chat-unavailable 2>&1)"
+TEAMS_FAIL_CODE=$?
+set -e
+if [[ "$TEAMS_FAIL_CODE" -ne 0 ]]; then
+  echo "ASSERT FAILED: case 7 should exit 0 with --allow-chat-unavailable" >&2
+  exit 1
+fi
+assert_contains "$TEAMS_FAIL_COMBINED" '"teams": "delivery_failed_http_'
+assert_not_contains "$TEAMS_FAIL_COMBINED" "webhook.office.com.test.invalid"
+
 # ── Secret redaction across all output ───────────────────────────────────────
 COMBINED_OUTPUT="$DRY_RUN_OUTPUT
 $MISSING_OUTPUT
 $FAIL_STDERR
 $SLACK_OUTPUT
-$TEAMS_OUTPUT"
+$TEAMS_OUTPUT
+$SLACK_FAIL_COMBINED
+$TEAMS_FAIL_COMBINED"
 
 assert_not_contains "$COMBINED_OUTPUT" "sk-"
 assert_not_contains "$COMBINED_OUTPUT" "pcp_"

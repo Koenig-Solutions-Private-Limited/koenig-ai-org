@@ -89,10 +89,10 @@ else
 {"text":"G4 approval queued for ${ISSUE_ID} (${APPROVAL_ID}). Review in Paperclip UI."}
 JSON
 )
-    SLACK_HTTP_CODE="$(curl -sS -o /dev/null -w '%{http_code}' \
+    SLACK_HTTP_CODE="$(curl -s --max-time 10 -o /dev/null -w '%{http_code}' \
       -H 'Content-Type: application/json' \
       --data "$slack_payload" \
-      "$SLACK_WEBHOOK_URL" || true)"
+      "$SLACK_WEBHOOK_URL" 2>/dev/null || true)"
     if [[ "$SLACK_HTTP_CODE" =~ ^2[0-9][0-9]$ ]]; then
       SLACK_STATUS="delivered"
     else
@@ -110,10 +110,10 @@ JSON
 {"text":"G4 approval queued for ${ISSUE_ID} (${APPROVAL_ID}). Review in Paperclip UI."}
 JSON
 )
-    TEAMS_HTTP_CODE="$(curl -sS -o /dev/null -w '%{http_code}' \
+    TEAMS_HTTP_CODE="$(curl -s --max-time 10 -o /dev/null -w '%{http_code}' \
       -H 'Content-Type: application/json' \
       --data "$teams_payload" \
-      "$TEAMS_WEBHOOK_URL" || true)"
+      "$TEAMS_WEBHOOK_URL" 2>/dev/null || true)"
     if [[ "$TEAMS_HTTP_CODE" =~ ^2[0-9][0-9]$ ]]; then
       TEAMS_STATUS="delivered"
     else
