@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   applyPaperclipWorkspaceEnv,
@@ -11,6 +12,18 @@ import {
 } from "./server-utils.js";
 
 function isPidAlive(pid: number) {
+  // On Linux, kill(pid,0) returns success even for zombie processes. Check /proc
+  // so that a zombie (effectively dead) is treated as not-alive.
+  if (process.platform === "linux") {
+    try {
+      const status = readFileSync(`/proc/${pid}/status`, "utf8");
+      const state = status.match(/^State:\s+(\S+)/m)?.[1];
+      if (state === "Z") return false;
+      return true;
+    } catch {
+      return false;
+    }
+  }
   try {
     process.kill(pid, 0);
     return true;
