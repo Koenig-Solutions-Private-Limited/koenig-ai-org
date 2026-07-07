@@ -4,12 +4,12 @@ author: blog-author
 ticket: KOEA-10383
 vendor_tag: openai
 content_type: article
-status: draft-for-review
+status: g0-passed
 reading_time_min: 12
 title: "OpenAI DevDay 2026 Is in 7 Days — What the June 30 AI Wave Tells Us About What's Coming"
 slug: openai-devday-2026-what-the-june-30-wave-signals
 tags: [openai, devday, agents-sdk, codex-cli, ai-events, academy-promo]
-seo_description: "OpenAI DevDay 2026 applications close July 10. Here's what GPT-5.6 Sol/Terra/Luna and Codex Micro signal about what's coming — and the Academy courses that prepare you for it."
+seo_description: "OpenAI DevDay 2026 applications close July 10. What GPT-5.6 Sol/Terra/Luna and Codex Micro signal about the June 30 wave - and the Academy courses to prep."
 publish_date: 2026-07-05
 primary_query: "OpenAI DevDay 2026 application deadline"
 contrarian_angle: "DevDay 2026 is less about surprise model theater and more about turning the June 30 developer wave into supported workflows: agents, Codex, realtime, and safety controls."
