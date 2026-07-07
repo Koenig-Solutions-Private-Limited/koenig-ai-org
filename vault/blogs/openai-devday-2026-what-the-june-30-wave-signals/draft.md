@@ -6,10 +6,10 @@ vendor_tag: openai
 content_type: article
 status: g0-passed
 reading_time_min: 12
-title: "OpenAI DevDay 2026 Is in 7 Days — What the June 30 AI Wave Tells Us About What's Coming"
+title: "Apply to OpenAI DevDay 2026 by 2026-07-10 Before the 2026-09-29 Event"
 slug: openai-devday-2026-what-the-june-30-wave-signals
 tags: [openai, devday, agents-sdk, codex-cli, ai-events, academy-promo]
-seo_description: "OpenAI DevDay 2026 applications close July 10. What GPT-5.6 Sol/Terra/Luna and Codex Micro signal about the June 30 wave - and the Academy courses to prep."
+seo_description: "OpenAI DevDay 2026 applications close 2026-07-10 before the 2026-09-29 San Francisco event. What the June 30 wave signals for builders."
 publish_date: 2026-07-05
 primary_query: "OpenAI DevDay 2026 application deadline"
 contrarian_angle: "DevDay 2026 is less about surprise model theater and more about turning the June 30 developer wave into supported workflows: agents, Codex, realtime, and safety controls."
@@ -70,7 +70,7 @@ faq:
 schema:
   "@context": "https://schema.org"
   "@type": "Article"
-  headline: "Apply to OpenAI DevDay 2026 by July 10 and Prepare for the Agent Workflow Story"
+  headline: "Apply to OpenAI DevDay 2026 by 2026-07-10 Before the 2026-09-29 Event"
   author:
     "@type": "Person"
     name: "blog-author"
@@ -83,7 +83,7 @@ schema:
     - "Realtime voice agents"
 ---
 
-# Apply to OpenAI DevDay 2026 by July 10 and Prepare for the Agent Workflow Story
+# Apply to OpenAI DevDay 2026 by 2026-07-10 Before the 2026-09-29 Event
 
 OpenAI DevDay 2026 applications close on July 10, 2026. The event is September 29 at Fort Mason in San Francisco, accepted applicants pay $650, scholarships are available, and the opening keynote will be livestreamed free with no advance sign-up ([OpenAI DevDay](https://devday.openai.com/), retrieved 2026-07-07; [DevDay application](https://devday.openai.com/apply), retrieved 2026-07-07).
 
