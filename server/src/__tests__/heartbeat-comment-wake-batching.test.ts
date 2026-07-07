@@ -741,13 +741,18 @@ describe("heartbeat comment wake batching", () => {
 
       gateway.releaseFirstWait();
 
-      await waitFor(() => gateway.getAgentPayloads().length === 2, 90_000);
+      // Only the first run reaches the adapter; the promoted deferred run is cancelled
+      // by the staleness check because the issue reached terminal status without resume intent.
       await waitFor(async () => {
         const runs = await db
-          .select()
+          .select({ status: heartbeatRuns.status, errorCode: heartbeatRuns.errorCode })
           .from(heartbeatRuns)
           .where(eq(heartbeatRuns.agentId, agentId));
-        return runs.length === 2 && runs.every((run) => run.status === "succeeded");
+        return (
+          runs.length === 2 &&
+          runs.some((r) => r.status === "succeeded") &&
+          runs.some((r) => r.status === "cancelled" && r.errorCode === "issue_terminal_status")
+        );
       }, 90_000);
 
       const issueAfterPromotion = await db
@@ -764,22 +769,8 @@ describe("heartbeat comment wake batching", () => {
       });
       expect(issueAfterPromotion?.completedAt).not.toBeNull();
 
-      const secondPayload = gateway.getAgentPayloads()[1] ?? {};
-      expect(secondPayload.paperclip).toMatchObject({
-        wake: {
-          reason: "issue_commented",
-          commentIds: [comment2.id],
-          latestCommentId: comment2.id,
-          issue: {
-            id: issueId,
-            identifier: `${issuePrefix}-1`,
-            title: "Reopen after deferred comment",
-            status: "done",
-            priority: "medium",
-          },
-        },
-      });
-      expect(String(secondPayload.message ?? "")).toContain("Please handle this follow-up after you finish");
+      // The deferred plain comment wake was cancelled — no second payload to the agent.
+      expect(gateway.getAgentPayloads()).toHaveLength(1);
     } finally {
       gateway.releaseFirstWait();
       await gateway.close();
@@ -1298,13 +1289,17 @@ describe("heartbeat comment wake batching", () => {
 
       gateway.releaseFirstWait();
 
-      await waitFor(() => gateway.getAgentPayloads().length === 2, 90_000);
+      // The mentioned agent's deferred wake is cancelled: issue is terminal (done) with no resume intent.
       await waitFor(async () => {
         const runs = await db
-          .select()
+          .select({ status: heartbeatRuns.status, errorCode: heartbeatRuns.errorCode })
           .from(heartbeatRuns)
           .where(eq(heartbeatRuns.companyId, companyId));
-        return runs.length === 2 && runs.every((run) => run.status === "succeeded");
+        return (
+          runs.length === 2 &&
+          runs.some((r) => r.status === "succeeded") &&
+          runs.some((r) => r.status === "cancelled" && r.errorCode === "issue_terminal_status")
+        );
       }, 90_000);
 
       const issueAfterPromotion = await db
@@ -1321,22 +1316,8 @@ describe("heartbeat comment wake batching", () => {
       });
       expect(issueAfterPromotion?.completedAt).not.toBeNull();
 
-      const secondPayload = gateway.getAgentPayloads()[1] ?? {};
-      expect(secondPayload.paperclip).toMatchObject({
-        wake: {
-          reason: "issue_comment_mentioned",
-          commentIds: [comment.id],
-          latestCommentId: comment.id,
-          issue: {
-            id: issueId,
-            identifier: `${issuePrefix}-1`,
-            title: "Do not reopen from agent mention",
-            status: "done",
-            priority: "medium",
-          },
-        },
-      });
-      expect(String(secondPayload.message ?? "")).toContain("please review after I finish");
+      // The cancelled mention wake never reached the adapter — only one payload delivered.
+      expect(gateway.getAgentPayloads()).toHaveLength(1);
     } finally {
       gateway.releaseFirstWait();
       await gateway.close();

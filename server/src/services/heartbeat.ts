@@ -4105,7 +4105,7 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
     }
 
     if (issue.status === "done" || issue.status === "cancelled") {
-      if (!resumeIntent && !wakeCommentId) {
+      if (!resumeIntent) {
         return {
           stale: true,
           errorCode: "issue_terminal_status",
