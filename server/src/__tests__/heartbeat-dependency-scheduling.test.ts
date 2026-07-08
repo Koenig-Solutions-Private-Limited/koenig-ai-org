@@ -40,12 +40,11 @@ const mockAdapterExecute = vi.hoisted(() =>
 
 vi.mock("../adapters/index.ts", async () => {
   const actual = await vi.importActual<typeof import("../adapters/index.ts")>("../adapters/index.ts");
+  const mockAdapter = { supportsLocalAgentJwt: false, execute: mockAdapterExecute };
   return {
     ...actual,
-    getServerAdapter: vi.fn(() => ({
-      supportsLocalAgentJwt: false,
-      execute: mockAdapterExecute,
-    })),
+    getServerAdapter: vi.fn(() => mockAdapter),
+    requireServerAdapter: vi.fn(() => mockAdapter),
   };
 });
 
