@@ -5,7 +5,7 @@ author: blog-author
 ticket: KOEA-9594
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: g0-passed
 reading_time_min: 6-8
 seo_description: "The Agent Name Service gives AI agents DNS-backed cryptographic identities. GoDaddy deployed it in Nov 2025. Identity is easy; authorization is unsolved."
 tags:
