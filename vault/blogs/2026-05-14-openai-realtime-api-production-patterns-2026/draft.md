@@ -79,7 +79,7 @@ The missed point is that Realtime is not a faster text-to-speech endpoint. [Cart
 
 ## How to Choose Realtime Over Whisper+TTS for Conversational Workloads
 
-```mermaid
+```mermaid title="Decision flow for choosing OpenAI Realtime API versus a Whisper plus TTS pipeline"
 flowchart TD
     A[Voice Agent Use Case] --> B{Live interruptions needed?}
     B -->|Yes| C{Tool calls mid-turn?}

@@ -79,7 +79,7 @@ faq:
 
 ## Multi-Step Agentic Planning: Why it isn't just a gimmick
 
-```mermaid
+```mermaid title="Benchmark score lift from GPT-5.4 to GPT-5.5 on Terminal-Bench and CyberGym"
 xychart-beta
     title "Benchmark Score Lift: GPT-5.4 (bar) → GPT-5.5 (line)"
     x-axis ["Terminal-Bench 2.0", "CyberGym Security"]

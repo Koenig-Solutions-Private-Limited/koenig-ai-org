@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-9593
 vendor_tag: anthropic
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 6
 seo_description: "Compare Claude Tag, Slack AI, and Copilot for Teams in 2026 by architecture, pricing, governance, and fit for enterprise developers."
 primary_query: "Claude Tag vs Slack AI vs Copilot for Teams enterprise 2026"

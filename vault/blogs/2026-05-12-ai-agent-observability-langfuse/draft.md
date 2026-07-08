@@ -109,7 +109,7 @@ The common pitch for Langfuse is "open source alternative to LangSmith." That un
 
 ## Key facts
 
-```mermaid
+```mermaid title="Langfuse self-hosted observability stack ingesting OTLP traces from coding agents"
 flowchart LR
     subgraph agents["Coding Agents — OTLP Emitters"]
         CC["Claude Code\nOTEL export via SDK"]

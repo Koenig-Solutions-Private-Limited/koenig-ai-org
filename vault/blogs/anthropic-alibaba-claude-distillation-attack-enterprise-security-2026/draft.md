@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-9972
 vendor_tag: anthropic
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 9-11
 target_word_count: 2300
 publish_date: 2026-06-26

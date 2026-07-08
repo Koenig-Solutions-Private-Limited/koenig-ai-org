@@ -77,7 +77,7 @@ Copy this to your team's runbook before your first deployment.
 
 ## What Changed at Google I/O 2026: Three APIs, Three Stability Tiers
 
-```mermaid
+```mermaid title="Gemini Managed Agents API preview architecture with background execution and polling"
 flowchart TD
     subgraph config["Agent Configuration"]
         F["AGENTS.md + SKILL.md\nVersioned behavior files"]
@@ -142,7 +142,7 @@ The **Antigravity SDK** is in preview. The Antigravity CLI fully replaces Gemini
 
 ## Should You Migrate to the Interactions API?
 
-```mermaid
+```mermaid title="Decision tree for choosing generateContent or the Gemini Interactions API"
 flowchart TD
     A[New agent workload] --> B{Need SLA guarantee?}
     B -->|Yes| C[Use generateContent\nstable, maintained, no breaking changes]

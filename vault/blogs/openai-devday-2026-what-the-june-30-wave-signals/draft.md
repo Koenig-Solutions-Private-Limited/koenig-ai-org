@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-10383
 vendor_tag: openai
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 12
 title: "Apply to OpenAI DevDay 2026 by 2026-07-10 Before the 2026-09-29 Event"
 slug: openai-devday-2026-what-the-june-30-wave-signals

@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-9597
 vendor_tag: openai
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 6-8
 title: "GPT-5.6 Sol Is Live — But the US Government Controls Who Gets Access in 2026"
 description: "OpenAI's GPT-5.6 Sol launched under a US government-managed access list — the first frontier model gated this way. Here is what the Trump executive order means for enterprise developers waiting for API access."

@@ -94,7 +94,7 @@ The mistake is treating this as a model leaderboard. Actually, the harness matte
 
 <figure>
 
-```mermaid
+```mermaid title="Decision tree for choosing Codex CLI or Cursor Composer 2 by steering mode"
 flowchart TD
     A[Which tool?] --> B{Is a human\nsteering live\nin the IDE?}
     B -->|Yes| C{Audit trail\nrequired?}
@@ -147,7 +147,7 @@ Do not run a giant subjective bakeoff. Run three small tasks in your own reposit
 
 <figure>
 
-```mermaid
+```mermaid title="Quadrant chart of automation intensity versus human steering for Codex CLI and Cursor Composer 2"
 quadrantChart
     title Automation Intensity vs Human Steering (2026)
     x-axis Low Human-Steering --> High Human-Steering

@@ -95,7 +95,7 @@ In May 2026, Anthropic and OpenAI quietly converged on an identical commercial s
 
 ## What changed in May 2026
 
-```mermaid
+```mermaid title="Decision flow for choosing Claude Max, ChatGPT Pro, or API metering"
 flowchart TD
     A["Developer or team needs AI capacity"] --> B{"Individual hits daily\nusage limits?"}
     B -->|"Yes — personal heavy use"| C{"Primary workflow?"}

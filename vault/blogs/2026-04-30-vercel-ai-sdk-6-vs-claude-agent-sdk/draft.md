@@ -78,7 +78,7 @@ To choose between Vercel AI SDK 6 and the Claude Agent SDK, ask one architectura
 
 ## How to Read the Key Facts Before Picking an SDK
 
-```mermaid
+```mermaid title="Decision flow for choosing Vercel AI SDK 6 or Claude Agent SDK by loop ownership"
 flowchart TD
     A["Choose Your Agent SDK"] --> B{"Who should own\nthe execution loop?"}
     B -->|"Your infrastructure:\nprovider portability · CI/CD\ncustom observability"| C["Vercel AI SDK 6\nnpm install ai @ai-sdk/anthropic\nToolLoopAgent on your infra"]

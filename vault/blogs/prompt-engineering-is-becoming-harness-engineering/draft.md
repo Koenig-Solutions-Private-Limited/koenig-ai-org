@@ -6,7 +6,7 @@ author: blog-author
 ticket: KOEA-6583
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 6-8
 primary_query: "prompt engineering vs harness engineering AI agents 2026"
 contrarian_angle: "The bottleneck was never your prompts — it was the absence of a system around them"

@@ -73,7 +73,7 @@ Most coverage will lead with the feature list. That's the wrong lens. Here's the
 
 ## The Four Priority Areas — What Changes for You
 
-```mermaid
+```mermaid title="MCP 2026 roadmap priorities and working group governance"
 flowchart TD
     A[MCP 2026 Roadmap] --> B["Working Group Governance\nSEP process · external contributors\nno single-vendor control"]
     A --> C[4 Priority Areas]

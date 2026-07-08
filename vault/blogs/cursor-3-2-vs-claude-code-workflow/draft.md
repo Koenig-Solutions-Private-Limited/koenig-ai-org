@@ -75,7 +75,7 @@ Cursor 3.2 is a major IDE release from Anysphere, shipped April 24, 2026, that r
 
 ## Why IDE-as-agent-runtime is the new standard
 
-```mermaid
+```mermaid title="Workflow decision split between Cursor 3.2 and Claude Code Agent SDK"
 flowchart LR
     A[Multi-file coding task] --> B{Where should the loop live?}
     B -->|"Interactive · visual diffs\nhuman-in-the-loop"| C["Cursor 3.2\n/multitask async subagents\nServer-side state persistence"]
