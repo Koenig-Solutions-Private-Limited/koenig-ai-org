@@ -3101,6 +3101,7 @@ export function IssueChatThread({
   const lastUserMessageIdRef = useRef<string | null>(null);
   const spacerBaselineAnchorRef = useRef<string | null>(null);
   const spacerInitialReserveRef = useRef(0);
+  const settleTimerIdsRef = useRef<number[]>([]);
   const [bottomSpacerHeight, setBottomSpacerHeight] = useState(0);
   const displayLiveRuns = useMemo(() => {
     const deduped = new Map<string, LiveRunForIssue>();
@@ -3348,6 +3349,12 @@ export function IssueChatThread({
     };
   }, [location.hash, messageAnchorIndex, messages, useVirtualizedThread]);
 
+  useEffect(() => {
+    return () => {
+      settleTimerIdsRef.current.forEach((id) => window.clearTimeout(id));
+    };
+  }, []);
+
   function jumpToLatestFallback() {
     if (useVirtualizedThread) {
       virtualizedThreadRef.current?.scrollToLatest({ behavior: "smooth" });
@@ -3383,9 +3390,11 @@ export function IssueChatThread({
 
     if (typeof window === "undefined") return;
 
+    settleTimerIdsRef.current.forEach((id) => window.clearTimeout(id));
+    settleTimerIdsRef.current = [];
     const settleDelays = [380, 760, 1140];
     settleDelays.forEach((delay) => {
-      window.setTimeout(() => {
+      const id = window.setTimeout(() => {
         const el = document.getElementById(latestCommentAnchor);
         if (el) {
           el.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -3399,6 +3408,7 @@ export function IssueChatThread({
           behavior: "auto",
         });
       }, delay);
+      settleTimerIdsRef.current.push(id);
     });
   }
 
