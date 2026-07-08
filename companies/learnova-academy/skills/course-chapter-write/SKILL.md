@@ -177,6 +177,8 @@ Required counts:
 - ≥1 Callout
 - ≥3 inline citations to primary sources
 - ≥1 explicit "What's next" pointer
+- Every body-level `![](...)` and `<img>` must have descriptive alt text (10-150 chars) describing what the image conveys. Decorative-only images use `alt=""` PLUS a comment line `<!-- decorative -->` immediately above OR a frontmatter `decorative: true` on the surrounding image block.
+- Any hand-written `hero_image` or `inline_images` frontmatter (not `auto:flux` sentinels) must include descriptive alt text (10-150 chars). Mermaid and SVG callouts also need alt text that describes what the diagram conveys.
 
 ### 5. Hand off
 
