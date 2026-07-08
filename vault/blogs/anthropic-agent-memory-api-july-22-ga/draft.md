@@ -1,7 +1,7 @@
 ---
 date: 2026-07-08
 title: "Decode Anthropic Agent Memory API before the July 22 launch (2026)"
-slug: "2026-07-08-anthropic-agent-memory-api-beta-header"
+slug: "anthropic-agent-memory-api-july-22-ga"
 author: blog-author
 ticket: KOEA-10538
 vendor_tag: anthropic
@@ -10,6 +10,7 @@ status: draft-for-review
 reading_time_min: 6
 primary_query: "Anthropic agent-memory-2026-07-22 beta header"
 contrarian_angle: "Anthropic's native memory does not kill vector memory vendors; it kills the infrastructure burden for most Claude-native agent use cases."
+seo_description: "What Anthropic's agent-memory-2026-07-22 beta header signals before July 22: SDK evidence, memory-store limits, audit controls, and where Mem0 or Zep still win."
 positions:
   - id: stance:ai-vendor-news-opinionated
     engagement: defends
@@ -26,7 +27,7 @@ faq:
 original_data: false
 last_updated: 2026-07-08
 hero_image:
-  url: /img/blogs/anthropic-agent-memory-api-beta-header/hero.png
+  url: /img/blogs/anthropic-agent-memory-api-july-22-ga/hero.png
   alt: "Claude Managed Agents memory store mounted as files with version history and July 22 beta header annotation"
 sources:
   - https://github.com/anthropics/anthropic-sdk-python/releases/tag/v0.116.0
@@ -47,11 +48,11 @@ learning_objectives:
 
 # Decode Anthropic Agent Memory API before the July 22 launch (2026)
 
-Anthropic's `agent-memory-2026-07-22` beta header is the strongest public signal that Agent Memory is being separated from the broader Managed Agents beta and prepared for a July 22, 2026 launch. The evidence is SDK-level, not a formal announcement: Python, TypeScript, and C# all added the same dated header on July 2.[^python][^ts][^csharp]
+Anthropic's `agent-memory-2026-07-22` beta header is the strongest public signal that Agent Memory is being separated from the broader Managed Agents beta and prepared for a July 22, 2026 launch. The evidence is SDK-level, not a formal announcement: Python, TypeScript, and C# all added the same dated header on July 2.[^python][^ts][^csharp] For production benchmark context, see KOEA-7007.
 
 The part most teams will miss is that this is less a "new memory feature" story than an infrastructure story. Anthropic already put Managed Agents memory into public beta on April 23 under `managed-agents-2026-04-01`.[^release] The new header suggests memory is becoming its own product surface. That matters because native memory removes the embedding service, vector database, sync worker, audit table, and custom prompt glue for a large class of Claude-native agents.
 
-![Annotated Claude memory lifecycle showing SDK beta header, memory store resource attachment, mounted files, and immutable versions](/img/blogs/anthropic-agent-memory-api-beta-header/agent-memory-lifecycle.png)
+![Annotated Claude memory lifecycle showing SDK beta header, memory store resource attachment, mounted files, and immutable versions](/img/blogs/anthropic-agent-memory-api-july-22-ga/agent-memory-lifecycle.png)
 
 ## Treat July 22 as a strong signal, not a confirmed press release
 
@@ -83,7 +84,9 @@ The contrarian take: Anthropic's memory API is not a Mem0 or Zep extinction even
 
 If your agent needs to remember "this customer prefers concise answers," "this codebase uses two-space indentation," or "this deployment run failed because the staging token was stale," native memory is the right shape. Files are inspectable. Updates can be versioned. Stores can be attached read-only or read-write per session. The memory lives where the agent already works.
 
-If your agent needs semantic retrieval across thousands of product docs or millions of facts, Anthropic's current model is not enough. The cookbook pattern is file-backed memory, not vector search.[^cookbook] AgentMarketCap's April survey describes the standalone memory vendors competing on different primitives: Mem0's vector, graph, and key-value mix; Zep's temporally aware graph; Letta's virtual context model; LangMem's LangGraph-native namespaces.[^market] Those systems still matter when similarity search and fact evolution are the core workload.
+Here is the architectural counterargument. If your agent needs semantic retrieval across thousands of product docs or millions of facts, Anthropic's current model is not enough. The cookbook pattern is file-backed memory, not vector search.[^cookbook] AgentMarketCap's April survey describes standalone vendors competing on different primitives: Mem0's vector, graph, and key-value mix; Zep's temporally aware graph; Letta's virtual context model; LangMem's LangGraph-native namespaces.[^market] Those systems still matter when similarity search and fact evolution are the core workload.
+
+The lock-in counterargument is separate. Native memory is convenient because it is native, and that can make switching harder. Enterprises should define export schemas early and avoid making Anthropic-only version identifiers or Dreams output the sole compliance record for workflows that may outlive one vendor.
 
 The practical split is:
 
@@ -94,8 +97,6 @@ The practical split is:
 | Large support corpus retrieval | Vector or graph memory plus Claude |
 | Multi-model agents across Claude, OpenAI, and Gemini | Vendor-neutral memory layer |
 | Compliance workflows needing portable audit evidence | Native memory plus explicit export plan |
-
-That last row is the lock-in counterargument. Native memory is convenient because it is native. The same fact makes switching harder. Enterprises should define export schemas early and avoid making Anthropic-only version identifiers the sole compliance record.
 
 ## Watch the audit trail and concurrency story
 
