@@ -1562,15 +1562,68 @@ export function extractWakeCommentIds(
   return out;
 }
 
-export function hasExplicitDeferredCommentReopenIntent(
-  deferredContextSeed: Record<string, unknown>,
-  deferredWakeReason: string | null,
-): boolean {
-  if (deferredWakeReason !== "issue_reopened_via_comment") return false;
-  if (deferredContextSeed.resumeIntent === true) return true;
-  if (deferredContextSeed.followUpRequested === true) return true;
-  if (readNonEmptyString(deferredContextSeed.reopenedFrom)) return true;
-  return false;
+type DeferredWakeCommentSnapshot = {
+  id: string;
+  authorAgentId: string | null;
+  authorUserId: string | null;
+  createdAt: Date;
+};
+
+export function isDeferredCommentWakeReopenWorthy(input: {
+  issueStatus: string;
+  assigneeAgentId: string | null;
+  deferredCommentIds: string[];
+  deferredWakeReason: string | null;
+  resumeIntent: boolean;
+  followUpRequested: boolean;
+  deferredComments: DeferredWakeCommentSnapshot[];
+  latestComment: DeferredWakeCommentSnapshot | null;
+}): boolean {
+  const isTerminalIssue = input.issueStatus === "done" || input.issueStatus === "cancelled";
+  const hasExplicitReopenIntent =
+    input.deferredWakeReason === "issue_reopened_via_comment" ||
+    input.resumeIntent ||
+    input.followUpRequested;
+
+  const baseReopenCandidate =
+    input.deferredCommentIds.length > 0 &&
+    isTerminalIssue &&
+    hasExplicitReopenIntent;
+
+  if (!baseReopenCandidate) return false;
+  if (input.deferredComments.length === 0) return false;
+
+  const deferredIdSet = new Set(input.deferredCommentIds);
+  const latestComment = input.latestComment;
+  if (!latestComment) return true;
+  if (deferredIdSet.has(latestComment.id)) return true;
+
+  const latestDeferredCreatedAt = input.deferredComments.reduce(
+    (max, row) => (row.createdAt > max ? row.createdAt : max),
+    input.deferredComments[0]!.createdAt,
+  );
+
+  const latestSupersedesDeferred =
+    latestComment.createdAt > latestDeferredCreatedAt ||
+    (
+      latestComment.createdAt.getTime() === latestDeferredCreatedAt.getTime() &&
+      !deferredIdSet.has(latestComment.id)
+    );
+
+  if (!latestSupersedesDeferred) return true;
+
+  if (
+    input.assigneeAgentId &&
+    latestComment.authorAgentId === input.assigneeAgentId
+  ) {
+    return false;
+  }
+
+  if (input.deferredWakeReason === "issue_reopened_via_comment") {
+    return true;
+  }
+
+  return Boolean(latestComment.authorUserId);
 }
 
 function mergeWakeCommentIds(...values: Array<unknown>): string[] {
@@ -6253,12 +6306,76 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
         }
         const deferredCommentIds = extractWakeCommentIds(deferredContextSeed);
         const deferredWakeReason = readNonEmptyString(deferredContextSeed.wakeReason);
-        // Only explicit route-level reopen intent should revive terminal issues.
-        // Plain issue_commented deferred wakes deliver comment context without status drift.
-        const shouldReopenDeferredCommentWake =
+        const deferredResumeIntent =
+          deferredContextSeed.resumeIntent === true || deferredContextSeed.followUpRequested === true;
+        const isTerminalIssue = issue.status === "done" || issue.status === "cancelled";
+        const deferredCommentRows =
+          deferredCommentIds.length > 0
+            ? await tx
+              .select({
+                id: issueComments.id,
+                authorAgentId: issueComments.authorAgentId,
+                authorUserId: issueComments.authorUserId,
+                createdAt: issueComments.createdAt,
+              })
+              .from(issueComments)
+              .where(
+                and(
+                  eq(issueComments.companyId, issue.companyId),
+                  eq(issueComments.issueId, issue.id),
+                  inArray(issueComments.id, deferredCommentIds),
+                ),
+              )
+            : [];
+        const latestCommentRow = await tx
+          .select({
+            id: issueComments.id,
+            authorAgentId: issueComments.authorAgentId,
+            authorUserId: issueComments.authorUserId,
+            createdAt: issueComments.createdAt,
+          })
+          .from(issueComments)
+          .where(
+            and(
+              eq(issueComments.companyId, issue.companyId),
+              eq(issueComments.issueId, issue.id),
+            ),
+          )
+          .orderBy(desc(issueComments.createdAt), desc(issueComments.id))
+          .limit(1)
+          .then((rows) => rows[0] ?? null);
+        // Only human/comment-reopen interactions should revive completed issues;
+        // system follow-ups such as retry or cleanup wakes must not reopen closed work.
+        const shouldReopenDeferredCommentWake = isDeferredCommentWakeReopenWorthy({
+          issueStatus: issue.status,
+          assigneeAgentId: issue.assigneeAgentId,
+          deferredCommentIds,
+          deferredWakeReason,
+          resumeIntent: deferredResumeIntent,
+          followUpRequested: deferredContextSeed.followUpRequested === true,
+          deferredComments: deferredCommentRows,
+          latestComment: latestCommentRow,
+        });
+        const hasExplicitReopenIntent =
+          deferredWakeReason === "issue_reopened_via_comment" || deferredResumeIntent;
+
+        if (
+          isTerminalIssue &&
           deferredCommentIds.length > 0 &&
-          (issue.status === "done" || issue.status === "cancelled") &&
-          hasExplicitDeferredCommentReopenIntent(deferredContextSeed, deferredWakeReason);
+          !hasExplicitReopenIntent
+        ) {
+          await tx
+            .update(agentWakeupRequests)
+            .set({
+              status: "skipped",
+              reason: "terminal_issue_passive_comment_wake",
+              finishedAt: new Date(),
+              updatedAt: new Date(),
+            })
+            .where(eq(agentWakeupRequests.id, deferred.id));
+          continue;
+        }
+
         let reopenedActivity: LogActivityInput | null = null;
 
         if (shouldReopenDeferredCommentWake) {
