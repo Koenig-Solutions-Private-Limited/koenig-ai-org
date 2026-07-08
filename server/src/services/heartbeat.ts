@@ -33,6 +33,7 @@ import {
   issueWorkProducts,
   projects,
   projectWorkspaces,
+  routineRuns,
   workspaceOperations,
 } from "@paperclipai/db";
 import { conflict, HttpError, notFound } from "../errors.js";
@@ -4105,7 +4106,7 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
     }
 
     if (issue.status === "done" || issue.status === "cancelled") {
-      if (!resumeIntent && !wakeCommentId) {
+      if (!resumeIntent) {
         return {
           stale: true,
           errorCode: "issue_terminal_status",
@@ -6135,6 +6136,7 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
       ? await resolveSessionBeforeForWakeup(recoveryAgent, taskKey)
       : null;
     const recoveryAgentNameKey = normalizeAgentNameKey(recoveryAgent?.name);
+    let routineExecutionAutoClosedIssueId: string | null = null;
 
     const promotionResult = await db.transaction(async (tx) => {
       if (contextIssueId) {
@@ -6171,6 +6173,37 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
             updatedAt: new Date(),
           })
           .where(eq(issues.id, issue.id));
+      }
+
+      if (
+        run.status === "succeeded" &&
+        issue.originKind === "routine_execution" &&
+        issue.assigneeAgentId === run.agentId &&
+        (issue.status === "in_progress" || issue.status === "todo")
+      ) {
+        const closedIssue = await issuesSvc.update(
+          issue.id,
+          { status: "done" },
+          tx,
+        );
+        if (closedIssue) {
+          issue = {
+            ...issue,
+            status: closedIssue.status,
+            identifier: closedIssue.identifier ?? issue.identifier,
+          };
+          routineExecutionAutoClosedIssueId = issue.id;
+          if (issue.originRunId) {
+            await tx
+              .update(routineRuns)
+              .set({
+                status: "completed",
+                completedAt: new Date(),
+                updatedAt: new Date(),
+              })
+              .where(eq(routineRuns.id, issue.originRunId));
+          }
+        }
       }
 
       while (true) {
@@ -6498,6 +6531,13 @@ export function heartbeatService(db: Db, options: HeartbeatServiceOptions = {}) 
         run: queuedRun,
       };
     });
+
+    if (routineExecutionAutoClosedIssueId) {
+      logger.info(
+        { issueId: routineExecutionAutoClosedIssueId, runId: run.id },
+        "auto-closed successful routine execution issue",
+      );
+    }
 
     if (promotionResult?.kind === "blocked") {
       await recovery.escalateStrandedAssignedIssue({
