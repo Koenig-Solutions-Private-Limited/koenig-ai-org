@@ -23,6 +23,34 @@ tags:
   - claude
   - tool-use
   - function-calling
+quiz:
+  - question: "In Claude's tool-use loop, which stop reason signals that the model is requesting a tool rather than producing a final answer?"
+    options:
+      - "`end_turn` — the model finished its response and no further action is needed by the host"
+      - "`tool_use` — the model returned a tool_use content block and the host must execute it"
+      - "`max_tokens` — the model hit its output limit and the call should be retried with more tokens"
+      - "`stop_sequence` — a custom stop string was matched and the conversation is now complete"
+    correct_idx: 1
+    explanation: "The Anthropic API uses stop_reason 'tool_use' when Claude returns a tool_use content block. 'end_turn' appears on final text answers. 'max_tokens' means the output budget was exhausted, and 'stop_sequence' means a custom delimiter was matched — neither signals a tool request."
+    section_anchor: the-mental-model-model-chooses-host-executes
+  - question: "What problem does omitting a required field from a tool's input schema create?"
+    options:
+      - "Claude refuses to call the tool and returns an error explaining the missing required field"
+      - "API latency increases because the server must infer the argument shape from surrounding context"
+      - "The model uses inconsistent field names across calls, breaking host-side argument parsing"
+      - "The tool's response is automatically blocked by the API's input safety classification layer"
+    correct_idx: 2
+    explanation: "Without a schema, Claude has no field-name contract and may send 'ticker', 'symbol', 'stock_code', or other variants across calls. Your host parser then either breaks or accepts loose input. A well-defined schema gives both Claude and your host the same contract so field names are stable."
+    section_anchor: why-input-schemas-are-not-optional
+  - question: "Which is an example of the 'over-broad tool' anti-pattern the chapter warns against?"
+    options:
+      - "`get_invoice_status(invoice_id)` — reads one invoice record scoped to a business identifier"
+      - "`list_open_support_cases(user_id)` — returns only the cases owned by the specified user"
+      - "`run_python(code)` — executes arbitrary Python code with no bounded business scope"
+      - "`lookup_stock_price(ticker)` — fetches one price quote from the demo portfolio price feed"
+    correct_idx: 2
+    explanation: "run_python(code) gives Claude a general-purpose execution primitive instead of a bounded business action. The other three tools are narrow and domain-specific: get_invoice_status, list_open_support_cases, and lookup_stock_price all constrain scope to a single identifiable business object."
+    section_anchor: common-first-failures
 ---
 
 # Introduction to Claude's Tool Use

@@ -34,6 +34,43 @@ sources:
   - https://github.com/modelcontextprotocol/servers
   - https://claude.com/blog/agent-capabilities-api
   - https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization
+quiz:
+  - question: "An MCP server registered under key `\"billing\"` exposes a tool named `charge_card`. What is its `allowedTools` identifier?"
+    options:
+      - "`billing::charge_card` — using the double-colon namespace separator convention"
+      - "`mcp__billing__charge_card` — following the double-underscore prefix pattern"
+      - "`@billing/charge_card` — adopting the scoped package notation from npm"
+      - "`mcp.billing.charge_card` — dot-separated namespacing like Python module paths"
+    correct_idx: 1
+    explanation: "MCP tools follow the pattern `mcp__<server-key>__<tool-name>`, where the server key is the dictionary key used in `mcpServers`, not the package name. This naming is also used for wildcards: `mcp__billing__*` grants all tools from that server."
+    section_anchor: the-mcp-naming-convention
+  - question: "Which MCP transport type spawns the server as a child process communicating over stdin/stdout?"
+    options:
+      - "HTTP — launches a local process on a port and calls it as a stateless REST endpoint"
+      - "SSE — opens a streaming local process that pushes server-sent events to the SDK"
+      - "stdio — the SDK spawns the server process and communicates via its standard I/O streams"
+      - "UNIX — routes through a Unix domain socket to a separately launched local process"
+    correct_idx: 2
+    explanation: "stdio is the most common transport for development and community-published servers (npm, PyPI). The SDK spawns the server as a child process and talks over its stdin/stdout. The default connection timeout is 60 seconds."
+    section_anchor: the-three-transport-types
+  - question: "A developer sets `permissionMode: \"acceptEdits\"` on their agent. Which tool category does this NOT auto-approve?"
+    options:
+      - "Write calls that create new files inside the project working directory tree"
+      - "Edit calls that make inline changes to existing source files already on disk"
+      - "MCP tool calls to external servers, which still require explicit `allowedTools` grants"
+      - "Glob and Grep searches across the project directory structure and subdirectories"
+    correct_idx: 2
+    explanation: "`acceptEdits` covers file-editing operations (Edit, Write) but does NOT extend to MCP tool calls. Every MCP tool must be granted explicitly via `allowedTools` using the `mcp__<server>__<tool>` pattern or a wildcard."
+    section_anchor: why-permissionmode-acceptedits-is-not-enough
+  - question: "When does the Claude Agent SDK report a failed MCP server connection, relative to tool execution?"
+    options:
+      - "Only after the first tool call fails, in a `ToolResultMessage` with a connection error"
+      - "At session end, in a final `ResultMessage` that lists all connection errors encountered"
+      - "In the `SystemMessage` with subtype `init`, before any tool call is attempted"
+      - "Synchronously at options construction time, before `query()` is even invoked as a generator"
+    correct_idx: 2
+    explanation: "Connection failures appear in the first event from `query()` — the `SystemMessage` with subtype `init`. The init message lists connected MCP servers and any servers that failed to connect, so you can detect and handle failures before attempting any tool calls."
+    section_anchor: detecting-connection-failures
 ---
 
 # MCP connector: orchestrating multi-server agents

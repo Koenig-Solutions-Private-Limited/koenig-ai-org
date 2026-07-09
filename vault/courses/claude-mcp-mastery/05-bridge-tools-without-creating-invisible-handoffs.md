@@ -48,6 +48,44 @@ sources:
   - "https://modelcontextprotocol.io/specification/2025-06-18/server/tools"
   - "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview"
   - "https://docs.blender.org/manual/en/latest/files/import_export/index.html"
+duration_min: 45
+quiz:
+  - question: "A Blender scene is exported to OBJ format for import into Autodesk Fusion. Which property is commonly lost in this format translation?"
+    options:
+      - "Object position and rotation data, which OBJ cannot represent and must be re-entered manually in Fusion"
+      - "The full material shader graph — OBJ carries material slot names but not procedural or node-based definitions"
+      - "Polygon face count and UV coordinates, which are stripped by the OBJ exporter to reduce the file size"
+      - "Scene camera and lighting data, which are always omitted from geometry-focused export formats like OBJ"
+    correct_idx: 1
+    explanation: "OBJ and FBX carry material slot names but not full shader graphs. A 'Glass' material in Blender exports as an empty slot named 'Glass' in Fusion — the node tree, shader parameters, and procedural data are lost. Geometry (position, rotation, topology) typically survives; material shader definitions do not, making them the most common source of visible defects in 3D-to-render pipelines."
+    section_anchor: what-must-survive-a-cross-tool-handoff
+  - question: "What is the purpose of an explicit checkpoint in a cross-tool connector chain?"
+    options:
+      - "A named pause where the human verifies what the source tool exported, what Claude changed, and who approved it before the next step"
+      - "An automated validation step where the connector checks that the file size did not increase beyond a defined threshold"
+      - "A prompt Claude sends to the next connector in the chain to confirm the previous step completed without errors"
+      - "A license check that runs automatically when an asset crosses a tool boundary to verify rights before export"
+    correct_idx: 0
+    explanation: "An explicit checkpoint is a human-owned gate between connector steps. It records what the source tool exported, what Claude changed, what format carries the asset forward, and who verified it before the next tool ran. Without checkpoints, connector calls chain invisibly and a defect introduced in step 2 may not surface until final delivery."
+    section_anchor: design-a-connector-chain-with-explicit-checkpoints
+  - question: "When exporting audio from Ableton for a cross-tool handoff, why should you export as WAV or AIFF rather than MP3?"
+    options:
+      - "WAV and AIFF support longer file names, making them easier to track across connector session audit logs"
+      - "MP3 is lossy and irreversible — lossless export preserves full quality for any downstream processing the next tool may require"
+      - "Ableton's connector requires WAV or AIFF to create a valid tool call for the receiving connector in the chain"
+      - "MP3 export is restricted by Splice licensing terms whenever licensed samples are present in the Ableton session"
+    correct_idx: 1
+    explanation: "MP3 encoding is lossy — it permanently discards audio data that cannot be recovered. A 24-bit 48 kHz source compressed to MP3 degrades quality for any downstream tool that re-processes the audio (pitch correction, reverb, further compression). Export lossless WAV or AIFF for all cross-tool handoffs; transcode to MP3 only at the final delivery step."
+    section_anchor: what-must-survive-a-cross-tool-handoff
+  - question: "Splice sample licenses are issued per-user, not per-project. What must you verify before exporting an audio deliverable that includes a Splice sample?"
+    options:
+      - "That the sample was downloaded after the current license plan activated, so the plan version covers its use"
+      - "That the project BPM and key match the Splice sample's listed metadata to confirm correct usage of the audio"
+      - "That the license terms permit using the sample in a rendered deliverable for the specific client or commercial context"
+      - "That the sample appears in your Splice library as 'owned' and not as 'preview' before including it in an export"
+    correct_idx: 2
+    explanation: "Splice licenses are per-user and cover the licensed user's creative work, but specific terms govern permitted deliverable contexts — a sync license for a commercial campaign may require additional clearance beyond a base Splice subscription. Before any cross-tool audio export including a Splice sample goes to a client, verify the license scope covers that specific commercial use."
+    section_anchor: protect-licensed-assets-across-the-chain
 ---
 
 # Bridge tools without creating invisible handoffs

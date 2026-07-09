@@ -56,6 +56,34 @@ faq:
     answer: "Deterministic controls—regexes, checksums, or dedicated PII-detection services—apply consistent, auditable transformations before sensitive material reaches the model. Asking an LLM to 'ignore' PII after seeing it is a probabilistic approach prone to silent failure. NIST SP 800-122 frames PII confidentiality as a lifecycle risk-control problem, not a prompt-instruction problem [6]."
   - question: "What is the difference between a legal MCP connector and a practice-area plugin?"
     answer: "A connector is the technical bridge to a specific platform—such as Everlaw for e-discovery or iManage for document management—providing permission-scoped, auditable access to data. A practice-area plugin is the domain-specific workflow package: the Setup Interview, prompts, guardrails, and escalation logic a legal team runs on top of one or more connectors to produce consistent, repeatable legal work [3][4]."
+quiz:
+  - question: "What problem does MCP's query-in-place model solve for legal workflows?"
+    options:
+      - "It eliminates the need for matter-scoped authorization by granting Claude shared read permissions"
+      - "It allows Claude to query legal systems without bulk-exporting sensitive matter files from governed infrastructure"
+      - "It provides automatic PII redaction before any sensitive legal content reaches the model context"
+      - "It transfers legal document storage to Anthropic's servers for lower-latency inference performance"
+    correct_idx: 1
+    explanation: "Query-in-place means Claude retrieves targeted context from e-discovery platforms, contract repositories, and document management systems without bulk-exporting underlying files. Sensitive matter data stays within the firm's governed infrastructure. The connector does not eliminate authorization requirements, provide automatic redaction, or move documents to Anthropic."
+    section_anchor: why-legal-connectors-matter-the-stakes-of-data-bound
+  - question: "Why is deterministic redaction required rather than instructing the LLM to ignore PII in legal documents?"
+    options:
+      - "LLMs lack the context window capacity to process unredacted legal documents of typical enterprise length"
+      - "Deterministic controls apply consistent, auditable transformations before sensitive data reaches the model"
+      - "The MCP protocol specification explicitly prohibits passing PII in tool response payload fields"
+      - "Anthropic's API charges a higher inference rate for requests that contain personal identifiers"
+    correct_idx: 1
+    explanation: "Deterministic controls — regex patterns, checksum verification, PII-detection services — apply consistent, auditable transformations every time. Asking an LLM to 'ignore' PII is a probabilistic approach prone to silent failure. NIST SP 800-122 frames PII confidentiality as a lifecycle risk-control problem, not a prompt-instruction problem."
+    section_anchor: designing-compliance-first-tool-definitions
+  - question: "What distinguishes a legal MCP connector from a practice-area plugin?"
+    options:
+      - "A connector packages domain workflow skills and prompts; a plugin is the technical platform bridge"
+      - "A connector bridges Claude to a specific legal platform; a plugin packages domain workflow skills and agents"
+      - "Connectors are available only on free tiers; plugins require enterprise licensing agreements to access"
+      - "Connectors deliver prompts and guardrails; plugins deliver only low-level raw API bindings"
+    correct_idx: 1
+    explanation: "The claude-for-legal repository distinguishes connector infrastructure (the technical bridge to platforms like Everlaw or iManage) from plugin workflow packages (the Setup Interview, prompts, guardrails, and escalation logic for a practice area). Plugins sit on top of connectors. Licensing tier and scope of prompts are not the distinguishing criterion."
+    section_anchor: key-facts
 ---
 
 # Chapter 8: Legal and Regulatory Connectors in MCP

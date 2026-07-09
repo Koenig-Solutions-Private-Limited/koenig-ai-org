@@ -26,6 +26,43 @@ tags:
   - marginal-roas
   - google-ads
   - meta-ads
+quiz:
+  - question: "A Google branded campaign has a 7x average ROAS and a 1.5x marginal ROAS. A Meta prospecting campaign has a 2x average ROAS and a 4x marginal ROAS. Where should you add the next ₹1L of budget?"
+    options:
+      - "Google branded — higher average ROAS means more efficient spend"
+      - "Meta prospecting — higher marginal ROAS means the next rupee earns more there"
+      - "Split equally between both channels to diversify risk"
+      - "Neither — average and marginal ROAS must both agree before increasing spend"
+    correct_idx: 1
+    explanation: "Marginal ROAS is the correct signal for where the next rupee earns more. Average ROAS reflects past performance on already-spent budget, not future incremental return. Meta at 4x marginal beats Google at 1.5x marginal regardless of average."
+    section_anchor: marginal-roas-the-correct-allocation-signal
+  - question: "You're managing a Google Ads account with a daily campaign budget of ₹10,000. What is the maximum Google can spend in a single day without violating the monthly cap?"
+    options:
+      - "₹10,000 — Google never exceeds the daily budget in any single day"
+      - "₹20,000 — Google can spend up to 2x the daily budget on high-demand days"
+      - "₹3,04,000 — the full monthly equivalent can be spent on one day"
+      - "₹15,000 — Google can spend up to 1.5x the daily budget on peak days"
+    correct_idx: 1
+    explanation: "Google's 2x daily allowance is a documented feature. Up to double the daily budget can be spent on high-demand days, offset by lower-spend days, with the monthly cap (daily × 30.4) as the hard ceiling."
+    section_anchor: budget-hierarchy-how-controls-are-structured
+  - question: "In Meta Ads, what is the fundamental difference between ABO and CBO?"
+    options:
+      - "ABO sets budgets per ad set; CBO sets a campaign-level budget and lets Meta allocate across ad sets"
+      - "ABO is reserved for app-install campaigns; CBO is for website conversion campaigns"
+      - "ABO requires manual CPC bidding; CBO uses only automated bidding strategies"
+      - "ABO and CBO are two names for the same Meta budget management feature"
+    correct_idx: 0
+    explanation: "ABO (Ad Set Budget Optimisation) gives you per-ad-set control. CBO (Campaign Budget Optimisation, also called Advantage+ Budget) sets one campaign-level budget and Meta's system allocates dynamically across ad sets based on real-time performance signals."
+    section_anchor: budget-hierarchy-how-controls-are-structured
+  - question: "Why do industry ROAS benchmarks (e.g. '3x is good for e-commerce') become unreliable at large budget scales?"
+    options:
+      - "Larger accounts pay higher CPMs that mechanically reduce observed ROAS"
+      - "At scale, attribution overlap inflates reported ROAS and organic demand creates conversions that would have happened without ads"
+      - "ROAS benchmarks are only calibrated for accounts under ₹10L/month of spend"
+      - "Benchmarks assume manual bidding; automated bidding produces structurally different ROAS ranges"
+    correct_idx: 1
+    explanation: "At scale, the same conversion is attributed by multiple channels simultaneously, and high organic brand awareness means many conversions occur regardless of ad exposure. Both inflate reported ROAS above the true incremental return, making benchmarks misleading."
+    section_anchor: why-roas-benchmarks-mislead-without-incrementality-context
 ---
 
 # The Cross-Channel Budget Mental Model — Marginal ROAS and Diminishing Returns

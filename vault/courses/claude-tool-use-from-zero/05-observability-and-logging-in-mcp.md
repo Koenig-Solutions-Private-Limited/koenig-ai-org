@@ -27,6 +27,34 @@ tags:
   - mcp
   - observability
   - logging
+quiz:
+  - question: "Which event belongs in an audit log rather than an operational log?"
+    options:
+      - "A timeout reading the refund-policy config file after two seconds of network delay"
+      - "A high-latency directory listing that took 800ms due to a cold file-system cache"
+      - "A user approving the send_invoice_reminder action in the invoice approval workflow UI"
+      - "A connection pool exhaustion error that triggered an automatic retry on the database"
+    correct_idx: 2
+    explanation: "A user approving a customer-facing send is a sensitive business action that compliance reviewers need to reconstruct — it belongs in an audit log. Timeouts, latency spikes, and connection retries are operational signals that help engineers debug reliability; they go in operational logs."
+    section_anchor: operational-logs-vs-audit-events
+  - question: "What must the `input_summary` field in an MCP tool log event contain?"
+    options:
+      - "The full raw input object, including all credential fields and customer record values"
+      - "A sanitized summary of the input that omits secrets, credentials, and private data"
+      - "Only the tool name and the stop reason from the upstream API response header"
+      - "A SHA-256 hash of the full input payload for downstream integrity verification"
+    correct_idx: 1
+    explanation: "input_summary must be a sanitized version — the raw input may contain API keys, customer names, or financial data that creates a second incident if written to logs. The other options either expose sensitive data (raw input), lose the input entirely (tool name only), or create an opaque audit trail (hash only)."
+    section_anchor: the-minimum-useful-log-event
+  - question: "Why should observability logic be added via a logging wrapper rather than copied into each tool handler?"
+    options:
+      - "Wrappers run before the tool definition is registered in the server's capability list"
+      - "The MCP transport specification prohibits direct logging calls inside individual tool handlers"
+      - "Consistent event shape across all tools makes the log stream searchable and correlatable"
+      - "Individual tool handlers cannot access the request_id correlation identifier by design"
+    correct_idx: 2
+    explanation: "When every handler copies its own logging code, small differences accumulate: field names drift, some handlers miss duration_ms, others forget error_code. A wrapper enforces the same event shape for every tool automatically. Consistency is what makes logs searchable — not merely the presence of log statements."
+    section_anchor: add-a-wrapper
 ---
 
 # Observability and Logging in MCP

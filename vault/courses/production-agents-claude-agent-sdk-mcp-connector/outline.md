@@ -2,6 +2,7 @@
 course_slug: production-agents-claude-agent-sdk-mcp-connector
 title: "Production Agents with Claude Agent SDK + MCP Connector"
 status: awaiting-g0
+course_track: career
 author: course-author
 agent_drafted_by: course-author
 date: 2026-04-30
@@ -30,6 +31,7 @@ sources:
   - https://code.claude.com/docs/en/agent-sdk/overview
   - https://platform.claude.com/docs/en/managed-agents/overview
   - https://platform.claude.com/docs/en/build-with-claude/files
+tags: [claude-agent-sdk, mcp, production-agents, career]
 ---
 
 # Production Agents with Claude Agent SDK + MCP Connector
@@ -41,6 +43,11 @@ April 2026 was a turning point for Claude-based agents. Anthropic shipped three 
 This course is built from primary documentation, not blog summaries. Every code example is drawn from the official Agent SDK docs, the Managed Agents quickstart, and the Files API reference. By the end you will have shipped a working production agent that orchestrates multiple MCP servers, manages files across sessions, and includes the observability and cost controls you need to stay out of trouble.
 
 There's also a contrarian thread running through each chapter: the defaults aren't always safe, the pricing model rewards different patterns than you'd expect, and MCP's "ecosystem" is still rough around the edges. We'll name all of it.
+
+## Career relevance
+
+**Why this matters for your career:** Production Claude Agent SDK skills — MCP orchestration, Files API management, and cost circuit breakers — are the gap separating mid-level backend developers from senior AI-infrastructure engineers at companies building agent platforms in 2026.
+Owning this full stack, from SDK migration through production observability hooks, directly maps to "Agent Platform Engineer" and "AI Infrastructure" roles at companies scaling their Claude deployments.
 
 ## Course outline
 

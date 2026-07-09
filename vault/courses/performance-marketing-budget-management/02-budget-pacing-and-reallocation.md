@@ -28,6 +28,34 @@ tags:
   - budget-management
   - google-ads
   - meta-ads
+quiz:
+  - question: "Your Google campaign has a daily budget of ₹20,000. On a high-traffic day, Google spends ₹37,000. Is this a billing error?"
+    options:
+      - "Yes — Google is contractually obligated to never exceed the daily budget"
+      - "Yes — Google can spend at most 1.5x the daily budget on any single day"
+      - "No — Google can spend up to 2x the daily budget on high-demand days as long as the monthly cap is respected"
+      - "No — Google can spend any amount on a single day as long as the weekly cap is respected"
+    correct_idx: 2
+    explanation: "Google's 2x daily allowance is a documented feature. Up to double the daily budget can be spent on high-demand days, offset by lower-spend days, with the monthly cap (daily × 30.4) as the hard limit. ₹37,000 on a ₹20,000 daily budget is within allowed range."
+    section_anchor: how-googles-2x-daily-allowance-works
+  - question: "It's the 15th of the month. Your Google Search campaign has spent ₹9L of its ₹20L monthly budget. At the current daily rate, you're tracking to spend only ₹18L by month-end. What is the most accurate description of the situation?"
+    options:
+      - "The campaign is underspending; double the daily budget immediately to make up lost ground"
+      - "The campaign is underspending by ~10%; investigate bidding, impression share, or seasonality before adjusting"
+      - "The campaign is on track — a slight underspend on day 15 is always within normal variance and requires no action"
+      - "The campaign has a conversion tracking error causing artificially low spend signals"
+    correct_idx: 1
+    explanation: "A ~10% projected underspend on day 15 warrants investigation but not an immediate large budget increase. Check impression share, Quality Score, and bid competitiveness before changing the budget to avoid triggering a learning phase reset."
+    section_anchor: the-weekly-budget-review-a-practical-checklist
+  - question: "You're managing a Google Ads tROAS campaign performing at 4.2x ROAS against a 3.5x target. You need to increase its monthly budget by ₹5L (currently ₹15L/month). How should you approach the increase?"
+    options:
+      - "Increase the daily budget by the full equivalent in one change to maximise immediate impact"
+      - "Make the increase over 5–7 days in ~15% daily increments to avoid triggering a learning phase reset"
+      - "Pause the campaign, update the budget, then restart — this is the safest way to avoid learning disruption"
+      - "Increase Meta budgets instead and accept that Google Smart Bidding handles large changes without learning impact"
+    correct_idx: 1
+    explanation: "Gradual increases of ~10–15% per change protect the Smart Bidding learning phase. A large single jump on a well-performing campaign risks resetting the algorithm's recent conversion history and causing a week or more of degraded performance."
+    section_anchor: reallocating-mid-flight-without-disrupting-learning-phases
 ---
 
 # Budget Pacing, Reallocation Cadences, and Mid-Flight Decisions

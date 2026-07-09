@@ -44,6 +44,44 @@ sources:
   - "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview"
   - "https://blog.adobe.com/en/publish/2026/04/28/adobe-for-creativity-connector"
   - "https://developer.adobe.com/adobe-for-creativity"
+duration_min: 45
+quiz:
+  - question: "Anthropic describes Adobe for creativity as drawing from how many Creative Cloud tools in the 2026 connector launch?"
+    options:
+      - "Nine tools — matching the total number of named connectors in Anthropic's Claude for Creative Work announcement"
+      - "More than fifty tools — making Adobe for creativity the broadest-scope connector in the launch"
+      - "Three tools — Photoshop, Premiere Pro, and Express, which are the core Creative Cloud production apps"
+      - "Twenty-five tools — the subset of Creative Cloud apps that support scripting and batch automation"
+    correct_idx: 1
+    explanation: "Anthropic describes Adobe for creativity as drawing from 50+ Creative Cloud tools — broader than any single-API connector like Blender. The production discipline in response is to scope every connector session to one specific tool, one file, and one action type, rather than trying to use the full breadth at once."
+    section_anchor: understand-what-the-adobe-connector-exposes
+  - question: "A campaign workflow touches Photoshop for compositing, Illustrator for vector assets, and Premiere Pro for the video cut. How should these be handled?"
+    options:
+      - "Run all three in a single connector prompt — Adobe for creativity can orchestrate across apps at the same time"
+      - "Treat each app as a separate tool boundary with its own scoped prompt and a human review gate between them"
+      - "Start in Premiere Pro because the video timeline sets constraints that drive the Photoshop and Illustrator work"
+      - "Combine Photoshop and Illustrator in one prompt since both handle visual assets, then add Premiere in a second call"
+    correct_idx: 1
+    explanation: "Each Creative Cloud application has a different file format, layer model, and destructive-risk profile. One app per connector prompt, each followed by a human review gate, is the production discipline. A multi-app prompt hides scope and makes rollback difficult — the connector might change Photoshop files before a Premiere scope error is detected."
+    section_anchor: separate-tasks-into-distinct-tool-boundaries
+  - question: "Which Photoshop operation is non-destructive and therefore safer as a connector-assisted edit?"
+    options:
+      - "Flattening all layers to a single raster background to produce a clean base for subsequent connector adjustments"
+      - "Rasterizing a Smart Object before applying a filter so the connector can access raw pixel data directly"
+      - "Adding an Adjustment Layer above the base content to apply color grading that can be removed or revised later"
+      - "Merging visible layers into a single composite so the connector can apply effects uniformly across the image"
+    correct_idx: 2
+    explanation: "Adjustment Layers, Smart Objects, and masks are non-destructive — they apply effects above base layers and can be removed without touching original pixel data. Flattening, rasterizing, and merging are destructive and irreversible once the file is saved. Non-destructive operations preserve rollback and are the safe default for any connector-assisted Photoshop edit."
+    section_anchor: recognize-destructive-operations-before-they-run
+  - question: "What is the correct way to communicate brand constraints in an Adobe connector prompt?"
+    options:
+      - "Reference the studio's shared brand guide URL and ask Claude to retrieve and apply the relevant values"
+      - "Name constraints explicitly in the prompt — hex values, exact font names, logo safe zones, and restricted image categories"
+      - "Describe the brand mood ('warm, premium, modern') and let the connector interpret and apply appropriate values"
+      - "Include a sample approved asset and ask Claude to match it without listing individual constraint values"
+    correct_idx: 1
+    explanation: "Brand constraints must be named explicitly — hex color values, font names and weights, logo safe-zone measurements, and prohibited content categories. Claude cannot infer your brand guide from a URL or a mood description. In a connector session, unspecified constraints lead to outputs that must be rejected after the fact, wasting both session time and review cycles."
+    section_anchor: write-prompts-that-preserve-brand-constraints
 ---
 
 # Use Adobe Creative Cloud connectors as production assistants

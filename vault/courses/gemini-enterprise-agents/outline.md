@@ -2,7 +2,8 @@
 course_slug: gemini-enterprise-agents
 slug: gemini-enterprise-agents
 title: "How to build production Gemini Enterprise agents with routing, lifecycle, and governance in 8 chapters"
-status: awaiting-g0
+status: g0-passed
+course_track: career
 last_delta: 2026-05-28
 last_delta_reason: "R2 G0 fixes: make routing and lifecycle the spine of the course; separate Gemini Enterprise app, Agent Platform, Vertex AI Agent Engine, ADK, and A2A responsibilities."
 author: course-author
@@ -47,6 +48,10 @@ sources:
 ---
 
 # Course outline
+
+## Why this matters for your career
+
+Engineers who can design, secure, and operate production Gemini Enterprise Agent systems — routing, lifecycle, governance, and cost — are positioned for cloud AI architect and senior platform engineering roles. This course builds that system from scratch, making every production decision traceable to code, cost, and audit evidence.
 
 ## Why this course
 

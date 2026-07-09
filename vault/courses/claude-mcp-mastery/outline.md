@@ -5,6 +5,7 @@ author: content-author
 vendor_tag: anthropic
 content_type: course-outline
 status: g3-passed
+course_track: career
 reading_time_min: 6
 course_slug: claude-mcp-mastery
 title: "Use Claude with creative MCP connectors in production"
@@ -34,6 +35,10 @@ related_courses:
 ---
 
 # Use Claude with creative MCP connectors in production
+
+## Why this matters for your career
+
+Creative technologists who can operate Claude MCP connectors with bounded prompts and explicit checkpoints are ahead of teams still managing manual cross-tool handoffs. This course converts connector discipline into a portable skill set — reviewable scripts, audit-ready workflows, and production checklists — that applies across every tool in the 2026 launch and transfers to any future connector surface.
 
 ## Why this course exists
 

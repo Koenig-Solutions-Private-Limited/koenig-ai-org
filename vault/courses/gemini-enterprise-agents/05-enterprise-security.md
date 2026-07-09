@@ -44,6 +44,43 @@ positions:
     engagement: "defends"
 course_schema_exception: "Security chapter uses bash/gcloud CLI exercises unsuitable for in-browser RunPromptCell; hands-on exercise in section 6 replaces interactive cells"
 scope_note: "OpenAI TAC content scoped out per KOEA-2242 — GEAP-only chapter"
+quiz:
+  - question: "A GEAP agent needs read access to a specific Cloud Storage bucket. What is the recommended IAM approach?"
+    options:
+      - "Create a dedicated service account, grant bucket read access, and attach it to the agent at deploy time"
+      - "Bind the storage read role to the agent's auto-issued SPIFFE ID with a condition scoping it to that bucket"
+      - "Hard-code storage credentials in the agent's instruction string so the agent can authenticate directly"
+      - "Use a shared project-level service account so all agents in the project inherit the same bucket access"
+    correct_idx: 1
+    explanation: "GEAP automatically issues a SPIFFE-formatted ID to every deployed agent. Binding IAM roles to the SPIFFE ID with an IAM condition restricting scope to the specific bucket is the least-privilege, audit-ready pattern. Shared service accounts produce ambiguous audit trails."
+    section_anchor: control-1-agent-identity-and-iam
+  - question: "You are doing a shadow rollout of Model Armor for an invoice processing agent. What is the correct deployment sequence?"
+    options:
+      - "Start in BLOCK mode to enforce controls immediately, then switch to OBSERVE if false positives appear"
+      - "Start in OBSERVE mode to measure false-positive rates, then switch to BLOCK mode for production enforcement"
+      - "Deploy BLOCK mode exclusively and tune the exception list before the rollout begins across all agents"
+      - "Run BLOCK and OBSERVE simultaneously using two separate Gateway policies on the same agent group"
+    correct_idx: 1
+    explanation: "OBSERVE mode lets you measure false-positive rates on your specific tool inputs before enforcement. Switch to BLOCK once the exception list is validated. Leaving Model Armor in OBSERVE indefinitely defeats its purpose."
+    section_anchor: control-2-agent-gateway-and-model-armor
+  - question: "An agent reads a user's Google Drive folder during an invoice workflow. Which OAuth flow ensures the folder is accessed with the user's own permissions?"
+    options:
+      - "Two-legged OAuth, where the agent authenticates as itself and requests Drive access for all users"
+      - "Three-legged OAuth via Agent Identity Auth Manager, so tool calls carry the user's delegated credential"
+      - "A service account with domain-wide delegation that grants the agent Drive access across all users"
+      - "No OAuth — the agent should use the Drive API with an API key scoped to project-level access only"
+    correct_idx: 1
+    explanation: "Three-legged OAuth lets the agent act on behalf of the specific user with their own permissions. The audit log records both the agent's SPIFFE ID and the delegated user identity. Two-legged OAuth and domain-wide delegation grant the agent excessive access."
+    section_anchor: control-3-user-delegated-oauth-via-agent-identity-auth-manager
+  - question: "Which GCP services must be included in a VPC Service Controls perimeter for a minimal GEAP deployment?"
+    options:
+      - "Only aiplatform.googleapis.com, since Agent Runtime is the primary service that processes user data"
+      - "aiplatform, agentengine, storage, bigquery, and secretmanager — missing any one creates a data-exfiltration path"
+      - "All GCP services in the project, because VPC-SC perimeters cannot protect only a subset of services"
+      - "No GCP services, because Agent Gateway already enforces egress controls at the application layer"
+    correct_idx: 1
+    explanation: "A minimal GEAP perimeter must cover aiplatform, agentengine, storage, bigquery (if in scope), and secretmanager. Missing any one creates a data-exfiltration path that bypasses IAM and defeats the perimeter."
+    section_anchor: control-4-vpc-service-controls-and-private-connectivity
 ---
 
 # Enterprise Security: CISO-Defensible Agent Deployments

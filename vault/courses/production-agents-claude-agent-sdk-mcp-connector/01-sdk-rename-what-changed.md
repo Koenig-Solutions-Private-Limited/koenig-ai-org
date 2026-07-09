@@ -35,6 +35,43 @@ sources:
   - https://platform.claude.com/docs/en/managed-agents/overview
   - https://github.com/anthropics/claude-agent-sdk-typescript/blob/main/CHANGELOG.md
   - https://docs.claude.com/en/docs/claude-code/sdk/migration-guide
+quiz:
+  - question: "Which npm package name replaced `@anthropic-ai/claude-code` in the April 2026 Agent SDK rename?"
+    options:
+      - "`@anthropic-ai/claude-agent-sdk` — the officially renamed package for TypeScript agents"
+      - "`@anthropic-ai/agent-runtime` — the new package for server-side agent orchestration"
+      - "`@anthropic-ai/claude-platform` — Anthropic's platform SDK for API-first integrations"
+      - "`@anthropic-ai/autonomous-sdk` — the general-purpose autonomous agent package"
+    correct_idx: 0
+    explanation: "The npm package renamed from `@anthropic-ai/claude-code` to `@anthropic-ai/claude-agent-sdk`; the PyPI package renamed from `claude-code-sdk` to `claude-agent-sdk`. These are the only import changes required — the `query()` API signature is unchanged."
+    section_anchor: installing-the-renamed-sdk
+  - question: "What is the last message type yielded by `query()` when the agent finishes a task?"
+    options:
+      - "`ResultMessage` — contains the final answer, total token usage, and session ID"
+      - "`AssistantMessage` — the last model turn's text response with a `final: true` flag"
+      - "`SystemMessage` with subtype `shutdown`, signaling the session has been closed"
+      - "`ToolResultMessage` — a synthesized summary of all prior tool execution results"
+    correct_idx: 0
+    explanation: "`ResultMessage` is always the last event from `query()`. It carries the synthesized answer, cumulative token usage, and the session ID — use it to capture the session ID for future `resume` calls."
+    section_anchor: the-query-api-in-2-minutes
+  - question: "How do you resume a previous Agent SDK session when calling `query()` a second time?"
+    options:
+      - "Set `resume=session_id` inside `ClaudeAgentOptions` to reopen the existing session file"
+      - "Set the `CLAUDE_RESUME_ID` environment variable to the session ID before running"
+      - "Call `query.resume(session_id)` as a separate method instead of the standard `query()`"
+      - "Pass `session_id` as a top-level argument directly to the `query()` generator call"
+    correct_idx: 0
+    explanation: "Pass `resume=session_id` (Python) or `resume: sessionId` (TypeScript) inside `ClaudeAgentOptions`. The SDK reopens the JSONL session file and Claude continues with full prior context — no re-reading of files or redundant tool calls."
+    section_anchor: capturing-and-resuming-sessions
+  - question: "Why is the `Bash` tool considered the highest-risk built-in among the Agent SDK's ten tools?"
+    options:
+      - "It can run arbitrary shell commands including file deletion, package installation, and git operations"
+      - "It uses a separate billing meter that charges per shell invocation on top of normal token costs"
+      - "It bypasses `allowedTools` restrictions for destructive commands like `rm -rf` and `pip install`"
+      - "It requires a sandboxed cloud container that cannot be monitored by the local hook callbacks"
+    correct_idx: 0
+    explanation: "`Bash` executes any shell command — on a developer workstation it can delete files, install packages, and run git operations with no additional confirmation. On a CI container with a sandboxed filesystem it is safe, but on local machines it must be scoped carefully."
+    section_anchor: built-in-tools-the-complete-list
 ---
 
 # What changed when Claude Code SDK became Claude Agent SDK

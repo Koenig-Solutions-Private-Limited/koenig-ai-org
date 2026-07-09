@@ -10,13 +10,18 @@
   "assets": {
     "audio_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/gemini-enterprise-agents/07-scale-and-cost/audio.mp3",
     "slide_deck_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/gemini-enterprise-agents/07-scale-and-cost/slide-deck.pdf",
-    "slides_url": "/courses/gemini-enterprise-agents/ch07-slides.pptx"
+    "slides_url": "/courses/gemini-enterprise-agents/07-scale-and-cost-slides.pptx"
   },
   "asset_metadata": {
     "audio": {
       "size_bytes": 30208579,
       "format": "mp3",
-      "produced_via": "notebooklm-py generate audio"
+      "produced_via": "notebooklm-py generate audio",
+      "local_audio_path": "vault/courses/gemini-enterprise-agents/ch07-audio.mp3",
+      "local_audio_size_bytes": 5103480,
+      "local_audio_duration_sec": 648,
+      "local_audio_sample_rate_hz": 24000,
+      "local_audio_produced_via": "kokoro_onnx voice af_sarah"
     },
     "slide_deck_pdf": {
       "size_bytes": 14942148,

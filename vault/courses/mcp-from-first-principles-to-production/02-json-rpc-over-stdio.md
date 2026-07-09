@@ -19,6 +19,34 @@ sources:
   - https://www.jsonrpc.org/specification
   - https://spec.modelcontextprotocol.io/specification/2025-03-26/
   - https://spec.modelcontextprotocol.io/specification/2025-03-26/basic/transports/
+quiz:
+  - question: "In JSON-RPC 2.0, what is the purpose of the `id` field in a request message?"
+    options:
+      - "It uniquely identifies the client sending the request, used by the server for rate limiting and audit"
+      - "It correlates each response to its originating request, enabling multiple in-flight requests simultaneously"
+      - "It specifies the JSON-RPC protocol version, ensuring the server can reject incompatible message formats"
+      - "It determines the order in which the server processes queued requests when backpressure occurs"
+    correct_idx: 1
+    explanation: "The `id` field is a correlation handle: the server echoes the same `id` in its response. This lets the client match responses to requests when multiple calls are in flight concurrently. A message without an `id` is a Notification — one-way, no response expected."
+    section_anchor: json-rpc-20-the-message-envelope
+  - question: "Why does MCP's stdio transport use newline-delimited framing rather than a length-prefix or HTTP chunking?"
+    options:
+      - "Newline framing is required by JSON-RPC 2.0, which mandates it as the only compliant delimiter for message boundaries"
+      - "Length-prefix framing is unavailable on Unix pipes, so newline framing is the only technically feasible option"
+      - "Newline framing is trivially grep-able and requires no parser state across reads, making it debuggable in a terminal"
+      - "HTTP chunking adds 30–40 ms of overhead per message on loopback, making it unsuitable for real-time tool calls"
+    correct_idx: 2
+    explanation: "Newline-delimited JSON (NDJSON) needs no special frame parser: each `readline()` call returns exactly one complete message. This makes logs grep-able, debugging trivial, and the implementation near-zero-state. The simplicity is a deliberate feature, not an afterthought."
+    section_anchor: the-stdio-transport-why-a-pipe-beats-a-socket
+  - question: "During the MCP `initialize` handshake, what does the server's response communicate to the client?"
+    options:
+      - "The server returns its JWT signing keys so the client can validate future auth tokens without a round-trip"
+      - "The server returns the list of all tools, resources, and prompts available so the client can build its menu immediately"
+      - "The server returns its supported protocol version and declared capabilities so the client can adjust its behaviour"
+      - "The server returns a session token the client must include in every subsequent request for session continuity"
+    correct_idx: 2
+    explanation: "The `initialize` response carries `protocolVersion` (the negotiated version) and `capabilities` (which optional features the server supports, such as resource subscriptions or prompt listing). Tool/resource/prompt discovery happens in subsequent `list` calls, not in `initialize`."
+    section_anchor: the-initialize-handshake-step-by-step
 ---
 
 # JSON-RPC over stdio — the wire protocol explained

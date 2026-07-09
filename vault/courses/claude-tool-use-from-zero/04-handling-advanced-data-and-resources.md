@@ -26,6 +26,34 @@ tags:
   - mcp
   - resources
   - structured-data
+quiz:
+  - question: "A support assistant needs a refund policy in multiple locales. The policy is stable and does not change during a session. How should it be modeled in MCP?"
+    options:
+      - "As a tool `get_refund_policy(locale)`, because the locale argument makes retrieval an invokable action"
+      - "As a resource URI like `company-config://policies/refund/en-US`, because it is stable context to read"
+      - "As a prompt template, because policy language instructs the model on approved tone and wording"
+      - "As a server environment variable injected at startup, because it avoids per-request network overhead"
+    correct_idx: 1
+    explanation: "A stable, locale-scoped policy is context the model reads, not an action it executes. Resource URIs are the correct primitive: company-config://policies/refund/en-US names the thing, the host retrieves it, and the server can still enforce access rules and log reads without making the document look like a side-effecting action."
+    section_anchor: the-resource-design-problem
+  - question: "Which is an anti-pattern for an MCP resource URI?"
+    options:
+      - "`finance://customers/acme-corp/account-summary` — scoped by scheme, tenant, and content type"
+      - "`company-config://policies/refund/en-US` — scoped by scheme, policy name, and locale"
+      - "`/Users/dev/projects/myapp/.env` — a raw filesystem path that leaks implementation layout"
+      - "`support://runbooks/password-reset` — scoped by scheme and a stable runbook identifier"
+    correct_idx: 2
+    explanation: "A raw filesystem path like /Users/dev/projects/myapp/.env is an anti-pattern: it leaks internal implementation details, is non-portable across machines, exposes the developer's home directory, and reveals that URIs map directly to local files. Resource URIs should be stable, meaningful, scoped identifiers that hide storage decisions."
+    section_anchor: resource-uri-rules
+  - question: "A connector exposes a 90-page vendor contract. What is the correct first resource to offer the model?"
+    options:
+      - "The full document as a single embedded text resource so Claude has complete contract context"
+      - "Contract metadata first — expose title, type, page count, owner, and the last-updated date"
+      - "A signed download URL that Claude can open directly in an attached browser automation tool"
+      - "A summarization prompt that asks Claude to compress the document on its first access request"
+    correct_idx: 1
+    explanation: "For large documents, expose metadata first: title, type, page count, owner, and update time. The model can then request specific section resources or use a targeted extraction tool if it needs clause-level content. Injecting all 90 pages wastes context, slows responses, and delivers mostly irrelevant material."
+    section_anchor: handling-binary-and-large-data
 ---
 
 # Handling Advanced Data and Resources

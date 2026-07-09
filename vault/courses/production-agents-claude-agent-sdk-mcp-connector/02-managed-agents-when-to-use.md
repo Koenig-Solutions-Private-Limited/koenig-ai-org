@@ -34,6 +34,43 @@ sources:
   - https://platform.claude.com/docs/en/api/beta-headers
   - https://code.claude.com/docs/en/agent-sdk/overview
   - https://modelcontextprotocol.io/docs/getting-started/intro
+quiz:
+  - question: "In the Managed Agents model, which two primitives should be created once and reused across many tasks?"
+    options:
+      - "Agent and Environment — created once, referenced by ID; only the Session is per-task"
+      - "Session and Environment — the Session is reused while a new Agent is created each run"
+      - "Agent and Session — both represent stable configuration that persists across all workloads"
+      - "Environment and Event stream — the only resources that survive individual session closure"
+    correct_idx: 0
+    explanation: "Agent (saved config) and Environment (sandbox template) are stable, long-lived resources. Only the Session is created per-task. Creating Agents and Environments repeatedly wastes the 300 RPM create-endpoint rate limit."
+    section_anchor: the-four-core-concepts
+  - question: "Which SSE event signals that a Managed Agents session has finished processing its task?"
+    options:
+      - "`agent.done` — sent after the agent's final message in the event stream"
+      - "`agent.complete` — the standard terminal event across all Anthropic agent runtimes"
+      - "`session.status_idle` — the event indicating the agent has reached an idle state"
+      - "`session.close` — sent by the server when the session container shuts down"
+    correct_idx: 2
+    explanation: "`session.status_idle` is the canonical signal that a Managed Agents session has finished its task. Listening for `agent.done` or `session.close` will miss the session's actual completion point and leave your app waiting indefinitely."
+    section_anchor: starting-a-session-and-streaming-events
+  - question: "What is the rate limit for Managed Agents create-endpoint calls (agents, environments, sessions)?"
+    options:
+      - "100 RPM — create endpoints are throttled more strictly than read operations"
+      - "300 RPM — create endpoints; read endpoints allow twice as many at 600 RPM"
+      - "600 RPM — create and read endpoints share one unified rate-limit envelope"
+      - "1000 RPM — no meaningful limit applies during the public beta period"
+    correct_idx: 1
+    explanation: "Create endpoints (POST agents, environments, sessions) are limited to 300 RPM; read endpoints are 600 RPM. This is why Agent and Environment IDs should be created once and reused — per-task Session creation is the only acceptable create call per request."
+    section_anchor: rate-limits
+  - question: "A team runs per-request scripts on their own servers and needs full process control. Which runtime fits?"
+    options:
+      - "Managed Agents — Anthropic's hosted harness manages containers, sessions, and scaling"
+      - "The local Agent SDK — provides process control and integrates with existing owned infrastructure"
+      - "Either — infrastructure control is determined by the `settingSources` option, not the runtime"
+      - "Managed Agents — per-request scripts run cheapest on Anthropic's managed cloud sandbox"
+    correct_idx: 1
+    explanation: "The Agent SDK runs the agent loop in your own process — ideal for simple per-request scripts, existing infrastructure, or workloads needing local file system access. Managed Agents is the right choice when you want Anthropic to manage the container and session lifecycle."
+    section_anchor: decision-rule-managed-agents-vs-agent-sdk
 ---
 
 # Managed Agents beta — when to use it, when to roll your own

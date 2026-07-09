@@ -32,6 +32,43 @@ sources:
   - https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/evaluate-online
   - https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/view-results
   - https://docs.cloud.google.com/gemini-enterprise-agent-platform/optimize/evaluation/optimize-agent
+quiz:
+  - question: "A trace for an invoice run shows the Extractor span taking 28 seconds and the Validator span absent entirely. What does the missing Validator span indicate?"
+    options:
+      - "The Validator completed in under one millisecond, which trace tooling rounds down to zero"
+      - "The Extractor succeeded but the Validator agent was rate-limited and added to a queue"
+      - "Extraction never produced valid output, so the Validator received no input and was skipped"
+      - "The Validator's telemetry export hit a Cloud Trace quota limit and was silently dropped"
+    correct_idx: 2
+    explanation: "A missing expected downstream span reveals that the agent's actual execution path diverged from the intended one. If the Extractor timed out or returned no valid output, the Validator was never invoked."
+    section_anchor: read-the-trace-dag-not-just-the-top-line-latency
+  - question: "An on-call engineer needs to understand why a specific invoice request took 30 seconds without visible errors. Which tool should they open first?"
+    options:
+      - "The Cloud Monitoring dashboard showing p95 and p99 request latency by agent deployment"
+      - "The Cloud Trace view for the specific request to inspect individual span durations and execution path"
+      - "The Agent Platform evaluation results to see if this request was flagged as a quality regression"
+      - "The Cloud Logging stdout stream to count how many log lines the agent emitted during the request"
+    correct_idx: 1
+    explanation: "Traces are for debugging a single request: they show the causal execution path, span durations, and any missing downstream spans. Cloud Monitoring shows trends; evaluation catches quality regressions; logs preserve specific facts."
+    section_anchor: read-the-trace-dag-not-just-the-top-line-latency
+  - question: "Your invoice pipeline p95 latency and 5xx error rate look healthy. Support reports the agent is approving invoices without checking purchase-order matches. Which signal catches this regression?"
+    options:
+      - "Cloud Monitoring request_count grouped by response code and reasoning engine ID"
+      - "Container CPU and memory allocation time for the Agent Runtime Reasoning Engine resource"
+      - "An Online Monitor or offline evaluation metric tracking tool-use quality and task success"
+      - "Cloud Logging stdout volume per invocation showing the volume of agent-generated text"
+    correct_idx: 2
+    explanation: "This is a behavioral quality regression, not an infrastructure failure. Runtime metrics look healthy while the agent silently skips a required tool. A trace-backed evaluation metric or offline regression case is the right control."
+    section_anchor: evaluation-is-the-quality-layer
+  - question: "An evaluation run surfaces a 'Hallucination of Tool or Capability' cluster: the agent claimed it checked the PO system but traces show no PO lookup call. What is the first fix?"
+    options:
+      - "Increase Agent Runtime CPU allocation to reduce latency on the purchase-order lookup tool call"
+      - "Add a required tool-use rule to the orchestrator instruction and a regression case for PO lookup"
+      - "Lower the Online Monitor sampling percentage to reduce noise from borderline failure cases"
+      - "Move all failed traces to a longer-retention Cloud Logging bucket for deeper historical analysis"
+    correct_idx: 1
+    explanation: "The cluster shows the agent claimed an action without executing the tool. The fix is behavioral: constrain the agent to require the PO lookup before approval, and add regression coverage. CPU, sampling, and retention do not address the behavioral defect."
+    section_anchor: use-failure-clusters-to-choose-the-next-fix
 ---
 
 # Production Observability and Evaluation for Gemini Enterprise Agents

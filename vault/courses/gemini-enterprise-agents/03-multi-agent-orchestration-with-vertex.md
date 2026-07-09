@@ -1,7 +1,7 @@
 ---
 chapter_num: 3
 title: "Multi-Agent Orchestration with Vertex"
-course_slug: gemini-enterprise-agent-platform-hands-on-tour
+course_slug: gemini-enterprise-agents
 prerequisites_chapters: [1, 2]
 duration_min: 60
 reading_time_min: 60
@@ -24,6 +24,43 @@ sources:
   - https://cloud.google.com/vertex-ai/docs/generative-ai/agent-builder/multi-agent
   - https://cloud.google.com/vertex-ai/docs/generative-ai/agent-builder/agent-registry
   - https://cloud.google.com/vertex-ai/docs/generative-ai/agent-builder/observability
+quiz:
+  - question: "You are building a data enrichment pipeline where step B must always run after step A regardless of what A returns. Which ADK orchestration pattern fits?"
+    options:
+      - "Generative — use transfer_to_agent and let the model decide the routing order"
+      - "Deterministic — use SequentialAgent to hardcode the fixed step-by-step routing"
+      - "Either pattern produces identical cost and reliability for a fixed-order pipeline"
+      - "Neither — GEAP workflow agents cannot enforce strict sequential execution order"
+    correct_idx: 1
+    explanation: "When routing is fixed and predictable, deterministic orchestration via SequentialAgent is the right choice. It gives predictable costs, easier testing, and eliminates any risk of the model skipping or reordering steps."
+    section_anchor: two-orchestration-patterns-one-choice-to-make
+  - question: "The Planner calls transfer_to_agent('retriever', question). In a production Vertex deployment, where does ADK resolve the 'retriever' name?"
+    options:
+      - "It imports the retriever module directly from the running Python process path"
+      - "It queries Agent Registry, resolving the name to a registered agent definition"
+      - "It looks for a class named RetrieverAgent declared in the same source file"
+      - "It sends an HTTP request to a hardcoded localhost endpoint for local resolution"
+    correct_idx: 1
+    explanation: "In production on Vertex AI, ADK resolves agent names through Agent Registry — a centralised catalogue of approved agents. Locally, ADK resolves names via the sub_agents declaration within the same session."
+    section_anchor: step-4-register-agents-in-agent-registry
+  - question: "A trace shows the Planner calling transfer_to_agent three times before receiving any response from the Retriever. What is the most likely cause?"
+    options:
+      - "The Planner instruction lacks a wait-for-result rule, so multiple delegations fire before any response arrives"
+      - "The Retriever is rate-limited by Agent Registry, causing the Planner to retry each call automatically"
+      - "Agent Registry is temporarily unavailable, causing the Planner to retry resolution for each sub-question"
+      - "The gemini-pro-latest model fires all tool calls as a single batch rather than processing them sequentially"
+    correct_idx: 0
+    explanation: "Without an explicit rule to wait for each result before the next transfer, a generative orchestrator issues multiple transfer_to_agent calls before processing any responses. Fix by adding 'wait for the result before the next transfer' to the Planner's instruction."
+    section_anchor: step-5-reading-an-observability-trace
+  - question: "Why is Agent Gateway recommended alongside Agent Registry for production multi-agent systems?"
+    options:
+      - "Agent Gateway improves model response quality on every sub-agent call made at runtime"
+      - "Registry controls discovery but not execution; Gateway enforces IAM access policies on callers"
+      - "Agent Gateway is a prerequisite for Memory Bank profiles to be stored and retrieved"
+      - "Agent Gateway reduces cold-start latency by pre-routing and caching sub-agent requests"
+    correct_idx: 1
+    explanation: "Agent Registry controls which agents are discoverable by name. Agent Gateway enforces which caller identities are allowed to invoke them. Both are needed: Registry for governance and Gateway for enforcement."
+    section_anchor: step-4-register-agents-in-agent-registry
 ---
 
 # Multi-Agent Orchestration with Vertex

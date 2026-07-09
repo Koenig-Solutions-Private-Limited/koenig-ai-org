@@ -1,7 +1,7 @@
 ---
 chapter_num: 2
 title: "Hello World: Agent + 1 Tool + State Persistence"
-course_slug: gemini-enterprise-agent-platform-hands-on-tour
+course_slug: gemini-enterprise-agents
 prerequisites_chapters: [1]
 duration_min: 55
 reading_time_min: 55
@@ -24,6 +24,43 @@ sources:
   - https://cloud.google.com/vertex-ai/docs/generative-ai/agent-builder/agent-development-kit/overview
   - https://cloud.google.com/vertex-ai/docs/generative-ai/agent-builder/sessions
   - https://cloud.google.com/vertex-ai/docs/generative-ai/agent-builder/memory
+quiz:
+  - question: "Where does ADK get the tool description that the model reads to decide when to call a function?"
+    options:
+      - "A separate JSON schema file provided alongside the function module"
+      - "The function's docstring, which ADK reads at import time to build the description"
+      - "A description keyword argument passed to the Agent constructor call"
+      - "A metadata decorator applied to the function before it is registered"
+    correct_idx: 1
+    explanation: "ADK infers the tool description from the Python function's docstring. The quality of the docstring directly controls when and how accurately the model decides to invoke the tool. No separate schema file or decorator is required."
+    section_anchor: step-2-define-your-first-tool
+  - question: "Your budget tracker needs to remember a user's preferred currency across all future sessions. Which storage layer is correct?"
+    options:
+      - "session.state, because it persists structured data for the current conversation turn"
+      - "Memory Bank, because it preserves information across all sessions for a given user"
+      - "A module-level Python list, because in-process storage has the lowest read latency"
+      - "Agent Registry, because user preferences are a form of agent tool configuration"
+    correct_idx: 1
+    explanation: "Preferred currency is a user preference that should persist indefinitely across conversations. Memory Bank is designed for cross-session, long-lived user context. session.state resets at the end of each conversation."
+    section_anchor: step-6-understanding-session-vs-memory-bank
+  - question: "How does ADK deliver the Session object to a tool function that needs to read or write session state?"
+    options:
+      - "The developer passes the Session manually when invoking the tool from the agent"
+      - "The agent reads from a global session variable accessible at the module level"
+      - "ADK detects the Session type annotation in the function signature and injects it automatically"
+      - "A session registration decorator is applied to the function before the agent is created"
+    correct_idx: 2
+    explanation: "ADK uses type annotation-based dependency injection. If your tool function declares a parameter typed as Session, ADK automatically injects the current session when the tool is called. No manual wiring is required."
+    section_anchor: step-5-add-session-state
+  - question: "What is the only code change required to move an ADK agent from local InMemorySessionService to production VertexAiSessionService?"
+    options:
+      - "Rewrite all tool functions to use a separate production-specific Session API"
+      - "Replace the session_service constructor — all other agent and tool code stays unchanged"
+      - "Add a production_tool decorator to every function that reads or writes session state"
+      - "Switch the model parameter from gemini-flash-latest to a production-grade model identifier"
+    correct_idx: 1
+    explanation: "ADK is designed for environment parity. The Session API is identical between InMemorySessionService and VertexAiSessionService — swap the constructor call and everything else continues to work without modification."
+    section_anchor: step-7-switching-to-production-sessions
 ---
 
 # Hello World: Agent + 1 Tool + State Persistence

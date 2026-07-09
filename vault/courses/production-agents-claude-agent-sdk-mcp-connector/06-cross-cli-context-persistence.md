@@ -3,7 +3,7 @@ chapter_num: 6
 course_slug: production-agents-claude-agent-sdk-mcp-connector
 title: "Cross-CLI Context Persistence"
 description: "Learn how to persist context across Claude Code, Codex CLI, and Agent SDK sessions using JSONL relays, the Files API, and MCP context brokers — eliminating the cross-CLI context gap in multi-agent pipelines."
-slug: "06-cross-cli-context-persistence"
+chapter_slug: "cross-cli-context-persistence"
 status: g3-passed
 author: content-author
 duration_min: 50
@@ -46,6 +46,43 @@ positions:
     engagement: "defends"
   - id: "mcp-as-interoperability-moat"
     engagement: "defends"
+quiz:
+  - question: "Which of the four context layers is most expensive to reconstruct if not captured before a session ends?"
+    options:
+      - "Conversation history — the full message log is large but straightforward to regenerate with the same prompt"
+      - "Tool execution outputs — re-running pipelines, API calls, and long analyses can cost hours of compute"
+      - "Session metadata — working directory, branch state, and environment variables are the hardest to recover"
+      - "File references — `file_id` values from the Files API expire quickly and must be captured at upload time"
+    correct_idx: 1
+    explanation: "Tool execution outputs are the most expensive to reconstruct: a 10-minute data pipeline, five external API calls, or a processed 50-page PDF can't be cheaply re-run just to recover context. Conversation history can be distilled; file references are lightweight; session metadata is usually cheap to re-establish."
+    section_anchor: anatomy-of-cli-context
+  - question: "Why is JSONL the preferred format for a cross-CLI context relay file over standard JSON?"
+    options:
+      - "JSONL files compress better than JSON objects, reducing storage overhead for large context payloads"
+      - "JSONL allows append-friendly writes and streaming reads without loading the entire file into memory"
+      - "JSONL is the only format Claude Code's PostToolUse hook natively serializes context events into"
+      - "JSONL provides built-in schema validation that catches malformed context events at write time"
+    correct_idx: 1
+    explanation: "JSONL (JSON Lines) writes one JSON object per line, enabling append-only writes with no file locking and streaming reads without loading the whole file. It also creates a natural audit trail of how context evolved across sessions. Standard JSON requires reading the full file to append a record."
+    section_anchor: file-based-context-the-universal-bridge
+  - question: "When should you use the Files API for context persistence instead of Agent SDK session IDs?"
+    options:
+      - "When resuming the same `query()` call within the same process after a brief network interruption"
+      - "When context must outlive the agent runtime, cross a CLI boundary, or be shared across multiple agents"
+      - "When the accumulated context size exceeds the JSONL relay file's practical storage capacity limit"
+      - "When a Claude Code session ID must be forwarded directly into a running Codex CLI process"
+    correct_idx: 1
+    explanation: "Session IDs are for intra-SDK continuity within one CLI surface. The Files API is the right layer when context must survive process exit, be consumed by a different CLI (Codex, Gemini, raw API), or be referenced by multiple downstream agents in a pipeline. Files API context is stable by `file_id` and survives indefinitely."
+    section_anchor: the-files-api-as-a-durable-context-layer
+  - question: "Which cross-CLI anti-pattern is most insidious because the context loss is invisible until the next agent starts?"
+    options:
+      - "Injecting full conversation history — the window bloats but the downstream agent still receives valid context"
+      - "Using git commits as context transport — historical context is preserved but mixed with code change history"
+      - "Omitting `schema_version` — the relay file still works initially but breaks when the event schema evolves"
+      - "Relying on environment variables for context — they vanish silently when the originating shell exits"
+    correct_idx: 3
+    explanation: "Environment variables look like a lightweight context mechanism but vanish silently at shell exit — the next agent starts with no error and no context, often producing subtly wrong output rather than an explicit failure. Git transport preserves data but pollutes history. Full conversation injection is wasteful but works."
+    section_anchor: anti-patterns-and-pitfalls
 ---
 
 # Cross-CLI Context Persistence

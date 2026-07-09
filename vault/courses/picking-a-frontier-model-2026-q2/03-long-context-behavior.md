@@ -39,6 +39,34 @@ references:
 slides: courses/picking-a-frontier-model-2026-q2/ch03-slides.pptx
 audio: courses/picking-a-frontier-model-2026-q2/voiceover-03.mp3
 voiceover_script: courses/picking-a-frontier-model-2026-q2/voiceover-03.md
+quiz:
+  - question: "Gemini 3.1 Pro advertises a 1M token context window. Which statement correctly characterizes its effective context limits as measured in this course?"
+    options:
+      - "Both its retrieval effective limit (~700K) and synthesis effective limit (~300K) fall well below its advertised window, with synthesis degrading fastest"
+      - "Its retrieval effective limit and synthesis effective limit are both approximately 1M tokens, matching the advertised specification"
+      - "Its synthesis effective limit matches Opus 4.7's at ~500K because both share the same transformer architecture and attention mechanism"
+      - "Its retrieval effective limit (~300K) is lower than Opus 4.7's because Gemini prioritizes audio and multimodal tasks at the expense of text retrieval"
+    correct_idx: 0
+    explanation: "Gemini 3.1 Pro's retrieval effective limit (90% single-fact accuracy) is approximately 700K tokens — well below the 1M advertised window. Its synthesis effective limit (85% multi-hop accuracy) is only ~300K, which is 30% of its advertised context. Opus 4.7's synthesis effective limit (~500K) exceeds Gemini's despite the same 1M advertised window, because synthesis degrades faster than retrieval in both models."
+    section_anchor: the-advertised-vs-effective-context-window
+  - question: "Which long-context failure mode is most difficult to detect in a production pipeline without ground-truth verification?"
+    options:
+      - "Lost needles — the model returns no answer, which typically triggers a null-check in downstream validation"
+      - "Hallucinated synthesis — the model returns a fluent, confident answer that combines real facts with invented connections"
+      - "Degraded step-by-step reasoning — the model terminates its chain of thought early, producing a visibly incomplete response"
+      - "Schema violations — the model returns the correct fact in an unparseable JSON format that fails the output validator"
+    correct_idx: 1
+    explanation: "Hallucinated synthesis produces fluent, confident output that looks high quality — the model hasn't failed to respond, it has responded wrongly. Detection requires knowing the correct answer in advance, which isn't always possible in production. Lost needles are easier to detect (no answer = obvious failure). Degraded reasoning produces visibly shorter chains. Schema violations produce parse errors. Hallucinated synthesis fails silently and confidently."
+    section_anchor: the-three-failure-modes-at-scale
+  - question: "For a 200K-token document corpus requiring multi-fact synthesis across scattered sections, which strategy best balances cost and accuracy?"
+    options:
+      - "Gemini 3.1 Pro full context — its 1M window means no chunking is required and every fact is within reach"
+      - "GPT-5.5 full context — its stable middle-context performance and 128K window cover 200K documents comfortably"
+      - "RAG with top-k=5 retrieval plus Opus 4.7 for synthesis — 10–20× cheaper with comparable or better accuracy for synthesis tasks"
+      - "Opus 4.7 full context — its 500K synthesis effective limit covers the entire 200K corpus with margin to spare"
+    correct_idx: 2
+    explanation: "For multi-fact synthesis, RAG with top-k=5 and good embeddings typically matches or exceeds full-context loading at a fraction of the inference cost. RAG retrieves the relevant chunks (~10K tokens) rather than loading the full 200K corpus, dramatically reducing cost while keeping synthesis context short and within any model's reliable operating range. GPT-5.5 full context can't handle 200K. Opus 4.7 full context covers it but costs 10–20× more than RAG for the same synthesis task."
+    section_anchor: choosing-your-context-strategy
 tags:
   - course/picking-a-frontier-model-2026-q2
   - evaluation

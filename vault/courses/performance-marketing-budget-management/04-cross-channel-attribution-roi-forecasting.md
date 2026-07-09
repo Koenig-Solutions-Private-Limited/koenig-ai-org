@@ -31,6 +31,43 @@ tags:
   - incrementality
   - google-ads
   - meta-ads
+quiz:
+  - question: "A customer's purchase journey is: Meta Prospecting ad → Google non-brand click → Google branded click → Purchase. Under last-click attribution, which channel receives 100% of the credit?"
+    options:
+      - "Meta Prospecting — it initiated the customer journey and deserves credit for awareness"
+      - "Google non-brand search — it was the middle touchpoint that bridged awareness to intent"
+      - "Google branded search — it was the final click immediately before the purchase"
+      - "Credit is split equally across all three channels in last-click attribution"
+    correct_idx: 2
+    explanation: "Last-click attribution assigns 100% of credit to the final touchpoint before conversion. The branded search click immediately before purchase receives all credit, regardless of which channel drove initial purchase intent."
+    section_anchor: the-four-attribution-models
+  - question: "Google reports 600 conversions and Meta reports 400 conversions last month. Your CRM shows 750 actual orders. What does this tell you?"
+    options:
+      - "Your CRM tracking is broken — platform-reported numbers are always the authoritative source"
+      - "There is significant cross-channel overlap: approximately 250 conversions were counted by both platforms simultaneously"
+      - "Meta's tracking is malfunctioning — it is overcounting conversions by approximately 150"
+      - "All numbers are correct because each platform uses different attribution windows that explain the discrepancy"
+    correct_idx: 1
+    explanation: "Platform-reported total (600 + 400 = 1,000) vs. CRM actual (750) implies approximately 250 conversions were attributed by both platforms for the same order — the classic walled garden double-counting problem, not a tracking error."
+    section_anchor: the-walled-garden-problem-why-reported-conversions-dont-add-up
+  - question: "Your platform reports a 4x ROAS for a Google Search campaign last month. Your de-duplicated model shows a 2.9x adjusted ROAS (correction factor 0.73). Which number should you use in your 30-day forecast to the CMO?"
+    options:
+      - "4x — platform-reported is always the most accurate source for forecasting purposes"
+      - "2.9x — the de-duplicated number is the better basis because it anchors to actual backend orders"
+      - "3.45x — average the two numbers to arrive at a conservative midpoint estimate"
+      - "Neither — present both figures and let the CMO decide which baseline to use"
+    correct_idx: 1
+    explanation: "The de-duplicated 2.9x anchors to actual backend order data and removes cross-channel double-counting. Forecasting from the inflated 4x platform number overstates expected revenue and erodes your credibility when actuals come in 25% lower than the forecast."
+    section_anchor: the-30-day-roi-forecast
+  - question: "A geo holdout test shows a 15% conversion lift from your Meta Prospecting campaign. The campaign currently reports 2,000 conversions per month. What is the estimated number of truly incremental conversions?"
+    options:
+      - "2,000 — all platform-reported conversions are incremental by definition"
+      - "300 — 15% of 2,000 represents the conversions driven purely by the Meta ads"
+      - "1,700 — the non-incremental share that would have happened regardless of Meta"
+      - "400 — factoring in a standard 2x Meta over-reporting correction alongside the lift ratio"
+    correct_idx: 1
+    explanation: "A 15% incrementality lift means 15% of reported conversions are attributable to the ads — 15% × 2,000 = 300 truly incremental conversions. The remaining 1,700 would have happened through organic search, direct, or other channels even without Meta running."
+    section_anchor: incrementality-testing-the-only-way-to-measure-true-impact
 ---
 
 # Cross-Channel Attribution, ROI Forecasting, and Making the Budget Case

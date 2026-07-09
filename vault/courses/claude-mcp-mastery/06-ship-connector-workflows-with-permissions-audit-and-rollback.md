@@ -50,6 +50,44 @@ sources:
   - "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview"
   - "https://docs.blender.org/api/current/"
   - "https://docs.blender.org/manual/en/latest/files/import_export/index.html"
+duration_min: 45
+quiz:
+  - question: "A Blender connector session needs to inspect scene object names and propose a list of material changes. Applying least privilege, which permissions should the connector have?"
+    options:
+      - "Read access to scene data plus write access to the scene graph, in case Claude needs to apply changes automatically"
+      - "Read-only access to scene object data and material names — no write permissions needed for an inspection-only workflow"
+      - "Full bpy access including system-level calls so Claude can install required Python packages if the session needs them"
+      - "Write access to a temporary export folder plus read access to the scene, to log changes without modifying the source file"
+    correct_idx: 1
+    explanation: "Least privilege means granting only what the workflow actually requires. An inspection-only session needs to read object data and material names — not modify them. Granting write access 'in case Claude needs it' violates least privilege and expands the blast radius if a script error occurs. Expand permissions only after the read-only phase confirms what write scope the approved next step genuinely needs."
+    section_anchor: define-per-tool-permission-boundaries
+  - question: "Which action requires a formal human approval gate before a connector may proceed?"
+    options:
+      - "Using the Ableton connector to query the Live 12 manual for steps to configure a MIDI routing chain"
+      - "Using the Blender connector to inspect an active object's material slot names without modifying any data"
+      - "Using the Adobe CC connector to export a campaign composite that includes a Splice-licensed audio sample"
+      - "Using the SketchUp connector to read a scene's geometry description without exporting or modifying it"
+    correct_idx: 2
+    explanation: "Approval gates are required for actions that are irreversible, involve licensed third-party assets, or produce artifacts that leave the local environment. Exporting a composite with a Splice-licensed sample to client delivery meets all three: the export is irreversible, license scope must be verified, and the file leaves the local environment. Documentation queries and read-only inspections do not require gates."
+    section_anchor: add-approval-gates-for-destructive-and-licensed-actions
+  - question: "A studio runs a Blender-to-Adobe connector workflow that three designers use simultaneously with shared Adobe CC credentials. Which deployment model is appropriate?"
+    options:
+      - "Local connector sessions on each designer's machine with shared credentials stored in a dotenv file on each computer"
+      - "A gateway with per-user authentication, rate limiting, and centralized audit log export for the shared credential set"
+      - "A single connector session run by the lead designer who then distributes outputs to the other two team members"
+      - "A local session with a shared API key in a team folder, since creative connectors are low-risk compared to code pipelines"
+    correct_idx: 1
+    explanation: "When more than one person runs a workflow with shared credentials, a gateway is required. It provides per-user authentication (so each action is attributable), rate limiting (to prevent runaway sessions), and a centralized audit trail. Local sessions with shared credentials in dotenv files create credential sprawl, make log attribution impossible, and make key rotation difficult."
+    section_anchor: decide-when-local-is-enough-and-when-to-use-a-gateway
+  - question: "What is the minimum rollback requirement for a connector workflow that writes to a Blender production scene?"
+    options:
+      - "Blender's built-in auto-save is sufficient because it creates incremental backups every two minutes by default"
+      - "A named versioned copy of the production file must exist before the session starts, stored outside the active folder"
+      - "A connector session log must be posted to the team's shared channel so everyone can see what was changed"
+      - "The connector must be limited to read-only access, because write sessions cannot be rolled back without version control"
+    correct_idx: 1
+    explanation: "A versioned pre-session copy stored outside the active folder is the minimum rollback requirement. Blender's auto-save creates recovery points within the same save cycle but does not protect against overwrites of the live file itself. A separate versioned copy (e.g. scene_v03_preConnector.blend in a backup folder) ensures recovery is possible regardless of what the connector script does to the production file."
+    section_anchor: build-a-rollback-plan-that-works-across-tools
 ---
 
 # Ship connector workflows with permissions, audit, and rollback

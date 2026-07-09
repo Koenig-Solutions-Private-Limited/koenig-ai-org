@@ -32,6 +32,43 @@ tags:
   - troas
   - google-ads
   - meta-ads
+quiz:
+  - question: "Your campaign averaged ₹650 CPA over the past 30 days. You want to move to tCPA. What target should you set on day one?"
+    options:
+      - "₹400 — set an ambitious target to push the algorithm to optimise aggressively from the start"
+      - "₹650 — set the target at your historical average CPA to give the algorithm a realistic baseline"
+      - "₹800 — set a generous target so the algorithm has room to find volume before you tighten it"
+      - "No target — run Max Conversions for another 30 days to build more conversion history first"
+    correct_idx: 1
+    explanation: "Start at your historical average CPA. This gives the algorithm a target it already knows how to hit. Setting an aspirational target far below history (e.g., ₹400) causes over-restricted bids and a sharp volume drop. Tighten the target by 5–10% every two weeks once stability is established."
+    section_anchor: target-cpa-tcpa-efficiency-first-automation
+  - question: "Your e-commerce campaign tracks purchases but passes a fixed value of ₹999 for every conversion regardless of actual order value. You enable tROAS at 3x. What is the most likely outcome?"
+    options:
+      - "The algorithm optimises correctly because conversions are still being tracked and counted"
+      - "The algorithm optimises toward ₹999-value purchases, ignoring high-value orders — actual blended ROAS will be lower than reported"
+      - "The campaign enters a permanent learning phase because ₹999 falls below the required minimum value threshold"
+      - "tROAS cannot be technically enabled when a fixed placeholder value is in use"
+    correct_idx: 1
+    explanation: "tROAS optimises toward the conversion value signal it receives. If every purchase looks like ₹999 to the algorithm, it has no signal to prioritise high-value orders over low-value ones. Your actual revenue mix is unaffected and reported ROAS will be systematically misleading."
+    section_anchor: target-roas-troas-revenue-first-automation
+  - question: "You're launching a new Meta ad set targeting a cold audience for a travel app install campaign. You have no historical CPA data for this audience. Which bidding strategy should you start with?"
+    options:
+      - "Cost Cap at ₹150, matching your business unit economics CPA target for app installs"
+      - "Bid Cap at ₹80, based on the lowest CPC you've seen in Meta's delivery estimates"
+      - "Lowest Cost (no cap) to build conversion data, then switch to Cost Cap after reaching 50 results"
+      - "Minimum ROAS at 2x since app installs generate approximately ₹200 average lifetime value"
+    correct_idx: 2
+    explanation: "Without conversion history for this audience, any cap will over-restrict delivery and starve the learning phase. Start with Lowest Cost to collect 50 results in 7 days (Meta's learning phase threshold), then apply a Cost Cap grounded in your actual observed cost per result."
+    section_anchor: metas-bidding-options-cost-caps-bid-caps-and-target-costs
+  - question: "A Google Ads campaign generates 18 conversions per month. You want to use tCPA. What is the best approach?"
+    options:
+      - "Enable tCPA immediately — 18 conversions per month is sufficient for basic Smart Bidding to function"
+      - "Use Max Conversions to grow volume to 30+ conversions per month, then switch to tCPA"
+      - "Use Manual CPC with enhanced conversion tracking and wait for volume to grow naturally"
+      - "Switch to a broader match type to generate more impressions and trigger additional conversions"
+    correct_idx: 1
+    explanation: "18 conversions per month falls below Google's 30-conversion minimum for reliable tCPA performance. Max Conversions has no efficiency target, giving the algorithm freedom to enter more auctions and build the conversion volume needed before tCPA can be set responsibly."
+    section_anchor: data-minimums-when-smart-bidding-cannot-work
 ---
 
 # Automated Bidding Strategies — tCPA, tROAS, Max Conversions, and When to Go Manual

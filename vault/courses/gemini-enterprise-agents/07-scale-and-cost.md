@@ -29,6 +29,52 @@ sources:
   - https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/runtime/optimize-and-scale
   - https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
   - https://cloud.google.com/resource-manager/docs/labels-overview
+quiz:
+  - question: "Why is cost-per-resolved-task a more useful production metric than cost-per-invocation for an agent workflow?"
+    options:
+      - "It ignores token costs so the finance team can focus on subscription fees and platform commitments"
+      - "It accounts for retries, handoffs, and abandoned work instead of treating every model call as equally valuable"
+      - "It applies only to batch prediction jobs, not to streaming or synchronous on-demand requests"
+      - "It is the same metric as requests-per-minute but normalized to business outcomes instead of raw count"
+    correct_idx: 1
+    explanation: "Cost-per-invocation is easy to calculate but hides whether the invocation produced a useful outcome. Cost-per-resolved-task includes retries, handoffs, and failed or abandoned runs — the number a production owner can actually optimize."
+    section_anchor: the-unit-economics-that-actually-matter
+  - question: "A regulated workload must keep all Vertex AI model processing within an auditable geography. Which endpoint is the safest default?"
+    options:
+      - "Global, because it pools capacity across regions and delivers the highest throughput availability"
+      - "Regional or supported multi-region, because the global endpoint does not let you control the processing region"
+      - "Any available endpoint, because data at rest and ML processing residency are the same regulatory control"
+      - "The cheapest endpoint on the pricing page, because cost optimization overrides residency for most regulators"
+    correct_idx: 1
+    explanation: "Google's endpoint guidance separates availability from processing-location control. Use the regional or supported multi-region endpoint that matches the residency requirement; reserve the global endpoint for workloads where availability is the priority and processing location is not constrained."
+    section_anchor: lever-2-regional-vs-global-endpoints
+  - question: "A loop detector reports agent A transferring to agent B, which transfers back to A, repeated six times. Which control should fire first?"
+    options:
+      - "Raise the project-level quota so the loop can complete at higher throughput before being stopped"
+      - "Switch the coordinator to a model with a larger context window to hold the full conversation history"
+      - "Stop or throttle the agent pair immediately and mark the run as failed-loud for incident response"
+      - "Move the affected agent pair to a batch prediction job to reduce per-token cost during the loop"
+    correct_idx: 2
+    explanation: "Runaway loops are reliability and cost incidents. The immediate control is containment: stop, throttle, or fail-loud before raising quotas or changing models. A loop running 14 minutes before detection can accumulate significant spend."
+    section_anchor: lever-4-quotas-rate-limits-and-runaway-loop-protection
+  - question: "Your billing export shows 18% of Vertex AI spend has no team label. What is the correct governance response?"
+    options:
+      - "Ignore it — resource labels are optional metadata and do not affect the accuracy of the invoice"
+      - "Require team, cost_center, and environment labels in deploy templates and report unallocated spend until fixed"
+      - "Delete all unlabeled agent resources immediately to ensure billing hygiene before the next invoice cycle"
+      - "Move all unlabeled agents to the global endpoint to consolidate them under a single billing line item"
+    correct_idx: 1
+    explanation: "Labels are the practical join key for chargeback reports. The durable fix is to make them required at deployment and surface unallocated spend in finance reporting, creating governance pressure on owners to fix metadata rather than relying on manual cleanup."
+    section_anchor: cost-attribution-who-is-paying-for-what
+  - question: "In a cost comparison between two agent platforms, why is per-token list price an insufficient decision input?"
+    options:
+      - "Because vendors rarely publish accurate per-token prices for enterprise customers on large committed deals"
+      - "Because total cost also depends on token efficiency, tool-call frequency, retry rate, and task resolution quality"
+      - "Because only output tokens are billed and input tokens are always free under standard generative AI pricing"
+      - "Because batch prediction discounts apply uniformly across all vendors, making list prices equivalent at scale"
+    correct_idx: 1
+    explanation: "The same task can require different numbers of input tokens, output tokens, tool calls, and retries across different models. Cost-per-resolved-task is the decision metric; list price per million tokens is only one input and does not capture task quality or efficiency."
+    section_anchor: a-note-on-cross-vendor-cost-benchmarking
 ---
 
 # Scale and Cost: Throughput, Quotas, Autoscaling, and Cost Attribution

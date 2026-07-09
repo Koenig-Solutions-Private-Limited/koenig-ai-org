@@ -1,7 +1,8 @@
 ---
 course_slug: picking-a-frontier-model-2026-q2
 title: "Picking a Frontier Model: Opus 4.7 vs GPT-5.5 vs Gemini 3.1 Pro — A Builder's Benchmark Guide"
-status: g3-passed
+status: g4-approved
+course_track: career
 author: course-author
 level: Builder
 vendor_tag: community
@@ -48,6 +49,10 @@ sources:
 ---
 
 # Picking a Frontier Model: Opus 4.7 vs GPT-5.5 vs Gemini 3.1 Pro
+
+## Career Compass: why this matters for your role
+
+Hiring managers in AI-adjacent engineering and product roles increasingly ask candidates to defend a model choice — not just name the "best" model. This course teaches you to run a structured benchmark, build a cost model, and write a defensible model-selection memo: exactly the artifact a staff engineer, AI product lead, or solutions architect would produce before recommending a vendor.
 
 ## Why this course
 

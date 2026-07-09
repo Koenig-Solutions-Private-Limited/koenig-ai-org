@@ -51,6 +51,34 @@ inline_assets:
     path: ./img/ch10-dynamic-workflow-architecture.svg
     alt: "Architecture diagram showing orchestrator Claude spawning three parallel sub-agents (analysis, transformation, verification), each writing results to a shared checkpoint store before the orchestrator reads and verifies"
 last_updated: 2026-05-31
+quiz:
+  - question: "What is the key structural difference between a static tool chain and a dynamic workflow?"
+    options:
+      - "Static chains can call multiple tools; dynamic workflows are limited to one tool per invocation"
+      - "Static chains call tools one at a time; dynamic workflows fan work out to parallel sub-agents"
+      - "Static chains require MCP servers; dynamic workflows use only native Claude tool-use calls"
+      - "Static chains run on the free tier; dynamic workflows require a Claude Max plan or API access"
+    correct_idx: 1
+    explanation: "In a static chain, one Claude instance calls tools one at a time and adapts using the last result. In a dynamic workflow, the orchestrator writes a script that spawns parallel sub-agent instances, compressing wall-clock time at the cost of multiplied token spend. The difference is parallelism via scripted orchestration, not tool count or pricing tier."
+    section_anchor: static-chains-vs-dynamic-workflows
+  - question: "Which scenario is NOT a valid reason to choose dynamic workflows over a static chain?"
+    options:
+      - "Analyzing 80 code files for security issues where each file is independent and parallelizable"
+      - "Extracting structured data from 200 documents where the same extraction schema applies to every document"
+      - "Running a five-step sequential pipeline where each step depends on the previous step's output"
+      - "Processing a nightly batch of 300 invoices where throughput matters more than per-invoice latency"
+    correct_idx: 2
+    explanation: "Dense sequential dependencies prevent meaningful parallelism: if step 3 requires step 2's output, you cannot fan them out. The other three — security review of independent files, homogeneous structured extraction, and batch invoice processing — all have natural parallel units of work that dynamic workflows can exploit effectively."
+    section_anchor: when-not-to-use-dynamic-workflows
+  - question: "Sub-agents in a dynamic workflow receive only the context the orchestrator explicitly provides. What does this isolation prevent?"
+    options:
+      - "It prevents sub-agents from calling tools that the orchestrator registered in its own session"
+      - "It prevents one sub-agent's error state from contaminating another sub-agent's result"
+      - "It prevents the orchestrator from reading sub-agent outputs before the verification step completes"
+      - "It prevents sub-agents from writing results to the checkpoint store without orchestrator approval"
+    correct_idx: 1
+    explanation: "Sub-agent isolation means each agent receives only the context and tools the orchestrator hands it — agents do not share memory with each other or with the orchestrator's conversation thread. This prevents one failing agent's corrupt state from infecting sibling agents' results. The other options describe behaviors that sub-agent isolation does not cause."
+    section_anchor: the-orchestrator-model
 ---
 
 # Claude Code Dynamic Workflows: Fan-Out, Checkpoint, and Verify (2026)

@@ -28,6 +28,34 @@ tags:
   - mcp
   - security
   - authentication
+quiz:
+  - question: "A request carries a valid bearer token that maps to user_123. Which question requires authorization (not authentication)?"
+    options:
+      - "Was this token cryptographically signed by the expected identity provider certificate?"
+      - "Is this token within its expiry window and absent from the revocation set?"
+      - "May user_123 call the draft_invoice_reminder tool on customer account A-107?"
+      - "Does this request include the required API version header for the connector version?"
+    correct_idx: 2
+    explanation: "Authentication asks 'who is this caller?' — whether the token is valid and unexpired. Authorization asks 'may this caller do this action to this target?' — whether user_123 has permission for a specific tool and a specific target object. The other three options all concern the validity of the credential, not what the credential permits."
+    section_anchor: authentication-vs-authorization
+  - question: "A payroll assistant only drafts and queues reminder emails; it never sends them. Which credential violates least privilege?"
+    options:
+      - "A read-only token scoped to payroll ledger records for the current billing period"
+      - "A full send token for external payment instructions and outbound wire transfers"
+      - "An email:draft scope for creating unsubmitted reminder drafts in the approval queue"
+      - "An invoice:read scope limited to the vendor records needed for payment reconciliation"
+    correct_idx: 1
+    explanation: "A connector that only drafts emails has no business need for a payment-send token. Granting it violates least privilege by giving the connector access to write-capable operations it was never designed to perform. The other three options all match the connector's declared scope of reading ledger data and creating draft messages."
+    section_anchor: least-privilege-for-connectors
+  - question: "Which design correctly implements a human approval gate for a sensitive MCP action?"
+    options:
+      - "Return the completed action immediately and include a confirmation string in the tool result"
+      - "Return an `awaiting_approval` object with an approval_id and preview data for human review"
+      - "Ask Claude to include a polite 'please confirm before I proceed' sentence in its text reply"
+      - "Add a system prompt instruction telling the model to pause before executing any write tools"
+    correct_idx: 1
+    explanation: "An awaiting_approval object gives the host application a machine-readable state it can enforce: it knows an approval is pending and can gate the next write action on a confirmed approval event. A confirmation string in a response, Claude's prose reply, or a prompt instruction are all advisory — the application cannot enforce them as control flow."
+    section_anchor: human-in-the-loop-approval
 ---
 
 # Security and Authentication

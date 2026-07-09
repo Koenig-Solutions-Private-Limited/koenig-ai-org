@@ -35,6 +35,43 @@ sources:
   - https://platform.claude.com/docs/en/api/files-list
   - https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention
   - https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/code-execution-tool
+quiz:
+  - question: "A developer passes a CSV dataset to the code execution tool via the Files API. Which content block type is required?"
+    options:
+      - "`document` — the same block type used for PDFs and plain text files uploaded to the API"
+      - "`image` — the API treats tabular CSV data as a structured visual matrix for code execution"
+      - "`data_file` — a dedicated block type for structured tabular and spreadsheet data formats"
+      - "`container_upload` — the correct block for CSV and binary data files passed to code execution"
+    correct_idx: 3
+    explanation: "CSV and other data files passed to the code execution tool must use the `container_upload` content block. `document` is for PDFs and plain text; `image` is for JPEG/PNG/GIF/WebP. Using the wrong block type returns a 400 error."
+    section_anchor: content-block-types-by-file-format
+  - question: "What does the Files API return after a successful file upload for use in future Messages calls?"
+    options:
+      - "A signed URL valid for 24 hours to reference or download the file in subsequent requests"
+      - "A `file_id` that persists permanently until the developer explicitly calls the delete endpoint"
+      - "A workspace-scoped path like `/files/<uuid>` to use directly in the API content blocks"
+      - "A session-scoped token that expires automatically when the current API session closes"
+    correct_idx: 1
+    explanation: "The Files API returns a `file_id` that is permanent — it persists until you explicitly delete it. Store this ID in your database alongside document metadata. Any workspace API key can delete any file, so treat `file_id` values as sensitive references."
+    section_anchor: uploading-files
+  - question: "A developer uploads a PDF once and references it five times in separate Messages calls. What is billed?"
+    options:
+      - "A one-time upload fee on the first call; each of the five references incurs a flat per-reference fee"
+      - "The file content as input tokens on each of the five references; storage operations are free"
+      - "A per-MB monthly storage fee proportional to file size, regardless of reference frequency"
+      - "Token costs for model responses only; file storage and reference access are entirely free"
+    correct_idx: 1
+    explanation: "Storage operations (upload, list, delete) are free. However, every time you reference a `file_id` in a Messages call, the file's full content is billed as input tokens. Uploading once avoids retransmitting bytes, but you still pay full input tokens on each of the five queries."
+    section_anchor: the-billing-reality
+  - question: "Which files can a developer download from the Files API after uploading and processing?"
+    options:
+      - "Any file uploaded to the Files API, retrieved using its `file_id` at any time after upload"
+      - "Only files created by code execution or skills; files the developer uploaded cannot be downloaded"
+      - "Only files smaller than 50 MB; the API returns an error for larger uploaded files on download"
+      - "Only files in the `container_upload` block format; `document` and `image` blocks are write-only"
+    correct_idx: 1
+    explanation: "Anthropic documents downloads only for files created by code execution or skills — not for files you uploaded. If you need to retrieve uploaded file content, store it locally before upload. This is distinct from the `file_id` reference, which persists but is not downloadable."
+    section_anchor: code-execution-with-the-files-api
 ---
 
 # Files API + code execution: the complete agent IO surface

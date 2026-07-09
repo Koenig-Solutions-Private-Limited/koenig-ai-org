@@ -1,7 +1,7 @@
 ---
 chapter_num: 4
 title: "Comparing to Claude Agent SDK + Cloudflare Agents"
-course_slug: gemini-enterprise-agent-platform-hands-on-tour
+course_slug: gemini-enterprise-agents
 prerequisites_chapters: [1, 2, 3]
 duration_min: 55
 reading_time_min: 55
@@ -23,6 +23,52 @@ sources:
   - https://developers.cloudflare.com/agents/
   - https://docs.anthropic.com/en/docs/agents-and-tools
   - https://claude.com/platform/api
+owns:
+  - "GEAP vs Claude Agent SDK vs Cloudflare Agents — state management comparison"
+  - "deployment topology: GCP-regional vs any-infra vs edge"
+  - "vendor lock-in surface area per platform"
+  - "decision framework: which platform for which workload"
+  - "lock-in surface area: Memory Bank, Registry, Gateway portability"
+defers_to:
+  - "ADK internals → ch02"
+  - "Agent Platform overview and A2A intro → ch01"
+quiz:
+  - question: "Your agent must remember document preferences across sessions and all user data must stay in a specific GCP region. Which platform fits best?"
+    options:
+      - "Cloudflare Agents, because Durable Objects are the simplest state management model available"
+      - "GEAP, because Memory Bank and Agent Sessions respect GCP regional deployment boundaries"
+      - "Claude Agent SDK, because you can point your database connection to any GCP-hosted service"
+      - "All three platforms handle GCP-regional data residency with equivalent compliance guarantees"
+    correct_idx: 1
+    explanation: "GEAP runs on GCP and supports regional deployment. Memory Bank and Agent Sessions respect GCP regional boundaries. Cloudflare runs on its global edge network (not GCP), and Claude SDK state is wherever you host your database."
+    section_anchor: state-management-the-deepest-divergence
+  - question: "Which GEAP feature has no built-in equivalent in either Claude Agent SDK or Cloudflare Agents?"
+    options:
+      - "Tool calling, since all three platforms support function-calling natively and interchangeably"
+      - "Multi-agent orchestration, since all three platforms support agent-to-agent delegation patterns"
+      - "Agent Identity, which issues a cryptographic per-agent ID tied to every auditable invocation"
+      - "Long-running workflows, since all three platforms support persistent multi-step background jobs"
+    correct_idx: 2
+    explanation: "Tool calling, multi-agent orchestration, and long-running workflows exist across all three platforms. Agent Identity — a cryptographic ID tied to every agent invocation with GCP-backed audit trails — is a GEAP-specific Govern feature with no built-in equivalent elsewhere."
+    section_anchor: platform-overview
+  - question: "A startup needs a real-time VS Code coding assistant: sub-200ms responses, per-user file context, TypeScript-native. Which platform fits best?"
+    options:
+      - "GEAP, because it provides the broadest model selection and enterprise-grade agent governance"
+      - "Claude Agent SDK, because Claude Opus 4.7 leads on complex multi-step code reasoning tasks"
+      - "Cloudflare Agents, because edge latency, TypeScript-native Durable Objects, and 200ms match all three constraints"
+      - "All three platforms are equally suitable when latency, language, and context requirements align"
+    correct_idx: 2
+    explanation: "Sub-200ms response favors Cloudflare's edge. Per-user context fits naturally into Durable Object state. TypeScript-native is Cloudflare's strength. GEAP adds unnecessary regional latency; Claude SDK lacks managed state and edge deployment."
+    section_anchor: decision-framework-which-platform-for-which-workload
+  - question: "You are migrating an agent from GEAP to Claude Agent SDK. Which GEAP component requires the most engineering effort to replace?"
+    options:
+      - "ADK tool functions, since they are plain Python with no platform-specific APIs to port"
+      - "The agent instruction, since it is plain text that transfers to any framework without changes"
+      - "Memory Bank, since it is a proprietary GCP managed service with no data export API at launch"
+      - "The model parameter, since changing from Gemini to Claude requires only a configuration swap"
+    correct_idx: 2
+    explanation: "ADK tool functions are plain Python — copy them. The instruction is text — copy it. The model is a config swap. Memory Bank is a proprietary managed service with no export API at launch; you must rebuild the long-term memory layer from scratch."
+    section_anchor: lock-in-surface-area
 ---
 
 # Comparing to Claude Agent SDK + Cloudflare Agents

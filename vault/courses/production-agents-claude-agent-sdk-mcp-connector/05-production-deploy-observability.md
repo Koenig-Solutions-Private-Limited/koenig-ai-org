@@ -34,6 +34,43 @@ sources:
   - https://code.claude.com/docs/en/agent-sdk/hooks
   - https://code.claude.com/docs/en/agent-sdk/claude-code-features
   - https://code.claude.com/docs/en/agent-sdk/permissions
+quiz:
+  - question: "What is the key functional difference between `PreToolUse` and `PostToolUse` hooks?"
+    options:
+      - "`PreToolUse` blocks calls before side effects occur; `PostToolUse` logs after execution"
+      - "`PreToolUse` fires only for read tools; `PostToolUse` fires for all state-modifying tools"
+      - "`PreToolUse` receives tool output; `PostToolUse` receives tool input before execution"
+      - "`PreToolUse` is Python-only; `PostToolUse` works in both Python and TypeScript SDKs"
+    correct_idx: 0
+    explanation: "`PreToolUse` runs before the tool executes and can return a `deny` decision to block the call — use it for cost circuit breakers and access control. `PostToolUse` runs after execution and suits audit logging but cannot prevent side effects that already occurred."
+    section_anchor: the-hook-system
+  - question: "A cost circuit breaker must stop an expensive MCP tool call before it modifies external state. Which hook type applies?"
+    options:
+      - "`PostToolUse` — to detect and reverse any filesystem or API change after it occurs"
+      - "`UserPromptSubmit` — to intercept the user's request before any tools are invoked at all"
+      - "`Stop` — to terminate the entire agent session when the spending threshold is reached"
+      - "`PreToolUse` — to deny the call before any filesystem or external state change occurs"
+    correct_idx: 3
+    explanation: "`PreToolUse` is the right hook for a cost circuit breaker because it fires before execution. Returning a `deny` `permissionDecision` in the hook output blocks the tool call entirely. `PostToolUse` runs after — by then the MCP call has already happened and state has already changed."
+    section_anchor: hook-2-cost-circuit-breaker-pretooluse
+  - question: "A Python developer wants to fire callbacks on session start and end. Why can't the SDK hook system do this?"
+    options:
+      - "Python asyncio cannot synchronously emit lifecycle events during session startup and teardown"
+      - "Python SDK callbacks lack `SessionStart`/`SessionEnd`; those events exist only in the TypeScript SDK"
+      - "Session lifecycle events are only available in Managed Agents, not the local Agent SDK runtime"
+      - "The Python SDK uses a separate `telemetry.session` API for lifecycle events instead of hooks"
+    correct_idx: 1
+    explanation: "The Python Agent SDK's callback system exposes tool, prompt, stop, compaction, permission, notification, and subagent events — but not `SessionStart` or `SessionEnd`. The TypeScript SDK adds these two session lifecycle events. Work around this in Python by logging session IDs from the `init` SystemMessage."
+    section_anchor: hook-3-session-lifecycle-telemetry
+  - question: "Why is `bypassPermissions: true` specifically dangerous in a production agent deployment?"
+    options:
+      - "It removes context compression, causing runaway token spend that overwhelms cost circuit breakers"
+      - "It grants access to Managed Agents beta endpoints without requiring explicit operator authorization"
+      - "It disables all safety checks, including file-edit prompts and destructive Bash confirmations"
+      - "It forces the agent to ignore budget caps and run with an unbounded token allocation by default"
+    correct_idx: 2
+    explanation: "`bypassPermissions` disables ALL safety checks — file-edit confirmation prompts, destructive Bash command confirmations, and MCP tool approval gates. In production, use explicit `allowedTools` grants and `acceptEdits` for file editing instead of disabling the entire permission system."
+    section_anchor: the-five-step-deployment-checklist
 ---
 
 # Production: deploy + observability + cost controls

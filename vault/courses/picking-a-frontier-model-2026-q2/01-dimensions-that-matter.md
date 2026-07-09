@@ -45,6 +45,43 @@ references:
 slides: courses/picking-a-frontier-model-2026-q2/ch01-slides.pptx
 audio: courses/picking-a-frontier-model-2026-q2/ch01-audio.mp3
 voiceover_script: courses/picking-a-frontier-model-2026-q2/voiceover-01.md
+quiz:
+  - question: "MMLU is frequently cited in frontier model release notes. What does it primarily measure, and why does a high MMLU score poorly predict whether a model will reliably call your JSON tool schemas?"
+    options:
+      - "Academic knowledge recall across 57 domains via multiple-choice; knowledge recall doesn't test tool-call schema adherence or structural output stability"
+      - "Function-calling accuracy on production API schemas; high MMLU scores directly correlate with lower tool-use variance"
+      - "Coding correctness on isolated function completion; HumanEval scores are a reliable proxy for multi-step pipeline reliability"
+      - "Cross-lingual reasoning depth; multilingual performance predicts agentic reliability across all task types"
+    correct_idx: 0
+    explanation: "MMLU evaluates knowledge recall across 57 academic subjects using multiple-choice questions — it measures what a model knows, not whether it calls tools reliably or produces structurally consistent JSON. A model can score 92% on MMLU and still routinely return malformed schemas or omit required fields. The production gap is most pronounced in function-calling tasks, where public leaderboard scores and real-world reliability diverge substantially."
+    section_anchor: why-the-standard-benchmarks-fail-builders
+  - question: "A three-step agentic pipeline where each step has 90% tool-use determinism has what end-to-end success probability?"
+    options:
+      - "~97% — determinism penalties only apply at the first step where a mismatch is detected"
+      - "~90% — the pipeline average equals the per-step determinism rate regardless of pipeline length"
+      - "~73% — each step's probability compounds multiplicatively as 0.9 × 0.9 × 0.9"
+      - "~27% — determinism differences are squared at each stage transition in multi-step chains"
+    correct_idx: 2
+    explanation: "Pipeline success probability follows the formula d^n where d is per-step determinism and n is the number of steps. At 90% determinism over 3 steps: 0.9³ = 72.9% ≈ 73%. This compounding means a modest per-step reliability gap becomes significant at production pipeline lengths. Five steps at 90% → 59%; eight steps → 43%."
+    section_anchor: the-7-dimensions-that-predict-production-success
+  - question: "A well-built evaluation scorecard must include a 'disqualifier.' What does a disqualifier mean in this context?"
+    options:
+      - "A category of benchmark where the model's score is excluded from the weighted average to prevent outlier bias"
+      - "A minimum threshold on one dimension where a failing score eliminates the model regardless of its scores on all other dimensions"
+      - "A list of vendor claims that cannot be verified and must be removed from consideration before selecting a model"
+      - "An automatic cost penalty applied when a model scores below the industry average on any single dimension"
+    correct_idx: 1
+    explanation: "A disqualifier is a hard floor on one dimension — for example, 'tool-use determinism below 85% eliminates a model from the shortlist.' It prevents a model from surviving selection on aggregate weighted scores while failing critically on the dimension that matters most for your workload. A scorecard without a disqualifier can unconsciously average away a fatal flaw."
+    section_anchor: building-your-scorecard
+  - question: "An overnight batch pipeline classifies 2 million customer-support tickets into 12 categories. Each ticket is 200–500 words. Which dimension should receive the highest weight in the evaluation scorecard for this use case?"
+    options:
+      - "Latency p95 — reducing response time shrinks the overnight processing window"
+      - "Multimodal fidelity — accurate classification may require image or audio evidence from customers"
+      - "Cost-per-task — at 2 million items per night, per-unit cost dominates the total infrastructure bill"
+      - "Context fidelity at depth — each 500-word ticket requires mid-context retrieval precision"
+    correct_idx: 2
+    explanation: "Batch pipelines are latency-tolerant (overnight run), so latency p95 is low priority. Each ticket is short (200–500 words), so context depth is not a constraint. The use case doesn't require tool calls, so tool-use determinism matters mainly through structured-output reliability on the 12-category schema. Cost-per-task is the dominant variable: a 20% cost delta across 2 million nightly items is a material budget line regardless of which vendor it favors."
+    section_anchor: use-case-archetypes
 tags:
   - course/picking-a-frontier-model-2026-q2
   - evaluation

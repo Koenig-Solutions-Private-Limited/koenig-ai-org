@@ -1,7 +1,11 @@
 ---
 course_slug: claude-tool-use-from-zero
 title: "Claude Tool Use from Zero: From Basics to Production Connectors"
-status: awaiting-g0
+status: outline-g3-passed
+course_track: career
+why_this_matters: |
+  Tool use and MCP connector design are table-stakes skills for AI engineering roles at companies deploying Claude in enterprise workflows.
+  Engineers who can build secure, observable, production-grade connectors are positioned for backend, platform, and AI infrastructure tracks commanding a significant salary premium.
 author: course-author
 level: Builder
 target_audience: "Developers who want to master Claude's tool use capabilities, from simple function calling to building robust specialized MCP servers."

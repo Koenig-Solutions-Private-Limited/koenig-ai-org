@@ -133,31 +133,11 @@ A common mistake is conflating Agent Platform with Vertex AI Agent Engine. Agent
 - Route-time is where most production complexity concentrates: in-process ADK sub-agents suit single-team deployments; A2A routing is required when agents span separate codebases or deployment boundaries.
 ```
 
-## A2A — what in-process calls cannot do
+## A2A: What In-Process Calls Cannot Do
 
-In-process ADK sub-agents are simple and fast: one Python process calls another, passing state directly. For a single team shipping a single application, this is the right choice.
-
-A2A exists for the case where that assumption breaks. An HR agent built by the People team and a Finance agent built by the Finance team may never share a codebase, a deployment boundary, or a cloud region. In-process calls cannot cross these boundaries.
+An HR agent built by the People team and a Finance agent built by the Finance team may never share a codebase, a deployment boundary, or a cloud region. In-process calls cannot cross these boundaries.
 
 A2A defines a standard HTTP task lifecycle: a calling agent posts a task to an A2A endpoint, the receiving agent processes it asynchronously, and the result — including any artifacts — flows back through the same protocol. This decouples deployment from coordination. Neither team needs to know how the other's agent is implemented, only the A2A interface contract. The [A2A specification](https://a2a-protocol.org/latest/specification/) defines the full task-state machine and wire format; the implementation details belong to [[gemini-enterprise-agents/04-comparing-to-claude-agent-sdk-and-cloudflare-agents]].
-
-The practical effect: A2A makes agents first-class participants in enterprise workflows without requiring a shared runtime or shared codebase. For multi-team, multi-department agent networks, it is the protocol that makes coordination at scale possible.
-
-## Workforce agent vs developer-built agent
-
-The five-component map clarifies a distinction that product marketing often blurs.
-
-**Workforce agents** are delivered through Gemini Enterprise app. A knowledge worker uses them without writing code or knowing what runs beneath. These agents are configured — often by Power Users or IT admins — through the app's interface.
-
-**Developer-built agents** are created in ADK, deployed on Vertex AI Agent Engine, and managed through Agent Platform. They can surface inside Gemini Enterprise app as well, but they originate in code. The developer controls the tool set, the routing logic, and the deployment configuration.
-
-The boundary matters for ownership, budgeting, and incident response. Workforce agents are consumed; developer-built agents are shipped. Mixing up responsibility — who monitors, who debugs, who pays the bill — is a common source of production incidents on multi-team platforms.
-
-```takeaways
-- Workforce agents are configured through Gemini Enterprise app and consumed by knowledge workers without code; developer-built agents are authored in ADK, deployed on Vertex AI Agent Engine, and managed through Agent Platform.
-- The ownership boundary is operational: who monitors, who debugs, and who bears the cost differs depending on whether the agent is a workforce agent or a developer-built agent.
-- A developer-built agent can surface inside Gemini Enterprise app, but the team that wrote it owns its tool set, routing logic, and deployment configuration.
-```
 
 ## Hands-on exercise
 

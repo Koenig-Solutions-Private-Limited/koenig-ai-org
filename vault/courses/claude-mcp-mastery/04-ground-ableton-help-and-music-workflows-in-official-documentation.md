@@ -48,6 +48,44 @@ sources:
   - "https://www.ableton.com/en/manual/live-audio-effect-reference"
   - "https://modelcontextprotocol.io/specification/2025-06-18/server/tools"
   - "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview"
+duration_min: 40
+quiz:
+  - question: "What is the practical difference between using Claude's Ableton connector and asking a general AI model an Ableton question?"
+    options:
+      - "The connector produces longer responses because it queries multiple Ableton documentation pages simultaneously"
+      - "The connector draws answers from official Ableton documentation rather than from general AI training data"
+      - "The connector can edit Live set files directly while a general model is limited to text-only advice responses"
+      - "The connector bypasses Claude's reasoning step and returns raw documentation results for faster performance"
+    correct_idx: 1
+    explanation: "The Ableton connector grounds Claude's answers in official Ableton documentation — the Live manual, Push guides, device reference, and release notes. A general AI model draws from training data that may include outdated tutorials, wrong-version advice, or incorrect community workarounds. Documentation-grounded answers are as reliable as the documentation itself for well-covered features."
+    section_anchor: what-documentation-grounding-means-in-practice
+  - question: "Which four components make a context-rich Ableton connector troubleshooting prompt?"
+    options:
+      - "Project name, BPM, sample count, and the exact MIDI note pitch that is causing the unexpected behavior"
+      - "Software version, hardware setup, crash log excerpt, and a request for Claude to reset the Live preferences"
+      - "Environment (version and OS), symptom, expected behavior, and what you have already tried to fix it"
+      - "Session view screenshot, audio interface model, buffer size in samples, and Ableton support ticket number"
+    correct_idx: 2
+    explanation: "Environment, symptom, expected behavior, and what you have already tried are the four components. Environment ensures the connector queries the right documentation version; symptom and expected behavior define the problem precisely; listing what you have tried prevents repeated suggestions. Omitting the Live version alone can return guidance for the wrong release."
+    section_anchor: write-context-rich-troubleshooting-prompts
+  - question: "The Ableton connector gives a documented answer on how to configure a routing setup. You disagree because the result won't sound right in your track. What should you do?"
+    options:
+      - "Trust the documentation-grounded answer — if the connector found it in the official manual, the routing will work"
+      - "File a support request with Ableton because the connector answer contradicts your studio's established workflow"
+      - "Override the connector's guidance — musical taste and arrangement decisions are human-owned and not documentation-answerable"
+      - "Provide the Live set file path to the connector so it can inspect the actual routing before confirming the answer"
+    correct_idx: 2
+    explanation: "Documentation tells you how Ableton features work; it cannot tell you what sounds right in your track. Tempo, key, sound selection, mixing decisions, and arrangement structure are musical taste calls that belong to the producer. The connector is a documentation navigator and troubleshooting assistant, not a musical collaborator — override on taste, trust on feature behavior."
+    section_anchor: separate-technical-guidance-from-musical-decisions
+  - question: "Why should you always state your Ableton Live version at the start of a connector troubleshooting session?"
+    options:
+      - "The connector will not respond without a version number — it is a required field in the connector request schema"
+      - "Feature behavior, routing, and Push workflow changed significantly between releases; a version-ambiguous prompt may return guidance for the wrong Live version"
+      - "Stating the version unlocks connector features that are restricted in free-tier sessions for older Live installations"
+      - "The connector uses the version to determine which language the documentation was written in for your region"
+    correct_idx: 1
+    explanation: "Routing behavior, MIDI device support, and Push workflow changed significantly between Live 11 and Live 12, with Live 12.4 (May 2026) adding MIDI mapping from Push standalone and expanded control surface customization. A version-ambiguous prompt can return guidance for a different release, leading to steps that don't exist or settings that behave differently in your version."
+    section_anchor: what-documentation-grounding-means-in-practice
 ---
 
 # Ground Ableton help and music workflows in official Live 12 documentation (2026)

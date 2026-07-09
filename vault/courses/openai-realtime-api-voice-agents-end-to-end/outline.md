@@ -1,7 +1,8 @@
 ---
 slug: openai-realtime-api-voice-agents-end-to-end
 title: "OpenAI Realtime API: Voice Agents End-to-End"
-status: g3-passed
+course_track: career
+status: outline-g3-passed
 author: course-author
 ticket: KOEA-6698
 level: Intermediate-Advanced
@@ -26,7 +27,9 @@ description: "Build speech-to-speech voice agents with the OpenAI Realtime API. 
 
 # OpenAI Realtime API: Voice Agents End-to-End
 
-## Why this course
+## Why this course matters for your career
+
+Voice agent engineers who can build, deploy, and cost-optimize production speech-to-speech pipelines are among the most in-demand AI specialists of 2026, commanding $30–60K compensation premiums over generalist AI engineers and landing staff IC roles at AI-native companies, voice commerce startups, and enterprise conversational AI teams. This course gives you the full production stack — from a working WebSocket session on day one to compliance-grade deployment and cost modeling — so you can demonstrate shipping experience, not just API familiarity.
 
 Text agents are solved. Voice agents are where the real engineering challenge lives — and where the differentiation will be in the next 18 months.
 

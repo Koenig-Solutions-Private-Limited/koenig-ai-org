@@ -132,7 +132,6 @@ async def receive_events(ws, stop: asyncio.Event):
 async def main():
     headers = {
         "Authorization": f"Bearer {API_KEY}",
-        "OpenAI-Beta":   "realtime=v1",
     }
     async with websockets.connect(WS_URL, additional_headers=headers) as ws:
         await ws.send(json.dumps({

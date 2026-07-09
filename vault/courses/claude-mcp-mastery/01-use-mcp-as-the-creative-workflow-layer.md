@@ -53,6 +53,35 @@ sources:
   - "https://docs.blender.org/api/current/"
   - "https://help.ableton.com/hc/en-us/articles/206769450-Live-Manual"
   - "https://support.splice.com/hc/en-us/articles/360025013734-Splice-Sounds-Licensing-FAQ"
+duration_min: 35
+quiz:
+  - question: "A designer pastes a campaign brief into Claude and asks for three visual directions without connecting any app. Which workflow mode does this represent?"
+    options:
+      - "Advice mode — Claude reasons from supplied context; no connector tool is called and no creative file is changed"
+      - "Action mode — Claude sends the brief to a connector and triggers a tool call against an external design system"
+      - "Approval mode — Claude evaluates the brief for brand compliance and forwards it to the creative director"
+      - "Review mode — Claude inspects an existing file and summarizes the changes needed before a connector runs"
+    correct_idx: 0
+    explanation: "Advice mode covers all Claude interactions where context is supplied but no tool call is invoked. The brief is processed inside the conversation; no file is modified and no connector event is logged. Action mode is what happens when a connector tool fires against an external system."
+    section_anchor: separate-advice-from-action
+  - question: "In a creative MCP workflow map, which element answers 'what must be verified after the connector call runs?'"
+    options:
+      - "Resource — the file or data the connector is acting on during the current tool invocation"
+      - "Tool — the named callable operation the connector exposes for Claude to invoke against a creative app"
+      - "Checkpoint — the deliberate pause where a human compares the result to the brief before proceeding"
+      - "Host — the AI application layer that manages the conversation and surfaces tool results to the user"
+    correct_idx: 2
+    explanation: "A checkpoint is the explicit review step after a connector action — it can be a script inspection, a creative-director taste check, a license review, or a file-diff before saving. Without it, connector calls chain invisibly. The host and resource are structural parts of the MCP map, not review steps."
+    section_anchor: map-the-creative-stack-before-you-prompt
+  - question: "Which of these is a human-owned decision that should never be delegated to a Claude creative connector?"
+    options:
+      - "Generating a checklist from official Ableton documentation for a known routing problem in a Live set"
+      - "Proposing two export variant settings from an existing Photoshop file for a studio review session"
+      - "Deciding whether the final product visual is on brand and cleared for client delivery and release"
+      - "Drafting a Python modifier script for Blender based on a named object and a specific change request"
+    correct_idx: 2
+    explanation: "Taste, brand fit, rights review, and final release authority are permanently human-owned. Claude can generate checklists, propose exports, and draft scripts — those are bounded, reviewable tasks. Deciding an asset is on brand and cleared for delivery involves subjective judgment and organizational accountability that a connector cannot hold."
+    section_anchor: put-the-human-decisions-in-the-prompt
 ---
 
 # Use MCP as the creative workflow layer (2026)

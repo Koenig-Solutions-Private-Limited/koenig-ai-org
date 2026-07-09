@@ -39,6 +39,34 @@ tags:
   - finance
   - approvals
   - connectors
+quiz:
+  - question: "Why should an SMB connector replace vendor-specific API primitives like `quickbooks_query(sql)` with workflow-level tools?"
+    options:
+      - "Vendor APIs have higher latency than workflow-level abstractions running in the same connector process"
+      - "Workflow-level tools describe business actions, making approval gates and audit logging tractable"
+      - "The MCP specification prohibits raw SQL queries in tool input schema definitions"
+      - "Claude cannot reliably generate valid SQL, so natural-language tool names are required instead"
+    correct_idx: 1
+    explanation: "quickbooks_query(sql) forces Claude to reason at the database level and makes every call look like an arbitrary data operation. Workflow-level tools like find_unmatched_settlements describe what the business needs to happen. This makes it clear what each tool does, where an approval gate belongs, and what should be logged."
+    section_anchor: the-smb-workflow-stack
+  - question: "Why must the Payroll Assistant separate reconciliation from the customer-facing send action into distinct tools?"
+    options:
+      - "Running both actions in one call exceeds the MCP tool input size limit for financial payloads"
+      - "Combining them makes human approval impossible because there is no natural pause point for review"
+      - "The MCP protocol does not support multi-stage tool calls within a single server session connection"
+      - "QuickBooks and PayPal rate limits require the two API calls to be spaced at least thirty seconds apart"
+    correct_idx: 1
+    explanation: "Each stage carries different risk: matching is read-heavy, drafting is reversible, and sending is external and customer-facing. Combining them means you cannot insert a human approval gate between 'we found a mismatch' and 'we emailed the customer.' Splitting also prevents a matching failure from rolling back a send that already executed."
+    section_anchor: split-reconciliation-from-action
+  - question: "What makes an `awaiting_approval` object more useful than Claude describing the draft action in prose?"
+    options:
+      - "The awaiting_approval object is smaller in tokens, which reduces the cost of each tool response"
+      - "The object gives the host application a machine-readable state it can enforce as control flow"
+      - "Prose descriptions are filtered by the MCP protocol before reaching the host application layer"
+      - "Only structured JSON objects are visible to the user; prose text is hidden from the UI rendering layer"
+    correct_idx: 1
+    explanation: "An awaiting_approval object with run_id, summary, and approval_required_for gives the host a state it can enforce: it knows an approval is pending and can gate the next write action on a confirmed approval event. Claude explaining the draft in prose is advisory — the application cannot reliably gate on prose without fragile parsing."
+    section_anchor: approval-state
 ---
 
 # SMB and Growth Connectors

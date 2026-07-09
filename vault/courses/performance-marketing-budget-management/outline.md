@@ -2,6 +2,8 @@
 course_slug: performance-marketing-budget-management
 title: "Performance Marketing Budget Allocation & Bid Strategy at Scale: From Channel Silos to Cross-Channel ROI"
 status: g3-passed
+course_track: career
+toc_locked: true
 author: course-author
 level: Practitioner
 vendor_tag: google-ads meta microsoft-ads
@@ -46,6 +48,10 @@ sources:
 ---
 
 # Performance Marketing Budget Allocation & Bid Strategy at Scale
+
+## Why this matters for your career
+
+For candidates targeting Performance Marketing Specialist roles at B2C platforms, budget allocation is the #1 technical skill gap — it's what separates channel operators from multi-channel owners. This course gives you the frameworks and vocabulary to own a ₹1Cr+/month cross-channel budget on day one, answering the exact interview question every hiring manager asks: "How do you decide where the next rupee goes?"
 
 ## Why this course
 

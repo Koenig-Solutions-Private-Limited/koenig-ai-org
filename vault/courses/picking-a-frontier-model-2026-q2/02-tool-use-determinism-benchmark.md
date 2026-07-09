@@ -4,7 +4,7 @@ chapter_num: 2
 chapter_slug: tool-use-determinism-benchmark
 title: "Tool-use determinism — our 10×3×5 benchmark"
 hero_image: "/courses/picking-a-frontier-model-2026-q2/assets/ch02-hero.svg"
-status: g3-passed
+status: g4-approved
 author: "Koenig AI Instructor"
 agent_drafted_by: ca965eff-ea59-4030-91de-47845d3600c6
 vendor_tag: koenig-ai-academy
@@ -38,6 +38,43 @@ references:
   - "[^9]: Srivastava, A. et al. (2022). 'Beyond the Imitation Game: Quantifying and Extrapolating the Capabilities of Language Models (BIG-Bench).' https://arxiv.org/abs/2206.04615 — large-scale multi-task benchmark establishing principles for distinguishing model capability dimensions."
 slides: courses/picking-a-frontier-model-2026-q2/ch02-slides.pptx
 voiceover_script: courses/picking-a-frontier-model-2026-q2/voiceover-02.md
+quiz:
+  - question: "Setting temperature=0 on a frontier model API call guarantees structurally identical outputs across repeated runs. Which statement correctly evaluates this claim?"
+    options:
+      - "True — temperature=0 forces greedy decoding, removing all sources of output variation at inference time"
+      - "False — attention routing, batching behavior, and API load conditions introduce structural variance that temperature cannot control"
+      - "True — temperature controls the full sampling distribution, making the top-1 token deterministic for all frontier models"
+      - "False — but only when using models above 100B parameters; smaller models are deterministic at temperature=0"
+    correct_idx: 1
+    explanation: "Temperature is only one source of variance. Even at temperature=0, factors including attention routing differences across hardware, batching behavior under load, and API version updates can produce structural mismatches between runs. All three frontier models in the 10×3×5 dataset show nonzero structural variance at temperature=0. Measure empirically rather than assuming the parameter eliminates variance."
+    section_anchor: what-determinism-is-and-isnt
+  - question: "Across 150 runs in the 10×3×5 benchmark, which failure type accounts for the largest share of structural mismatches?"
+    options:
+      - "Type mismatch — a field returns a string instead of the expected integer in the schema"
+      - "Extra keys — the model appends unexpected fields not specified in the required schema"
+      - "Key omission — a required field present in most runs is silently absent in one or more runs"
+      - "Wrong enum value — an allowed string constant is replaced with a plausible but invalid alternative"
+    correct_idx: 2
+    explanation: "Key omission accounts for 54% of all structural mismatches across the dataset — far more than type mismatch (18%), extra keys (14%), nesting errors (9%), or wrong enum values (5%). It is also the most dangerous failure mode because it produces structurally valid (but incomplete) JSON that passes many validators while silently dropping data downstream stages expect."
+    section_anchor: results-summary
+  - question: "GPT-5.5 averages 88% determinism without schema enforcement and 93% with strict JSON schema enabled. What does this finding imply for model selection on structured-output workloads?"
+    options:
+      - "Schema enforcement is a larger reliability lever than switching from GPT-5.5 to Opus 4.7 for structured-output tasks on OpenAI's platform"
+      - "Switching to Opus 4.7 is always preferable since its 91.4% baseline exceeds GPT-5.5 even after schema enforcement is applied"
+      - "The 5-point improvement from strict mode is negligible; model-level determinism is the only lever that matters for pipeline planning"
+      - "Strict schema mode should be disabled during benchmarking to produce a valid baseline before choosing a model"
+    correct_idx: 0
+    explanation: "GPT-5.5 with strict JSON schema jumps from 88% to 93%, narrowing and reversing the typical 3–5 point gap against Opus 4.7. Enabling a single API parameter outperforms a model switch in terms of reliability gain per unit of migration effort. The actionable rule: apply schema enforcement before concluding that model replacement is necessary."
+    section_anchor: benchmark-design-10-prompt-categories
+  - question: "A builder measures Opus 4.7 determinism at 80% on a specific prompt type. Their production system uses this prompt type in a 4-step pipeline. What is the approximate end-to-end success probability?"
+    options:
+      - "~80% — pipeline success rate equals the single-step determinism rate when the same model is used at every step"
+      - "~41% — calculated as 0.8⁴ using the multiplicative reliability formula for sequential pipeline steps"
+      - "~60% — the pipeline degrades at half the single-step rate because each step partially recovers prior errors"
+      - "~20% — failure probability is squared at each step transition in multi-step pipelines"
+    correct_idx: 1
+    explanation: "Pipeline success probability = d^n = 0.8⁴ = 0.4096 ≈ 41%. This means 59% of task attempts require at least one retry or fail outright. At this level, schema enforcement (which may bring Opus to 93%+ on strict schemas) or pipeline redesign to reduce sequential LLM steps are more effective interventions than model switching alone."
+    section_anchor: interpreting-your-results
 tags:
   - course/picking-a-frontier-model-2026-q2
   - evaluation

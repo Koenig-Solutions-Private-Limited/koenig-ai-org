@@ -45,6 +45,44 @@ sources:
   - "https://docs.blender.org/manual/en/latest/advanced/scripting/introduction.html (retrieved 2026-06-14)"
   - "https://modelcontextprotocol.io/specification/2025-06-18/server/tools (retrieved 2026-06-14)"
   - "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview (retrieved 2026-06-14)"
+duration_min: 50
+quiz:
+  - question: "In Blender's bpy module, which namespace holds the currently active object that operators read from at script run time?"
+    options:
+      - "bpy.data — the data store holding every mesh, material, image, collection, and scene in the current file"
+      - "bpy.context — the current editor state including the active object, selected objects, and active scene"
+      - "bpy.ops — the callable equivalents of Blender's menu commands such as Add Object and Apply Modifier"
+      - "bpy.types — the class registry that defines the structure of all Blender data blocks and operators"
+    correct_idx: 1
+    explanation: "bpy.context reflects current editor state. Operators (bpy.ops) read from this context to know which object to act on — if the wrong object is active when a script runs, the operator modifies the wrong target. This is the most common source of connector mistakes and the reason to read the generated script before executing it."
+    section_anchor: why-the-python-api-is-the-connector-surface
+  - question: "A safe, bounded Blender scene-edit prompt must name which three things at minimum?"
+    options:
+      - "The working file, the object in scope, and what the connector must return before the human saves"
+      - "The connector version, the bpy namespace path, and the expected render output format for the scene"
+      - "The studio brief, the marketing campaign name, and the client's approved visual reference for the style"
+      - "The Blender release number, the material node count, and the frame range for the animation timeline"
+    correct_idx: 0
+    explanation: "Naming the working file, the object in scope, and what must be returned before saving turns a vague connector prompt into a bounded production instruction. The file prevents acting on the wrong scene; named objects prevent cross-object side effects; the return requirement creates a human verification gate before changes are committed."
+    section_anchor: write-a-bounded-scene-edit-prompt
+  - question: "Why should a generated bpy script be read before execution, even when running against a duplicate .blend file?"
+    options:
+      - "Blender auto-runs scripts at import time, so reading the description prevents a duplicate execution event"
+      - "Generated scripts may reference the wrong active object and apply changes to unintended parts of the scene"
+      - "Blender's undo history does not record Python script runs, making every generated script execution permanent"
+      - "Reading the script satisfies Anthropic's connector terms of service requiring human script approval first"
+    correct_idx: 1
+    explanation: "Operators read from bpy.context, so a script calling bpy.ops.object.modifier_apply() acts on whichever object is active at run time. A wrong active object means the modifier is applied to the wrong mesh. Reviewing the script first catches incorrect context assumptions, hardcoded names, and operator scope errors before any scene data changes."
+    section_anchor: review-generated-python-before-execution
+  - question: "Before starting a Claude Blender connector session on a production asset, the recommended first step is:"
+    options:
+      - "Enable the Scripting workspace and run bpy.context.scene.name in the Python console to verify the scene"
+      - "Save a versioned copy of the file (e.g. scene_v02_preAI.blend) so the original is recoverable after any script run"
+      - "Disable incremental auto-save under Preferences so the connector session does not overwrite existing auto-save slots"
+      - "Grant the connector write access to the live production folder to minimize file transfer time during the session"
+    correct_idx: 1
+    explanation: "A versioned pre-session copy is the rollback foundation. Without it, a script error that overwrites mesh data or applies an irreversible modifier may have no recovery path. Blender's undo history and incremental auto-save are additional safety layers, not substitutes for an explicit versioned backup before a connector session begins."
+    section_anchor: protect-production-files-with-versioned-copies
 ---
 
 # Automate Blender scenes in 2026 without hiding the Python layer

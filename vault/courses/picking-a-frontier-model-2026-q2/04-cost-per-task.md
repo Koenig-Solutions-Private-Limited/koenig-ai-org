@@ -37,6 +37,43 @@ references:
 slides: courses/picking-a-frontier-model-2026-q2/ch04-slides.pptx
 audio: courses/picking-a-frontier-model-2026-q2/voiceover-04.mp3
 voiceover_script: courses/picking-a-frontier-model-2026-q2/voiceover-04.md
+quiz:
+  - question: "Which factor does a standard pricing-page cost comparison consistently omit, causing the largest divergence between listed price and actual bill?"
+    options:
+      - "Output token prices, which are typically bundled into the input rate and reported as a blended figure"
+      - "The retry multiplier driven by determinism failures, which compounds across pipeline steps as (1/determinism)^steps"
+      - "Input token prices for system prompts, which providers cap at a published maximum to normalize cross-model comparisons"
+      - "Tool definition tokens, which are billed at a separate internal rate not disclosed on public pricing pages"
+    correct_idx: 1
+    explanation: "Pricing pages show per-token rates but ignore retry rate, which multiplies every cost component by 1/determinism^steps. At category-5 complexity over a 3-step pipeline, Gemini's 59% success rate means 1.69 expected runs per successful task, compressing its 2.3× token-price advantage over Opus to a 1.7× cost-per-task advantage. At 10 steps, a 14-point determinism gap becomes a 7.2× cost difference that pricing pages hide entirely."
+    section_anchor: why-pricing-pages-are-misleading
+  - question: "At category-5 multi-tool complexity over 3 pipeline steps, Gemini 3.1 Pro costs $0.032 per run and Opus 4.7 costs $0.075. After applying measured determinism (Gemini 84%, Opus 94%), what is the cost-per-successful-task relationship?"
+    options:
+      - "Gemini remains 2.3× cheaper than Opus because token pricing fully determines cost-per-task regardless of determinism"
+      - "Opus becomes cheaper because its determinism advantage eliminates retry overhead entirely, reversing the token-price gap"
+      - "Gemini's advantage compresses to ~1.7× after retry overhead is applied, though it remains cheaper per successful task at this complexity"
+      - "Both models are cost-equivalent after retries because the retry cost exactly matches the per-token price differential"
+    correct_idx: 2
+    explanation: "3-step pipeline success: Opus 0.94³ = 83% → 1.20 expected runs → $0.090/task. Gemini 0.84³ = 59% → 1.69 expected runs → $0.054/task. The ratio compresses from 2.3× (token pricing) to $0.090/$0.054 ≈ 1.7× (cost-per-task). Gemini is still cheaper here — but the inversion kicks in above 4–5 steps on harder prompt categories."
+    section_anchor: the-retry-multiplier-in-practice
+  - question: "A team runs 10,000 API calls per day with a 10,000-token system prompt. What is the daily savings from enabling Anthropic's prompt caching at Opus 4.7 pricing ($5/M input, $0.50/M cached)?"
+    options:
+      - "~$50/day — caching reduces total input cost by approximately 10% by avoiding re-tokenization overhead"
+      - "~$250/day — the 50% discount on cached tokens splits the $500 uncached daily cost in half"
+      - "~$450/day — the 90% cache-read discount reduces the $500 uncached daily spend to $50 per day"
+      - "~$500/day — caching eliminates all input token charges for repeated system prompts after the first call"
+    correct_idx: 2
+    explanation: "Without caching: 10K tokens × $5/M × 10,000 calls = $500/day. With caching: 10K tokens × $0.50/M × 10,000 calls = $50/day. Savings = $450/day. The 90% cache discount is available on all three platforms; the absolute dollar saving is largest for Opus (highest per-token price) but the discount percentage is the same across providers."
+    section_anchor: prompt-caching-the-underrated-cost-lever
+  - question: "For a single-step 80K-token document Q&A query with one LLM call and no pipeline, which model wins on cost-per-task and why?"
+    options:
+      - "Opus 4.7 — its lower retry rate offsets the higher token price on document retrieval tasks"
+      - "GPT-5.5 — its comparable input price to Opus 4.7 but superior middle-context stability gives better cost-quality outcome"
+      - "Gemini 3.1 Pro — single-step retrieval doesn't compound determinism variance, so the 2.5× per-token price advantage is preserved"
+      - "All three are cost-equivalent for single-step document Q&A because retry overhead is zero at n=1 pipeline step"
+    correct_idx: 2
+    explanation: "Single-step workloads don't compound determinism variance — there are no sequential failures to amplify. With no retry multiplier, token pricing dominates: Gemini at $2/$12 per M in/out vs. Opus at $5/$25 and GPT-5.5 at $5/$30. For an 80K-token input + 600-token output: Gemini = $0.167, Opus = $0.415, GPT-5.5 = $0.418. Gemini is 2.5× cheaper. The inversion only occurs at multi-step pipelines with higher complexity schemas."
+    section_anchor: the-three-workload-archetypes-costed
 tags:
   - course/picking-a-frontier-model-2026-q2
   - evaluation

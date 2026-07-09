@@ -54,11 +54,10 @@ Tools are declared in `session.update` using the same JSON Schema format as Chat
 import WebSocket from "ws";
 
 const ws = new WebSocket(
-  "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01",
+  "wss://api.openai.com/v1/realtime?model=gpt-realtime-2.1",
   {
     headers: {
       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-      "OpenAI-Beta": "realtime=v1",
     },
   }
 );

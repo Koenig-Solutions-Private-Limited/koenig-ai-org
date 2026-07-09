@@ -174,7 +174,6 @@ WS_URL  = f"wss://api.openai.com/v1/realtime?model={MODEL}"
 async def main():
     headers = {
         "Authorization": f"Bearer {API_KEY}",
-        "OpenAI-Beta": "realtime=v1",
     }
 
     async with websockets.connect(WS_URL, additional_headers=headers) as ws:

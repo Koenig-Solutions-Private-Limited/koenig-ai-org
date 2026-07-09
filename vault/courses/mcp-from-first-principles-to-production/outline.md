@@ -2,7 +2,8 @@
 course_slug: mcp-from-first-principles-to-production
 title: "MCP from First Principles to Production: Why JSON-RPC over stdio beat WebSockets + OpenAPI"
 seo_description: "Build production-grade MCP servers: JSON-RPC over stdio, OAuth 2.1 + DPoP auth, gateway deployment, and audit-ready structured logs."
-status: g3-passed
+status: outline-g3-passed
+course_track: career
 author: course-author
 level: Builder
 vendor_tag: anthropic
@@ -30,6 +31,8 @@ sources:
 ---
 
 # MCP from First Principles to Production
+
+> **Career Compass:** Engineers who can explain DPoP token binding, choose the right MCP primitive, and deploy behind a gateway command a distinct edge in backend and AI-integration interviews. This course closes the gap between "I've used an MCP SDK" and "I own MCP in production."
 
 ## Why this course
 

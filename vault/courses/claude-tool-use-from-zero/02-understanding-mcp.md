@@ -28,6 +28,34 @@ tags:
   - mcp
   - claude-code
   - connectors
+quiz:
+  - question: "A company-wide refund policy is stable and read-only. Which MCP primitive should represent it?"
+    options:
+      - "A tool, because it must be retrieved by calling a function with a policy name argument"
+      - "A resource, because it is stable read-only context identified by a URI like `company://policies/refund`"
+      - "A prompt, because policy language is a reusable instruction template for the model to apply"
+      - "A connector, because it wraps the policy management API behind a protocol endpoint"
+    correct_idx: 1
+    explanation: "Resources are stable, readable context identified by URIs. A static refund policy fits this pattern: the host retrieves it as context rather than invoking it as an action. Modeling it as a tool makes it look like an action with side effects. A prompt is for reusable instruction patterns, not data retrieval."
+    section_anchor: the-three-primitives-tools-resources-and-prompts
+  - question: "You are configuring a Claude Code MCP server that runs as a local Node.js script. Which transport should you choose?"
+    options:
+      - "Remote HTTP, because it is the only transport recommended for production MCP servers"
+      - "SSE (Server-Sent Events), because it supports persistent real-time event streaming connections"
+      - "Local stdio, because it runs as a local process started directly by a host"
+      - "WebSocket, because it has lower per-message latency than stdio pipe connections"
+    correct_idx: 2
+    explanation: "Claude Code's MCP documentation recommends local stdio for servers running as local processes on the machine. HTTP is recommended for remote cloud services. SSE is deprecated for new work. WebSocket is not a documented MCP transport option."
+    section_anchor: host-client-server-and-transport
+  - question: "Which capability is correctly classified under MCP's three primitives?"
+    options:
+      - "`company://policies/refund-policy` — tool, because it performs a targeted policy query"
+      - "`list_unpaid_invoices(customer_id)` — resource, because it is read-only data retrieval"
+      - "`draft_collection_email(customer_id, tone)` — prompt, because it is a reusable instruction template"
+      - "`create_refund(order_id, amount)` — resource, because it accesses the finance data system"
+    correct_idx: 2
+    explanation: "draft_collection_email is a reusable instruction template for a communication workflow — the definition of a prompt. The refund policy URI is a resource, not a tool. list_unpaid_invoices is a tool (it executes a query with arguments). create_refund is a tool (it changes business state)."
+    section_anchor: the-three-primitives-tools-resources-and-prompts
 ---
 
 # Beyond Function Calling: Understanding MCP

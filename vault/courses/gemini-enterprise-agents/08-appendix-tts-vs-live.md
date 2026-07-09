@@ -9,6 +9,34 @@ duration_min: 10
 learning_objectives:
   - "Distinguish between scripted audio generation (Flash TTS) and interactive speech agents (Live API)"
   - "Identify the correct Google audio surface for your agent's UX requirements"
+quiz:
+  - question: "An agent generates narrated course content from a pre-written script and needs precise control over vocal pace and style. Which surface fits?"
+    options:
+      - "Gemini Live API, which handles interactive audio conversations with adaptive prosody and low latency"
+      - "Gemini 3.1 Flash TTS, which generates high-fidelity audio from scripted text with expressive style control"
+      - "Either surface, since both handle scripted text-to-audio generation with similar control and quality"
+      - "A cascaded speech-to-text plus LLM plus TTS pipeline tuned for scripted content at lower cost"
+    correct_idx: 1
+    explanation: "Flash TTS is optimized for scripted audio: narrated courses, podcasts, and exact recitation with expressive style tags. Gemini Live API is designed for interactive, real-time conversation — not pre-scripted narration."
+    section_anchor: when-to-use-gemini-31-flash-tts
+  - question: "A user talks to a voice agent in real time while sharing their screen. Which surface provides the lowest latency floor for this interaction?"
+    options:
+      - "Gemini 3.1 Flash TTS, which generates audio from the model's text output after each reasoning step"
+      - "Gemini Live API, which handles multimodal audio and video input natively in a single low-latency pipeline"
+      - "A cascaded STT-then-LLM-then-TTS pipeline that processes each modality stage in a predictable sequence"
+      - "Cloud Text-to-Speech, which buffers completed audio and streams it to the client after reasoning finishes"
+    correct_idx: 1
+    explanation: "Gemini Live API handles audio-to-audio (and video-to-audio) natively, optimized for turn-taking with ultra-low latency. Cascaded STT+LLM+TTS accumulates processing latency at every stage, producing a 2-4 second floor the Live API avoids."
+    section_anchor: when-to-use-gemini-live-api
+  - question: "Why does Google explicitly recommend against a cascaded STT-to-LLM-to-Flash-TTS pipeline for interactive voice agents?"
+    options:
+      - "Flash TTS output format is incompatible with the audio frame sizes that most STT services produce"
+      - "The cascaded pipeline accumulates latency at each stage, producing a 2-4 second floor that Live API avoids"
+      - "Flash TTS does not support the SSML-like style tags required for real-time interactive voice control"
+      - "Gemini Live API is priced per word while Flash TTS charges per character, making cascaded pipelines costlier"
+    correct_idx: 1
+    explanation: "A User-Audio→STT→LLM→Flash-TTS→User-Audio pipeline accumulates processing delay at every step. Gemini Live API handles the audio-to-audio path natively, eliminating the latency floor inherent in the cascaded approach."
+    section_anchor: strategic-recommendation
 ---
 
 # Appendix: Gemini Flash TTS vs. Gemini Live API

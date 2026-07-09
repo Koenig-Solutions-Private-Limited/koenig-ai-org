@@ -37,6 +37,34 @@ sources:
   - https://news.ycombinator.com/item?id=47956895
   - https://status.claude.com/incidents/2gf1jpyty350
   - https://news.ycombinator.com/item?id=47952722
+quiz:
+  - question: "Why did Anthropic target creative tools as early MCP connectors instead of enterprise CRM systems?"
+    options:
+      - "Creative tools have significantly larger user bases than enterprise CRM across all market segments"
+      - "Creative syntax like bpy and ExtendScript is hard for humans but easy for LLMs, making the benefit immediate"
+      - "Enterprise CRM vendors declined to provide API documentation for the MCP connector launch"
+      - "Creative connectors require fewer authentication steps and no enterprise compliance review process"
+    correct_idx: 1
+    explanation: "The chapter identifies three reasons: creative syntax has a high barrier for humans but is easy for LLMs, creating immediate 'aha!' moments; a bug in a 3D script is a creative glitch, not a business incident — lower risk for early production testing; cross-app bridging positions Claude as the creative studio OS. User base size and authentication complexity are not the cited reasons."
+    section_anchor: why-anthropic-chose-creative-apps-first
+  - question: "Which architecture principle applies to all nine initial creative connectors launched in April 2026?"
+    options:
+      - "Cloud-first storage: all creative assets are uploaded to Anthropic's CDN before processing"
+      - "Local-first architecture: creative assets stay on the user's machine while Claude sends structured commands"
+      - "Batch-only execution: all tool commands are queued and processed in an offline scheduled job"
+      - "Container-based isolation: each connector runs inside a Docker sandbox with no host filesystem access"
+    correct_idx: 1
+    explanation: "The chapter states the connectors 'run as local MCP servers, meaning your creative assets stay on your machine while Claude only sends and receives structured commands.' Cloud-first storage, batch-only execution, and container-based isolation are not described for these connectors — local-first is the defining architecture."
+    section_anchor: key-facts
+  - question: "What does the Blender MCP connector expose to Claude?"
+    options:
+      - "A simplified wrapper with pre-defined 3D shape commands for common modeling operations"
+      - "Blender's native Python API (bpy) for executing code directly against the live scene state"
+      - "A static catalog of pre-rendered scene templates that Claude selects and applies by name"
+      - "A REST API that proxies Blender render requests to Anthropic's cloud servers for processing"
+    correct_idx: 1
+    explanation: "The Blender connector exposes the native bpy Python API, allowing Claude to execute real bpy patterns against the live Blender scene. It is not a simplified wrapper, a static template catalog, or a cloud proxy — it runs locally and gives Claude access to the same Python API a human Blender developer would use."
+    section_anchor: walkthrough-controlling-blender-via-mcp
 ---
 
 # How to use Claude’s creative connectors for Blender and Adobe for creativity

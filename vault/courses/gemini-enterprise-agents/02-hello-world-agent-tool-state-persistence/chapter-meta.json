@@ -10,7 +10,7 @@
   "assets": {
     "audio_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/gemini-enterprise-agents/02-hello-world-agent-tool-state-persistence/audio.mp3",
     "slide_deck_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/gemini-enterprise-agents/02-hello-world-agent-tool-state-persistence/slide-deck.pdf",
-    "slides_url": "/courses/gemini-enterprise-agents/ch02-slides.pptx"
+    "slides_url": "/courses/gemini-enterprise-agents/02-hello-world-agent-tool-state-persistence-slides.pptx"
   },
   "asset_metadata": {
     "audio": {

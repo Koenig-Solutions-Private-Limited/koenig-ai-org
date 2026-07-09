@@ -3,7 +3,7 @@ course_slug: gemini-enterprise-agents
 chapter_num: 1
 type: voiceover-script
 source_chapter: vault/courses/gemini-enterprise-agents/01-what-gemini-enterprise-agent-platform-is-and-isnt.md
-audio_file: vault/courses/gemini-enterprise-agents/ch01-audio.mp3
+audio_file: vault/courses/gemini-enterprise-agents/01-what-gemini-enterprise-agent-platform-is-and-isnt-audio.mp3
 duration_sec: 0
 word_count: 2569
 speaker: notebooklm-dual-narrator

@@ -25,6 +25,34 @@ tags:
   - mcp
   - typescript
   - server
+quiz:
+  - question: "What is the purpose of the `path.resolve` + `startsWith` check in the file-browser server?"
+    options:
+      - "It caches resolved paths to reduce file-system lookup latency on repeated directory requests"
+      - "It prevents directory traversal attacks by rejecting any path that escapes the approved root"
+      - "It converts all user-supplied relative paths to lowercase before passing them to readdir"
+      - "It resolves symbolic links so the server can log the canonical destination path correctly"
+    correct_idx: 1
+    explanation: "path.resolve constructs an absolute path from the user-supplied relative input, and startsWith(root) verifies it stays inside the approved directory. Without this check, a caller could supply '../../etc/passwd' and escape the intended root. Caching, lowercasing, and symlink resolution are separate concerns."
+    section_anchor: minimal-server-shape
+  - question: "Why is a generic `read_file(path)` tool considered dangerous in an MCP server?"
+    options:
+      - "It requires too many input parameters for Claude to fill correctly in a single turn"
+      - "It exposes every file the server process can read, including secrets and credentials"
+      - "It forces the host to validate all MIME types before returning any binary file content"
+      - "It creates excessive round-trip latency when reading files larger than ten kilobytes"
+    correct_idx: 1
+    explanation: "read_file(path) with no root restriction lets Claude — or a prompt injection attack — request .env files, SSH keys, browser profiles, or system files. The server process often has broader filesystem access than intended. Separating list from read and fixing the allowed root is the correct defense."
+    section_anchor: why-this-is-safer-than-read_filepath
+  - question: "In the chapter's file-browser design, who enforces the rule that certain paths are off-limits?"
+    options:
+      - "Claude, based on the tool description and the instructions in the model's system prompt"
+      - "The host application, by filtering the tool_use blocks before they reach the MCP server"
+      - "The server, by enforcing a root restriction in code that the model cannot override"
+      - "The MCP protocol layer, which automatically blocks path traversal sequences in tool arguments"
+    correct_idx: 2
+    explanation: "The server enforces the boundary in code. Claude may helpfully avoid sensitive paths, but prompt instructions are not a security control. The host can validate requests, but server-side enforcement is what guarantees the boundary. The MCP protocol itself has no path-traversal guard."
+    section_anchor: what-the-server-will-do
 ---
 
 # Building Your First MCP Server
