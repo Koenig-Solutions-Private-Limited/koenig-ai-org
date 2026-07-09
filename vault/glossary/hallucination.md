@@ -11,3 +11,10 @@ Hallucination is the most consequential failure mode of current LLMs. Models hal
 Mechanistically, hallucinations occur when the model's internal representation of a fact is weak (low-frequency training data) or the model attempts to extrapolate beyond its knowledge. Confident-sounding hallucinations are particularly dangerous because users may not recognize them as errors.
 
 Mitigation strategies fall into three categories: grounding (RAG, tool use—give the model the facts so it doesn't have to recall them), training (RLHF with factuality rewards, Constitutional AI), and post-hoc verification (citation checking, cross-validation with a fact-checker model). No single strategy eliminates hallucination; production systems combine all three. Calibration research aims to make models better at expressing uncertainty rather than confabulating.
+
+## Related Terms
+
+- [[glossary/confabulation|Confabulation]] — a synonym for hallucination emphasising the unintentional, fluent fabrication pattern
+- [[glossary/grounding|Grounding]] — the technique of anchoring model responses in verified external facts or retrieved documents
+- [[glossary/rag|Retrieval-Augmented Generation (RAG)]] — the pattern of retrieving relevant documents and injecting them into the prompt
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry

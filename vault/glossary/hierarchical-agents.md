@@ -11,3 +11,11 @@ In a hierarchical architecture, an executive or CEO agent receives a high-level 
 The key advantage is specialization without chaos: each agent is an expert in its domain and has tools tailored to that domain. The key challenge is information transfer—summaries passed up the hierarchy inevitably lose detail, and coordinators must decide how much context to pass down without overloading sub-agents' context windows.
 
 Paperclip's company model is explicitly hierarchical: CEO (Opus 4.7) → chiefs (Sonnet 4.6) → workers (Gemini Flash, DeepSeek). Budget limits cascade: each layer can only spend up to its allocated fraction of the total company budget, preventing any single sub-task from consuming disproportionate resources.
+
+## Related Terms
+
+- [[glossary/multi-agent-system|Multi-Agent System]] — the broader architecture in which multiple specialized agents collaborate
+- [[glossary/orchestrator|Orchestrator]] — the component that owns the task graph and decides which agent handles each step
+- [[glossary/sub-agent|Sub-Agent]] — a child agent spawned by an orchestrator to execute a bounded subtask
+- [[glossary/planning-agent|Planning Agent]] — the agent responsible for decomposing goals into executable sub-tasks
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — hands-on practice with the concepts covered in this entry

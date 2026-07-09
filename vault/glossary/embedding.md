@@ -14,3 +14,11 @@ Modern embeddings come from transformer encoder models or specialized embedding 
 Embedding dimensionality, model architecture, and training data dominate quality. Modern best-in-class embedding models train with contrastive losses on (query, positive document, hard negative) triples sourced from search query logs.
 
 In RAG systems, embeddings are typically used with vector indexes (FAISS, pgvector, Pinecone, Weaviate, Convex vector index, Supabase pgvector) and a top-k semantic similarity query. Hybrid retrieval — combining dense embedding similarity with sparse BM25 — typically outperforms either alone on real-world workloads.
+
+## Related Terms
+
+- [[glossary/rag|Retrieval-Augmented Generation (RAG)]] — the pattern of retrieving relevant documents and injecting them into the prompt
+- [[glossary/vector-database|Vector Database]] — the indexed store that enables fast semantic similarity search for retrieval
+- [[glossary/llm|Large Language Model (LLM)]] — the large language model that generates responses and tool calls inside the loop
+- [[glossary/transformer|Transformer]] — the neural architecture underlying virtually all modern LLMs
+- [[courses/gemini-enterprise-agents|Course: Gemini Enterprise Agents]] — hands-on practice with the concepts covered in this entry

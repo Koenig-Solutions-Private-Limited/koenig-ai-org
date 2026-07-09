@@ -13,3 +13,10 @@ Common fine-tuning workflows in 2026 include: instruction tuning (teaching a bas
 Parameter-efficient methods dominate practical fine-tuning. LoRA (Low-Rank Adaptation, Hu et al. 2021) trains a small rank-decomposition matrix while keeping base weights frozen; QLoRA adds 4-bit quantization to fit larger models on smaller hardware. These cut memory cost 4-16× with minimal quality loss.
 
 When fine-tuning is the right tool: when prompt engineering and RAG cannot achieve the desired behavior, when you need a smaller model to behave like a larger one (distillation), or when latency requirements demand a specialized smaller deployment. Most production AI applications do not fine-tune; prompting + RAG + agent loops are usually sufficient.
+
+## Related Terms
+
+- [[glossary/llm|Large Language Model (LLM)]] — the large language model that generates responses and tool calls inside the loop
+- [[glossary/rlhf|Reinforcement Learning from Human Feedback (RLHF)]] — the training technique that uses human preference comparisons to steer model behaviour
+- [[glossary/lora|LoRA]] — a parameter-efficient fine-tuning method that trains low-rank weight adaptors instead of full weights
+- [[courses/gemini-enterprise-agents|Course: Gemini Enterprise Agents]] — hands-on practice with the concepts covered in this entry

@@ -14,3 +14,10 @@ Function calling is functionally equivalent to Anthropic's tool use and Google G
 Practical differences across vendors as of April 2026: OpenAI requires `strict: true` for guaranteed schema-compliant outputs (and in exchange, accepts a slightly restricted JSON Schema subset); Anthropic Claude accepts the full JSON Schema spec but does not provide a strict-mode guarantee; Google Gemini documents OpenAPI 3.0 schema, with similar guarantees to Anthropic.
 
 For builders: the choice of vendor rarely depends on function-calling differences alone — model intelligence, latency, and cost dominate. But determinism in tool selection (which tool gets called for ambiguous inputs) and parameter accuracy (schema compliance) do vary; Koenig publishes monthly benchmark data at /data/claude-tool-use-determinism/.
+
+## Related Terms
+
+- [[glossary/tool-use|Tool use]] — the protocol Claude follows when invoking external tools from an agent loop
+- [[glossary/mcp|Model Context Protocol (MCP)]] — the protocol layer that standardises how agents discover and call tools
+- [[glossary/agent-harness|Agent harness]] — the software framework that runs the agent loop with tools and stopping criteria
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry
