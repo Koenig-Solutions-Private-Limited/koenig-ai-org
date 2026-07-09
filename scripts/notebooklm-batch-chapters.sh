@@ -11,6 +11,14 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 COURSE="$1"; shift
 CHAPTERS=("$@")
 [ ${#CHAPTERS[@]} -gt 3 ] && { echo "max 3 chapters per run"; exit 1; }
+# Guard against the unquoted-$VAR word-split bug: a single arg holding several
+# chapter names (contains whitespace) would create merged dirs/R2 keys.
+for CH in "${CHAPTERS[@]}"; do
+  case "$CH" in *[[:space:]]*)
+    echo "ERROR: chapter arg '$CH' contains whitespace — pass each chapter as its own argument"; exit 1;;
+  esac
+  [ -f "$ROOT/vault/courses/$COURSE/$CH.md" ] || { echo "ERROR: no such chapter file: vault/courses/$COURSE/$CH.md"; exit 1; }
+done
 WORK="/tmp/nlm-batch-$COURSE-$$"
 LOG="$WORK/batch.log"
 mkdir -p "$WORK"
