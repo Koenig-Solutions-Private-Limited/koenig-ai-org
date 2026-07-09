@@ -11,3 +11,10 @@ In a Mixture of Experts (MoE) transformer, each feed-forward layer is replaced w
 Mixtral 8×7B (Mistral, 2023) popularized open MoE models: it has ~46B total parameters but only ~13B active per token, matching Llama 2 70B quality at Llama 2 13B inference cost. GPT-4 is widely believed to be MoE-based. Gemini 2.5 and other frontier models use MoE to achieve their scale-quality-cost tradeoff.
 
 Load balancing is the main engineering challenge: if the gating always selects the same top-k experts, most of the model is underutilized. Auxiliary loss terms (load balancing loss) are added during training to encourage uniform expert utilization. Expert routing is non-differentiable through hard selection; the straight-through estimator or soft routing (softmax over experts) is used during training.
+
+## Related Terms
+
+- [[glossary/scaling-laws|Scaling Laws]] — the empirical relationships between model size, compute, data, and performance
+- [[glossary/transformer|Transformer]] — the neural architecture underlying virtually all modern LLMs
+- [[glossary/emergent-abilities|Emergent Abilities]] — capabilities that appear in large models but are absent in smaller ones at the same task
+- [[courses/gemini-enterprise-agents|Course: Gemini Enterprise Agents]] — hands-on practice with the concepts covered in this entry

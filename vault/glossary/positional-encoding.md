@@ -11,3 +11,11 @@ Pure self-attention is permutation-equivariant: shuffling the input tokens produ
 Rotary Positional Embeddings (RoPE, Su et al., 2021) encode position by rotating the query and key vectors in attention, making the dot product naturally dependent on relative position. RoPE enables efficient extrapolation to longer sequences than seen during training and is used by Llama 3, Mistral, and most recent open-source models. ALiBi (Attention with Linear Biases) takes a different approach, adding a linear position bias to attention logits.
 
 Context length extension techniques (YaRN, LongRoPE) scale RoPE to longer contexts by adjusting the rotation frequencies. These techniques allowed Claude 3.7, Llama 3 Long, and similar models to extend from 8K–32K training context to 128K+ deployment context with minimal fine-tuning.
+
+## Related Terms
+
+- [[glossary/transformer|Transformer]] — the neural architecture underlying virtually all modern LLMs
+- [[glossary/attention-mechanism|Attention Mechanism]] — the core transformer operation that weights token relationships to compute representations
+- [[glossary/context-length|Context Length]] — the maximum number of tokens the model can process in a single call
+- [[glossary/multi-head-attention|Multi-Head Attention]] — the parallel attention computation that lets transformers attend to different representation subspaces
+- [[courses/gemini-enterprise-agents|Course: Gemini Enterprise Agents]] — hands-on practice with the concepts covered in this entry

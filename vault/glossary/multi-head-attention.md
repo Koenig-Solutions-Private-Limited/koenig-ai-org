@@ -11,3 +11,11 @@ Multi-head attention (MHA) divides the model dimension into h heads, each perfor
 Grouped Query Attention (GQA) and Multi-Query Attention (MQA) are efficient variants that share key and value heads across multiple query heads, dramatically reducing KV cache memory requirements. GPT-5, Claude Sonnet 4.6, and Llama 3 all use GQA, which enables larger batch sizes and longer contexts with the same GPU memory.
 
 The number of attention heads scales with model size in practice: small models (1B params) use 16–32 heads; large models (70B+) use 64–128 heads. More heads give the model more representational capacity per layer but also increase computation. Head pruning research shows that many heads can be removed post-training with minimal quality loss, suggesting that not all heads are equally important.
+
+## Related Terms
+
+- [[glossary/attention-mechanism|Attention Mechanism]] — the core transformer operation that weights token relationships to compute representations
+- [[glossary/transformer|Transformer]] — the neural architecture underlying virtually all modern LLMs
+- [[glossary/kv-cache|KV Cache]] — the cached key-value pairs that eliminate redundant attention computation across turns
+- [[glossary/positional-encoding|Positional Encoding]] — the signal added to token embeddings so the model understands sequence order
+- [[courses/gemini-enterprise-agents|Course: Gemini Enterprise Agents]] — hands-on practice with the concepts covered in this entry

@@ -11,3 +11,11 @@ JSON mode is the simplest form of structured output: the model is told to respon
 JSON mode is useful for lightweight data extraction tasks where a full tool-calling setup would add unnecessary overhead. Common patterns include: extracting entities from a document, classifying text into a fixed taxonomy, and generating configuration objects for downstream tools.
 
 The limitation of simple JSON mode (versus full structured output with schema) is that it guarantees valid JSON syntax but not schema conformance—the model might return a valid JSON object with wrong field names or missing required keys. Adding an explicit JSON schema (via OpenAI's `response_format.json_schema` or Anthropic's tool schema) solves this at the cost of slightly more setup.
+
+## Related Terms
+
+- [[glossary/structured-output|Structured Output]] — model output constrained to a declared schema for reliable downstream parsing
+- [[glossary/function-calling|Function calling]] — the mechanism by which the model emits structured JSON to invoke an external function
+- [[glossary/tool-use|Tool use]] — the protocol Claude follows when invoking external tools from an agent loop
+- [[glossary/sampling-parameters|Sampling Parameters]] — the temperature, top-k, and top-p settings that control output randomness
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry

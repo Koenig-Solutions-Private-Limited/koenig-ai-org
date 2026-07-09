@@ -11,3 +11,11 @@ Pre-training is the most computationally expensive phase of LLM development, con
 The resulting pre-trained model has broad language capabilities—it can complete sentences, continue code, summarize text—but is not aligned to follow instructions or behave safely. This is the "base model" stage. GPT-4 base, Claude base (before RLHF), and Llama 3 base are examples of pre-trained-only models, generally not deployed directly to users.
 
 Pre-training quality depends on dataset curation (deduplication, quality filtering, domain mix), compute budget, and architecture. Chinchilla scaling laws (Hoffmann et al., 2022) established that training longer on more data with a smaller model often outperforms training shorter with a larger model for the same compute budget, reshaping how frontier labs allocate their training runs.
+
+## Related Terms
+
+- [[glossary/instruction-tuning|Instruction Tuning]] — the fine-tuning stage that teaches a model to follow natural-language instructions
+- [[glossary/fine-tuning|Fine-tuning]] — the weight-update process that adapts a pre-trained base model for downstream tasks
+- [[glossary/scaling-laws|Scaling Laws]] — the empirical relationships between model size, compute, data, and performance
+- [[glossary/transformer|Transformer]] — the neural architecture underlying virtually all modern LLMs
+- [[courses/gemini-enterprise-agents|Course: Gemini Enterprise Agents]] — hands-on practice with the concepts covered in this entry

@@ -11,3 +11,11 @@ LoRA (Hu et al., 2021) represents the weight update ΔW as a product of two low-
 The rank r controls the expressivity-efficiency tradeoff. r=4 works well for style adaptation; r=64 approaches full fine-tuning expressivity for domain specialization. For a 7B model, r=8 LoRA adapters contain ~10M trainable parameters vs. ~7B for full fine-tuning—a 700× reduction. This makes fine-tuning feasible on a single GPU.
 
 LoRA adapters are composable and swappable. A base model can have many task-specific adapters (coding, medical, legal) that are swapped at inference time, enabling a single model deployment to serve multiple specialized behaviors. Libraries like PEFT (HuggingFace) and Unsloth make LoRA fine-tuning accessible with minimal code.
+
+## Related Terms
+
+- [[glossary/qlora|QLoRA]] — LoRA applied to a quantized model, making fine-tuning feasible on consumer hardware
+- [[glossary/supervised-fine-tuning|Supervised Fine-Tuning]] — the weight-update process that adapts a pre-trained model to a target task using labeled data
+- [[glossary/fine-tuning|Fine-tuning]] — the weight-update process that adapts a pre-trained base model for downstream tasks
+- [[glossary/quantization|Quantization]] — the process of reducing model weight precision to decrease memory and speed up inference
+- [[courses/gemini-enterprise-agents|Course: Gemini Enterprise Agents]] — hands-on practice with the concepts covered in this entry

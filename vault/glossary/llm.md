@@ -15,3 +15,11 @@ The frontier LLMs as of April 2026 are Anthropic Claude Opus 4.7, OpenAI GPT-5.5
 Open-weights leaders include Meta Llama 4, Google Gemma 4 (April 2026), Qwen 3.5, and Mistral Large 2. Open-weights models lag the frontier on raw intelligence by roughly 6-12 months but lead on deployment flexibility (single-GPU inference, edge deployment, on-premise compliance).
 
 Practical model selection depends on three axes: intelligence (frontier vs open-weights), cost-per-task (varies 10-100×), and deployment shape (cloud API, self-hosted, on-device). Koenig AI Academy publishes an updated frontier-model comparison at /data/claude-tool-use-determinism/.
+
+## Related Terms
+
+- [[glossary/transformer|Transformer]] — the neural architecture underlying virtually all modern LLMs
+- [[glossary/tokenization|Tokenization]] — related concept that intersects with this term in agent workflows
+- [[glossary/embedding|Embedding]] — dense vector representations that power semantic similarity search
+- [[glossary/fine-tuning|Fine-tuning]] — the weight-update process that adapts a pre-trained base model for downstream tasks
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry

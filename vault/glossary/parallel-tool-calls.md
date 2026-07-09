@@ -11,3 +11,11 @@ Sequential tool calls are a major source of latency in agentic tasks. If a task 
 Both OpenAI's and Anthropic's APIs support parallel tool calls. The model must recognize that calls are independent to issue them together; tasks with data dependencies (the output of call A is the input of call B) must still be sequential. Good prompt engineering and system design can often restructure tasks to maximize parallelism.
 
 Parallel tool calls complicate the scaffolding slightly: the orchestrator must fan out the calls to their respective executors, collect all results, and reassemble them into a consistent context before the next model turn. Failures in one branch must be handled without blocking results from successful branches.
+
+## Related Terms
+
+- [[glossary/tool-use|Tool use]] — the protocol Claude follows when invoking external tools from an agent loop
+- [[glossary/tool-result|Tool Result]] — the output returned to the model after a tool call completes
+- [[glossary/function-calling|Function calling]] — the mechanism by which the model emits structured JSON to invoke an external function
+- [[glossary/agent-loop|Agent Loop]] — the iterative perceive-act-observe cycle the harness executes
+- [[courses/mcp-from-first-principles-to-production|Course: MCP from First Principles to Production]] — hands-on practice with the concepts covered in this entry

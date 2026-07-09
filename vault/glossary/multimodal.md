@@ -11,3 +11,11 @@ Multimodal LLMs extend the transformer architecture to handle non-text inputs by
 As of 2026, frontier multimodal models include GPT-5 (text + image + audio), Claude Opus 4.7 (text + image + PDF), and Gemini 2.5 Ultra (text + image + audio + video + code + 1M token context). Gemini's native multimodal architecture (trained jointly across modalities from scratch) is contrasted with "bolted-on" vision (a vision encoder added to a text-only LLM).
 
 The practical implications are significant for agents: a multimodal agent can read screenshots, interpret charts, transcribe audio, and describe video—tasks that were impossible without human perception. GUI automation agents use screenshot understanding to control computers without requiring API access to the underlying applications.
+
+## Related Terms
+
+- [[glossary/vision-language-model|Vision-Language Model]] — a multimodal model that understands and reasons over both images and text
+- [[glossary/text-to-image|Text-to-Image]] — the task of generating images from natural-language descriptions
+- [[glossary/text-to-speech|Text-to-Speech]] — the task of synthesizing natural-sounding audio from written text
+- [[glossary/speech-to-text|Speech-to-Text]] — the task of converting spoken audio into written transcriptions
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry

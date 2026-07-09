@@ -11,3 +11,11 @@ When a language model generates a token, it internally computes a probability di
 Logprobs enable several downstream applications: computing sequence perplexity (how surprised the model is by a given text), uncertainty quantification (low confidence = broad distribution = low logprob of the chosen token), speculative decoding (use a fast draft model's logprobs to skip verification of high-confidence tokens), and minimum Bayes risk decoding.
 
 One important use is classification: instead of asking a model to answer "Yes" or "No" in natural language, extract the logprobs for those specific tokens and compare them directly—this gives calibrated probability estimates and avoids sensitivity to response format. OpenAI's completion API returns logprobs natively; Anthropic currently exposes them through select use cases.
+
+## Related Terms
+
+- [[glossary/perplexity|Perplexity]] — the exponentiated average negative log-likelihood used to measure how well a model predicts text
+- [[glossary/cross-entropy|Cross-Entropy]] — the loss function used to measure the gap between predicted and true token distributions
+- [[glossary/temperature|Temperature]] — the scaling factor that controls how peaked or flat the token probability distribution is
+- [[glossary/sampling-parameters|Sampling Parameters]] — the temperature, top-k, and top-p settings that control output randomness
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry
