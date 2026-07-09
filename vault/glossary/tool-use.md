@@ -13,3 +13,10 @@ Tool use is implemented by all frontier model providers as of 2026: Anthropic Cl
 The reliability of tool use varies by model and prompt. Determinism (same input producing same output across runs) and parameter-schema correctness (the model fills the JSON schema correctly) are the two failure modes that matter most in production. Koenig AI Academy publishes a monthly determinism benchmark across the three frontier vendors at /data/claude-tool-use-determinism/.
 
 Tool use predates MCP but is now usually combined with it: MCP provides the discovery + transport layer, while tool-use provides the model-level capability.
+
+## Related Terms
+
+- [[glossary/function-calling|Function calling]] — OpenAI's name for the same capability; differs in JSON Schema conventions but shares the identical model-side call-result loop
+- [[glossary/mcp|Model Context Protocol (MCP)]] — the discovery and transport layer that delivers tool schemas to the model and routes call results back
+- [[glossary/agent-harness|Agent harness]] — the runtime that executes tool calls and returns results, turning single model calls into multi-step workflows
+- [[courses/mcp-from-first-principles-to-production|Course: MCP from First Principles to Production]] — hands-on walkthrough of building and securing MCP servers

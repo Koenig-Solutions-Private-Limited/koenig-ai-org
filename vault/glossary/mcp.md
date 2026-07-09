@@ -16,3 +16,10 @@ MCP standardizes how AI applications connect to external context — replacing N
 The protocol's core design choice — JSON-RPC over stdio for local servers, plus HTTP+SSE for remote — was deliberate: it favors discoverability and stream-based context delivery over request-response simplicity, and it lets MCP servers run as ordinary processes that any host application can spawn.
 
 Major adopters as of April 2026 include Anthropic Claude (native), OpenAI (via Connectors), Google Gemini Enterprise (Vertex Agent Platform), Cursor, and the Zed editor. The MCP registry at modelcontextprotocol.io lists 200+ community servers.
+
+## Related Terms
+
+- [[glossary/tool-use|Tool use]] — the model-level capability MCP exposes to host applications through the tools/list and tools/call primitives
+- [[glossary/function-calling|Function calling]] — OpenAI's equivalent name for the same model capability; both produce structured JSON arguments on the same wire contract
+- [[glossary/agent-harness|Agent harness]] — the host application that spawns MCP servers, sends JSON-RPC requests, and drives the tool loop
+- [[courses/mcp-from-first-principles-to-production|Course: MCP from First Principles to Production]] — hands-on walkthrough of building and securing MCP servers

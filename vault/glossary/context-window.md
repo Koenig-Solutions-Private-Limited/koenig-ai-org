@@ -13,3 +13,10 @@ Frontier model context windows as of April 2026: Anthropic Claude Sonnet 4.6 / O
 Context-window size matters less than effective context — how reliably the model uses information at different positions. The "lost in the middle" phenomenon (Liu et al., 2023) shows that models systematically attend more to context at the start and end of the window than the middle, even with stated 1M context. Anthropic's needle-in-a-haystack and Google's MRCR benchmarks measure this.
 
 Practical implications for builders: pay-as-you-go pricing scales linearly or super-linearly with input tokens; KV cache memory dominates inference latency at long context; and prompt-caching APIs (Anthropic, OpenAI, Google) offer 50-90% cost reduction for repeated long prompts.
+
+## Related Terms
+
+- [[glossary/tokenization|Tokenization]] — the process that converts raw text to tokens, determining what counts toward the context-window limit
+- [[glossary/llm|Large Language Model (LLM)]] — the underlying model architecture whose context window is sized and priced per token
+- [[glossary/transformer|Transformer]] — the attention mechanism whose compute requirements motivate context-window limits and prompt-caching APIs
+- [[courses/mcp-from-first-principles-to-production|Course: MCP from First Principles to Production]] — hands-on walkthrough of building and securing MCP servers

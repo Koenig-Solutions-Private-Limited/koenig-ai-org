@@ -14,3 +14,10 @@ In cross-tool connector workflows, audit logs matter because format translation 
 A well-structured audit log entry for a connector handoff includes: the source file path and hash, the connector action (export, transform, import), the target file path and hash, the timestamp, and a diff summary of what changed. Storing hashes allows exact file comparison even if timestamps drift. See [[courses/mcp-from-first-principles-to-production/05-gateways-audit-logs]] for gateway-level audit log patterns that complement connector-level records.
 
 Audit logs differ from general application logs in two ways: they are append-only (no entry is ever modified or deleted) and they record business-meaningful events rather than debug output. A debug log says "export function called with args X." An audit log says "Blender scene `hero_mesh_v3.blend` exported to `hero_mesh_v3.obj` by claude-blender-connector at 14:22:07 UTC; 4 materials stripped (no OBJ shader graph support); verified by operator."
+
+## Related Terms
+
+- [[glossary/observability|Observability]] — the broader discipline that uses audit logs alongside metrics and traces to understand agent behavior
+- [[glossary/structured-logging|Structured Logging]] — the key-value formatting standard that makes audit log entries machine-queryable and filterable
+- [[glossary/idempotency|Idempotency]] — the tool-design property that keeps audit log entries meaningful by ensuring each entry reflects a unique, non-duplicated operation
+- [[courses/mcp-from-first-principles-to-production|Course: MCP from First Principles to Production]] — hands-on walkthrough of building and securing MCP servers
