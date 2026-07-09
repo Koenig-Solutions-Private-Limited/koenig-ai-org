@@ -5,13 +5,13 @@ author: blog-author
 ticket: KOEA-10715
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: awaiting-g0
 title: "Use AI Where It Speeds Work, but Gate It Where Errors Hurt in 2026"
 slug: "2026-07-08-advantages-and-disadvantages-of-artificial-intelligence"
 tags: [ai, enterprise-ai, ai-governance, responsible-ai]
 reading_time_min: 7
 primary_query: "advantages and disadvantages of artificial intelligence"
-first_60_words_answer: "Artificial intelligence is most useful when it accelerates repetitive work, extracts structure from messy data, and gives people faster drafts to review. Its biggest disadvantages are privacy exposure, biased outputs, hallucinated facts, hard-to-explain decisions, and new oversight cost."
+first_60_words_answer: "Artificial intelligence is most useful when it accelerates repetitive work, extracts structure from messy data, and gives people faster drafts to review. Its biggest disadvantages are privacy exposure, biased outputs, hallucinated facts, hard-to-explain decisions, and new oversight cost. The practical question is whether AI improves the workflow after review, not before it."
 contrarian_angle: "The real AI adoption question is not whether AI is good or bad; it is whether the review gate is cheaper than doing the task manually."
 description: "Advantages and disadvantages of artificial intelligence: a structured tradeoff matrix covering productivity, quality, privacy, bias, cost, and oversight with source-backed examples."
 original_data: false
@@ -29,7 +29,7 @@ faq:
   - question: "What are the biggest risks or disadvantages of AI?"
     answer: "The biggest disadvantages are not abstract. They are privacy exposure, biased outputs, fabricated facts, opaque decision paths, and the extra labor required to review model output. Stanford HAI's 2026 responsible AI chapter notes that hallucination and bias remain live measurement problems, not solved implementation details [4]."
   - question: "How do I decide if AI is appropriate for a high-stakes use case?"
-    answer: "Start with the cost of a wrong answer. If a mistake affects money, health, employment, legal rights, or safety, require human approval, logging, appeal paths, and pre-launch risk classification. The EU AI Act risk framework and OECD advanced AI risk consultation both push teams toward risk-tiered deployment instead of one-size-fits-all automation [3][7]."
+    answer: "Start with the cost of a wrong answer. If a mistake affects money, health, employment, legal rights, or safety, require human approval, logging, appeal paths, and pre-launch risk classification. The EU AI Act risk framework and OECD's 2026 governance input both push teams toward risk-tiered deployment instead of one-size-fits-all automation [3][7]."
 sources:
   - "https://www.nist.gov/itl/ai-risk-management-framework"
   - "https://www.anthropic.com/news/anthropics-responsible-scaling-policy"
@@ -37,7 +37,7 @@ sources:
   - "https://hai.stanford.edu/ai-index/2026-ai-index-report/responsible-ai"
   - "https://hai.stanford.edu/ai-index/2026-ai-index-report"
   - "https://digital-strategy.ec.europa.eu/en/library/draft-commission-guidelines-classification-high-risk-ai-systems"
-  - "https://oecd.ai/en/wonk/seeking-your-views-public-consultation-on-risk-thresholds-for-advanced-ai-systems-deadline-10-september"
+  - "https://oecd.ai/en/wonk/documents/oecd-input-to-the-global-dialogue-on-ai-governance"
 references:
   - n: 1
     title: "NIST - AI Risk Management Framework"
@@ -64,8 +64,8 @@ references:
     url: "https://digital-strategy.ec.europa.eu/en/library/draft-commission-guidelines-classification-high-risk-ai-systems"
     retrieved: 2026-07-09
   - n: 7
-    title: "OECD.AI - Public consultation on risk thresholds for advanced AI systems"
-    url: "https://oecd.ai/en/wonk/seeking-your-views-public-consultation-on-risk-thresholds-for-advanced-ai-systems-deadline-10-september"
+    title: "OECD.AI - OECD input to the Global Dialogue on AI Governance"
+    url: "https://oecd.ai/en/wonk/documents/oecd-input-to-the-global-dialogue-on-ai-governance"
     retrieved: 2026-07-09
 whats_new:
   - "AI adoption works when the review gate is cheaper than manual work; it fails when review cost, privacy risk, or accountability debt exceeds the speed gain."
@@ -140,7 +140,7 @@ Privacy is not a footnote you add after procurement. It is an architecture decis
 
 For teams, that means three concrete design choices. First, minimize what the model sees: remove unnecessary personal data before inference. Second, choose the deployment boundary deliberately: public SaaS, enterprise tenant, private cloud, or local model. Third, log enough to audit outcomes without storing sensitive prompts forever.
 
-Bias needs the same treatment. Do not ask whether the model is biased in the abstract. Ask which protected or vulnerable groups could be harmed by this workflow, what proxy variables might stand in for those groups, and which metric will catch the problem before launch. The OECD's 2026 consultation on advanced AI risk thresholds is a reminder that risk thresholds are becoming governance objects, not just research topics [7].
+Bias needs the same treatment. Do not ask whether the model is biased in the abstract. Ask which protected or vulnerable groups could be harmed by this workflow, what proxy variables might stand in for those groups, and which metric will catch the problem before launch. OECD's June 2026 input to the Global Dialogue on AI Governance frames trustworthy AI as an interoperability problem across governance approaches, which is exactly why local review rules need to map to external policy expectations [7].
 
 ## Use human oversight as a workflow step
 
@@ -158,4 +158,4 @@ Question: A support team wants AI to auto-refund customers under $50, draft repl
 Answer: The suspected fraud denial needs the strongest oversight because it affects customer access, reputation, and potentially money. Auto-refunds under a small threshold may be acceptable with monitoring, and drafted replies can be reviewed by agents. Denials should require a human approval gate, logged evidence, and an appeal path before the action is final.
 </KnowledgeCheck>
 
-AI is most advantageous when the task is frequent, bounded, measurable, and cheap to verify. It is most dangerous when the task is rare, high-stakes, hard to verify, privacy-sensitive, or legally consequential. The winning move is not blanket adoption or blanket avoidance. It is routing: automate where review is cheap, gate where errors hurt, and refuse workflows where accountability cannot be made explicit. To practice that routing on real agent workflows, start with [[course/ai-agent-security-for-developers]].
+AI is most advantageous when the task is frequent, bounded, measurable, and cheap to verify. It is most dangerous when the task is rare, high-stakes, hard to verify, privacy-sensitive, or legally consequential. The winning move is not blanket adoption or blanket avoidance. It is routing: automate where review is cheap, gate where errors hurt, and refuse workflows where accountability cannot be made explicit. To practice that routing on real agent workflows, start with [[course/ai-agent-security-for-developers]], then pair it with [[course/ai-agent-observability-langfuse]] when you need production traceability.
