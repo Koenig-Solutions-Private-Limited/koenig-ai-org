@@ -108,7 +108,7 @@ This package is the V1 template. When Vardaan launches the next product (Marketi
 
 ## Cost discipline
 
-Total ceiling: ~$680/month. Per-agent monthly + per-task hard caps enforced by Paperclip's budget engine (80% soft warning, 100% auto-pause). Watchdog (`watchdog/watchdog.mjs`) adds: pause on 5 consecutive heartbeats with no status delta, pause on 2× rolling-avg tokens-per-task. Models picked for cost-vs-quality fit: Opus only at the top, Sonnet for synthesis + review, Grok Fast for research, Gemini Flash for writing, Haiku for QA.
+Real cash cost = subscriptions (Claude Max $200 + ChatGPT/Codex $200 + Cursor $60) plus small metered spend (OpenRouter ≤$50, Tavily, DataForSEO). Per-agent monthly caps in the DB are **synthetic circuit-breakers** (nominal $ computed from tokens even on subscription runs; they sum to ~$1,560 and that is intentional headroom, not cash) — their job is runaway containment via the budget engine (80% soft warning, 100% auto-pause). The binding constraint is **subscription quota**, especially the shared ChatGPT/Codex weekly limit: see the TOKEN DISCIPLINE section in every codex agent's AGENTS.md and the quota-fallback daemon (`watchdog/quota-fallback.py`). Watchdog (`watchdog/watchdog.mjs`) adds: pause on 5 consecutive heartbeats with no status delta, pause on 2× rolling-avg tokens-per-task. Model roster: generated `ROSTER.live.md` (do not trust prose lists).
 
 ## Vault — agent narrative output
 
