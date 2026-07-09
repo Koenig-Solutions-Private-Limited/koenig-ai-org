@@ -65,7 +65,7 @@ The July 23 wave shuts down dated snapshots, not every capability in those famil
 
 That means the first audit is mechanical: find exact model strings, map each to the listed substitute, and run regression tests on prompts where model behavior matters. Do not rely on model age as a proxy for safety. The community reaction called the list unusually large, and one developer pointed out that `gpt-4-1106-preview` appears again even though it had already been listed in an earlier wave.[3] The operational lesson is simple: the deprecations page, not release recency, is the source of truth.
 
-For most teams, July's riskiest categories are realtime/audio and Codex-like coding agents. Audio migrations need latency and voice-quality checks. Coding-agent migrations need trace-level evals: run the same repository tasks before and after the model change, then compare patch quality, tool-call count, latency, and cost.
+For most teams, July's riskiest categories are realtime/audio and Codex-like coding agents. Audio migrations need latency and voice-quality checks. Coding-agent migrations need trace-level evals: run the same repository tasks before and after the model change, then compare patch quality, tool-call count, latency, and cost. If your team does not already have this vocabulary, start with [[glossary/agent-evaluation]] before treating the replacement model as equivalent.
 
 ## Replace Computer-Use Preview with GPT-5.4 Mini, Not a No-Replacement Panic
 
@@ -79,7 +79,7 @@ The October 23 wave is the larger production risk because it removes the model f
 
 The dangerous files are rarely named `openai-models.ts`. They are eval fixtures, LangChain defaults, notebooks, queue workers, incident fallbacks, retry middleware, old fine-tune manifests, and cost-optimized "cheap model" branches. Search for exact strings and family aliases, then partials such as `gpt-3.5`, `gpt-4-turbo`, `o1`, `o3-mini`, `o4-mini`, `ft-`, `babbage`, and `davinci`.
 
-Fine-tunes need a separate plan. A fine-tuned model tied to a retiring base does not magically become a fine-tuned replacement on the new base. Budget time for re-training, eval comparison, and rollout behind a flag.
+Fine-tunes need a separate plan. A fine-tuned model tied to a retiring base does not magically become a fine-tuned replacement on the new base. Budget time for re-training, eval comparison, and rollout behind a flag. The key distinction in [[glossary/fine-tuning]] is that you are migrating learned behavior, not just swapping an inference endpoint.
 
 <RunPromptCell
   model="gpt-5.5"
@@ -91,7 +91,7 @@ Fine-tunes need a separate plan. A fine-tuned model tied to a retiring base does
 
 July and October are not isolated dates. The synthesis tracks a dense second-half calendar: August 10 for `gpt-5.2-chat-latest` and `gpt-5.3-chat-latest`, August 26 for Assistants API sunset, September 28 for older instruct and base models, December 1 for image-model consolidation, and December 11 for original `gpt-5` and `o3` snapshots.[1][5][6]
 
-The Assistants API deserves special attention because it is not a model swap. OpenAI's community announcement says the beta sunsets on August 26, 2026; the migration path changes object boundaries from Assistants, Threads, and Runs toward Responses and Conversations.[5] If your app uses server-managed threads as the state container, decide what state remains server-side, what moves into your database, and how much historical context each response receives.
+The Assistants API deserves special attention because it is not a model swap. OpenAI's community announcement says the beta sunsets on August 26, 2026; the migration path changes object boundaries from Assistants, Threads, and Runs toward Responses and Conversations.[5] If your app uses server-managed threads as the state container, decide what state remains server-side, what moves into your database, and how much historical context each response receives. The practical migration pattern is covered in [[course/openai-agents-sdk-mastery/ch01-sdk-responses-api]].
 
 Image generation has a similar trap. The research synthesis cites a December 1 consolidation from `gpt-image-1-mini`, `gpt-image-1.5`, and `chatgpt-image-latest` toward `gpt-image-2`.[6] If your product stores expected dimensions or prompt templates tuned to old outputs, schedule a visual regression pass.
 
