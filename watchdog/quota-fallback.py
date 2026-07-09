@@ -113,6 +113,77 @@ def flip_pass() -> None:
         log(f"FLIP {name} codex_local->{FALLBACK_ADAPTER}/{FALLBACK_MODEL} ({n} quota failures; revert {revert_at.isoformat()})")
 
 
+CLAUDE_QUOTA_PATTERN = "hit your limit"  # "You've hit your limit · resets 3:20pm (UTC)"
+
+
+def parse_claude_reset(error: str) -> datetime:
+    """Parse 'resets 3:20pm (UTC)' from Claude limit errors."""
+    now = datetime.now(timezone.utc)
+    m = re.search(r"resets (\d{1,2}):(\d{2})(am|pm)", error, re.I)
+    if m:
+        try:
+            t = datetime.strptime(f"{m.group(1)}:{m.group(2)} {m.group(3).upper()}", "%I:%M %p").time()
+            dt = datetime.combine(now.date(), t, tzinfo=timezone.utc)
+            if dt <= now:
+                dt += timedelta(days=1)
+            return dt
+        except ValueError:
+            pass
+    return now + timedelta(hours=DEFAULT_REVERT_HOURS)
+
+
+def claude_snooze_pass() -> None:
+    """Both-subscriptions-exhausted case: a claude_local agent hitting the
+    Claude limit has nowhere to flip (Codex is usually what it fell back FROM).
+    Instead of letting it fail-loop, disable its heartbeat until the parsed
+    reset time; the re-enable is handled by snooze_revert_pass."""
+    rows = q(f"""
+        SELECT a.id, a.name, count(*), max(hr.error)
+        FROM heartbeat_runs hr JOIN agents a ON a.id = hr.agent_id
+        WHERE hr.status = 'failed'
+          AND hr.created_at > now() - interval '20 minutes'
+          AND hr.error ILIKE '%{CLAUDE_QUOTA_PATTERN}%'
+          AND a.adapter_type = 'claude_local'
+          AND a.status <> 'paused'
+          AND (a.metadata IS NULL OR NOT (a.metadata ? 'quota_snooze'))
+        GROUP BY a.id, a.name HAVING count(*) >= {MIN_FAILURES};
+    """)
+    for row in filter(None, rows.splitlines()):
+        agent_id, name, n, error = row.split("|", 3)
+        resume_at = parse_claude_reset(error)
+        marker = json.dumps({
+            "resume_at": resume_at.isoformat(),
+            "snoozed_at": datetime.now(timezone.utc).isoformat(),
+            "reason": f"{n} Claude quota failures in 20min (no fallback tier available)",
+        })
+        q(f"""
+            UPDATE agents SET
+              runtime_config = jsonb_set(runtime_config, '{{heartbeat,enabled}}', 'false'),
+              metadata = coalesce(metadata, '{{}}'::jsonb) || jsonb_build_object('quota_snooze', '{marker}'::jsonb),
+              updated_at = now()
+            WHERE id = '{agent_id}';
+        """)
+        log(f"SNOOZE {name} heartbeat disabled until {resume_at.isoformat()} ({n} Claude quota failures)")
+
+
+def snooze_revert_pass() -> None:
+    rows = q("""
+        SELECT id, name FROM agents
+        WHERE metadata ? 'quota_snooze'
+          AND (metadata->'quota_snooze'->>'resume_at')::timestamptz < now();
+    """)
+    for row in filter(None, rows.splitlines()):
+        agent_id, name = row.split("|", 1)
+        q(f"""
+            UPDATE agents SET
+              runtime_config = jsonb_set(runtime_config, '{{heartbeat,enabled}}', 'true'),
+              metadata = metadata - 'quota_snooze',
+              updated_at = now()
+            WHERE id = '{agent_id}';
+        """)
+        log(f"RESUME {name} heartbeat re-enabled after Claude quota reset")
+
+
 def revert_pass() -> None:
     rows = q("""
         SELECT id, name, metadata->'quota_fallback' FROM agents
@@ -137,7 +208,9 @@ def revert_pass() -> None:
 def main() -> None:
     try:
         flip_pass()
+        claude_snooze_pass()
         revert_pass()
+        snooze_revert_pass()
     except Exception as exc:  # noqa: BLE001
         log(f"ERROR {exc}")
         sys.exit(1)
