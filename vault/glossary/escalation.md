@@ -11,3 +11,10 @@ Escalation is a safety mechanism that prevents agents from proceeding through un
 Escalation paths form a directed graph: a worker agent escalates to its chief, who escalates to the CEO agent, who escalates to a human. Each level should be able to resolve most issues surfaced from below; human escalation should be rare (for genuinely novel or high-stakes decisions) rather than routine.
 
 Implementing escalation requires clear criteria for when to escalate vs. when to attempt recovery. Over-escalation paralyzes the system; under-escalation allows errors to compound. The optimal threshold depends on the cost of a wrong action vs. the cost of interrupting a human—for irreversible actions, escalation bias is appropriate; for low-stakes reversible actions, agents should attempt recovery independently.
+
+## Related Terms
+
+- [[glossary/human-in-the-loop|Human-in-the-Loop]] — the design pattern that defines where human judgment enters the escalation path
+- [[glossary/handoff|Handoff]] — the structured transfer mechanism used when escalating to a higher-authority agent
+- [[glossary/agent-budget|Agent Budget]] — a common escalation trigger; budget exhaustion signals the agent cannot complete the task alone
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — learn agent orchestration, loops, and budgets in a production context

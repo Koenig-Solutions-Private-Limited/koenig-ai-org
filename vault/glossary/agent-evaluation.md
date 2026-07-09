@@ -11,3 +11,10 @@ Evaluating agents is harder than evaluating static LLM outputs because the space
 Automated evaluation uses either ground-truth test cases (for tasks with verifiable answers) or model-graded rubrics (for open-ended tasks). Human evaluation remains the gold standard but is expensive and slow. Hybrid approaches use a strong model (e.g., Opus 4.7) as a judge, validated against human ratings on a calibration set.
 
 Frameworks like Anthropic's evals library, OpenAI Evals, and HELM provide standardized scaffolding. SWE-bench Verified is the dominant benchmark for coder agents; WebArena and AssistGUI cover web and GUI agents. Bespoke eval suites for specific products—like grading content quality in a content production pipeline—often provide more actionable signal than general benchmarks.
+
+## Related Terms
+
+- [[glossary/definition-of-done|Definition of Done]] — the checkable criteria an eval must verify before an agent can claim task completion
+- [[glossary/benchmark|Benchmark]] — a standardized test set used to compare agent performance across conditions
+- [[glossary/model-graded-eval|Model-Graded Eval]] — an evaluation approach where a strong LLM judges agent outputs in place of human raters
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — learn agent orchestration, loops, and budgets in a production context

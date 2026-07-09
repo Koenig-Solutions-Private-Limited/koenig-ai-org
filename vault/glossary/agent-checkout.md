@@ -11,3 +11,11 @@ In systems where multiple agent instances may be running simultaneously, task ch
 Checkout expiry handles the failure case: if an agent crashes after checkout without completing the task, the task remains locked indefinitely unless a timeout releases it. The watchdog or orchestrator should periodically scan for expired checkouts and reset them to PENDING so another agent can pick them up.
 
 Paperclip uses Postgres row-level locking and status fields to implement idempotent checkout. The idempotency principle means a task can be safely retried after a failed checkout: if the initial work was partially done, the agent checks for prior partial results before starting fresh, avoiding redundant work.
+
+## Related Terms
+
+- [[glossary/agent-orchestration|Agent Orchestration]] — the coordination layer that distributes tasks for agents to check out
+- [[glossary/multi-agent-system|Multi-Agent System]] — the concurrent architecture that makes exclusive checkout necessary
+- [[glossary/agent-loop|Agent Loop]] — the execution cycle that begins once an agent successfully checks out a task
+- [[glossary/handoff|Handoff]] — the complementary operation that releases a task to the next agent after work completes
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — learn agent orchestration, loops, and budgets in a production context

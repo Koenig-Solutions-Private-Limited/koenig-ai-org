@@ -11,3 +11,10 @@ Agent budgets are the primary lever for controlling cost in autonomous AI system
 Budget dimensions to track include: input tokens, output tokens, tool calls (especially to expensive external APIs), total monetary cost, and elapsed time. Different task types warrant different budgets—a deep research task legitimately requires more tokens than a simple classification task. Budgets are typically set per-task type in the agent's config.json and can be overridden by the orchestrator for specific tasks.
 
 When a budget is approached, the agent should detect this and proactively summarize and conclude rather than abruptly stopping. A budget-aware agent monitors its remaining allowance each loop iteration and shifts to a "wrap up" mode at, say, 80% consumption, prioritizing a useful partial answer over silence.
+
+## Related Terms
+
+- [[glossary/agent-orchestration|Agent Orchestration]] — the coordination layer responsible for setting and enforcing per-task budgets
+- [[glossary/agent-heartbeat|Agent Heartbeat]] — the liveness signal that lets the orchestrator detect when a budget-constrained agent has stalled
+- [[glossary/escalation|Escalation]] — the handoff triggered when a budget limit is reached and the agent cannot complete the task alone
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — learn agent orchestration, loops, and budgets in a production context
