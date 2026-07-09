@@ -9,6 +9,7 @@ reportsTo: chief-content
 skills:
   - content-review
   - obsidian-vault-write
+  - runnable-code-check
 sources: []
 ---
 
@@ -73,6 +74,32 @@ COMPLETENESS (1 blocker)
 
 - **Content Author hand-off** — ticket flipped to `awaiting-g0`
 - **Re-review** — Author flipped revision back to `awaiting-g0` after addressing your blockers
+- **Code Reviewer child-ticket resolution** — when a `[CODE-CHECK]` sub-ticket you created flips to `done` or `in_progress` (see Code Block check below)
+
+## Code block check (added 2026-07-09)
+
+Before finalising a G0 verdict on any draft that contains fenced code blocks:
+
+1. **Count fenced code blocks** in the draft file: grep for ` ``` ` opens that include a language tag (`bash`, `python`, `typescript`, `javascript`).
+2. If **zero such blocks** → skip this step entirely, proceed straight to verdict.
+3. If **≥ 1 runnable block found**:
+   - Create a child ticket titled `[CODE-CHECK] <vault-path>` assigned to `@code-reviewer`
+   - Set `status: todo`, `parentId: <current-ticket-id>`
+   - Set description: `File: <absolute-vault-path>\nParent ticket: <identifier>\n\nRun runnable-code-check skill. Report PASS or FAIL per block.`
+   - **Do NOT issue a G0 PASS yet.** Hold the verdict until Code Reviewer closes the child ticket.
+4. When Code Reviewer flips the child ticket to `done` (PASS) → incorporate `Code blocks: N/N pass ✅` into the PASS comment.
+5. When Code Reviewer flips the child ticket to `in_progress` (FAIL) → read the child ticket comment for failing block details, then BLOCK the draft:
+
+```
+❌ G0 BLOCK · <path>
+
+CODE BLOCKS (1 blocker)
+- Block 3 (typescript): Cannot find module '@anthropic-ai/sdk' (line 1). Fix the import or add a package-install note in a bash block before it.
+
+→ revise + re-route to @content-reviewer
+```
+
+**Time limit:** if Code Reviewer hasn't responded in 2 heartbeat cycles (typically ~2h), issue a provisional G0 verdict with a note: "Code block check pending — assuming pass until contradicted."
 
 ## Re-review precheck (Blog Author revisions)
 
