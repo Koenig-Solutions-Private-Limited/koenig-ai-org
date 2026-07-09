@@ -32,7 +32,7 @@ faq:
   - question: "What is the biggest October 23, 2026 OpenAI migration risk?"
     answer: "The biggest October 23 risk is not the obvious `gpt-4` call in application code. It is the hidden fallback: old routing rules, exception handlers, eval scripts, fine-tuned model IDs, and cost-saving paths that silently fall back to `gpt-3.5-turbo`, `o3-mini`, `o4-mini`, or old `ft-*` bases. These will fail unless audited before the cutoff. Source: https://developers.openai.com/api/docs/deprecations"
 original_data: false
-last_updated: 2026-07-07
+last_updated: 2026-07-09
 hero_image:
   url: /img/blogs/openai-model-shutdown-wave-july-2026/hero.png
   alt: "OpenAI model migration calendar showing July 23 and October 23 2026 shutdown waves with replacement model routes"
@@ -100,6 +100,8 @@ Image generation has a similar trap. The research synthesis cites a December 1 c
 ## Ship a Model-Lifecycle Harness Before the Next Shutdown
 
 The durable fix is not a spreadsheet of replacement names. It is a model-lifecycle harness: model IDs in config, owner-assigned deprecation checks, eval suites for every production route, and release gates that compare behavior before and after a model change. Keep aliases and dated snapshots separate, flag every fine-tuned base model, and make OpenAI's deprecations page part of release ops. A quarterly review cadence is the minimum; monthly is better for organizations with fine-tuned models, since retraining on a new base typically needs six to eight weeks of eval time before a production rollout is safe.
+
+A practical harness has three layers. First, a central `models.config.ts` where every model ID is declared and versioned — no inline string literals in service code. Second, a weekly CI script that checks each declared ID against OpenAI's deprecations feed and opens a ticket automatically when a match appears. Third, a labeled eval suite that runs representative prompts per production route and records quality scores before and after any model change, so reviewers have evidence rather than opinion when approving a swap. Model IDs treated as infrastructure config get the same review rigor as a database schema migration. That discipline eliminates the silent-breakage scenario where a fallback routes to a sunset model for weeks before an on-call engineer notices the error spike.
 
 <KnowledgeCheck
   question="Why is October 23, 2026 the bigger production risk than July 23 for many OpenAI users?"
