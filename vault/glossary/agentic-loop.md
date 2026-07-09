@@ -11,3 +11,11 @@ The agentic loop is the runtime instantiation of an agent's cognitive architectu
 Well-engineered agentic loops are resilient to partial failures. If a tool returns an error, the loop should catch it, inject the error message as an observation, and let the model retry or choose an alternative. Unhandled exceptions that crash the loop lose all accumulated context and must restart from scratch.
 
 The distinction between "agentic loop" and "agent loop" is purely stylistic. "Agentic loop" is the term more commonly used in Anthropic's and LangChain's documentation to describe the loop that occurs during an agentic session, contrasting with a simple single-turn LLM call.
+
+## Related Terms
+
+- [[glossary/agent-loop|Agent Loop]] — the iterative perceive-act-observe cycle the harness executes
+- [[glossary/tool-use|Tool use]] — the protocol Claude follows when invoking external tools from an agent loop
+- [[glossary/agent-scaffolding|Agent Scaffolding]] — the non-model infrastructure that surrounds the LLM to enable agent behaviour
+- [[glossary/agent-heartbeat|Agent Heartbeat]] — the periodic liveness signal agents emit to detect stuck or crashed runs
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — hands-on practice with the concepts covered in this entry

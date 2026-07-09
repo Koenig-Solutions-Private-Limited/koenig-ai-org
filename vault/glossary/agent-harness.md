@@ -12,3 +12,9 @@ The term gained prominence with Anthropic's April 2026 paper "Harness Engineerin
 Key harness design choices include: synchronous vs streaming; context window management (compression, summarization, or eviction); permission model (fully autonomous, plan-first, or step-confirmation); and tool surface (file edits, shell commands, browser, or all of the above).
 
 Harnesses are differentiated from agent platforms (like Claude Agent SDK Managed Agents or Vertex Agent Platform) primarily by where the loop runs: harnesses run client-side; agent platforms run vendor-managed.
+
+## Related Terms
+
+- [[glossary/tool-use|Tool use]] — the protocol Claude follows when invoking external tools from an agent loop
+- [[glossary/mcp|Model Context Protocol (MCP)]] — the protocol layer that standardises how agents discover and call tools
+- [[courses/mcp-from-first-principles-to-production|Course: MCP from First Principles to Production]] — hands-on practice with the concepts covered in this entry

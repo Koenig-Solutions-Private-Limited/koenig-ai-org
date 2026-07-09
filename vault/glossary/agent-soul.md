@@ -11,3 +11,11 @@ The SOUL (a Paperclip convention) is the constitutional document for an individu
 A well-written SOUL is narrow enough to prevent scope creep but broad enough to handle legitimate variation within the role. A content author SOUL might say: "I write first drafts of blog posts and course chapters based on a brief. I do not publish, edit final copy, or communicate directly with customers. I escalate if the brief is ambiguous or if I cannot find sufficient authoritative sources." This clarity prevents the agent from drifting into reviewer or publisher behavior.
 
 SOULs should be version-controlled alongside the company configuration. Changes to a SOUL are deployment changes: they alter the agent's behavior across all future tasks and should go through review (ideally by the CEO agent and a human) before being promoted to production.
+
+## Related Terms
+
+- [[glossary/agent-lane|Agent Lane]] — the defined scope of actions and decisions the agent is authorized to take
+- [[glossary/definition-of-done|Definition of Done]] — the explicit completion criteria that tell the agent when to stop and report
+- [[glossary/escalation|Escalation]] — the mechanism for passing an issue up the chain of command when the agent is blocked
+- [[glossary/system-prompt|System Prompt]] — the top-level instruction block prepended to every conversation turn
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — hands-on practice with the concepts covered in this entry

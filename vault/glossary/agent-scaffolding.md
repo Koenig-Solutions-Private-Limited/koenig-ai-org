@@ -11,3 +11,11 @@ An LLM by itself is a stateless text completion engine. Scaffolding transforms i
 Good scaffolding is transparent to the model—the agent's prompt should feel like natural context, not a JSON dump of framework internals. It should also be resilient: tool failures, malformed JSON outputs, and network errors are routine, not exceptional, and the scaffold must handle them gracefully without breaking the loop.
 
 Frameworks like LangGraph, the Claude Agent SDK, and Paperclip each make different tradeoffs between flexibility and opinions. LangGraph is maximally flexible; Paperclip adds strong governance opinions (lane discipline, budget guards, heartbeats); the Claude Agent SDK prioritizes simplicity and tight integration with Anthropic's models and tool-use protocol.
+
+## Related Terms
+
+- [[glossary/agent-loop|Agent Loop]] — the iterative perceive-act-observe cycle the harness executes
+- [[glossary/tool-use|Tool use]] — the protocol Claude follows when invoking external tools from an agent loop
+- [[glossary/agent-memory|Agent Memory]] — the persistence layer (working, episodic, semantic) that maintains agent continuity
+- [[glossary/agent-harness|Agent harness]] — the software framework that runs the agent loop with tools and stopping criteria
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — hands-on practice with the concepts covered in this entry

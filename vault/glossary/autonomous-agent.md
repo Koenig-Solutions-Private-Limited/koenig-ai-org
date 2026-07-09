@@ -11,3 +11,11 @@ Autonomy exists on a spectrum. Fully supervised agents confirm every action with
 The practical challenges of autonomous operation include irreversibility management (avoiding actions that are hard to undo), budget discipline (stopping before costs become prohibitive), and graceful degradation (doing something useful even when a tool fails). Watchdog processes are commonly used to detect stuck or runaway autonomous agents.
 
 As of 2026, Devin, OpenHands, and SWE-agent represent the frontier of software-engineering autonomy, while systems like Paperclip demonstrate autonomous operation in content production and business process workflows. Benchmark performance on SWE-bench Verified correlates roughly—but imperfectly—with real-world autonomous task completion.
+
+## Related Terms
+
+- [[glossary/agent-loop|Agent Loop]] — the iterative perceive-act-observe cycle the harness executes
+- [[glossary/human-in-the-loop|Human-in-the-Loop]] — the checkpoint pattern where a human approves before irreversible agent actions
+- [[glossary/agent-budget|Agent Budget]] — the resource and spend limits enforced to prevent runaway agent consumption
+- [[glossary/agent-scaffolding|Agent Scaffolding]] — the non-model infrastructure that surrounds the LLM to enable agent behaviour
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — hands-on practice with the concepts covered in this entry

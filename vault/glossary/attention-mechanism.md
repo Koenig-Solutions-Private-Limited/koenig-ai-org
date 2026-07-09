@@ -11,3 +11,11 @@ Attention was introduced in Bahdanau et al. (2015) for sequence-to-sequence mode
 Self-attention allows each token to directly attend to every other token, capturing long-range dependencies without the recurrence bottleneck of RNNs. The computational cost is O(n²) in sequence length, which is the primary constraint on context window size for standard attention. Variants like FlashAttention optimize memory access patterns to make this quadratic scaling tractable for sequences up to 200K+ tokens.
 
 Sparse attention (Longformer, BigBird) and linear attention approximations reduce the quadratic bottleneck for extremely long contexts but typically sacrifice some quality. Rotary Positional Embeddings (RoPE) and ALiBi extend effective attention distance beyond training lengths, enabling the long-context capabilities seen in Claude 3.7+ and Gemini 2.5.
+
+## Related Terms
+
+- [[glossary/transformer|Transformer]] — the neural architecture underlying virtually all modern LLMs
+- [[glossary/multi-head-attention|Multi-Head Attention]] — the parallel attention computation that lets transformers attend to different representation subspaces
+- [[glossary/kv-cache|KV Cache]] — the cached key-value pairs that eliminate redundant attention computation across turns
+- [[glossary/positional-encoding|Positional Encoding]] — the signal added to token embeddings so the model understands sequence order
+- [[courses/gemini-enterprise-agents|Course: Gemini Enterprise Agents]] — hands-on practice with the concepts covered in this entry

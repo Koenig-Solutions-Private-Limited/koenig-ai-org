@@ -11,3 +11,11 @@ Agent memory is typically stratified into three layers. Working memory is the cu
 Write policies determine what gets stored and when. Naively writing everything leads to noisy retrieval; writing nothing loses important context. Effective agents use importance scoring, event triggers (task completion, error occurrence, novel information), and periodic summarization to maintain a compact, high-signal memory store.
 
 Read policies determine what gets recalled and injected into context for each new task. Hybrid retrieval (dense semantic search + BM25 keyword) with cross-encoder re-ranking achieves good precision. The amount recalled is constrained by available context budget—agents should prioritize recent, highly relevant memories and discard low-relevance background.
+
+## Related Terms
+
+- [[glossary/working-memory|Working Memory]] — the in-context short-term store for the current task's intermediate results
+- [[glossary/episodic-memory|Episodic Memory]] — the long-term store of past interactions retrieved to inform future decisions
+- [[glossary/semantic-memory|Semantic Memory]] — the persistent factual knowledge base the agent queries during tasks
+- [[glossary/memory-agent|Memory Agent]] — a specialized agent that manages long-term knowledge retrieval and storage
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — hands-on practice with the concepts covered in this entry
