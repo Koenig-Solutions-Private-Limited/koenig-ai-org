@@ -11,3 +11,9 @@ Modern LLMs are trained in BFloat16 or Float16 precision. Quantization converts 
 Post-training quantization (PTQ) applies after training using a small calibration dataset, requiring no gradient computation. Quantization-aware training (QAT) simulates quantization noise during training, producing models that are more robust to precision reduction. PTQ is practical and widely used; QAT produces better results but requires retraining.
 
 The practical impact is substantial: a 70B model requires ~140GB in BFloat16 but only ~35GB in INT4, fitting on two consumer-grade 24GB GPUs. GGUF format (used by llama.cpp) enables running quantized LLMs on CPU with no GPU required, making local model deployment accessible without dedicated ML hardware. AWQ and GPTQ are the dominant GPU quantization formats as of 2026.
+
+## Related Terms
+
+- [[glossary/lora|LoRA]] — a parameter-efficient fine-tuning method that trains low-rank weight adaptors instead of full weights
+- [[glossary/qlora|QLoRA]] — LoRA applied to a quantized model, making fine-tuning feasible on consumer hardware
+- [[courses/gemini-enterprise-agents|Course: Gemini Enterprise Agents]] — hands-on practice with the concepts covered in this entry

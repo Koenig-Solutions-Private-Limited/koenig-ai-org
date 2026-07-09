@@ -11,3 +11,11 @@ Softmax(x_i) = exp(x_i) / Σ_j exp(x_j). In language model inference, the logit 
 Numerically stable softmax implementations subtract the maximum logit before exponentiation to prevent overflow: softmax(x_i) = exp(x_i - max(x)) / Σ_j exp(x_j - max(x)). This is standard practice in all production ML frameworks.
 
 In the attention mechanism, softmax normalizes the query-key dot products to produce attention weights that sum to 1 over the sequence positions. FlashAttention and other efficient attention implementations avoid materializing the full attention matrix, instead computing softmax in tiles to reduce memory usage—this is the key innovation enabling long-context models.
+
+## Related Terms
+
+- [[glossary/temperature|Temperature]] — the scaling factor that controls how peaked or flat the token probability distribution is
+- [[glossary/logprobs|Logprobs]] — the log-probabilities of candidate tokens returned alongside the model's chosen token
+- [[glossary/cross-entropy|Cross-Entropy]] — the loss function used to measure the gap between predicted and true token distributions
+- [[glossary/attention-mechanism|Attention Mechanism]] — the core transformer operation that weights token relationships to compute representations
+- [[courses/gemini-enterprise-agents|Course: Gemini Enterprise Agents]] — hands-on practice with the concepts covered in this entry

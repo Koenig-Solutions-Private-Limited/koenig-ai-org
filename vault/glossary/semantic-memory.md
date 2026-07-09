@@ -11,3 +11,11 @@ Semantic memory corresponds roughly to a knowledge base or long-term fact store.
 Implementation typically uses a vector database (Chroma, FAISS, Pinecone) that stores embeddings of text chunks. At query time, the agent embeds its query and retrieves the nearest neighbors, then re-ranks them. The resulting chunks are injected into the context window to ground the model's response.
 
 Maintenance of semantic memory is an ongoing process: new documents must be ingested and indexed, stale documents updated or removed, and the embedding model periodically upgraded when a better model becomes available (which requires re-embedding the entire corpus). Tools like LlamaIndex and LangChain provide pipelines for this maintenance work.
+
+## Related Terms
+
+- [[glossary/agent-memory|Agent Memory]] — the persistence layer (working, episodic, semantic) that maintains agent continuity
+- [[glossary/episodic-memory|Episodic Memory]] — the long-term store of past interactions retrieved to inform future decisions
+- [[glossary/working-memory|Working Memory]] — the in-context short-term store for the current task's intermediate results
+- [[glossary/rag|Retrieval-Augmented Generation (RAG)]] — the pattern of retrieving relevant documents and injecting them into the prompt
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — hands-on practice with the concepts covered in this entry

@@ -13,3 +13,11 @@ Top-p (nucleus sampling) truncates the distribution to the smallest set of token
 For agentic tasks, low temperature (0.0–0.3) is preferred for tool calls and structured output, where format correctness matters more than creativity. Higher temperature (0.7–1.0) suits brainstorming and content generation. Extended thinking modes in Claude models can sometimes substitute for higher temperature by exploring more reasoning paths at low temperature.
 
 **Claude Sonnet 5 caveat**: Sonnet 5 rejects non-default values for temperature, top_p, and top_k, returning HTTP 400. For Sonnet 5 workloads, omit all three parameters entirely. To control output quality and consistency, use prompt design (explicit format instructions, few-shot examples), output schemas (tool definitions, structured output), or post-generation evals rather than sampling parameter tuning.
+
+## Related Terms
+
+- [[glossary/temperature|Temperature]] — the scaling factor that controls how peaked or flat the token probability distribution is
+- [[glossary/top-p|Top-p (Nucleus Sampling)]] — the nucleus sampling strategy that selects from the smallest set covering cumulative probability p
+- [[glossary/top-k|Top-k Sampling]] — the sampling strategy that restricts token selection to the K most probable candidates
+- [[glossary/greedy-decoding|Greedy Decoding]] — the simplest decoding strategy that always picks the highest-probability next token
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry

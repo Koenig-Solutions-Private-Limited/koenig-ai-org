@@ -11,3 +11,11 @@ Research agents combine web search, document retrieval, and synthesis in a loop.
 Quality controls include source diversity (avoiding echo-chamber retrieval), recency filtering, and factual cross-validation across multiple sources. Research agents are particularly prone to hallucination when sources conflict, so strong implementations explicitly represent uncertainty and surface disagreements rather than smoothing them over.
 
 Production research agents in 2026 typically use a fast, cheap model (e.g., Grok 4.1 Fast or Gemini 2.5 Flash) for initial retrieval and a stronger model (Sonnet 4.6 or Opus 4.7) for synthesis and fact-checking. This mix balances cost and quality effectively.
+
+## Related Terms
+
+- [[glossary/autonomous-agent|Autonomous Agent]] — an agent that completes tasks independently without step-by-step human approval
+- [[glossary/rag|Retrieval-Augmented Generation (RAG)]] — the pattern of retrieving relevant documents and injecting them into the prompt
+- [[glossary/grounding|Grounding]] — the technique of anchoring model responses in verified external facts or retrieved documents
+- [[glossary/agent-loop|Agent Loop]] — the iterative perceive-act-observe cycle the harness executes
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — hands-on practice with the concepts covered in this entry

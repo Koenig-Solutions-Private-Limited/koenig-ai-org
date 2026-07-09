@@ -11,3 +11,11 @@ QLoRA (Dettmers et al., 2023) made fine-tuning 65B+ models practical on a single
 The quality gap between QLoRA and full fine-tuning is surprisingly small—often within 1–2% on downstream tasks—because LoRA adapters are trained in BFloat16 and compensate for quantization noise. This makes QLoRA the go-to method for researchers and practitioners who want to fine-tune large models without access to A100/H100 clusters.
 
 Practical QLoRA recipes use rank 16–64 adapters, learning rate 2e-4, and the Alpaca or ShareGPT instruction format. Libraries like Axolotl, Unsloth, and LLaMA-Factory wrap QLoRA in user-friendly training interfaces. As of 2026, the open-source fine-tuning ecosystem is almost entirely built on LoRA/QLoRA variants.
+
+## Related Terms
+
+- [[glossary/lora|LoRA]] — a parameter-efficient fine-tuning method that trains low-rank weight adaptors instead of full weights
+- [[glossary/quantization|Quantization]] — the process of reducing model weight precision to decrease memory and speed up inference
+- [[glossary/supervised-fine-tuning|Supervised Fine-Tuning]] — the weight-update process that adapts a pre-trained model to a target task using labeled data
+- [[glossary/fine-tuning|Fine-tuning]] — the weight-update process that adapts a pre-trained base model for downstream tasks
+- [[courses/gemini-enterprise-agents|Course: Gemini Enterprise Agents]] — hands-on practice with the concepts covered in this entry

@@ -14,3 +14,11 @@ RAG addresses three weaknesses of pure parametric LLMs: factual staleness, hallu
 Common implementation choices include: dense retrieval (e.g., text-embedding-004, Voyage-3) versus sparse retrieval (BM25); reranking with a cross-encoder; chunking strategy (fixed-size vs. semantic); and the prompt template that integrates retrieved context.
 
 Modern RAG variants include agentic RAG (the model can re-query iteratively), graph-RAG (retrieving connected sub-graphs from a knowledge graph), and hybrid retrieval (dense + sparse with score fusion). MCP increasingly replaces ad-hoc RAG plumbing for agent-style applications.
+
+## Related Terms
+
+- [[glossary/embedding|Embedding]] — dense vector representations that power semantic similarity search
+- [[glossary/vector-database|Vector Database]] — the indexed store that enables fast semantic similarity search for retrieval
+- [[glossary/agent-harness|Agent harness]] — the software framework that runs the agent loop with tools and stopping criteria
+- [[glossary/mcp|Model Context Protocol (MCP)]] — the protocol layer that standardises how agents discover and call tools
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — hands-on practice with the concepts covered in this entry

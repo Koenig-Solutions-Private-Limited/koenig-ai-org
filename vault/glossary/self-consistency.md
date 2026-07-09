@@ -11,3 +11,11 @@ Self-consistency (Wang et al., 2022) addresses a fundamental limitation of chain
 The technique requires no additional training and works with any model that supports temperature sampling. It is most effective on tasks with a small, well-defined answer space (multiple choice, math, code correctness) where majority vote is meaningful. For open-ended generation it is less applicable.
 
 The cost is linear in the number of samples, which can be prohibitive for long chains. Practical systems often combine self-consistency with fast inference—running many short reasoning chains on a cheap model (e.g., Gemini 2.5 Flash) and escalating only borderline cases to a stronger model for a single careful answer.
+
+## Related Terms
+
+- [[glossary/chain-of-thought|Chain of Thought]] — the prompting technique that asks the model to reason step-by-step before answering
+- [[glossary/sampling-parameters|Sampling Parameters]] — the temperature, top-k, and top-p settings that control output randomness
+- [[glossary/temperature|Temperature]] — the scaling factor that controls how peaked or flat the token probability distribution is
+- [[glossary/beam-search|Beam Search]] — a decoding strategy that maintains multiple candidate sequences in parallel
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry
