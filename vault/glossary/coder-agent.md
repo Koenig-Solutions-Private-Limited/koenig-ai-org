@@ -11,3 +11,11 @@ Coder agents are the most mature class of autonomous agents as of 2026. They ope
 The scaffolding around the model is as important as the model itself. Coder agents need accurate file-tree navigation, diff-aware editing (to avoid rewriting entire files), sandboxed code execution, and a way to record and revert changes. Tools like Aider, OpenHands, and Claude Code implement these scaffolds with varying tradeoffs between safety and autonomy.
 
 Key unsolved problems include handling very large codebases that exceed the context window, maintaining architectural coherence across many edits, and knowing when to ask a human rather than guessing at intent.
+
+## Related Terms
+
+- [[glossary/autonomous-agent|Autonomous Agent]] — an agent that completes tasks independently without step-by-step human approval
+- [[glossary/agent-scaffolding|Agent Scaffolding]] — the non-model infrastructure that surrounds the LLM to enable agent behaviour
+- [[glossary/tool-use|Tool use]] — the protocol Claude follows when invoking external tools from an agent loop
+- [[glossary/codex|Codex]] — OpenAI's code-generation model and the CLI agent built on it
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — hands-on practice with the concepts covered in this entry

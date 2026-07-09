@@ -11,3 +11,9 @@ The term confabulation, borrowed from neuroscience, describes fabrications that 
 Confabulation is often harder to detect than simple hallucination because the fabricated content is stylistically and contextually appropriate. A confabulated citation might have the right author name, plausible journal name, and realistic year—requiring active verification to disprove. This makes confabulation particularly risky in academic, legal, and medical applications.
 
 The distinction from hallucination is partly semantic—many researchers use the terms interchangeably. The neurological framing is useful because it implies a mechanism: the model is not malfunctioning but performing exactly the interpolation it was trained to do, which happens to produce false output when the target fact is not in its training distribution.
+
+## Related Terms
+
+- [[glossary/hallucination|Hallucination]] — the failure mode where a model generates confident but factually incorrect output
+- [[glossary/grounding|Grounding]] — the technique of anchoring model responses in verified external facts or retrieved documents
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry

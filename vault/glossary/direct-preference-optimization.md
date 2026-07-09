@@ -11,3 +11,10 @@ Rafailov et al. (2023) showed that the RLHF objective can be optimized directly 
 DPO is simpler to implement and more stable to train than PPO-based RLHF. It does not require the complex reward model training stage, eliminates reward hacking dynamics, and is far less sensitive to hyperparameters. These advantages have made DPO the default alignment method for many open-source projects (Zephyr, Tulu, OpenHermes).
 
 Variants include IPO (Identity Preference Optimization), KTO (Kahneman-Tversky Optimization, which works with scalar ratings rather than pairs), and ORPO (odds-ratio preference optimization, which integrates SFT and alignment into a single training stage). As of 2026, most frontier labs use DPO-family methods for their instruction-following and safety alignment pipelines.
+
+## Related Terms
+
+- [[glossary/rlhf|Reinforcement Learning from Human Feedback (RLHF)]] — the training technique that uses human preference comparisons to steer model behaviour
+- [[glossary/supervised-fine-tuning|Supervised Fine-Tuning]] — the weight-update process that adapts a pre-trained model to a target task using labeled data
+- [[glossary/constitutional-ai|Constitutional AI]] — Anthropic's training technique where the model critiques itself against a set of principles
+- [[courses/gemini-enterprise-agents|Course: Gemini Enterprise Agents]] — hands-on practice with the concepts covered in this entry

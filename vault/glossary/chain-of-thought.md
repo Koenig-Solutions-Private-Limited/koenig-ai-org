@@ -11,3 +11,11 @@ Introduced in the Wei et al. (2022) paper, chain-of-thought (CoT) prompting invo
 Modern frontier models like Claude and GPT-5 have been trained to produce CoT reasoning by default for hard questions. Extended thinking mode in Claude takes this further: the model has a private reasoning scratch-pad (not billed to the user's context) where it can explore multiple reasoning paths before producing a response.
 
 In agentic systems, CoT serves another purpose: it makes tool-call decisions auditable. When the model writes out why it is calling a tool and what it expects to learn, human reviewers can catch reasoning errors before they cascade into irreversible actions.
+
+## Related Terms
+
+- [[glossary/few-shot-prompting|Few-Shot Prompting]] — the technique of including worked examples in the prompt to steer model behaviour
+- [[glossary/self-consistency|Self-Consistency]] — the technique of sampling multiple reasoning paths and taking the majority answer
+- [[glossary/react-prompting|ReAct Prompting]] — the Reasoning + Acting prompt pattern that interleaves thought and tool-call steps
+- [[glossary/prompt-engineering|Prompt Engineering]] — the practice of crafting inputs to elicit reliable, high-quality model outputs
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry

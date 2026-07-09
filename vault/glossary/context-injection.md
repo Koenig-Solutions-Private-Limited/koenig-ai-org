@@ -11,3 +11,11 @@ Context injection is the mechanism by which external information becomes availab
 Injection happens at multiple points in an agent's turn: the system prompt may inject user preferences and agent SOUL; the user turn may inject retrieved memory snippets; tool result blocks inject execution outputs. The order and formatting of injected content affects how well the model uses it—information injected near the end of the prompt generally receives stronger attention than information buried in the middle.
 
 Injection budget management is a real concern. Every injected token costs money and consumes context space. Effective systems use relevance scoring to inject only the most important chunks, and compress or summarize lower-priority content. The emerging "context engineering" discipline studies optimal injection strategies for different task types.
+
+## Related Terms
+
+- [[glossary/working-memory|Working Memory]] — the in-context short-term store for the current task's intermediate results
+- [[glossary/agent-memory|Agent Memory]] — the persistence layer (working, episodic, semantic) that maintains agent continuity
+- [[glossary/rag|Retrieval-Augmented Generation (RAG)]] — the pattern of retrieving relevant documents and injecting them into the prompt
+- [[glossary/grounding|Grounding]] — the technique of anchoring model responses in verified external facts or retrieved documents
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — hands-on practice with the concepts covered in this entry

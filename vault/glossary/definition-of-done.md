@@ -11,3 +11,11 @@ The definition of done (DoD) is the agent's exit criteria. Without explicit DoD,
 DoD items should be machine-checkable wherever possible. A code agent's DoD might include: all tests pass, no linting errors, and diff is under 500 lines. Automated checking prevents the agent from self-reporting completion without actually satisfying the criteria.
 
 DoD also defines what is NOT included—explicitly ruling out scope creep. A content author's DoD says nothing about publishing or SEO optimization; those belong to later stages. By making both the positive criteria and the scope boundary explicit, the DoD reduces ambiguity and supports reliable automated evaluation.
+
+## Related Terms
+
+- [[glossary/agent-soul|Agent SOUL]] — the identity document that constrains the agent's lane and definition-of-done
+- [[glossary/agent-lane|Agent Lane]] — the defined scope of actions and decisions the agent is authorized to take
+- [[glossary/handoff|Handoff]] — the structured task transfer between agents managed by the orchestrator
+- [[glossary/agent-evaluation|Agent Evaluation]] — the structured process for measuring how well an agent meets its goals
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — hands-on practice with the concepts covered in this entry

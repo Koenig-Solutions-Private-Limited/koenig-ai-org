@@ -11,3 +11,11 @@ Context length is a fundamental architectural property of transformer-based LLMs
 Long context enables qualitatively new tasks: reasoning over an entire codebase, summarizing a book, analyzing hundreds of documents simultaneously. However, attention quality degrades for content in the middle of very long contexts ("lost in the middle" problem), and costs scale with context length. Prompt caching mitigates cost for stable prefixes.
 
 Effective context length—how well the model actually uses information near the limit—is often shorter than the advertised maximum. Models tested on the RULER benchmark and needle-in-a-haystack tasks show degraded retrieval accuracy for items near the context midpoint. Architectural improvements continue to close the gap between claimed and effective context length.
+
+## Related Terms
+
+- [[glossary/context-window|Context window]] — the token buffer the model reads at each step of the loop
+- [[glossary/kv-cache|KV Cache]] — the cached key-value pairs that eliminate redundant attention computation across turns
+- [[glossary/working-memory|Working Memory]] — the in-context short-term store for the current task's intermediate results
+- [[glossary/attention-mechanism|Attention Mechanism]] — the core transformer operation that weights token relationships to compute representations
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry

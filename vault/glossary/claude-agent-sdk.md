@@ -11,3 +11,11 @@ Anthropic released the Claude Agent SDK as part of its push toward production ag
 Key features include built-in support for parallel tool calls, structured output via JSON schema validation, and first-class support for the Model Context Protocol (MCP) for standardized tool integration. The SDK handles the bookkeeping of multi-turn conversations so developers focus on task logic rather than loop management.
 
 The SDK is currently available in Python and TypeScript. It integrates with Anthropic's prompt caching API, which substantially reduces costs in long agentic sessions where the system prompt and tools list are stable across many turns.
+
+## Related Terms
+
+- [[glossary/anthropic-agent-sdk|Anthropic Agent SDK]] — the broader Anthropic toolkit for evaluation, prompt management, and deployment
+- [[glossary/agent-scaffolding|Agent Scaffolding]] — the non-model infrastructure that surrounds the LLM to enable agent behaviour
+- [[glossary/agent-loop|Agent Loop]] — the iterative perceive-act-observe cycle the harness executes
+- [[glossary/tool-use|Tool use]] — the protocol Claude follows when invoking external tools from an agent loop
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — hands-on practice with the concepts covered in this entry

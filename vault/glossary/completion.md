@@ -11,3 +11,11 @@ A completion is generated autoregressively: the model samples one token at a tim
 In modern chat APIs, "completion" has been largely replaced by "response" or "message" terminology, but the underlying mechanism is identical. The completions API (as opposed to the chat completions API) treats the conversation history as a single text block rather than structured messages—useful for certain fine-tuning workflows but generally less convenient for conversational applications.
 
 Output quality depends jointly on the prompt quality, the model's capabilities, and the sampling parameters. Greedy decoding (always picking the highest-probability token) is deterministic but can produce flat, repetitive text. Temperature sampling introduces variety at the cost of occasional incoherence. Best-of-N sampling generates multiple completions and selects the best, trading compute for quality.
+
+## Related Terms
+
+- [[glossary/prompt|Prompt]] — the structured input the model receives to generate a completion
+- [[glossary/sampling-parameters|Sampling Parameters]] — the temperature, top-k, and top-p settings that control output randomness
+- [[glossary/temperature|Temperature]] — the scaling factor that controls how peaked or flat the token probability distribution is
+- [[glossary/greedy-decoding|Greedy Decoding]] — the simplest decoding strategy that always picks the highest-probability next token
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry
