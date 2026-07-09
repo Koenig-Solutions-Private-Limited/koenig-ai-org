@@ -161,7 +161,7 @@ Before you write a coaching plan, you must identify which type of gap you are de
 
 [AIHR's skills gap analysis framework](https://www.aihr.com/blog/skills-gap-analysis/) identifies premature coaching as the most common mis-triage: managers reach for skill training when the root cause is missing access. The diagnostic sequence is three questions in order: (1) "Do you have access to X?" before (2) "Do you know how to do X?" before (3) "How often are you doing X?"
 
-A 31% CVR drop accompanied by only an 8% CPC increase is a signal that warrants access and workload checks before coaching. Industry-wide CPC rose 12.88% YoY — a CPC rise of 8% sits below that trend, which means the CPA pressure here is unlikely to be market-driven. But if the analyst recently absorbed extra accounts and has not been provisioned GA4 access for them, the problem is structural, and coaching it as a skill deficiency will damage the relationship.
+A 31% CVR drop with only an 8% CPC increase warrants access and workload checks before coaching. If the analyst recently absorbed extra accounts and lacks GA4 access for them, the problem is structural — coaching it as a skill deficiency will damage the relationship.
 
 <Callout type="warning">
 Always confirm tool access before writing a coaching plan. Ask the analyst to share their screen and pull the report you expect them to run. One minute reveals an access gap that three coaching sessions would never fix.
@@ -169,7 +169,7 @@ Always confirm tool access before writing a coaching plan. Ask the analyst to sh
 
 ## From Data to Feedback: The SBI Method with Campaign Evidence
 
-Vague feedback is the most common trust-eroder in analyst management. "Your performance has been poor lately" has no Situation, no observable Behavior, and no quantified Impact. The [SBI Feedback Model from the Center for Creative Leadership](https://www.ccl.org/articles/leading-effectively-articles/sbi-feedback-model-a-quick-win-to-improve-talent-conversations-development/) — CCL's programs reach two-thirds of the Fortune 1000, and SBI is among their most-deployed feedback frameworks — solves this by requiring each element:
+Vague feedback is the most common trust-eroder in analyst management. "Your performance has been poor lately" has no Situation, no observable Behavior, and no quantified Impact. The [SBI Feedback Model from the Center for Creative Leadership](https://www.ccl.org/articles/leading-effectively-articles/sbi-feedback-model-a-quick-win-to-improve-talent-conversations-development/) solves this by requiring each element:
 
 **Situation**: Name the campaign, account, and date. "In the Account A performance report submitted last Tuesday..."
 
