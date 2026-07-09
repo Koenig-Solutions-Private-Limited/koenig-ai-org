@@ -36,13 +36,12 @@ last_updated: 2026-07-09
 hero_image:
   url: /img/blogs/sap-abap-ecc/hero.png
   alt: "SAP ECC ABAP request lifecycle sequence diagram from user input through dispatcher and work process to database commit"
-status: g0-passed
+status: awaiting-g0
 reading_time_min: 7
 sources:
   - "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/6c28b5a9ec734c35a39bdfa8e41b3ec3/4ec3c11c6e391014adc9fffe4e204223.html"
   - "https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/4ec389696e391014adc9fffe4e204223.html"
   - "https://learning.sap.com/learning-journeys/acquire-core-abap-skills"
-  - "https://www.sap.com/products/erp/what-is-sap-erp.html"
   - "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE"
 references:
   - n: 1
@@ -58,8 +57,8 @@ references:
     url: "https://learning.sap.com/learning-journeys/acquire-core-abap-skills"
     retrieved: 2026-06-29
   - n: 4
-    title: "SAP — What Is SAP ERP"
-    url: "https://www.sap.com/products/erp/what-is-sap-erp.html"
+    title: "SAP Help Portal — SAP S/4HANA On-Premise Documentation (ECC predecessor context)"
+    url: "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE"
     retrieved: 2026-07-09
   - n: 5
     title: "SAP Help Portal — S/4HANA Documentation"
