@@ -1699,7 +1699,10 @@ export function routineService(
             and(
               eq(routineTriggers.id, row.trigger.id),
               eq(routineTriggers.enabled, true),
-              eq(routineTriggers.nextRunAt, row.trigger.nextRunAt),
+              // Use date_trunc to ms precision: JS Date has ms resolution but DB may store
+              // sub-ms (microsecond) timestamps via now(), causing equality to silently fail
+              // and the trigger to be skipped forever. Comparing truncated values guarantees a match.
+              sql`date_trunc('milliseconds', ${routineTriggers.nextRunAt}) = date_trunc('milliseconds', ${row.trigger.nextRunAt}::timestamptz)`,
             ),
           )
           .returning({ id: routineTriggers.id })
