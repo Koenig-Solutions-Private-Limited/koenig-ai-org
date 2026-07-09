@@ -18,6 +18,7 @@ learning_objectives:
 whats_new:
   - System diagram of C memory layout and control-flow model for interview preparation
 description: "C interview questions and answers covering pointers, memory management, undefined behaviour, and the C runtime memory model, with cited tool references and a runnable sanitizer example."
+seo_description: "C interview questions and answers: pointers, memory management, control flow, and the C runtime memory model with AddressSanitizer and Valgrind tool references."
 primary_query: "C interview questions and answers"
 contrarian_angle: "The best C interview answers are not trivia answers; they connect each rule to the memory segment, failure mode, and debugging tool."
 faq:
@@ -33,7 +34,7 @@ last_updated: 2026-07-09
 hero_image:
   url: /img/blogs/c-interview-questions-and-answers/hero.png
   alt: "Diagram of C runtime memory layout showing text, data, BSS, heap, and stack segments with pointer relationships"
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 8
 sources:
   - "https://en.cppreference.com/w/c/language/memory_model"
