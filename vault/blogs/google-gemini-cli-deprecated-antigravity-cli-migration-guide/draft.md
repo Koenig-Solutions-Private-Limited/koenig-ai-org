@@ -66,13 +66,7 @@ Most guides tell you to run `s/gemini/agy/g` and call it done. That gets you 80%
 
 ## Who June 18 Actually Cut Off — and Who It Didn't
 
-The cutoff affected:
-
-- **Free-tier users** (Gemini Code Assist for individuals) — hard cutoff June 18
-- **Google AI Pro and AI Ultra subscribers** — hard cutoff June 18
-- **Gemini Code Assist for GitHub** — no new installations after June 18; existing requests wound down in subsequent weeks
-
-It did **not** affect Enterprise Standard or Enterprise licence holders, who retain full Gemini CLI access. [Google's announcement](https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/) framed the move as product focus: "we can serve you best by pouring our energy into a single product built for today's multi-agent reality." The developer community's reaction was pointed — the announcement showed 293 downvotes on [GitHub discussions](https://github.com/google-gemini/gemini-cli/discussions/27274) when rechecked on July 9, 2026, overwhelmingly because Gemini CLI was Apache 2.0 and [Antigravity CLI ships as a closed-source binary](https://github.com/google-antigravity/antigravity-cli).
+The cutoff hit free-tier Gemini Code Assist users, Google AI Pro subscribers, Google AI Ultra subscribers, and new Gemini Code Assist for GitHub installs. It did **not** affect Enterprise Standard or Enterprise licence holders, who retain full Gemini CLI access. [Google's announcement](https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/) framed the move as product focus around "today's multi-agent reality." The developer community's reaction was pointed — the announcement showed 293 downvotes on [GitHub discussions](https://github.com/google-gemini/gemini-cli/discussions/27274) when rechecked on July 9, 2026, overwhelmingly because Gemini CLI was Apache 2.0 and [Antigravity CLI ships as a closed-source binary](https://github.com/google-antigravity/antigravity-cli).
 
 The `google-gemini/gemini-cli` repository remains on GitHub under Apache 2.0 and continues to receive enterprise bug and security fixes. For everyone else, it is effectively archived.
 
@@ -80,23 +74,15 @@ One clarification worth making: the [Gemini API changelog](https://ai.google.dev
 
 ## What Antigravity CLI Actually Is (and the Version Scheme That Will Confuse You)
 
-Antigravity CLI is not a renamed Gemini CLI. It is a distinct product built in Go (Gemini CLI was TypeScript/Node.js), with a different licensing model, session architecture, and command surface. [The New Stack's headless test](https://thenewstack.io/gemini-cli-antigravity-replacement) confirmed that Gemini CLI in non-interactive mode could not complete file-write tasks — a limitation Antigravity CLI does not share. Google's own blog acknowledges ["there won't be 1:1 feature parity right out of the gate"](https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/), so treat this as a migration to a different [[glossary/agent-harness|agent harness]], not an upgrade of the same one.
-
-| Dimension | Gemini CLI | Antigravity CLI |
-|---|---|---|
-| Language | TypeScript / Node.js | Go |
-| Licensing | Apache 2.0 | Closed source (binary) |
-| Command | `gemini` | `agy` |
-| Session model | Single agent, single session | Multi-agent, async parallel subagents |
-| Version scheme | `0.x.x` / `1.x.x` | `1.x.x` (at `1.0.14`, July 2026) |
+Antigravity CLI is not a renamed Gemini CLI. It is a distinct product built in Go rather than TypeScript/Node.js, with a different licensing model, session architecture, and command surface. [The New Stack's headless test](https://thenewstack.io/gemini-cli-antigravity-replacement) found Gemini CLI could read and explain file edits in non-interactive mode but could not complete the write operation; Antigravity CLI is designed for that headless agent loop. Google's own blog acknowledges ["there won't be 1:1 feature parity right out of the gate"](https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/), so treat this as a migration to a different [[glossary/agent-harness|agent harness]], not an upgrade of the same one.
 
 The version scheme matters because the Antigravity product line uses two separate tracks: the **desktop app** uses `2.x.x`, the **CLI** uses `1.x.x`. Any bug report citing version `2.2.1` is about the desktop app. This is directly relevant to a widely-circulated bug report — covered in the section below.
 
 ## The 5-Step Migration Scaffold
 
-Google's announcement links an Antigravity migration guide, but `https://antigravity.google/docs/gcli-migration` returned HTTP 200 with no extractable body when rechecked on July 9, 2026. The scaffold below therefore uses the accessible Google announcement, the public Antigravity CLI repository, the CLI changelog, and implementation reports rather than treating the unavailable page as source evidence.
+Google's announcement links an Antigravity migration guide, but `https://antigravity.google/docs/gcli-migration` returned HTTP 200 with no extractable body when rechecked on July 9, 2026. The scaffold below uses the accessible Google announcement, public Antigravity CLI repository, CLI changelog, and implementation reports rather than treating the unavailable page as source evidence.
 
-**Step 1: Install**
+**Step 1: Install and verify**
 
 ```bash
 # macOS / Linux
@@ -126,18 +112,12 @@ agy plugin import gemini
 agy plugin list
 ```
 
-Verify each plugin individually. Community reports indicate occasional incomplete imports — `agy plugin list` is the fastest sanity check.
+Verify each plugin with `agy plugin list`; incomplete imports are faster to catch here than inside a failing CI run.
 
 **Step 4: Update MCP config (silent failure if skipped)**
 
-If you have [[glossary/mcp|MCP]] servers configured, the config key changed from `url` to `serverUrl`. No error is thrown on the wrong key — the server silently does not connect. Also move standalone config to a new file path.
+If you have [[glossary/mcp|MCP]] servers configured, the config key changed from `url` to `serverUrl`. No error is thrown on the wrong key — the server silently does not connect. Move standalone config to `~/.gemini/config/mcp_config.json` and use:
 
-Before (`~/.gemini/settings.json` inline):
-```json
-{ "mcpServers": { "my-server": { "url": "ws://localhost:3000" } } }
-```
-
-After (`~/.gemini/config/mcp_config.json` standalone):
 ```json
 { "mcpServers": { "my-server": { "serverUrl": "ws://localhost:3000" } } }
 ```
@@ -146,14 +126,13 @@ Also rename workspace skills: `.gemini/skills/` → `.agents/skills/`.
 
 **Step 5: Fix scripts and CI/CD — the plural landmine**
 
-This is the most common source of post-migration incidents. The `agents` subcommand became `agent` (singular):
+This is the most common source of post-migration incidents: the `agents` subcommand became `agent` (singular).
 
 | Gemini CLI | Antigravity CLI | Note |
 |---|---|---|
 | `gemini agents run <workflow>` | `agy agent run <workflow>` | **Plural → singular — silent failure** |
 | `gemini extensions list` | `agy plugin list` | Extensions became Plugins |
 | `gemini -p "prompt"` | `agy -p "prompt"` | Same flag |
-| `npm update -g @google/gemini-cli` | `agy update` | New update path |
 
 Search every CI script and Makefile for `agents run` and replace with `agent run`. A project-wide `grep -r "agents run"` is the fastest audit.
 
@@ -175,14 +154,9 @@ Expected output: all three searches should return empty after a complete migrati
 
 ## The v2.2.1 Bug Is in the Desktop App, Not the CLI
 
-A bug filed June 29, 2026 on the Google AI Developers Forum documents a `/browser` routing regression:
+A bug filed June 29, 2026 on the Google AI Developers Forum documents a `/browser` routing regression where version 2.2.1 sometimes invoked a Linux-only inline browser path on Windows instead of routing through the subagent path ([Google AI Developers Forum](https://discuss.ai.google.dev/t/bug-report-browser-command-routing-issue-in-2-2-1-forces-linux-only-tool-on-windows/172873)). This is confirmed and real. But it is scoped to **Antigravity 2.0 desktop app version 2.2.1** — not Antigravity CLI, which runs on the separate `1.x.x` track and is currently at `1.0.14`.
 
-> "after the 2.2.1 update, the routing logic for the /browser command seems broken. Sometimes, instead of invoking the Subagent, the system tries to run a built-in Browsing xxx inline UI directly in the chat. The problem is that this built-in tool seems to only support Linux. As a result, it gets stuck at No browser pages open and throws an error stating it can only run in a Linux environment."  
-> — [Google AI Developers Forum, June 29, 2026](https://discuss.ai.google.dev/t/bug-report-browser-command-routing-issue-in-2-2-1-forces-linux-only-tool-on-windows/172873)
-
-This is confirmed and real. But it is scoped to **Antigravity 2.0 desktop app version 2.2.1** — not Antigravity CLI, which runs on the separate `1.x.x` track and is currently at `1.0.14`. A second `2.2.1` issue ("Models not following Global nor Agents rules") was reported July 3 in the same desktop app.
-
-If you are running `agy` in your terminal, the [CLI changelog](https://github.com/google-antigravity/antigravity-cli/blob/main/CHANGELOG.md) records separate fixes — including a resolved Windows non-TTY print mode bug where output was silently discarded in pipes. The two products share an agent harness but maintain separate versioning and separate bug tracks.
+If you are running `agy` in your terminal, the [CLI changelog](https://github.com/google-antigravity/antigravity-cli/blob/main/CHANGELOG.md) records separate fixes, including a Windows non-TTY print-mode fix for discarded piped output. The two products share an agent harness but maintain separate versioning and separate bug tracks.
 
 {{KnowledgeCheck}}
 **Question:** After migrating from Gemini CLI to Antigravity CLI, you run `agy agents run my-workflow` in your CI pipeline. The step exits with code 0 but produces no output. What is the most likely cause?
@@ -197,8 +171,6 @@ D) The v2.2.1 desktop app bug is blocking the CLI
 
 ## Stable Primitives Outlast CLI Wrappers
 
-Gemini CLI ran for under two years before Google replaced it with a closed-source binary. Antigravity CLI is the official tool today — and the async subagent model it introduces is architecturally different enough that another generational shift is plausible. The pattern is predictable.
-
-What transfers across CLI generations: the MCP server layer you own, the spec files that define your agent's behavior, and the evaluation gates that verify its output. Teams that built their Gemini CLI workflows on MCP servers and structured prompts will complete this migration in hours. Teams that hardwired `gemini`-specific commands throughout their pipelines are the ones filing incidents.
+Gemini CLI ran for under two years before Google replaced it with a closed-source binary. What transfers across CLI generations is the MCP server layer you own, the spec files that define your agent's behavior, and the evaluation gates that verify its output. Teams that built Gemini CLI workflows on MCP servers and structured prompts can finish this migration in hours. Teams that hardwired `gemini`-specific commands throughout pipelines are the ones filing incidents.
 
 The async multi-agent model in Antigravity CLI — parallel subagent orchestration, session handoff between terminal and desktop — is worth dedicated learning, not just a sed command. Koenig AI Academy's [[course/antigravity-cli-for-developers]] course covers the MCP migration pattern in depth and the new async subagent workflow that Gemini CLI never supported.

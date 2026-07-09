@@ -24,11 +24,11 @@ positions:
 first_60_words_answer: "Anthropic's `agent-memory-2026-07-22` beta header is the strongest public signal that Agent Memory is being separated from the broader Managed Agents beta and prepared for a July 22, 2026 launch."
 faq:
   - question: "Is Anthropic Agent Memory officially launching on July 22, 2026?"
-    answer: "Not officially. The public evidence is that Anthropic added the `agent-memory-2026-07-22` beta header to its Python, TypeScript, and C# SDKs on July 2, 2026, while existing memory docs still describe the April Managed Agents beta. That strongly signals a July 22 launch, but it is not a press-release confirmation."
+    answer: "Not officially. The public evidence is that Anthropic added the `agent-memory-2026-07-22` beta header to its Python, TypeScript, and C# SDKs on July 2, 2026, while existing memory docs still describe the April Managed Agents beta. That strongly signals a July 22 launch, but it is not a press-release confirmation (see [Python SDK v0.116.0](https://github.com/anthropics/anthropic-sdk-python/releases/tag/v0.116.0))."
   - question: "How does Anthropic Agent Memory store memories?"
-    answer: "Anthropic's documented model is filesystem-backed memory stores. A store attaches to a Managed Agents session as a resource, mounts inside the sandbox under `/mnt/memory/<store-name>/`, and exposes memories as small files the agent can read and write with normal file tools. The official docs cap each memory at 100 KB and each store at 2,000 memories."
+    answer: "Anthropic's documented model is filesystem-backed memory stores. A store attaches to a Managed Agents session as a resource, mounts inside the sandbox under `/mnt/memory/<store-name>/`, and exposes memories as small files the agent can read and write with normal file tools. The official docs cap each memory at 100 KB and each store at 2,000 memories (per [Anthropic memory docs](https://platform.claude.com/docs/en/managed-agents/memory))."
   - question: "Does Anthropic Agent Memory replace Mem0, Zep, Letta, or LangMem?"
-    answer: "It replaces a lot of custom memory plumbing for Claude-only agents, especially preferences, project conventions, audit-friendly notes, and per-user state. It does not replace semantic retrieval systems for large corpora. Anthropic's cookbook describes file-backed memory, while vendor memory stacks still differentiate on vector, graph, and hybrid retrieval."
+    answer: "It replaces a lot of custom memory plumbing for Claude-only agents, especially preferences, project conventions, audit-friendly notes, and per-user state. It does not replace semantic retrieval systems for large corpora. Anthropic's cookbook describes file-backed memory, while vendor memory stacks still differentiate on vector, graph, and hybrid retrieval (see [AgentMarketCap's 2026 memory vendor survey](https://agentmarketcap.ai/blog/2026/04/10/agent-memory-vendor-landscape-2026-letta-zep-mem0-langmem))."
 original_data: false
 last_updated: 2026-07-08
 hero_image:
@@ -53,7 +53,7 @@ learning_objectives:
 
 # Decode Anthropic Agent Memory API before the July 22 launch (2026)
 
-Anthropic's `agent-memory-2026-07-22` beta header is the strongest public signal that Agent Memory is being separated from the broader Managed Agents beta and prepared for a July 22, 2026 launch. The evidence is SDK-level, not a formal announcement: Python, TypeScript, and C# all added the same dated header on July 2.[^python][^ts][^csharp] For production benchmark context, see KOEA-7007.
+Anthropic's `agent-memory-2026-07-22` beta header is the strongest public signal that Agent Memory is being separated from the broader [[glossary/managed-agents]] beta and prepared for a July 22, 2026 launch. The evidence is SDK-level, not a formal announcement: Python, TypeScript, and C# all added the same dated header on July 2.[^python][^ts][^csharp] For production benchmark context, see KOEA-7007.
 
 The part most teams will miss is that this is less a "new memory feature" story than an infrastructure story. Anthropic already put Managed Agents memory into public beta on April 23 under `managed-agents-2026-04-01`.[^release] The new header suggests memory is becoming its own product surface. That matters because native memory removes the embedding service, vector database, sync worker, audit table, and custom prompt glue for a large class of Claude-native agents.
 
@@ -71,7 +71,7 @@ Still, do not write your roadmap as if Anthropic has announced every detail. As 
 
 Anthropic's confirmed memory model is deliberately boring: memory stores attach to a session through the `resources` array, and the agent sees the store mounted at a filesystem path. The official memory guide shows `access: read_write`, per-attachment instructions, and a default mount model; it also warns that `read_only` is safer for reference material when the agent processes untrusted input.[^memory-docs]
 
-That last warning is important. A writable memory store is not just persistence. It is a trust boundary. If a web page, support ticket, or user prompt can cause the agent to write malicious notes into a shared store, later sessions may treat that memory as trusted context. Anthropic's own docs point teams toward `read_only` when modification is unnecessary.[^memory-docs]
+That last warning is important. A writable memory store is not just persistence. It is a trust boundary. If a web page, support ticket, or user prompt can cause the agent to write malicious notes into a shared store, later sessions may treat that memory as trusted context. Anthropic's own docs point teams toward `read_only` when modification is unnecessary.[^memory-docs] That is why [[glossary/prompt-injection]] belongs in the memory design review, not only in the prompt review.
 
 The limits are also clear enough for architecture decisions. A memory can be up to 100 KB, roughly 25,000 tokens. A store can hold up to 2,000 memories. A session can attach up to eight memory stores.[^memory-docs] That is enough for user preferences, project conventions, workflow notes, previous mistakes, customer state, and team policies. It is not enough to pretend every document corpus should become a pile of memory files.
 
