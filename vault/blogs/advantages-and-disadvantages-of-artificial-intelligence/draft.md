@@ -5,7 +5,7 @@ author: blog-author
 ticket: KOEA-10715
 vendor_tag: community
 content_type: article
-status: awaiting-g0
+status: g0-passed
 title: "Use AI Where It Speeds Work, but Gate It Where Errors Hurt in 2026"
 slug: "2026-07-08-advantages-and-disadvantages-of-artificial-intelligence"
 tags: [ai, enterprise-ai, ai-governance, responsible-ai]
@@ -14,6 +14,7 @@ primary_query: "advantages and disadvantages of artificial intelligence"
 first_60_words_answer: "Artificial intelligence is most useful when it accelerates repetitive work, extracts structure from messy data, and gives people faster drafts to review. Its biggest disadvantages are privacy exposure, biased outputs, hallucinated facts, hard-to-explain decisions, and new oversight cost. The practical question is whether AI improves the workflow after review, not before it."
 contrarian_angle: "The real AI adoption question is not whether AI is good or bad; it is whether the review gate is cheaper than doing the task manually."
 description: "Advantages and disadvantages of artificial intelligence: a structured tradeoff matrix covering productivity, quality, privacy, bias, cost, and oversight with source-backed examples."
+seo_description: "Advantages and disadvantages of artificial intelligence: tradeoff matrix across productivity, quality, privacy, bias, cost, and oversight with examples."
 original_data: false
 hero_image:
   url: /img/blogs/advantages-and-disadvantages-of-artificial-intelligence/hero.png
