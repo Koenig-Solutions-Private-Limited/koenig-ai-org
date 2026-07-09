@@ -25,23 +25,29 @@ positions:
   - id: stance:ai-vendor-news-opinionated
     engagement: defends
 sources:
-  - https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview
-  - https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools
-  - https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls
-  - https://platform.claude.com/docs/en/about-claude/models/overview
-  - https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling
-  - https://claudeapi.com/en/blog/dev-guides/langchain-claude-api-tutorial
+  - url: https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview
+    retrieved: 2026-07-06
+  - url: https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools
+    retrieved: 2026-07-06
+  - url: https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls
+    retrieved: 2026-07-06
+  - url: https://platform.claude.com/docs/en/about-claude/models/overview
+    retrieved: 2026-07-06
+  - url: https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling
+    retrieved: 2026-07-06
+  - url: https://claudeapi.com/en/blog/dev-guides/langchain-claude-api-tutorial
+    retrieved: 2026-07-06
 faq:
   - question: "What is the difference between tool_choice: auto and tool_choice: any?"
-    answer: "With auto (the default), Claude decides whether to call a tool or answer directly based on the user's request. With any, Claude must call one of the provided tools but can choose which one. Use auto unless you specifically need to force a tool call — any also disables the natural-language preamble before the tool call block, which can surprise developers expecting a reasoning sentence."
+    answer: "With auto (the default), Claude decides whether to call a tool or answer directly based on the user's request; with any, Claude must call one of the provided tools but can choose which one, according to Anthropic's [tool definition docs](https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools). Use auto unless you specifically need to force a tool call — any also disables the natural-language preamble before the tool call block, which can surprise developers expecting a reasoning sentence."
   - question: "Why does my tool use return a 400 error about 'tool_use ids without tool_result blocks'?"
-    answer: "Your tool_result message is malformed. The tool_result blocks must be the first items in the content array of the user message. Any text content in that message must come after all tool_result blocks. A single text block appearing before a tool_result triggers the 400. Also verify that tool_use_id in your result exactly matches the id field Claude returned in its tool_use block."
+    answer: "Your tool_result message is malformed. Anthropic's [tool-call handling guide](https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls) requires tool_result blocks to be the first items in the content array of the user message. Any text content in that message must come after all tool_result blocks. Also verify that tool_use_id in your result exactly matches the id field Claude returned in its tool_use block."
   - question: "Can I pass temperature or top_p when using Claude Sonnet 5 with tool use?"
-    answer: "No — and this is the most common copy-paste trap from older tutorials. Claude Sonnet 5 (claude-sonnet-5) rejects non-default temperature, top_p, and top_k with a validation error. Omit these parameters entirely when targeting Sonnet 5 or Opus 4.8. If your code was working on claude-sonnet-4-6 and broke on upgrade, this is almost certainly the cause."
+    answer: "No — and this is the most common copy-paste trap from older tutorials. The current Koenig course pinning note, based on Anthropic's [models overview](https://platform.claude.com/docs/en/about-claude/models/overview), warns that Claude Sonnet 5 rejects non-default temperature, top_p, and top_k with a validation error. Omit these parameters entirely when targeting Sonnet 5 or Opus 4.8."
   - question: "How do I handle a tool that fails at runtime?"
-    answer: "Return a tool_result with is_error: true and a descriptive message in the content field (e.g. 'ConnectionError: weather service unavailable (HTTP 503)'). Claude incorporates the error into its response and tells the user what went wrong. Do not raise an exception or leave the tool_result block empty — an empty result looks like a success to Claude."
+    answer: "Return a tool_result with is_error: true and a descriptive message in the content field (for example, a service-unavailable message), matching Anthropic's [error result format](https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls). Claude incorporates the error into its response and tells the user what went wrong. Do not raise an exception or leave the tool_result block empty — an empty result looks like a success to Claude."
   - question: "Does adding tool definitions increase my API cost?"
-    answer: "Yes. Tool schemas add tokens to every request: approximately 354 tokens overhead for auto/none tool_choice and 474 tokens for any/tool on Sonnet 5. Use cache_control on tool definitions to pin them in Anthropic's prompt cache — once cached, repeated calls do not re-bill those tokens."
+    answer: "Yes. Anthropic's [define-tools docs](https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools) explain that the API constructs a tool-use system prompt from your tool definitions, tool configuration, and any user-specified system prompt. That means larger schemas consume more prompt tokens. Use cache_control on stable tool definitions to pin them in Anthropic's prompt cache and reduce repeated schema cost."
 whats_new:
   - "W28 Sonnet 5 caveats: 3 specific changes that silently break code copied from older Claude tool-use tutorials"
 learning_objectives:
@@ -143,6 +149,10 @@ if response.stop_reason == "tool_use":
 
 When `stop_reason` is `"tool_use"`, Claude has decided to call a function instead of answering directly. The `content` array may include both a text block (Claude's reasoning narration) and one or more `tool_use` blocks. Iterate over all blocks — in agentic workflows, Claude may issue parallel tool calls in a single turn.
 
+Do not assume the first non-text block is the only call. If a user asks, "Compare the weather in Tokyo, Delhi, and Paris," Claude can emit three `get_weather` calls at once. Your handler should collect every `tool_use` block, execute the calls independently, and return one `tool_result` block per `tool_use_id` in the next user message. That pattern matters because parallel calls are where native tool use starts to resemble a real harness rather than a demo: you need stable IDs, ordered results, and a failure policy for one call failing while the others succeed.
+
+The small text block before a tool call is not a contract. Treat it as narration for the user, not as machine-readable state. The machine-readable state is the `tool_use` block: `name` chooses the handler, `input` is the JSON payload, and `id` is the join key that binds the later `tool_result` to this exact request. This is also why [[glossary/tool-use]] examples should teach the ID plumbing early; most broken implementations fail after the model has already made the right tool decision.
+
 ---
 
 ## Step 4: Execute Locally and Return `tool_result`
@@ -200,6 +210,10 @@ print(final_response.content[0].text)
 ```
 
 When `stop_reason` is `"end_turn"`, Claude has incorporated the tool result into a natural-language answer. If Claude calls another tool — `stop_reason == "tool_use"` again — loop back to Step 3. This is the multi-step agentic pattern. In production, the [Anthropic SDK's Tool Runner](https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling) handles this loop automatically, parsing `tool_use` blocks, executing registered handlers, and formatting `tool_result` messages.
+
+The loop should still have a hard stop. Set a maximum number of tool turns, track which tool names have already been called, and log the user prompt, tool name, input payload, `tool_use_id`, result status, and final `stop_reason`. Those fields are enough to debug most "Claude ignored my tool" reports without storing full private tool outputs. They also make migration to [[glossary/mcp]] easier later, because MCP servers expose the same basic contract: named tools, structured inputs, structured results, and an execution trace you can inspect.
+
+One practical rule: retry transport failures outside the model loop, but send domain failures back to Claude as `is_error: true`. A timeout from your weather API may deserve one idempotent retry before Claude sees it. A valid "city not found" response should go straight into `tool_result` so Claude can ask the user for a better location. That split keeps the model responsible for conversation repair and keeps your application responsible for infrastructure repair.
 
 ---
 
