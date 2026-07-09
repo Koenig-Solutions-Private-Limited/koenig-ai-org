@@ -20,6 +20,7 @@ learning_objectives:
 whats_new:
   - "System diagram of the Microsoft certification ladder: Fundamentals -> Associate -> Expert by role family, updated for 2026 retirements"
 description: "Microsoft certification roadmap from Fundamentals to Expert in 2026: Azure, M365, Security, Data, and AI tracks mapped with active exams, retirements, costs, timelines, and renewal rules."
+seo_description: "Microsoft certification roadmap 2026: which Azure, M365, data, and security paths are still active, which exams retired, and how to reach Expert credentials."
 faq:
   - question: "What is the safest Microsoft certification roadmap in 2026?"
     answer: "Start with the Fundamentals exam for your role family, then move to an active Associate credential, and only pursue Expert after verifying prerequisites on Microsoft Learn. In July 2026, avoid starting DP-203 because it retired on March 31, 2025, and treat AZ-204 and AZ-500 as deadline-sensitive because Microsoft lists them for retirement in July and August 2026 respectively [6]."
@@ -34,7 +35,7 @@ last_updated: 2026-07-09
 hero_image:
   url: /img/blogs/2026-07-08-microsoft-certification-roadmap-fundamentals-expert/hero.png
   alt: "Microsoft certification roadmap diagram showing Fundamentals, Associate, and Expert paths with retired DP-203 replaced by DP-700"
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 7
 sources:
   - "https://learn.microsoft.com/en-us/credentials/browse/"
