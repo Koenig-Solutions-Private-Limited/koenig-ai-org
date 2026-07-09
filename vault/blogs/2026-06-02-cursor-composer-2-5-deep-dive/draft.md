@@ -4,7 +4,7 @@ description: "Composer 2.5 reaches the Coding Agent Index top three at one-tenth
 slug: 2026-06-02-cursor-composer-2-5-deep-dive
 date: 2026-06-02
 last_updated: 2026-06-30
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-7150
 vendor_tag: community
 content_type: article

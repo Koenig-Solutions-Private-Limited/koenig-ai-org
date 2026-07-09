@@ -2,7 +2,7 @@
 date: 2026-07-06
 title: "Build Your First MCP Server in Python (2026 Complete Guide)"
 slug: build-your-first-mcp-server-python-2026-complete-guide
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-10201
 vendor_tag: anthropic
 content_type: article

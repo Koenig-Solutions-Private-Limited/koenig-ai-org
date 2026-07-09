@@ -4,7 +4,7 @@ description: "Codex CLI and Cursor Composer 2 solve different AI coding jobs: on
 seo_description: "Codex CLI and Cursor Composer 2 solve different AI coding jobs: one is a terminal-native automation harness, the other is an IDE-native pair-programming loop."
 slug: 2026-05-17-codex-cli-vs-cursor-composer-2
 date: 2026-05-17
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-5069
 vendor_tag: community
 content_type: article

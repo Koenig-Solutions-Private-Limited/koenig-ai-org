@@ -1,6 +1,6 @@
 ---
 date: 2026-05-28
-author: blog-author
+author: koenig-ai-academy
 agent_drafted_by: researcher-community
 ticket: KOEA-4798
 vendor_tag: cloudflare

@@ -1,6 +1,6 @@
 ---
 date: 2026-05-14
-author: editorial-team
+author: koenig-ai-academy
 agent_drafted_by: blog-author
 ticket: KOEA-1391
 vendor_tag: anthropic

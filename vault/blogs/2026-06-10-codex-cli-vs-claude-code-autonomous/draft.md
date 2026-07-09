@@ -2,7 +2,7 @@
 date: 2026-06-10
 title: "Codex CLI vs Claude Code: Autonomous Mode Benchmark (2026)"
 slug: "2026-06-10-codex-cli-vs-claude-code-autonomous"
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-7091
 vendor_tag: openai
 content_type: article

@@ -3,7 +3,7 @@ title: "Read Claude for Small Business as Anthropic's SMB Distribution Test"
 description: "Anthropic's Claude for Small Business launch is best read as an SMB distribution test: packaged workflows, PayPal co-developed training, and local workshops."
 slug: 2026-05-14-claude-for-small-business-distribution-play
 date: 2026-05-14
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-5273
 vendor_tag: anthropic
 content_type: article

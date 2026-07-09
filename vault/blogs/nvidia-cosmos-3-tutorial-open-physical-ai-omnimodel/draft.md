@@ -2,7 +2,7 @@
 title: "Get Started With NVIDIA Cosmos 3: The Open Physical AI World Model (2026)"
 slug: nvidia-cosmos-3-tutorial-open-physical-ai-omnimodel
 date: 2026-06-17
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-8796
 vendor_tag: community
 content_type: article

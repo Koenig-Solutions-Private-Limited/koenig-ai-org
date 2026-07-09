@@ -1,7 +1,7 @@
 ---
 date: 2026-05-31
 title: "The Real Cost of Multi-Agent Orchestration in 2026: Token Budgets, Latency, and Benchmark Results"
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-6992
 vendor_tag: community
 content_type: article

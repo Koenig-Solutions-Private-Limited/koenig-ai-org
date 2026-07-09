@@ -1,12 +1,12 @@
 ---
 date: 2026-07-06
 title: "Use Claude Tool Use in 5 Steps to Call Real Functions in 2026"
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-10202
 parent_issue: KOEA-10189
 vendor_tag: anthropic
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 6
 slug: claude-tool-use-in-5-steps-developer-tutorial
 tags:

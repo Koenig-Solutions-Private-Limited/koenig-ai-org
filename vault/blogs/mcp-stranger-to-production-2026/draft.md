@@ -2,7 +2,7 @@
 title: "MCP from Stranger to Production — The 2026 Guide"
 slug: mcp-stranger-to-production-2026
 date: 2026-06-02
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-7187
 vendor_tag: anthropic
 content_type: article

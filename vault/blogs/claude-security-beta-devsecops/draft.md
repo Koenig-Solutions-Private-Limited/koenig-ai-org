@@ -4,6 +4,7 @@ ticket: KOEA-265
 vendor_tag: anthropic
 content_type: article
 status: published
+author: koenig-ai-academy
 reading_time_min: 5
 primary_query: "anthropic claude security beta devsecops"
 contrarian_angle: "The scanner isn't the product — the partner ecosystem is. Anthropic is building a DevSecOps platform moat through Opus 4.7 embeddings in CrowdStrike, Wiz, and Palo Alto, not through feature differentiation in the scanner itself."

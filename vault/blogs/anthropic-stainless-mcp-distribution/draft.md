@@ -4,7 +4,7 @@ title: "Anthropic Bought an API Factory, Not Just an MCP Vendor (2026)"
 description: "Anthropic acquired Stainless to own the OpenAPI-to-artifact pipeline that generates SDKs, CLIs, docs, and MCP servers from a single spec. Here is why it is a distribution-layer move — and what it means for API vendors who want to be Claude-accessible."
 slug: "2026-06-10-anthropic-stainless-mcp-distribution"
 tags: [anthropic, mcp, sdk-generation, api-distribution, stainless]
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-7083
 vendor_tag: anthropic
 content_type: article

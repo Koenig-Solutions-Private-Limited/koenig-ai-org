@@ -3,7 +3,7 @@ date: 2026-05-14
 title: "Build a Cloudflare Agent with Durable Objects, Workers AI, R2, and Vectorize"
 slug: "2026-05-14-cloudflare-agents-week-2026-build-deep-dive"
 description: "Build a persistent Cloudflare RAG agent by treating Durable Objects, Workers AI, R2, and Vectorize as platform bindings instead of separate services."
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-2099
 vendor_tag: community
 content_type: article

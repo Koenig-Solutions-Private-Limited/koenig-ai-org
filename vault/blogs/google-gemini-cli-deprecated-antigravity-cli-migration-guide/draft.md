@@ -2,7 +2,7 @@
 date: 2026-07-06
 title: "Google Killed Gemini CLI in 2026: Your Complete Antigravity CLI Migration Guide"
 slug: google-gemini-cli-deprecated-antigravity-cli-migration-guide
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-10220
 vendor_tag: google
 content_type: article

@@ -2,7 +2,7 @@
 title: "NotebookLM for Polish, Open Notebook for Control: The Hybrid AI Learning Workflow in 2026"
 slug: notebooklm-open-notebook-hybrid
 date: 2026-06-11
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-1770
 vendor_tag: google+community
 content_type: article

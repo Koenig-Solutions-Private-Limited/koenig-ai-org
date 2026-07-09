@@ -2,7 +2,7 @@
 title: Choose Claude Skills for workflows and MCP for live systems
 description: "Choose Claude Skills when you need reusable workflow memory, use MCP when Claude must reach live systems, and combine them for production agents."
 date: 2026-05-13
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-5086
 slug: 2026-05-13-claude-skills-vs-mcp
 vendor: anthropic

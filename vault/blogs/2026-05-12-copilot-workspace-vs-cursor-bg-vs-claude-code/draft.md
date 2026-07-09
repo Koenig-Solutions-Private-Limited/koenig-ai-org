@@ -1,6 +1,6 @@
 ---
 date: 2026-05-12
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-1342
 vendor_tag: community
 content_type: article

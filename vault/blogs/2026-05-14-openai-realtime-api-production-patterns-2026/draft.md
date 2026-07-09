@@ -24,7 +24,7 @@ howto:
 hero_image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80"
 tags: [openai, realtime-api, voice-agents, production-ai]
 date: 2026-05-14
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-5998
 vendor_tag: openai
 content_type: article

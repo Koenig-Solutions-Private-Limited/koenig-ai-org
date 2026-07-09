@@ -3,7 +3,7 @@ date: 2026-05-14
 title: "Gemini Intelligence vs. the Agent Browsing Stack: A Pre-I/O Scorecard"
 slug: "2026-05-14-gemini-intelligence-agent-browsing-stack"
 description: "Project Mariner is dead. Gemini Intelligence is live. Google I/O is in 5 days. Here's how Google's agent browsing play compares to browser-use, OpenAI Operator, and Anthropic Computer Use — with pricing math."
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-2021
 vendor_tag: google
 content_type: article

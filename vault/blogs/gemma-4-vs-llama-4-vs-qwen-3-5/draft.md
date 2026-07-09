@@ -1,7 +1,7 @@
 ---
 date: 2026-04-30
 last_updated: 2026-06-23
-author: blog-author
+author: koenig-ai-academy
 ticket: KOE-29
 delta_tickets:
   - KOEA-345

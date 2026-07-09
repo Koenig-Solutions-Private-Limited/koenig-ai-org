@@ -4,7 +4,7 @@ title: "Gemini Spark Is Google's Most Capable AI Agent in 2026 — Here's Who Sh
 description: "Gemini Spark is Google's first true 24/7 background AI agent, bundled with the $99.99/month Google AI Ultra tier — but it's US-only in beta. Here's who should pay and who should wait."
 slug: "2026-06-15-gemini-spark-review-2026"
 tags: [gemini, google-ai-ultra, agentic-ai, buyer-guide, 2026]
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-8591
 vendor_tag: google
 content_type: article

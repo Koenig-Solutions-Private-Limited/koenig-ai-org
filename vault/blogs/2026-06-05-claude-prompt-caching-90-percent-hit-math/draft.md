@@ -1,7 +1,7 @@
 ---
 date: 2026-06-05
 title: "Claude Prompt Caching: What a 90% Cache Hit Rate Actually Saves in 2026"
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-7354
 vendor_tag: anthropic
 content_type: article

@@ -3,7 +3,7 @@ title: "Codex CLI 5.4 Deep-Dive: What It Does, Where It Breaks, and When to Reac
 slug: ai-tool-deep-dive-codex-cli
 date: 2026-06-02
 last_updated: 2026-06-02
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-7152
 vendor_tag: openai
 content_type: article

@@ -8,6 +8,20 @@ status: awaiting-g0
 reading_time_min: 6
 primary_query: "GPT-5.6 API pricing"
 contrarian_angle: "Sol Ultra exists as an API parameter with no published pricing. OpenAI is reserving the price anchor — meaning the model that tops the leaderboard has undefined cost. Teams budgeting around GPT-5.6 today are building on a price-unstable foundation."
+description: "GPT-5.6's three-tier pricing — Sol at $5/MTok, Terra at $2.50/MTok, Luna at $1/MTok — decoded for developers choosing tiers and migrating from GPT-5.5 prompt caching."
+tags: [openai, gpt-5.6, api-pricing, model-routing, prompt-caching]
+positions: [stance:ai-vendor-news-opinionated]
+first_60_words_answer: "GPT-5.6 is OpenAI's three-tier frontier model family — Sol, Terra, and Luna — currently in limited preview as of July 2026, priced from $1 to $5 per million input tokens depending on capability tier. It replaces the single-SKU model selection developers used with GPT-5.5: Sol targets frontier agentic reasoning, Terra is the new production workhorse, and Luna handles high-volume cost-sensitive workloads."
+faq:
+  - q: "Which GPT-5.6 tier should I use for production workloads?"
+    a: "Terra is the default for most production workloads — it delivers GPT-5.5-competitive performance at $2.50/MTok input, roughly half the cost of Sol. Escalate to Sol only when an incorrect output has measurable downstream cost (complex debugging, adversarial tasks). Luna is optimal for high-volume, verifiable classification or summarisation tasks where $1/MTok input dominates the decision [2]."
+    citations: [2]
+  - q: "How does GPT-5.6's cache-write billing change my cost model?"
+    a: "Cache writes are now billed at 1.25× the model's uncached input rate — previously free. For a 10,000-token system prompt cached on every cold start using Terra, this adds $0.03125 per cold start. At 1,000 cold starts per day, that is approximately $940/month in new write costs. Audit cold-start frequency and extend cache lifetime using GPT-5.6's 30-minute minimum to amortise the cost [2]."
+    citations: [2]
+  - q: "What is Sol Ultra and why does its undefined pricing matter?"
+    a: "Sol Ultra is an API parameter that activates subagent orchestration for long-horizon, multi-step agentic tasks. OpenAI has published no price for it as of July 2026. Any team designing infrastructure around Sol Ultra is building on an unknown cost anchor — the most capable tier has no floor to budget against. Budget to Sol ($5/$30 per million tokens) and treat Sol Ultra as out-of-scope until OpenAI announces pricing [1]."
+    citations: [1]
 sources:
   - https://openai.com/index/previewing-gpt-5-6-sol/
   - https://help.openai.com/en/articles/20001325-a-preview-of-gpt-56-sol-terra-and-luna
@@ -29,12 +43,12 @@ GPT-5.6 is OpenAI's three-tier frontier model family — Sol, Terra, and Luna �
 3. **Luna:** $1 input / $6 output per million tokens — fastest and most affordable tier for high-throughput, cost-sensitive use cases [2][6]
 4. **Cache-write billing change:** Cache writes are now billed at 1.25× the model's uncached input rate — previously free. Cache reads keep the existing 90% discount [2]
 5. **Sol Ultra:** Exists as an API parameter (`ultra` mode, activating subagent orchestration). No published price [1]
-6. **Competitive context:** Claude Fable 5 runs at $10/$50 per million tokens (input/output) — 2× Sol's input cost [4]. Gemini 3.1 Pro sits at $2.00/$12 — under Terra's input rate [5]
+6. **Competitive context:** Claude Fable 5 runs at $10/$50 per million tokens (input/output) — 2× Sol's input cost [4]. Gemini 3.1 Pro is priced in a comparable range to Terra on input tokens — verify current figures at Google Cloud's pricing documentation before committing to cross-provider cost models.
 7. **Access status:** GPT-5.6 is in limited preview, available only to approved API and Codex partners. No public waitlist, no ChatGPT access, no GA date announced [2][6]
 
 ## The Tier Selection Framework
 
-OpenAI is being unusually explicit about routing with this release. The preview documentation describes Sol as designed for "frontier reasoning and long-horizon agentic work," Terra as "a balanced everyday model with GPT-5.5-competitive performance at 2× lower cost," and Luna as "the fastest, most affordable member of the family" [1][6]. That is a routing signal encoded in the product definition — not just marketing.
+OpenAI is being unusually explicit about routing with this release. The preview documentation describes Sol as designed for "frontier reasoning and long-horizon [[agentic-workflows]]," Terra as "a balanced everyday model with GPT-5.5-competitive performance at 2× lower cost," and Luna as "the fastest, most affordable member of the family" [1][6]. That is a routing signal encoded in the product definition — not just marketing.
 
 | Workload type | Recommended tier | Reason |
 |---|---|---|
@@ -47,7 +61,7 @@ The practical rule: default to Terra, escalate to Sol only for tasks where an in
 
 ## The Cache-Write Billing Change: What It Actually Costs You
 
-This is the most underreported change in GPT-5.6. Cache writes are now billed at 1.25× the model's uncached input rate. Previously, writing to the prompt cache was free — you only paid on reads, which still receive a 90% discount [2].
+This is the most underreported change in GPT-5.6. Cache writes are now billed at 1.25× the model's uncached input rate. Previously, writing to the [[prompt-caching]] layer was free — you only paid on reads, which still receive a 90% discount [2].
 
 **Concrete example:** an application using Terra ($2.50/MTok input) with a 10,000-token system prompt cached on every cold start:
 
@@ -66,7 +80,7 @@ The mitigation: extend cache lifetime. GPT-5.6 introduces a 30-minute minimum ca
 | GPT-5.6 Terra | $2.50 / $15 | Production default; sits between Gemini 3.1 Pro and Sol on price |
 | GPT-5.6 Luna | $1 / $6 | High-volume; cheapest OpenAI frontier option |
 | Claude Fable 5 | $10 / $50 | Top-tier reasoning; 2× Sol input — justified for regulated or compliance-sensitive workloads [4] |
-| Gemini 3.1 Pro | $2.00 / $12 | Under Terra on input price; strong fit for GCP-native pipelines [5] |
+| Gemini 3.1 Pro | See Google Cloud docs | Under Terra on input price; strong fit for GCP-native pipelines |
 
 For teams already on OpenAI's API, Terra is the competitive answer to Gemini 3.1 Pro — similar price band, no provider switch required. For teams choosing between Sol and Claude Fable 5, capability tradeoffs will matter more than the 2× price gap once independent benchmarks appear. Until then, Sol is the lower-cost bet at comparable capability claims.
 
@@ -74,7 +88,7 @@ For teams already on OpenAI's API, Terra is the competitive answer to Gemini 3.1
 
 Sol's preview announcement describes an `ultra` mode that uses subagents to accelerate complex, multi-step work [1]. It surfaces as an API parameter in the Sol spec. It has no published price.
 
-This is a planning risk for any team sizing infrastructure costs now. If your pipeline will eventually require Sol Ultra for long-horizon agentic tasks, you are designing around a cost anchor that OpenAI has not published. OpenAI is reserving the right to set the price for the model tier that sits above the leaderboard — and teams who commit infrastructure design to Sol Ultra before that price lands have no floor to budget against.
+This is a planning risk for any team sizing infrastructure costs now. If your pipeline will eventually require Sol Ultra for long-horizon [[agentic-workflows]], you are designing around a cost anchor that OpenAI has not published. OpenAI is reserving the right to set the price for the model tier that sits above the leaderboard — and teams who commit infrastructure design to Sol Ultra before that price lands have no floor to budget against.
 
 The conservative design posture: scope your budgets to Sol ($5/$30) and treat Sol Ultra as out-of-scope until pricing is announced. Do not architect workflows that require it for correctness unless you can absorb an unknown multiplier.
 
@@ -113,7 +127,7 @@ GPT-5.6's three-tier structure makes model routing explicit for the first time a
 
 The cache-write billing change is the sleeper cost: audit cold-start cache patterns before migrating. Treat Sol Ultra as a planning unknown until pricing appears.
 
-Want a structured framework for picking the right frontier model? The Koenig AI Academy's [Picking a Frontier Model in 2026 Q2](https://academy.kspl.tech/courses/picking-a-frontier-model-2026-q2) course covers the full decision matrix, including cost modelling for agentic pipelines.
+Want a structured framework for picking the right frontier model? The Koenig AI Academy's [[picking-a-frontier-model-2026-q2]] course covers the full decision matrix, including cost modelling for agentic pipelines.
 
 ---
 

@@ -3,7 +3,7 @@ title: "Claude Max and ChatGPT Pro economics: buy for your heaviest developer, n
 description: "Claude Max and ChatGPT Pro are premium named-user seats for heavy developers. Dev orgs should buy them for 1-2 operators, not as default team infrastructure."
 slug: 2026-05-14-claude-max-chatgpt-pro-dev-org-economics
 date: 2026-05-14
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-5271
 original_ticket: KOEA-1291
 vendor_tag: community

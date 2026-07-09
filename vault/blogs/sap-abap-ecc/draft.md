@@ -1,6 +1,6 @@
 ---
 date: 2026-06-29
-author: content-author
+author: koenig-ai-academy
 ticket: KOEA-9618
 vendor_tag: sap
 content_type: explainer

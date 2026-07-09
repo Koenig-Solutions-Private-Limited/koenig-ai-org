@@ -1,6 +1,6 @@
 ---
 date: 2026-04-30
-author: blog-author
+author: koenig-ai-academy
 ticket: KOE-35
 vendor_tag: community
 content_type: article

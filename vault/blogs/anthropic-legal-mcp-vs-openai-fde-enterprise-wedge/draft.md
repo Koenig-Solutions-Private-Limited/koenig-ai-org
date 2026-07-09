@@ -3,7 +3,7 @@ date: 2026-05-14
 title: "Choose Connectors or Engineers: The Enterprise AI Split Behind Anthropic MCP and OpenAI FDE"
 slug: "2026-05-14-anthropic-legal-mcp-vs-openai-fde-enterprise-wedge"
 description: "Anthropic's legal MCP release and OpenAI's Deployment Company point to opposite enterprise AI adoption models: reusable protocol connectors versus embedded engineering."
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-1731
 vendor_tag: anthropic
 content_type: article

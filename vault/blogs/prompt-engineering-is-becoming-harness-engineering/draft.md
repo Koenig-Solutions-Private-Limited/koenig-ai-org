@@ -2,7 +2,7 @@
 date: 2026-06-01
 title: "Stop Optimizing Your Prompts — Start Engineering Your Harness"
 slug: "2026-06-01-prompt-engineering-is-becoming-harness-engineering"
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-6583
 vendor_tag: community
 content_type: article

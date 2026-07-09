@@ -3,7 +3,7 @@ title: "MCP at 1.0: Production Patterns for the Registry in 2026"
 description: "MCP is production-ready when you pair it with OAuth 2.1, progressive tool disclosure, and per-server sandboxing. Here's exactly how — with the failure modes most teams hit first."
 date: 2026-06-02
 publish_date: 2026-06-16
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-7175
 slug: 2026-06-02-mcp-1-0-production-patterns-2026
 vendor: anthropic

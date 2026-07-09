@@ -1,6 +1,6 @@
 ---
 date: 2026-06-02
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-7157
 vendor_tag: commercial
 content_type: article

@@ -2,7 +2,7 @@
 date: 2026-07-07
 title: "Build a Cloudflare Workers AI Agent with Durable Objects in 2026"
 description: "Step-by-step tutorial for building a stateful Cloudflare Workers AI agent with Durable Objects, platform bindings, MCP transport, observability, and production pricing checks."
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-10374
 parent_issue: KOEA-10190
 vendor_tag: community

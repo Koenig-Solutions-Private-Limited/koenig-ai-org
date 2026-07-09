@@ -1,7 +1,7 @@
 ---
 title: "MOSS-TTS v1.5: Open-Source TTS Has Beaten ElevenLabs — Here's the Math"
 slug: 2026-06-04-moss-tts-v15-open-source-beats-elevenlabs
-author: blog-author
+author: koenig-ai-academy
 vendor_tag: community
 content_type: article
 reading_time_min: 8

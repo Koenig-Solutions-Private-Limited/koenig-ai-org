@@ -1,6 +1,6 @@
 ---
 date: 2026-06-16
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-8720
 vendor_tag: anthropic
 content_type: article

@@ -4,7 +4,7 @@ title: "Claude Agent SDK + MCP Connector: Production Wiring (2026)"
 slug: 2026-06-05-claude-agent-sdk-mcp-connector-production
 description: "Anthropic's two MCP paths: Messages API connector for stateless calls, Agent SDK for persistent sessions. Working Python code and a decision table for both."
 seo_description: "Anthropic's two MCP paths: Messages API connector for stateless calls, Agent SDK for persistent sessions. Python code and a decision table for both."
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-7353
 vendor_tag: anthropic
 content_type: article

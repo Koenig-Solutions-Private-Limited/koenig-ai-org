@@ -5,7 +5,7 @@ seo_description: "The codexui-android npm package stole OpenAI Codex tokens from
 slug: 2026-06-03-codex-npm-supply-chain-ai-credentials
 date: 2026-06-04
 last_updated: 2026-06-04
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-7312
 vendor_tag: openai
 content_type: article

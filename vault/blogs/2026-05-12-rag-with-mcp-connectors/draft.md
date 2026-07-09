@@ -3,7 +3,7 @@ date: 2026-05-12
 title: "Build production RAG by putting MCP connectors in front of retrieval, not inside every app"
 slug: 2026-05-12-rag-with-mcp-connectors
 description: "MCP connectors give production RAG a single control plane for auth, discovery, and retrieval—here's how to architect that boundary so it stays inside your latency budget."
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-1341
 vendor_tag: community
 content_type: article

@@ -1,6 +1,6 @@
 ---
 date: 2026-07-08
-author: content-author
+author: koenig-ai-academy
 ticket: KOEA-9613
 vendor_tag: microsoft
 content_type: explainer

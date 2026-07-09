@@ -3,7 +3,7 @@ title: "Context Engineering vs Prompt Engineering in 2026: Design the Stack Firs
 slug: "context-engineering-vs-prompt-engineering-2026"
 tags: ["context-engineering", "prompt-engineering", "ai-agents", "production-ai", "llm-architecture-2026"]
 date: 2026-05-30
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-6776
 vendor_tag: community
 content_type: article

@@ -3,7 +3,7 @@ title: "AI Coding Agents in Production 2026 — Complete Buyer's Guide"
 slug: ai-coding-agents-production-2026-buyers-guide
 date: 2026-06-02
 last_updated: 2026-06-29
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-7161
 vendor_tag: community
 content_type: article

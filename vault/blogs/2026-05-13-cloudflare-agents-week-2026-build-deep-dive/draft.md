@@ -22,7 +22,7 @@ howto:
       text: "Call env.CHAT_AGENT.get(env.CHAT_AGENT.idFromName('user-123')) to bind each user to their own Durable Object instance. State persists across sessions without a separate database."
     - name: "Step 7: Deploy with wrangler deploy and verify limits"
       text: "Confirm the 30-second CPU-per-request limit, 10 GB per-object storage cap, and single-threaded execution model fit your workload before going live. Add AI Gateway in front for caching and rate limits."
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-1748
 vendor_tag: community
 content_type: article

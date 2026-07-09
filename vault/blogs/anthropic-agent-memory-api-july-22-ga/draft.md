@@ -2,7 +2,7 @@
 date: 2026-07-08
 title: "Decode Anthropic Agent Memory API before the July 22 launch (2026)"
 slug: "anthropic-agent-memory-api-july-22-ga"
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-10538
 vendor_tag: anthropic
 content_type: article

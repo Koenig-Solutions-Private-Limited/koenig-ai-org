@@ -1,6 +1,6 @@
 ---
 date: 2026-07-02
-author: content-author
+author: koenig-ai-academy
 vendor_tag: AI Fundamentals
 seo_description: "Four capability tiers, 70 years of AI history, and the 2026 agent shift — an accurate mental model for professionals evaluating AI tools and vendors."
 content_type: blog

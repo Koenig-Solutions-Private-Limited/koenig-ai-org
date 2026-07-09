@@ -2,7 +2,7 @@
 date: 2026-07-07
 title: "Migrate OpenAI Model IDs Before the July 2026 Shutdown Wave"
 slug: openai-model-shutdown-wave-july-2026
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-10295
 vendor_tag: openai
 content_type: article

@@ -1,7 +1,7 @@
 ---
 date: 2026-06-14
 title: "Gemini 2.5 Flash vs Claude Sonnet 4.6: What the Real Benchmarks Tell You"
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-7012
 vendor_tag: google
 content_type: article

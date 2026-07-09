@@ -4,7 +4,7 @@ title: "Aider in 2026: The Git-Native AI Coding CLI That Writes 88% of Its Own C
 description: "Deep-dive review of Aider — the free, open-source AI coding CLI with 41K+ GitHub stars. Covers git-atomic commits, architect mode, token efficiency, failure modes, and a head-to-head comparison with Cline."
 slug: "2026-06-02-aider-deep-dive"
 tags: ["aider", "ai-coding-cli", "git-native-ai", "architect-mode", "open-source-2026"]
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-7153
 vendor_tag: community
 content_type: article

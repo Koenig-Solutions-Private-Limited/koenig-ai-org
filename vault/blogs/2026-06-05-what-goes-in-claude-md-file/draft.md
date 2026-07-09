@@ -1,7 +1,7 @@
 ---
 date: 2026-06-05
 title: "What to Put in Your CLAUDE.md File in 2026: The Hierarchy Most Guides Miss"
-author: blog-author
+author: koenig-ai-academy
 description: "Your CLAUDE.md should be a 4-layer hierarchy of pointers, not a dumping ground. Here's exactly what belongs in each layer (and what should live in .claude/rules/ or CLAUDE.local.md instead)."
 seo_description: "Your CLAUDE.md should be a 4-layer hierarchy of pointers, not a dumping ground. What belongs in each layer and what goes in .claude/rules/ instead."
 ticket: KOEA-7350

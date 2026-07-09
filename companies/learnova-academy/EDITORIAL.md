@@ -24,6 +24,7 @@ Long enough for topical depth and internal linking; short enough to stay answer-
 - Internal links to ≥2 related Academy pages.
 - FAQ: ≥3 entries, each answer ≥40 words with ≥1 citation.
 - No AI-tells ("In conclusion", "Furthermore", "Let's dive in", "delve", "moreover", "in today's fast-paced world").
+- **Author slug (G0 BLOCK if missing or invalid):** every blog must have `author: <real-slug>` in frontmatter. Canonical slugs: `vardaan-koenig` (for content attributed to Vardaan) or `koenig-ai-academy` (for AI-authored/team content). Banned defaults: `editorial-team`, `blog-author`, `content-author`, `koenig-blog-author` — these yield Organization schema instead of Person schema and weaken AI citation signals. The `/authors/<slug>` page must exist on the site (not a stub). [KOEA-7017]
 
 ## Status vocabulary (contract with the frontend)
 Authors hand off drafts as **`awaiting-g0`** — never `draft-for-review` (non-canonical; the frontend silently drops it). Full canonical set: `draft` → `awaiting-g0` → `g0-passed` / `g0-blocked` → `awaiting-qa` → `g2-passed` → `g3-passed` (LIVE from here) → `g4-approved` → `published`. Content file is always `draft.md` — never `index.md`.

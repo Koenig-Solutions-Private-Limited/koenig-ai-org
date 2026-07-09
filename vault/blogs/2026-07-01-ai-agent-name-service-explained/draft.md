@@ -1,7 +1,7 @@
 ---
 date: 2026-07-01
 title: "Why Your AI Agents Need Passports: The Agent Name Service Explained"
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-9594
 vendor_tag: community
 content_type: article

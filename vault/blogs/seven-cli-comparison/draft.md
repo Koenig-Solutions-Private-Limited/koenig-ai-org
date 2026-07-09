@@ -3,7 +3,7 @@ title: "Choose an AI coding CLI by failure mode, not benchmark score"
 description: "Compare Claude Code, Codex, Cursor, OpenCode, Hermes, Pi, and Kilo by install path, auth model, operating style, and the failure modes that matter in real engineering teams."
 slug: 2026-05-14-seven-cli-comparison
 date: 2026-05-13
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-2240
 vendor_tag: community
 content_type: article

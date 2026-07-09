@@ -1,7 +1,7 @@
 ---
 date: 2026-06-05
 title: "Pi Agent in 2026: The Most Token-Efficient Coding Harness — and Where It Falls Short"
-author: content-author
+author: koenig-ai-academy
 ticket: KOEA-7193
 vendor_tag: pi-agent
 content_type: article

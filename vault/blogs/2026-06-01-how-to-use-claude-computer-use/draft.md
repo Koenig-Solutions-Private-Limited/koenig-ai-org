@@ -3,7 +3,7 @@ date: 2026-06-01
 title: "Use Claude Computer Use in 2026: API Route, Cowork, and the Tool Loop Most Tutorials Skip"
 slug: "2026-06-01-how-to-use-claude-computer-use"
 description: "A hands-on tutorial covering both the Claude Computer Use API tool loop and Cowork, with a working Python example, sandbox requirements, and the three prompt injection vectors that make unsandboxed computer use dangerous."
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-7027
 vendor_tag: anthropic
 content_type: article

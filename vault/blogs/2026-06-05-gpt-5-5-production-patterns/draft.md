@@ -1,6 +1,6 @@
 ---
 date: 2026-06-05
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-7171
 vendor_tag: openai
 content_type: article

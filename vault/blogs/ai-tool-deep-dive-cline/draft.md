@@ -4,7 +4,7 @@ description: "A thorough 2026 review of Cline: what the open-source coding agent
 slug: 2026-06-12-cline-ai-coding-agent-review-2026
 tags: [cline, ai-coding-agents, open-source, mcp, vscode]
 date: 2026-06-02
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-7155
 vendor_tag: community
 content_type: article

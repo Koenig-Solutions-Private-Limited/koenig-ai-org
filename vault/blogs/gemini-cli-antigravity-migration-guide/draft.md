@@ -4,7 +4,7 @@ title: "Gemini CLI Dies Today: Your Complete Migration Guide to Antigravity CLI"
 description: "Gemini CLI shuts down for free, AI Pro, and AI Ultra users on June 18, 2026. Here is who must migrate, what breaks, and how to verify Antigravity CLI before the deadline."
 slug: "gemini-cli-antigravity-migration-guide"
 tags: [google, gemini-cli, antigravity-cli, migration-guide, ai-agents, 2026]
-author: chief-content
+author: koenig-ai-academy
 ticket: KOEA-8842
 vendor_tag: google
 content_type: article

@@ -3,7 +3,7 @@ date: 2026-07-01
 title: "OpenAI's Jalapeño Chip Will Reshape AI App Economics in 2028 — Not 2026"
 description: "OpenAI's Jalapeño ASIC promises roughly 50% cheaper inference by 2028 — but that's Broadcom CEO Hock Tan's number, not OpenAI's, and no API pricing changes have been announced."
 slug: "2026-07-01-openai-jalapeno-chip-inference-costs"
-author: blog-author
+author: koenig-ai-academy
 ticket: KOEA-9595
 vendor_tag: openai
 content_type: article
