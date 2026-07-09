@@ -4,9 +4,11 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import {
   activityLog,
   agents,
+  budgetPolicies,
   companies,
   companySecrets,
   companySecretVersions,
+  costEvents,
   createDb,
   executionWorkspaces,
   heartbeatRuns,
@@ -178,7 +180,7 @@ describeEmbeddedPostgres("routine service live-execution coalescing", () => {
     return { companyId, agentId, issueSvc, projectId, routine, svc, wakeups };
   }
 
-  it("coalesces into an existing open routine issue even when it is idle", async () => {
+  it("creates a fresh execution issue when the previous routine issue is open but idle", async () => {
     const { companyId, issueSvc, routine, svc } = await seedFixture();
     const previousRunId = randomUUID();
     const previousIssue = await issueSvc.create(companyId, {
@@ -209,9 +211,8 @@ describeEmbeddedPostgres("routine service live-execution coalescing", () => {
     expect(detailBefore?.activeIssue).toBeNull();
 
     const run = await svc.runRoutine(routine.id, { source: "manual" });
-    expect(run.status).toBe("coalesced");
-    expect(run.linkedIssueId).toBe(previousIssue.id);
-    expect(run.coalescedIntoRunId).toBe(previousRunId);
+    expect(run.status).toBe("issue_created");
+    expect(run.linkedIssueId).not.toBe(previousIssue.id);
 
     const routineIssues = await db
       .select({
@@ -221,48 +222,9 @@ describeEmbeddedPostgres("routine service live-execution coalescing", () => {
       .from(issues)
       .where(eq(issues.originId, routine.id));
 
-    expect(routineIssues).toHaveLength(1);
-    expect(routineIssues.map((issue) => issue.id)).toEqual([previousIssue.id]);
-  });
-
-  it("coalesces into an existing blocked routine execution issue", async () => {
-    const { companyId, issueSvc, routine, svc } = await seedFixture();
-    const previousRunId = randomUUID();
-    const previousIssue = await issueSvc.create(companyId, {
-      projectId: routine.projectId,
-      title: routine.title,
-      description: routine.description,
-      status: "blocked",
-      priority: routine.priority,
-      assigneeAgentId: routine.assigneeAgentId,
-      originKind: "routine_execution",
-      originId: routine.id,
-      originRunId: previousRunId,
-    });
-
-    await db.insert(routineRuns).values({
-      id: previousRunId,
-      companyId,
-      routineId: routine.id,
-      triggerId: null,
-      source: "manual",
-      status: "issue_created",
-      triggeredAt: new Date("2026-03-20T12:00:00.000Z"),
-      linkedIssueId: previousIssue.id,
-      completedAt: new Date("2026-03-20T12:00:00.000Z"),
-    });
-
-    const run = await svc.runRoutine(routine.id, { source: "manual" });
-    expect(run.status).toBe("coalesced");
-    expect(run.linkedIssueId).toBe(previousIssue.id);
-    expect(run.coalescedIntoRunId).toBe(previousRunId);
-
-    const routineIssues = await db
-      .select({ id: issues.id })
-      .from(issues)
-      .where(eq(issues.originId, routine.id));
-    expect(routineIssues).toHaveLength(1);
-    expect(routineIssues[0]?.id).toBe(previousIssue.id);
+    expect(routineIssues).toHaveLength(2);
+    expect(routineIssues.map((issue) => issue.id)).toContain(previousIssue.id);
+    expect(routineIssues.map((issue) => issue.id)).toContain(run.linkedIssueId);
   });
 
   it("creates draft routines without a project or default assignee", async () => {
@@ -1150,5 +1112,399 @@ describeEmbeddedPostgres("routine service live-execution coalescing", () => {
 
     expect(run.source).toBe("webhook");
     expect(run.status).toBe("issue_created");
+  });
+});
+
+describeEmbeddedPostgres("routine assignee eligibility guard", () => {
+  let db!: ReturnType<typeof createDb>;
+  let tempDb: Awaited<ReturnType<typeof startEmbeddedPostgresTestDatabase>> | null = null;
+
+  beforeAll(async () => {
+    tempDb = await startEmbeddedPostgresTestDatabase("paperclip-routines-eligibility-");
+    db = createDb(tempDb.connectionString);
+  }, 20_000);
+
+  afterEach(async () => {
+    await db.delete(activityLog);
+    await db.delete(issueInboxArchives);
+    await db.delete(issueReadStates);
+    await db.delete(costEvents);
+    await db.delete(budgetPolicies);
+    await db.delete(routineRuns);
+    await db.delete(routineTriggers);
+    await db.delete(routines);
+    await db.delete(companySecretVersions);
+    await db.delete(companySecrets);
+    await db.delete(heartbeatRuns);
+    await db.delete(issues);
+    await db.delete(executionWorkspaces);
+    await db.delete(projectWorkspaces);
+    await db.delete(projects);
+    await db.delete(agents);
+    await db.delete(companies);
+    await db.delete(instanceSettings);
+  });
+
+  afterAll(async () => {
+    await tempDb?.cleanup();
+  });
+
+  async function seedEligibilityFixture(agentStatus: string = "active", agentPauseReason: string | null = null) {
+    const companyId = randomUUID();
+    const agentId = randomUUID();
+    const projectId = randomUUID();
+    const issuePrefix = `E${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
+
+    await db.insert(companies).values({
+      id: companyId,
+      name: "Eligibility Co",
+      issuePrefix,
+      requireBoardApprovalForNewAgents: false,
+    });
+
+    // Insert agent as active first so routine creation succeeds, then update status.
+    await db.insert(agents).values({
+      id: agentId,
+      companyId,
+      name: "IneligibleAgent",
+      role: "engineer",
+      status: "active",
+      adapterType: "codex_local",
+      adapterConfig: {},
+      runtimeConfig: {},
+      permissions: {},
+    });
+
+    await db.insert(projects).values({
+      id: projectId,
+      companyId,
+      name: "Routines",
+      status: "in_progress",
+    });
+
+    const svc = routineService(db, {
+      heartbeat: {
+        wakeup: async () => null,
+      },
+    });
+
+    // Create the routine while the agent is still active.
+    const routine = await svc.create(
+      companyId,
+      {
+        projectId,
+        goalId: null,
+        parentIssueId: null,
+        title: "eligibility test",
+        description: "Guard test",
+        assigneeAgentId: agentId,
+        priority: "medium",
+        status: "active",
+        concurrencyPolicy: "always_enqueue",
+        catchUpPolicy: "skip_missed",
+      },
+      {},
+    );
+
+    // Now set the agent to the desired ineligible status.
+    if (agentStatus !== "active" || agentPauseReason !== null) {
+      await db.update(agents).set({ status: agentStatus, pauseReason: agentPauseReason }).where(eq(agents.id, agentId));
+    }
+
+    return { companyId, agentId, projectId, routine, svc };
+  }
+
+  it("records a failed run with no linked issue when the default assignee is paused", async () => {
+    const { routine, svc } = await seedEligibilityFixture("paused");
+
+    const run = await svc.runRoutine(routine.id, { source: "manual" });
+
+    expect(run.status).toBe("failed");
+    expect(run.linkedIssueId).toBeNull();
+    expect(run.failureReason).toMatch(/ineligible.*paused/i);
+  });
+
+  it("records a failed run with no linked issue when the default assignee is in error state", async () => {
+    const { routine, svc } = await seedEligibilityFixture("error");
+
+    const run = await svc.runRoutine(routine.id, { source: "api" });
+
+    expect(run.status).toBe("failed");
+    expect(run.linkedIssueId).toBeNull();
+    expect(run.failureReason).toMatch(/ineligible.*error/i);
+  });
+
+  it("records a failed run with no linked issue when the default assignee is pending_approval", async () => {
+    const { routine, svc } = await seedEligibilityFixture("pending_approval");
+
+    const run = await svc.runRoutine(routine.id, { source: "manual" });
+
+    expect(run.status).toBe("failed");
+    expect(run.linkedIssueId).toBeNull();
+    expect(run.failureReason).toMatch(/ineligible.*pending_approval/i);
+  });
+
+  it("records a failed run with no linked issue when the default assignee is terminated", async () => {
+    const { routine, svc } = await seedEligibilityFixture("terminated");
+
+    const run = await svc.runRoutine(routine.id, { source: "manual" });
+
+    expect(run.status).toBe("failed");
+    expect(run.linkedIssueId).toBeNull();
+    expect(run.failureReason).toMatch(/ineligible.*terminated/i);
+  });
+
+  it("records a failed run when the default assignee is paused due to budget hard-stop", async () => {
+    const { routine, svc } = await seedEligibilityFixture("paused", "budget");
+
+    const run = await svc.runRoutine(routine.id, { source: "manual" });
+
+    expect(run.status).toBe("failed");
+    expect(run.linkedIssueId).toBeNull();
+    expect(run.failureReason).toMatch(/budget/i);
+  });
+
+  it("records a failed run when an active agent exceeds its budget hard-stop", async () => {
+    const { companyId, agentId, routine, svc } = await seedEligibilityFixture("active");
+
+    // Insert a budget policy for the agent with a hard stop at 100 cents.
+    await db.insert(budgetPolicies).values({
+      companyId,
+      scopeType: "agent",
+      scopeId: agentId,
+      metric: "billed_cents",
+      windowKind: "calendar_month_utc",
+      amount: 100,
+      warnPercent: 80,
+      hardStopEnabled: true,
+      notifyEnabled: false,
+      isActive: true,
+    });
+
+    // Insert a cost event that pushes the agent over the hard stop.
+    await db.insert(costEvents).values({
+      companyId,
+      agentId,
+      provider: "anthropic",
+      model: "claude-sonnet-4-6",
+      costCents: 200,
+      occurredAt: new Date(),
+    });
+
+    const run = await svc.runRoutine(routine.id, { source: "manual" });
+
+    expect(run.status).toBe("failed");
+    expect(run.linkedIssueId).toBeNull();
+    expect(run.failureReason).toMatch(/budget|hard.stop/i);
+  });
+
+  it("records a failed run for a scheduled dispatch when the default assignee is paused", async () => {
+    const { routine, svc } = await seedEligibilityFixture("paused");
+
+    const { trigger } = await svc.createTrigger(routine.id, {
+      kind: "schedule",
+      cronExpression: "0 * * * *",
+      timezone: "UTC",
+    }, {});
+
+    // Backdate nextRunAt so the tick fires this trigger.
+    await db.update(routineTriggers)
+      .set({ nextRunAt: new Date(Date.now() - 60_000), enabled: true })
+      .where(eq(routineTriggers.id, trigger.id));
+
+    const result = await svc.tickScheduledTriggers(new Date());
+    expect(result.triggered).toBe(1);
+
+    const [run] = await db.select().from(routineRuns).where(eq(routineRuns.routineId, routine.id));
+    expect(run.status).toBe("failed");
+    expect(run.linkedIssueId).toBeNull();
+    expect(run.failureReason).toMatch(/ineligible/i);
+  });
+
+  it("records a failed run for a webhook dispatch when the default assignee is in error state", async () => {
+    const { routine, svc } = await seedEligibilityFixture("error");
+
+    // Use source="webhook" via runRoutine to exercise the dispatch-level guard without
+    // spinning up a webhook trigger (which needs secret storage not available in all envs).
+    const run = await svc.runRoutine(routine.id, { source: "webhook" });
+
+    expect(run.status).toBe("failed");
+    expect(run.linkedIssueId).toBeNull();
+    expect(run.failureReason).toMatch(/ineligible.*error/i);
+  });
+
+  it("rejects create() with a paused assignee before creating the routine", async () => {
+    const companyId = randomUUID();
+    const agentId = randomUUID();
+    const issuePrefix = `C${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
+
+    await db.insert(companies).values({
+      id: companyId,
+      name: "Guard Co",
+      issuePrefix,
+      requireBoardApprovalForNewAgents: false,
+    });
+    await db.insert(agents).values({
+      id: agentId,
+      companyId,
+      name: "PausedAgent",
+      role: "engineer",
+      status: "paused",
+      adapterType: "codex_local",
+      adapterConfig: {},
+      runtimeConfig: {},
+      permissions: {},
+    });
+
+    const svc = routineService(db, { heartbeat: { wakeup: async () => null } });
+    await expect(
+      svc.create(companyId, {
+        projectId: null,
+        goalId: null,
+        parentIssueId: null,
+        title: "should fail",
+        description: null,
+        assigneeAgentId: agentId,
+        priority: "medium",
+        status: "active",
+        concurrencyPolicy: "always_enqueue",
+        catchUpPolicy: "skip_missed",
+      }, {}),
+    ).rejects.toThrow(/ineligible/i);
+
+    const created = await db.select().from(routines).where(eq(routines.companyId, companyId));
+    expect(created).toHaveLength(0);
+  });
+
+  it("rejects update() when re-assigning to a paused agent", async () => {
+    const { companyId, agentId, routine, svc } = await seedEligibilityFixture("active");
+
+    // Insert a second agent that is paused.
+    const pausedAgentId = randomUUID();
+    await db.insert(agents).values({
+      id: pausedAgentId,
+      companyId,
+      name: "AlreadyPaused",
+      role: "engineer",
+      status: "paused",
+      adapterType: "codex_local",
+      adapterConfig: {},
+      runtimeConfig: {},
+      permissions: {},
+    });
+
+    await expect(
+      svc.update(routine.id, { assigneeAgentId: pausedAgentId }, {}),
+    ).rejects.toThrow(/ineligible/i);
+
+    // Original assignee should be unchanged.
+    const [updated] = await db.select({ assigneeAgentId: routines.assigneeAgentId }).from(routines).where(eq(routines.id, routine.id));
+    expect(updated.assigneeAgentId).toBe(agentId);
+  });
+
+  it("throws immediately from runRoutine() when an override assignee is paused (no routine run created)", async () => {
+    const { companyId, routine, svc } = await seedEligibilityFixture("active");
+
+    const pausedAgentId = randomUUID();
+    await db.insert(agents).values({
+      id: pausedAgentId,
+      companyId,
+      name: "PausedOverride",
+      role: "engineer",
+      status: "paused",
+      adapterType: "codex_local",
+      adapterConfig: {},
+      runtimeConfig: {},
+      permissions: {},
+    });
+
+    await expect(
+      svc.runRoutine(routine.id, { source: "manual", assigneeAgentId: pausedAgentId }),
+    ).rejects.toThrow(/ineligible/i);
+
+    const runs = await db.select().from(routineRuns).where(eq(routineRuns.routineId, routine.id));
+    expect(runs).toHaveLength(0);
+  });
+
+  it("still creates an execution issue for a draft routine run with an eligible override assignee", async () => {
+    const companyId = randomUUID();
+    const eligibleAgentId = randomUUID();
+    const projectId = randomUUID();
+    const issuePrefix = `D${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
+
+    await db.insert(companies).values({
+      id: companyId,
+      name: "Draft Co",
+      issuePrefix,
+      requireBoardApprovalForNewAgents: false,
+    });
+    await db.insert(agents).values({
+      id: eligibleAgentId,
+      companyId,
+      name: "EligibleAgent",
+      role: "engineer",
+      status: "active",
+      adapterType: "codex_local",
+      adapterConfig: {},
+      runtimeConfig: {},
+      permissions: {},
+    });
+    await db.insert(projects).values({
+      id: projectId,
+      companyId,
+      name: "Draft Project",
+      status: "in_progress",
+    });
+
+    let queuedIssueId: string | null = null;
+    const svc = routineService(db, {
+      heartbeat: {
+        wakeup: async (_agentId, wakeupOpts) => {
+          const issueId =
+            (typeof wakeupOpts?.payload?.issueId === "string" && wakeupOpts.payload.issueId) ||
+            (typeof wakeupOpts?.contextSnapshot?.issueId === "string" && wakeupOpts.contextSnapshot.issueId) ||
+            null;
+          if (!issueId) return null;
+          queuedIssueId = issueId;
+          const queuedRunId = randomUUID();
+          await db.insert(heartbeatRuns).values({
+            id: queuedRunId,
+            companyId,
+            agentId: eligibleAgentId,
+            invocationSource: "assignment",
+            triggerDetail: null,
+            status: "queued",
+            contextSnapshot: { issueId },
+          });
+          return { id: queuedRunId };
+        },
+      },
+    });
+
+    // Draft routine: no default assignee or project.
+    const draft = await svc.create(companyId, {
+      projectId: null,
+      goalId: null,
+      parentIssueId: null,
+      title: "draft routine",
+      description: null,
+      assigneeAgentId: null,
+      priority: "medium",
+      status: "active",
+      concurrencyPolicy: "always_enqueue",
+      catchUpPolicy: "skip_missed",
+    }, {});
+
+    expect(draft.status).toBe("paused");
+
+    const run = await svc.runRoutine(draft.id, {
+      source: "manual",
+      projectId,
+      assigneeAgentId: eligibleAgentId,
+    });
+
+    expect(run.status).toBe("issue_created");
+    expect(run.linkedIssueId).toBeTruthy();
+    expect(queuedIssueId).toBe(run.linkedIssueId);
   });
 });
