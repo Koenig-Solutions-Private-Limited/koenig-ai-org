@@ -7,7 +7,8 @@ ticket: KOEA-10374
 parent_issue: KOEA-10190
 vendor_tag: community
 content_type: article
-status: awaiting-g0
+status: g0-passed
+seo_description: "Build a stateful Cloudflare Workers AI agent with Durable Objects for per-session state, platform bindings, MCP transport, and production pricing checks."
 reading_time_min: 8
 slug: 2026-07-07-cloudflare-workers-ai-agents-durable-objects-tutorial-2026
 tags:
@@ -58,7 +59,7 @@ learning_objectives:
   - "Choose Durable Object state, platform bindings, and MCP transport deliberately instead of defaulting to HTTP tool endpoints."
   - "Add the production checks Cloudflare's quickstarts often leave implicit: pricing, hibernation assumptions, and observability."
 original_data: false
-last_updated: 2026-07-07
+last_updated: 2026-07-09
 hero_image:
   url: /img/blogs/2026-07-07-cloudflare-workers-ai-agents-durable-objects-tutorial-2026/hero.png
   alt: "Architecture diagram of a Cloudflare Workers AI agent using a Durable Object for state, Workers AI for inference, and bindings for D1, R2, KV, Queues, and AI Gateway"
