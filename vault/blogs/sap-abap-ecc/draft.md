@@ -18,7 +18,7 @@ learning_objectives:
 whats_new:
   - Inline sequence diagram illustrating the 12-step SAP ECC/ABAP request lifecycle
 description: "Understand how SAP ECC uses ABAP to process enterprise transactions — from dispatcher assignment to database commit — with an annotated sequence diagram and practical guidance for developers."
-seo_description: "How SAP ECC uses the ABAP runtime to process enterprise transactions: dispatcher, work processes, LUW, and COMMIT WORK, with a sequence diagram."
+seo_description: "How SAP ECC uses the ABAP runtime to process enterprise transactions: dispatcher, work processes, LUW, and COMMIT WORK."
 faq:
   - question: "What is the role of the ABAP dispatcher in SAP ECC?"
     answer: "The ABAP dispatcher is the central router of the SAP application server. When a user submits a request via SAP GUI, the message server forwards it to the dispatcher, which assigns the request to a free dialog work process from its pool. If all work processes are busy, the dispatcher queues the request — the most common cause of SAP dialog slowness. Monitoring work process availability via SM50/SM66 is the first diagnostic step for any SAP performance issue [1]. Adding application server instances increases the work process pool."
