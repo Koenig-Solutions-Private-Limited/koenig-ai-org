@@ -6,7 +6,7 @@ author: blog-author
 ticket: KOEA-10220
 vendor_tag: google
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 6
 tags:
   - google
@@ -14,6 +14,7 @@ tags:
   - antigravity-cli
   - migration
 description: "Migrate from deprecated Gemini CLI to Antigravity CLI with the command, MCP config, plugin, and CI changes that prevent silent workflow failures."
+seo_description: "Migrate from deprecated Gemini CLI to Antigravity CLI in 2026. Covers the silent agents→agent rename, MCP serverUrl key change, and CI/CD audit steps."
 primary_query: "google gemini cli deprecated migrate antigravity cli 2026"
 contrarian_angle: "The agents→agent plural rename and the MCP url→serverUrl silent failure are the real CI/CD killers — not the binary rename everyone talks about"
 first_60_words_answer: "On June 18, 2026, Google shut off Gemini CLI for all free, AI Pro, and AI Ultra users. The official replacement is Antigravity CLI (agy), announced at Google I/O on May 19, 2026. Migration takes five steps. Two have silent failure modes that break CI/CD without throwing an error: the agents→agent plural rename and the MCP url→serverUrl key change."
@@ -32,7 +33,7 @@ faq:
   - question: "Are Enterprise users of Gemini CLI required to migrate by June 18, 2026?"
     answer: "No. Enterprise Standard and Enterprise licence holders retain full Gemini CLI access and are not affected by the June 18 cutoff. The cutoff applied to free-tier, Google AI Pro, and AI Ultra subscribers. Gemini Code Assist for GitHub also stopped accepting new installations on June 18, with existing requests winding down in subsequent weeks. Source: https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/"
 original_data: false
-last_updated: 2026-07-06
+last_updated: 2026-07-09
 hero_image:
   url: /img/blogs/google-gemini-cli-deprecated-antigravity-cli-migration-guide/hero.png
   alt: "Terminal showing agy agent run command replacing the deprecated gemini agents run syntax after the June 18 2026 Gemini CLI cutoff"

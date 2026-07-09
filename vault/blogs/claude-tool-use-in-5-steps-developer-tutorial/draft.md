@@ -6,7 +6,7 @@ ticket: KOEA-10202
 parent_issue: KOEA-10189
 vendor_tag: anthropic
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 6
 slug: claude-tool-use-in-5-steps-developer-tutorial
 tags:
@@ -15,6 +15,7 @@ tags:
   - anthropic-api
   - tutorial
 description: "Implement Claude tool use in five steps, avoid the Sonnet 5 sampling-parameter trap, and return tool_result blocks correctly for production API calls."
+seo_description: "Implement Claude tool use in five steps, avoid the Sonnet 5 sampling-parameter trap, and return tool_result blocks correctly for production API calls."
 source_research: vault/research/anthropic/claude-tool-use-in-5-steps-developer-tutorial.md
 primary_query: "Claude tool use tutorial guide API"
 first_60_words_answer: "Claude tool use lets your code execute real functions — database queries, API calls, web lookups — by following a deterministic 5-step loop: define a JSON Schema tool, send it with your request, detect stop_reason: 'tool_use', run the function locally and return a tool_result block, then receive Claude's final natural-language answer. The loop is identical across all current models."
@@ -55,7 +56,7 @@ learning_objectives:
   - "Avoid the three W28 Sonnet 5 breaking changes that affect any code migrated from Sonnet 4.x"
   - "Handle tool errors correctly so Claude can communicate failures to users"
 original_data: false
-last_updated: 2026-07-06
+last_updated: 2026-07-09
 hero_image:
   url: /img/blogs/claude-tool-use-in-5-steps-developer-tutorial/hero.png
   alt: "Diagram of the Claude tool use loop: five steps from schema definition to final natural-language answer"
