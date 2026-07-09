@@ -6,7 +6,7 @@ author: blog-author
 ticket: KOEA-10201
 vendor_tag: anthropic
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 6
 tags:
   - mcp
@@ -14,6 +14,7 @@ tags:
   - fastmcp
   - tutorial
 description: "Build your first Python MCP server with FastMCP, Claude Desktop configuration, version pinning, and the security checks that keep a toy demo from breaking in production."
+seo_description: "Build a Python MCP server with FastMCP in 20 lines. Covers Claude Desktop config, version pinning for the July 2026 SDK v2 break, and minimum security rules."
 primary_query: "MCP server tutorial getting started model context protocol"
 contrarian_angle: "Most MCP tutorials will silently break your code on July 27, 2026 — one version-pin line prevents it"
 first_60_words_answer: "To build your first MCP server in Python, install Python 3.10+, run `uv add 'mcp[cli]'`, and write a 10-line server using `from mcp.server.fastmcp import FastMCP` with the `@mcp.tool()` decorator. Run it with `uv run server.py` for stdio transport. Your tools are then callable from Claude Desktop or Cursor — no manual schema writing needed."
