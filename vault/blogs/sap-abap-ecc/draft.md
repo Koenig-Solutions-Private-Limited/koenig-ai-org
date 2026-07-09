@@ -36,7 +36,7 @@ last_updated: 2026-07-09
 hero_image:
   url: /img/blogs/sap-abap-ecc/hero.png
   alt: "SAP ECC ABAP request lifecycle sequence diagram from user input through dispatcher and work process to database commit"
-status: awaiting-g0
+status: g0-blocked
 reading_time_min: 7
 sources:
   - "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/6c28b5a9ec734c35a39bdfa8e41b3ec3/4ec3c11c6e391014adc9fffe4e204223.html"

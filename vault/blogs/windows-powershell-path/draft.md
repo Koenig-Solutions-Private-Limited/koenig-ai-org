@@ -18,6 +18,7 @@ learning_objectives:
 whats_new:
   - Sequence diagram of Windows PATH resolution order for PowerShell commands and environment variable updates
 description: "How Windows PATH resolution works in PowerShell: system vs user scope, how to add directories permanently, session snapshot behaviour, and commands to inspect and debug PATH entries."
+seo_description: "Windows PATH and PowerShell: how PATH works, how to add directories permanently at user or system scope, and commands to diagnose common PATH problems."
 faq:
   - question: "How do you permanently add a directory to PATH in Windows PowerShell?"
     answer: "To permanently add a directory to PATH at user scope, run: `[Environment]::SetEnvironmentVariable('PATH', \"$([Environment]::GetEnvironmentVariable('PATH','User'));C:\\MyDir\", 'User')`. This writes to the HKCU\\Environment registry key and persists across sessions [2]. For system-wide scope affecting all users, use 'Machine' instead of 'User' and run PowerShell as Administrator — this writes to HKLM\\SYSTEM\\...\\Environment. Open a new PowerShell window to see the change; running sessions do not automatically pick up registry updates."
@@ -35,7 +36,7 @@ last_updated: 2026-07-09
 hero_image:
   url: /img/blogs/windows-powershell-path/hero.png
   alt: "Sequence diagram showing Windows PATH resolution in PowerShell: HKLM system PATH and HKCU user PATH merging into the session environment block"
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 6
 sources:
   - "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_environment_variables"

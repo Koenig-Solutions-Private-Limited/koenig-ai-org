@@ -4,11 +4,13 @@ author: vardaan-koenig
 ticket: KOEA-10181
 vendor_tag: openai
 content_type: article
-status: awaiting-g0
+status: g0-passed
+last_updated: 2026-07-09
 reading_time_min: 6
 primary_query: "GPT-5.6 API pricing"
 contrarian_angle: "Sol Ultra exists as an API parameter with no published pricing. OpenAI is reserving the price anchor — meaning the model that tops the leaderboard has undefined cost. Teams budgeting around GPT-5.6 today are building on a price-unstable foundation."
 description: "GPT-5.6's three-tier pricing — Sol at $5/MTok, Terra at $2.50/MTok, Luna at $1/MTok — decoded for developers choosing tiers and migrating from GPT-5.5 prompt caching."
+seo_description: "GPT-5.6 Sol/Terra/Luna pricing: $5, $2.50, $1 per MTok input. Tier selection guide, cache-write billing change, and Sol Ultra's undisclosed pricing risk."
 tags: [openai, gpt-5.6, api-pricing, model-routing, prompt-caching]
 positions: [stance:ai-vendor-news-opinionated]
 first_60_words_answer: "GPT-5.6 is OpenAI's three-tier frontier model family — Sol, Terra, and Luna — currently in limited preview as of July 2026, priced from $1 to $5 per million input tokens depending on capability tier. It replaces the single-SKU model selection developers used with GPT-5.5: Sol targets frontier agentic reasoning, Terra is the new production workhorse, and Luna handles high-volume cost-sensitive workloads."
