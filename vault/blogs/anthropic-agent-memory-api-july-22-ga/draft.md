@@ -6,11 +6,12 @@ author: blog-author
 ticket: KOEA-10538
 vendor_tag: anthropic
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 6
 primary_query: "Anthropic agent-memory-2026-07-22 beta header"
 contrarian_angle: "Anthropic's native memory does not kill vector memory vendors; it kills the infrastructure burden for most Claude-native agent use cases."
 description: "What Anthropic's agent-memory-2026-07-22 beta header signals before July 22: SDK evidence, memory-store limits, audit controls, and where Mem0 or Zep still win."
+seo_description: "What Anthropic's agent-memory-2026-07-22 beta header signals before July 22: SDK evidence, memory-store limits, audit controls, and where Mem0 or Zep still win."
 tags:
   - anthropic
   - agent-memory
@@ -30,7 +31,7 @@ faq:
   - question: "Does Anthropic Agent Memory replace Mem0, Zep, Letta, or LangMem?"
     answer: "It replaces a lot of custom memory plumbing for Claude-only agents, especially preferences, project conventions, audit-friendly notes, and per-user state. It does not replace semantic retrieval systems for large corpora. Anthropic's cookbook describes file-backed memory, while vendor memory stacks still differentiate on vector, graph, and hybrid retrieval (see [AgentMarketCap's 2026 memory vendor survey](https://agentmarketcap.ai/blog/2026/04/10/agent-memory-vendor-landscape-2026-letta-zep-mem0-langmem))."
 original_data: false
-last_updated: 2026-07-08
+last_updated: 2026-07-09
 hero_image:
   url: /img/blogs/anthropic-agent-memory-api-july-22-ga/hero.png
   alt: "Claude Managed Agents memory store mounted as files with version history and July 22 beta header annotation"
