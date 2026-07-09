@@ -1,4 +1,4 @@
-"""Build ch04-slides.pptx for Gemini Enterprise Agents — Chapter 4.
+"""Build the canonical Chapter 4 slide deck for Gemini Enterprise Agents.
 
 Chapter: Comparing to Claude Agent SDK + Cloudflare Agents
 7 slides: title + 5 content + CTA.
@@ -189,7 +189,7 @@ _text(s7, ATTRIBUTION,
       size=16, color=INDIGO, align=PP_ALIGN.CENTER)
 
 # ── Save ──────────────────────────────────────────────────────────────────────
-OUT = "vault/courses/gemini-enterprise-agents/ch04-slides.pptx"
+OUT = "vault/courses/gemini-enterprise-agents/04-comparing-to-claude-agent-sdk-and-cloudflare-agents-slides.pptx"
 prs.save(OUT)
 slide_count = len(prs.slides)
 size_kb = __import__("os").path.getsize(OUT) // 1024

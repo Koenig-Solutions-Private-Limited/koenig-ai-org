@@ -1,0 +1,5 @@
+{"date":"2026-07-09","type":"item","title":"GLM-5.2 becomes the open-weight agent benchmark","sources":3,"decision":"blog","signal_count":4,"rationale":"r/LocalLLaMA plus X praise and cross-community comparison chatter"}
+{"date":"2026-07-09","type":"item","title":"Claude Cowork is turning into a billing story","sources":3,"decision":"course-delta","signal_count":4,"rationale":"real-business usage plus enterprise/subagent spend discussion"}
+{"date":"2026-07-09","type":"item","title":"Prompt engineering is being reframed as systems work","sources":3,"decision":"course-delta","signal_count":3,"rationale":"runbook framing repeated across Reddit, HN, and X"}
+{"date":"2026-07-09","type":"item","title":"LocalLLaMA is warning that distills often do not beat the base model","sources":1,"decision":"track-only","signal_count":2,"rationale":"community skepticism about low-sample distills"}
+{"date":"2026-07-09","type":"item","title":"OpenAI users want explicit uncertainty and spend visibility","sources":1,"decision":"track-only","signal_count":2,"rationale":"uncertainty UI and token accounting concerns"}

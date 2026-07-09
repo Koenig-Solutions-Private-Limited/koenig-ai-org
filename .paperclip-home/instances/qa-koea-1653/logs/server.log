@@ -1,0 +1,26 @@
+[09:41:35] ERROR: Paperclip server failed to start 
+    err: {
+      "type": "Error",
+      "message": "local_trusted requires server.bind=loopback",
+      "stack":
+          Error: local_trusted requires server.bind=loopback
+              at loadConfig (/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/server/src/config.ts:276:11)
+              at startServer (/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/server/src/index.ts:90:16)
+              at <anonymous> (/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/server/src/index.ts:974:8)
+              at ModuleJob.run (node:internal/modules/esm/module_job:437:25)
+              at async node:internal/modules/esm/loader:639:26
+              at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+    }
+[09:42:12] ERROR: Paperclip server failed to start 
+    err: {
+      "type": "Error",
+      "message": "local_trusted requires server.bind=loopback",
+      "stack":
+          Error: local_trusted requires server.bind=loopback
+              at loadConfig (/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/server/src/config.ts:276:11)
+              at startServer (/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/server/src/index.ts:90:16)
+              at <anonymous> (/Users/vardaankoenig/Documents/Paperclip/koenig-ai-org/server/src/index.ts:974:8)
+              at ModuleJob.run (node:internal/modules/esm/module_job:437:25)
+              at async node:internal/modules/esm/loader:639:26
+              at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+    }

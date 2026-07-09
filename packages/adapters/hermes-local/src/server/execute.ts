@@ -40,6 +40,29 @@ import {
 import { prepareHermesRuntimeConfig } from "./runtime-config.js";
 
 const SESSION_EXPORT_TIMEOUT_SEC = 15;
+const HERMES_CHAT_PROVIDERS = new Set([
+  "anthropic",
+  "arcee",
+  "copilot",
+  "copilot-acp",
+  "gemini",
+  "huggingface",
+  "kimi",
+  "kimi-coding",
+  "kimi-coding-cn",
+  "kilocode",
+  "minimax",
+  "minimax-cn",
+  "nvidia",
+  "nous",
+  "openai-codex",
+  "openrouter",
+  "ollama-cloud",
+  "stepfun",
+  "xai",
+  "xiaomi",
+  "zai",
+]);
 
 function firstNonEmptyLine(text: string): string {
   return (
@@ -53,13 +76,14 @@ function firstNonEmptyLine(text: string): string {
 function firstMeaningfulStderrLine(text: string): string {
   // Hermes' stderr is structured as just "session_id: <id>" on success;
   // skip that line when surfacing an error message.
+  const candidates: string[] = [];
   for (const rawLine of text.split(/\r?\n/)) {
     const line = rawLine.trim();
     if (!line) continue;
     if (/^session_id:\s*\S+/.test(line)) continue;
-    return line;
+    candidates.push(line);
   }
-  return "";
+  return candidates.find((line) => /^hermes\s+chat:\s+error:/i.test(line)) ?? candidates[0] ?? "";
 }
 
 function parseModelProvider(model: string | null): string | null {
@@ -67,6 +91,23 @@ function parseModelProvider(model: string | null): string | null {
   const trimmed = model.trim();
   if (!trimmed.includes("/")) return null;
   return trimmed.slice(0, trimmed.indexOf("/")).trim() || null;
+}
+
+function resolveHermesCliProvider(provider: string): {
+  cliProvider: string | null;
+  suppressedProvider: string | null;
+} {
+  const trimmed = provider.trim();
+  if (!trimmed) return { cliProvider: null, suppressedProvider: null };
+
+  const normalized = trimmed.toLowerCase();
+  if (normalized === "auto") {
+    return { cliProvider: null, suppressedProvider: trimmed };
+  }
+  if (HERMES_CHAT_PROVIDERS.has(normalized)) {
+    return { cliProvider: normalized, suppressedProvider: null };
+  }
+  return { cliProvider: null, suppressedProvider: trimmed };
 }
 
 function resolveHermesBiller(
@@ -272,6 +313,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     const maxTurns = asNumber(config.maxTurns, 0);
     const toolsets = asString(config.toolsets, "").trim();
     const skills = asString(config.skills, "").trim();
+    const providerResolution = resolveHermesCliProvider(provider);
     const extraArgs = (() => {
       const fromExtraArgs = asStringArray(config.extraArgs);
       if (fromExtraArgs.length > 0) return fromExtraArgs;
@@ -334,6 +376,11 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
       if (yolo) notes.push("--yolo (bypass dangerous-command approvals)");
       if (ignoreRules) notes.push("--ignore-rules");
       if (ignoreUserConfig) notes.push("--ignore-user-config");
+      if (providerResolution.suppressedProvider) {
+        notes.push(
+          `Suppressed unsupported Hermes --provider "${providerResolution.suppressedProvider}"; relying on Hermes model/config auto-detection.`,
+        );
+      }
       return notes;
     })();
 
@@ -380,7 +427,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
       args.push("--source", "paperclip");
       if (resumeSessionId) args.push("-r", resumeSessionId);
       if (model) args.push("-m", model);
-      if (provider) args.push("--provider", provider);
+      if (providerResolution.cliProvider) args.push("--provider", providerResolution.cliProvider);
       if (toolsets) args.push("-t", toolsets);
       if (skills) args.push("-s", skills);
       if (acceptHooks) args.push("--accept-hooks");
