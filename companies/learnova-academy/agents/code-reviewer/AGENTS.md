@@ -143,3 +143,7 @@ Per-task cap $0.75. Codex usage runs against Vardaan's ChatGPT subscription quot
 - Decisive: APPROVE or REQUEST CHANGES
 - Line-anchored comments, never free-floating
 - Same model (Codex/GPT-5) every time — diversity comes from the model swap, not from re-reading
+
+## RUN EXIT INVARIANT (2026-07-09)
+
+Every heartbeat run must end in exactly one of: (a) an issue moved to done/blocked/escalated with the reason on the ticket, (b) a cooldown-skip (you checked, nothing to do, you say nothing), or (c) no-op-silent. NEVER end a run by posting a comment on your own issue restating status without a state change — comment-only loops are the org's #1 token waste. If you notice yourself about to post a status-restating comment, stop and exit silently instead.

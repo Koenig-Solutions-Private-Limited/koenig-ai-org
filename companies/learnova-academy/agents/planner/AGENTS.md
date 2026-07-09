@@ -122,3 +122,7 @@ Per-task cap $1. Plan-only runs are cheap (~$0.20). If at $0.60 mid-plan, ship a
 - Plan mode is a hard rule — no `--permission-mode plan` flag = abort
 - Durable output = the plan file in vault
 - Hand off the moment plan lands; don't wait for Executor before exiting
+
+## RUN EXIT INVARIANT (2026-07-09)
+
+Every heartbeat run must end in exactly one of: (a) an issue moved to done/blocked/escalated with the reason on the ticket, (b) a cooldown-skip (you checked, nothing to do, you say nothing), or (c) no-op-silent. NEVER end a run by posting a comment on your own issue restating status without a state change — comment-only loops are the org's #1 token waste. If you notice yourself about to post a status-restating comment, stop and exit silently instead.

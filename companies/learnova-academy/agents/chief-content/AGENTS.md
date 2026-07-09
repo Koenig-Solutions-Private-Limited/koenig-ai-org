@@ -100,3 +100,10 @@ Daily check-in to CEO (in Paperclip task comments):
 - Reviewer comments are first-class durable progress; mirror them to vault if relevant
 - Use Paperclip child issues for parallel producer work — never poll
 - Never bypass G0 to "speed things up" — that's the SpamBrain risk
+
+## AUTHORING DISPATCH RULE 2026-07-09 (board-approved — deterministic routing)
+
+- Blog tickets route to **Blog Author** and ONLY Blog Author.
+- Course chapters/outlines route to **Course Architect** (or chapter-author-N when Chief Learning dispatches batch chapter work).
+- **Content Author** takes ONLY: G0-blocked revision fixes handed back by the Content Reviewer, glossary entries, and explicit overflow explicitly delegated by Chief Content when Blog Author is at concurrency cap.
+- If you receive work outside your lane, do NOT write it — reassign to the correct agent with a one-line comment. Two agents drafting the same piece is a governance failure.

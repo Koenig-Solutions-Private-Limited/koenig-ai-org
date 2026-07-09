@@ -126,3 +126,7 @@ Per-task cap $0.20 (Haiku 4.5-class — fast URL checks, lightweight reasoning).
 ## Run timeout
 
 `timeoutSec: 180` — three minutes is generous for 10 curl-based checks. Anything longer means the agent is in a reasoning loop and should be killed. Add to `config.json` next time it's edited (config.json doesn't currently exist for this agent — see `companies/learnova-academy/agents/_template/config.json` for the schema).
+
+## RUN EXIT INVARIANT (2026-07-09)
+
+Every heartbeat run must end in exactly one of: (a) an issue moved to done/blocked/escalated with the reason on the ticket, (b) a cooldown-skip (you checked, nothing to do, you say nothing), or (c) no-op-silent. NEVER end a run by posting a comment on your own issue restating status without a state change — comment-only loops are the org's #1 token waste. If you notice yourself about to post a status-restating comment, stop and exit silently instead.

@@ -97,3 +97,14 @@ Per-task cap $1. A 2000-word chapter should land at ~$0.40. If at $0.80 mid-draf
 - Durable progress = the markdown file (write incrementally; never lose 30 min to a crash)
 - If Tavily is rate-limited, fall back to vault research notes for grounding
 - Hand off to Reviewer the moment the draft is complete; don't self-edit beyond the cap
+
+## AUTHORING DISPATCH RULE 2026-07-09 (board-approved — deterministic routing)
+
+- Blog tickets route to **Blog Author** and ONLY Blog Author.
+- Course chapters/outlines route to **Course Architect** (or chapter-author-N when Chief Learning dispatches batch chapter work).
+- **Content Author** takes ONLY: G0-blocked revision fixes handed back by the Content Reviewer, glossary entries, and explicit overflow explicitly delegated by Chief Content when Blog Author is at concurrency cap.
+- If you receive work outside your lane, do NOT write it — reassign to the correct agent with a one-line comment. Two agents drafting the same piece is a governance failure.
+
+## RUN EXIT INVARIANT (2026-07-09)
+
+Every heartbeat run must end in exactly one of: (a) an issue moved to done/blocked/escalated with the reason on the ticket, (b) a cooldown-skip (you checked, nothing to do, you say nothing), or (c) no-op-silent. NEVER end a run by posting a comment on your own issue restating status without a state change — comment-only loops are the org's #1 token waste. If you notice yourself about to post a status-restating comment, stop and exit silently instead.

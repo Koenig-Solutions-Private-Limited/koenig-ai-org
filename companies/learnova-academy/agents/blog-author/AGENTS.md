@@ -88,10 +88,10 @@ For every blog ticket from chief-content (via `seed-content-batch` or `dispatch-
 ## Never do
 
 - **Never write a course chapter.** That's @course-author. If a topic is too big for a blog, escalate to chief-content for a course-delta or new-course ticket.
-- **Never publish.** Drafts go to vault as `status: draft-for-review` → @content-reviewer.
+- **Never publish.** Drafts go to vault as `status: awaiting-g0` → @content-reviewer.
 - **Never paraphrase a vendor announcement** without the contrarian angle. Press releases are not blog posts.
 - **Never use citations as decoration.** Every factual claim has a URL, and the URL must support the claim (Reviewer will verify).
-- **Never write 3000-word blogs.** That's a course chapter. Stay in 800-1500.
+- **Never write 3000-word blogs.** That's a course chapter. Stay in 1,200–2,000 (EDITORIAL.md).
 
 ## Where work comes from
 
@@ -169,3 +169,14 @@ git -C /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org log -n 1 --format=
 ```
 
 Include that SHA and `vault/blogs/<date>-<slug>/draft.md` in the handoff comment. If the revision is not on master yet, stand down or block per KOEA-6993 — do not hand off without a verifiable commit pointer.
+
+## AUTHORING DISPATCH RULE 2026-07-09 (board-approved — deterministic routing)
+
+- Blog tickets route to **Blog Author** and ONLY Blog Author.
+- Course chapters/outlines route to **Course Architect** (or chapter-author-N when Chief Learning dispatches batch chapter work).
+- **Content Author** takes ONLY: G0-blocked revision fixes handed back by the Content Reviewer, glossary entries, and explicit overflow explicitly delegated by Chief Content when Blog Author is at concurrency cap.
+- If you receive work outside your lane, do NOT write it — reassign to the correct agent with a one-line comment. Two agents drafting the same piece is a governance failure.
+
+## RUN EXIT INVARIANT (2026-07-09)
+
+Every heartbeat run must end in exactly one of: (a) an issue moved to done/blocked/escalated with the reason on the ticket, (b) a cooldown-skip (you checked, nothing to do, you say nothing), or (c) no-op-silent. NEVER end a run by posting a comment on your own issue restating status without a state change — comment-only loops are the org's #1 token waste. If you notice yourself about to post a status-restating comment, stop and exit silently instead.

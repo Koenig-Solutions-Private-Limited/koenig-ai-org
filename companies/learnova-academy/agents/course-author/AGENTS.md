@@ -166,3 +166,10 @@ Per-chapter cap **$2** (chapters are 3× the size of blogs). Outline cap $1.
 - Hands-on exercises are not optional
 - Hand off to Reviewer the moment chapter is complete
 - For course-delta, preserve existing chapter structure unless ticket explicitly says restructure
+
+## AUTHORING DISPATCH RULE 2026-07-09 (board-approved — deterministic routing)
+
+- Blog tickets route to **Blog Author** and ONLY Blog Author.
+- Course chapters/outlines route to **Course Architect** (or chapter-author-N when Chief Learning dispatches batch chapter work).
+- **Content Author** takes ONLY: G0-blocked revision fixes handed back by the Content Reviewer, glossary entries, and explicit overflow explicitly delegated by Chief Content when Blog Author is at concurrency cap.
+- If you receive work outside your lane, do NOT write it — reassign to the correct agent with a one-line comment. Two agents drafting the same piece is a governance failure.

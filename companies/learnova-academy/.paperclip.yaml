@@ -49,9 +49,6 @@ agents:
         GH_TOKEN:
           kind: secret
           requirement: optional
-    runtimeConfig:
-      heartbeat:
-        maxConcurrentRuns: 1
 
   # ─────────────────────────── Chiefs (Sonnet 4.6 via Claude Code) ───────────────────────────
   chief-research:
@@ -86,9 +83,6 @@ agents:
         GH_TOKEN:
           kind: secret
           requirement: required
-    runtimeConfig:
-      heartbeat:
-        maxConcurrentRuns: 1
   chief-marketing:
     adapter:
       type: claude_local
@@ -117,9 +111,6 @@ agents:
         XAI_API_KEY:
           kind: secret
           requirement: optional
-    runtimeConfig:
-      heartbeat:
-        maxConcurrentRuns: 1
   researcher-openai:
     adapter:
       type: opencode_local
@@ -134,9 +125,6 @@ agents:
         TAVILY_API_KEY:
           kind: secret
           requirement: required
-    runtimeConfig:
-      heartbeat:
-        maxConcurrentRuns: 1
   researcher-google:
     adapter:
       type: opencode_local
@@ -151,9 +139,6 @@ agents:
         TAVILY_API_KEY:
           kind: secret
           requirement: required
-    runtimeConfig:
-      heartbeat:
-        maxConcurrentRuns: 1
   researcher-community:
     adapter:
       type: opencode_local
@@ -171,9 +156,6 @@ agents:
         XAI_API_KEY:
           kind: secret
           requirement: required   # community researcher uses Grok x_search heavily
-    runtimeConfig:
-      heartbeat:
-        maxConcurrentRuns: 1
   research-editor:
     adapter:
       type: claude_local
@@ -213,45 +195,6 @@ agents:
       config:
         model: openrouter/google/gemini-3-flash-preview
         cwd: /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org
-    runtimeConfig:
-      heartbeat:
-        maxConcurrentRuns: 1
-    inputs:
-      env:
-        ACADEMY_AGENT_API_KEY:
-          kind: secret
-          requirement: required
-        TAVILY_API_KEY:
-          kind: secret
-          requirement: optional
-  # course-author: split-out variant of content-author, dedicated to multi-chapter courses.
-  course-author:
-    adapter:
-      type: opencode_local
-      config:
-        model: openrouter/google/gemini-3-flash-preview
-        cwd: /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org
-    runtimeConfig:
-      heartbeat:
-        maxConcurrentRuns: 1
-    inputs:
-      env:
-        ACADEMY_AGENT_API_KEY:
-          kind: secret
-          requirement: required
-        TAVILY_API_KEY:
-          kind: secret
-          requirement: optional
-    runtimeConfig:
-      heartbeat:
-        maxConcurrentRuns: 1
-
-  blog-author:
-    adapter:
-      type: opencode_local
-      config:
-        model: openrouter/google/gemini-3-flash-preview
-        cwd: /Users/vardaankoenig/Documents/Paperclip/koenig-ai-org
     inputs:
       env:
         ACADEMY_AGENT_API_KEY: { kind: secret, requirement: required }
@@ -260,6 +203,7 @@ agents:
       heartbeat:
         maxConcurrentRuns: 1
 
+  # course-author: split-out variant of content-author, dedicated to multi-chapter courses.
   course-author:
     adapter:
       type: opencode_local
@@ -329,9 +273,6 @@ agents:
         GH_TOKEN:
           kind: secret
           requirement: required
-    runtimeConfig:
-      heartbeat:
-        maxConcurrentRuns: 1
   executor:
     adapter:
       type: claude_local
@@ -346,9 +287,6 @@ agents:
         GH_TOKEN:
           kind: secret
           requirement: required
-    runtimeConfig:
-      heartbeat:
-        maxConcurrentRuns: 1
   code-reviewer:
     adapter:
       type: codex_local
@@ -365,9 +303,6 @@ agents:
         GH_TOKEN:
           kind: secret
           requirement: required
-    runtimeConfig:
-      heartbeat:
-        maxConcurrentRuns: 1
   qa-verifier:
     adapter:
       type: claude_local
