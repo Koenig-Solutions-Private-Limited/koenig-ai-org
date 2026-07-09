@@ -47,6 +47,7 @@ notebooklm_source_focus:
   - "B2B intent data and buying signals for corporate learning buyers"
   - "LinkedIn job alerts and Google Alerts for sales prospecting 2026"
   - "Trigger-based outreach timing best practices B2B"
+word_count: 1128
 word_budget: { min: 800, max: 1200 }
 positions: []
 last_updated: 2026-06-13
