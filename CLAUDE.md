@@ -35,7 +35,7 @@ Upstream paths to **leave alone**: `cli/`, `server/`, `ui/`, `packages/`, `evals
 
 - **Paperclip core** (upstream): pnpm workspace, Node 20+, embedded Postgres, ESM TypeScript.
 - **Adapters wired locally**: `claude-local`, `codex-local`, `gemini-local`, `opencode-local`, `paperclip-adapter-openrouter`, plus our custom adapters.
-- **Models** (via OpenRouter): Opus 4.7 (CEO), Sonnet 4.6 (chiefs / Reviewer / Editor), Grok 4.1 Fast (researchers), Gemini 2.5 Flash (Author), DeepSeek V4 Pro (code), Haiku 4.5 (QA).
+- **Models**: the DB is the runtime source of truth — see the generated `companies/learnova-academy/ROSTER.live.md` (regenerate with `./scripts/roster-snapshot.sh`; verify with `--check`). Do not hand-maintain model lists in prose docs; they drift.
 - **Observability**: Langfuse self-hosted at `localhost:3100`.
 - **Watchdog**: `watchdog/watchdog.mjs`, runs under launchd.
 
