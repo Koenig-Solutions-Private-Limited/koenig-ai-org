@@ -27,16 +27,14 @@ faq:
     answer: "Yes. Microsoft's DP-203 study guide says Exam DP-203 retired on March 31, 2025 [7]. For data engineering, the current replacement path is Microsoft Certified: Fabric Data Engineer Associate, which uses Exam DP-700 and targets data engineering solutions in Microsoft Fabric [8]."
   - question: "How long are Microsoft certifications valid?"
     answer: "Microsoft role-based certifications generally renew annually through Microsoft Learn renewal assessments rather than by re-sitting the original proctored exam. Microsoft says associate, expert, and specialty certifications expire annually, while renewal assessments are free and available through Microsoft Learn when eligible [7]."
-positions:
-  - id: none
-    engagement: neutral
+positions: []
 first_60_words_answer: "The Microsoft certification roadmap in 2026 is: pick a Fundamentals exam, choose an active Associate credential in the same role family, then pursue Expert only after checking current Microsoft Learn prerequisites. Do not follow old DP-203 roadmaps; DP-203 retired on March 31, 2025, and DP-700 is the current Fabric data engineering path."
 original_data: false
 last_updated: 2026-07-09
 hero_image:
   url: /img/blogs/2026-07-08-microsoft-certification-roadmap-fundamentals-expert/hero.png
   alt: "Microsoft certification roadmap diagram showing Fundamentals, Associate, and Expert paths with retired DP-203 replaced by DP-700"
-status: draft-for-review
+status: awaiting-g0
 reading_time_min: 7
 sources:
   - "https://learn.microsoft.com/en-us/credentials/browse/"
@@ -102,7 +100,7 @@ Most roadmaps still optimize for a clean ladder: AZ-900 to AZ-104 to AZ-305, DP-
 
 ## Start with the active role family, not the nearest exam code
 
-Microsoft's credential catalog is organized around role families, not a single universal ladder [1]. Fundamentals exams such as AZ-900, MS-900, DP-900, AI-900, and SC-900 are entry points. Associate exams validate role execution. Expert credentials validate architecture or senior operating responsibility.
+Microsoft's credential catalog is organized around role families, not a single universal ladder [1]. Active Fundamentals exams in mid-2026 include AZ-900, DP-900, and SC-900. MS-900 (Microsoft 365 Fundamentals) retired on March 31, 2026, and AI-900 (Azure AI Fundamentals) retired on June 30, 2026 — do not start with either [6]. Associate exams validate role execution. Expert credentials validate architecture or senior operating responsibility.
 
 That structure matters because the first exam is often optional. AZ-900 is useful if you are new to Azure vocabulary, pricing, identity, networking, and governance. It is not a hard gate for AZ-104, AZ-204, or AZ-500. The real gate appears later: Microsoft lists AZ-104 as the prerequisite for Azure Solutions Architect Expert [3].
 
@@ -112,8 +110,8 @@ That structure matters because the first exam is often optional. AZ-900 is usefu
 | Azure developer | AZ-900 -> AZ-204 only if you can finish before July 31, 2026 | AZ-204 is listed to retire July 31, 2026 [6] |
 | Azure security engineer | SC-900 or AZ-900 -> AZ-500 only if you can finish before August 31, 2026 | AZ-500 is listed to retire August 31, 2026 [6] |
 | Data engineer | DP-900 -> DP-700 | DP-203 is retired [7][8] |
-| AI engineer | AI-900 -> current AI role credential from Microsoft Learn | Verify the current exam before booking [1] |
-| Microsoft 365 administrator | MS-900 -> MS-102 | Check current M365 prerequisites in the catalog [1] |
+| AI engineer | AI-900 retired June 30, 2026; AI-102 (Azure AI Engineer Associate) also retired June 30, 2026 → browse the Microsoft Learn catalog for the current AI role credential | Both AI-900 and AI-102 are retired [1][6]; verify the current AI path before booking |
+| Microsoft 365 administrator | MS-900 retired March 31, 2026 → MS-102 Microsoft 365 Administrator (active) is now the entry credential for the M365 track | MS-900 is retired [6]; browse catalog to confirm any Fundamentals successor before starting [1] |
 
 ## Replace DP-203 with DP-700 for data engineering
 
