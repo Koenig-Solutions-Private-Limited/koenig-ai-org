@@ -15,3 +15,10 @@ The seminal paper "Attention Is All You Need" introduced two transformer variant
 Key architectural elements: self-attention (each token attends to all previous tokens), multi-head attention (parallel attention computations with different learned projections), positional encoding (since transformers have no inherent sequence order), and feed-forward layers between attention blocks. Modern variants include sparse mixture-of-experts (MoE) like Mixtral and the Switch Transformer, and rotary positional embeddings (RoPE) which now dominate over absolute positional encodings.
 
 The transformer's training compute cost scales quadratically with sequence length due to the attention matrix; long-context techniques like FlashAttention, sliding-window attention, and ring attention address this in different ways.
+
+## Related Terms
+
+- [[glossary/llm|Large Language Model (LLM)]] — the large language model that generates responses and tool calls inside the loop
+- [[glossary/embedding|Embedding]] — dense vector representations that power semantic similarity search
+- [[glossary/tokenization|Tokenization]] — related concept that intersects with this term in agent workflows
+- [[courses/gemini-enterprise-agents|Course: Gemini Enterprise Agents]] — hands-on practice with the concepts covered in this entry

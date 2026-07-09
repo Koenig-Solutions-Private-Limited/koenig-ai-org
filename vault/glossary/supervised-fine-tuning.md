@@ -11,3 +11,11 @@ Supervised fine-tuning (SFT) is the first step in the post-training pipeline for
 The practical tradeoff between SFT and in-context learning (few-shot prompting) has shifted as models have grown more capable. For general tasks, strong frontier models often match SFT performance with well-crafted prompts. For specialized tasks (medical terminology, legal drafting, proprietary domain knowledge) or efficiency requirements (reducing prompt length), SFT still provides a significant edge.
 
 Parameter-efficient fine-tuning methods—LoRA, QLoRA—make SFT practical on consumer-grade hardware by updating only a small fraction of model parameters. A 7B model can be fine-tuned on a single consumer GPU with LoRA; a 70B model on a 4-GPU workstation with QLoRA. This democratization has enabled a thriving open-source fine-tuning ecosystem around Llama 3 and Mistral 7B.
+
+## Related Terms
+
+- [[glossary/instruction-tuning|Instruction Tuning]] — the fine-tuning stage that teaches a model to follow natural-language instructions
+- [[glossary/fine-tuning|Fine-tuning]] — the weight-update process that adapts a pre-trained base model for downstream tasks
+- [[glossary/pre-training|Pre-training]] — the large-scale unsupervised training run that teaches the model language and world knowledge
+- [[glossary/direct-preference-optimization|Direct Preference Optimization]] — an alignment technique that optimises the model directly on preference data without a reward model
+- [[courses/gemini-enterprise-agents|Course: Gemini Enterprise Agents]] — hands-on practice with the concepts covered in this entry

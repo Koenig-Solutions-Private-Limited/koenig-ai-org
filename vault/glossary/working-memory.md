@@ -11,3 +11,11 @@ Working memory is bounded by the model's context window size—from 128K tokens 
 Content management within working memory is critical. At the start of a long agentic session, the system prompt, tool definitions, and initial task may consume 20–30% of the context. As the session progresses, tool results accumulate and old turns scroll out of the effective attention window (due to the recency bias of attention). Summarization and compaction strategies periodically compress old turns into dense summaries to reclaim context budget.
 
 KV caching (key-value caching) allows the scaffolding to reuse previously computed attention states for stable prefixes (system prompt, tools list), dramatically reducing the cost and latency of each turn in a long agentic session.
+
+## Related Terms
+
+- [[glossary/agent-memory|Agent Memory]] — the persistence layer (working, episodic, semantic) that maintains agent continuity
+- [[glossary/episodic-memory|Episodic Memory]] — the long-term store of past interactions retrieved to inform future decisions
+- [[glossary/semantic-memory|Semantic Memory]] — the persistent factual knowledge base the agent queries during tasks
+- [[glossary/context-window|Context window]] — the token buffer the model reads at each step of the loop
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — hands-on practice with the concepts covered in this entry

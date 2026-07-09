@@ -11,3 +11,11 @@ When an LLM emits a tool call, the scaffolding executes it and returns a tool re
 Tool results are the primary grounding mechanism in agentic systems. They replace the model's internal knowledge with authoritative external data: a web search result, a database row, a code execution output, or a file read. The quality of downstream reasoning depends heavily on how faithfully the tool result represents ground truth.
 
 Error handling in tool results is a critical design decision. Returning a structured error (`{"error": "rate_limited", "retry_after": 30}`) is far more useful than returning an empty response or raising an exception, because it gives the model actionable information to decide its next step—wait and retry, try a different tool, or escalate to a human.
+
+## Related Terms
+
+- [[glossary/tool-use|Tool use]] — the protocol Claude follows when invoking external tools from an agent loop
+- [[glossary/function-calling|Function calling]] — the mechanism by which the model emits structured JSON to invoke an external function
+- [[glossary/parallel-tool-calls|Parallel Tool Calls]] — the capability to invoke multiple tools simultaneously in a single model turn
+- [[glossary/agent-loop|Agent Loop]] — the iterative perceive-act-observe cycle the harness executes
+- [[courses/mcp-from-first-principles-to-production|Course: MCP from First Principles to Production]] — hands-on practice with the concepts covered in this entry

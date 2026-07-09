@@ -14,3 +14,11 @@ Modern LLMs use byte-pair encoding (BPE) or its variants — tiktoken (OpenAI), 
 Tokenization choices have practical consequences: pricing is per-token, so verbose languages cost more; context windows are measured in tokens; and tokenization boundaries can affect model behavior (the famous SolidGoldMagikarp glitch token in GPT-3 came from a tokenizer artifact).
 
 Tools for inspecting tokenization include OpenAI's tiktoken library, Anthropic's `count_tokens` API endpoint, and Hugging Face's transformers library. Cross-vendor token-count comparisons require running each vendor's tokenizer; there is no universal mapping.
+
+## Related Terms
+
+- [[glossary/llm|Large Language Model (LLM)]] — the large language model that generates responses and tool calls inside the loop
+- [[glossary/transformer|Transformer]] — the neural architecture underlying virtually all modern LLMs
+- [[glossary/embedding|Embedding]] — dense vector representations that power semantic similarity search
+- [[glossary/context-window|Context window]] — the token buffer the model reads at each step of the loop
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry

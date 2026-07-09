@@ -11,3 +11,10 @@ Autoregressive generation is inherently sequential—each token requires a full 
 When the draft model's predictions are accurate (as they typically are for common phrases, boilerplate code, and easy continuations), this achieves near-k-fold speedup over standard decoding while producing exactly the same output distribution as the large model alone. Typical speedups are 2–3× for text generation tasks.
 
 Google, Anthropic, and NVIDIA have all deployed speculative decoding in their inference infrastructure. A common configuration uses a matching family model at different scales: Haiku 4.5 drafts for Sonnet 4.6 target, or a 7B model drafts for a 70B target. Self-speculative decoding uses early exit layers of the same model as the drafter, avoiding the need for a separate model.
+
+## Related Terms
+
+- [[glossary/kv-cache|KV Cache]] — the cached key-value pairs that eliminate redundant attention computation across turns
+- [[glossary/latency|Latency]] — the elapsed time from request submission to first token or full response received
+- [[glossary/greedy-decoding|Greedy Decoding]] — the simplest decoding strategy that always picks the highest-probability next token
+- [[courses/gemini-enterprise-agents|Course: Gemini Enterprise Agents]] — hands-on practice with the concepts covered in this entry

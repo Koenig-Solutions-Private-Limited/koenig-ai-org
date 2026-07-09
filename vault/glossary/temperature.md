@@ -13,3 +13,11 @@ In practice, temperatures between 0.0 and 0.3 are used for tasks requiring factu
 Temperature interacts with top-p and top-k: they are usually applied together. A common production configuration is temperature=0.7 with top-p=0.9, which provides variety while avoiding extremely low-probability tokens. For API-facing agent tasks, temperature=0.0 is preferred to maximize consistency and testability.
 
 **Claude Sonnet 5 caveat**: Sonnet 5 rejects any non-default temperature value and returns HTTP 400. Do not pass temperature (including temperature=0) when calling Sonnet 5. For deterministic structured output, use tool schemas with strict typing, few-shot prompting, or output format instructions — the same techniques work without relying on the temperature knob.
+
+## Related Terms
+
+- [[glossary/sampling-parameters|Sampling Parameters]] — the temperature, top-k, and top-p settings that control output randomness
+- [[glossary/top-p|Top-p (Nucleus Sampling)]] — the nucleus sampling strategy that selects from the smallest set covering cumulative probability p
+- [[glossary/top-k|Top-k Sampling]] — the sampling strategy that restricts token selection to the K most probable candidates
+- [[glossary/greedy-decoding|Greedy Decoding]] — the simplest decoding strategy that always picks the highest-probability next token
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry

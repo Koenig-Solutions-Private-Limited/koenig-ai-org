@@ -11,3 +11,11 @@ Top-k sampling was one of the first practical sampling improvements over naive t
 The choice of k involves a tradeoff: small k (10–50) produces conservative, coherent output; large k (500+) allows more diversity. Unlike top-p, top-k does not adapt to the shape of the distribution—it applies the same cutoff regardless of whether the model is confident or uncertain. This is why top-p has largely superseded top-k as the preferred sampling method for text generation.
 
 Top-k is still widely used in image and audio generation, where the vocabulary is much smaller (typically a few thousand codebook tokens) and a fixed k cutoff is more intuitive. For language models, many APIs expose both top-k and top-p; common practice is to set one or the other (not both) to avoid unexpected interactions.
+
+## Related Terms
+
+- [[glossary/sampling-parameters|Sampling Parameters]] — the temperature, top-k, and top-p settings that control output randomness
+- [[glossary/temperature|Temperature]] — the scaling factor that controls how peaked or flat the token probability distribution is
+- [[glossary/top-p|Top-p (Nucleus Sampling)]] — the nucleus sampling strategy that selects from the smallest set covering cumulative probability p
+- [[glossary/greedy-decoding|Greedy Decoding]] — the simplest decoding strategy that always picks the highest-probability next token
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry

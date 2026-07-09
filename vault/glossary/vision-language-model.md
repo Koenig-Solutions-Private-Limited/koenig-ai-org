@@ -11,3 +11,11 @@ Vision-language models (VLMs) combine a visual encoder (typically a ViT—Vision
 Closed-source VLMs—GPT-4V, Claude Opus, Gemini—excel at real-world visual understanding: reading handwritten text, understanding diagrams, analyzing medical images, and interpreting screenshots. As of 2026, Claude's document understanding capability handles multi-page PDFs with embedded charts and tables.
 
 VLMs are increasingly used in agentic contexts: browser-use agents screenshot the screen and use a VLM to identify UI elements; document processing agents extract structured data from scanned forms; quality assurance agents visually verify that rendered UIs match design specifications.
+
+## Related Terms
+
+- [[glossary/multimodal|Multimodal]] — the ability to process and generate content across text, images, audio, and other modalities
+- [[glossary/embedding|Embedding]] — dense vector representations that power semantic similarity search
+- [[glossary/transformer|Transformer]] — the neural architecture underlying virtually all modern LLMs
+- [[glossary/text-to-image|Text-to-Image]] — the task of generating images from natural-language descriptions
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry

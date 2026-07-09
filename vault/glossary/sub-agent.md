@@ -11,3 +11,11 @@ Sub-agents implement the decomposition step of hierarchical planning. When a pla
 Sub-agent boundaries enforce good software engineering principles at the agent level: separation of concerns, clear interfaces (the sub-agent receives a typed input and returns a typed output), and independent testability. A sub-agent for code review can be tested separately from the planning agent that decides when to invoke it.
 
 Trust between parent and sub-agent is a nuanced issue. The parent should validate sub-agent outputs before acting on them, especially in security-sensitive contexts where a compromised or misbehaving sub-agent could inject malicious instructions. Defense-in-depth means the orchestrator applies its own safety checks even on outputs from trusted sub-agents.
+
+## Related Terms
+
+- [[glossary/orchestrator|Orchestrator]] — the component that owns the task graph and decides which agent handles each step
+- [[glossary/hierarchical-agents|Hierarchical Agents]] — the pattern of orchestrator-plus-specialist agents with layered authority
+- [[glossary/agent-orchestration|Agent Orchestration]] — the coordination layer that routes and schedules work across multiple agents
+- [[glossary/handoff|Handoff]] — the structured task transfer between agents managed by the orchestrator
+- [[courses/claude-agent-sdk-zero-to-production|Course: Claude Agent SDK — Zero to Production]] — hands-on practice with the concepts covered in this entry

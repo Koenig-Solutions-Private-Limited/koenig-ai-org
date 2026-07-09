@@ -11,3 +11,11 @@ Nucleus sampling (Holtzman et al., 2020) addresses a weakness of top-k sampling:
 With p=0.9, the model samples from the smallest set of tokens that together account for 90% of the probability mass. On confident predictions, this might be just 5 tokens; on uncertain predictions, it might be 500. This dynamic adjustment generally produces more coherent text than fixed top-k.
 
 Top-p=1.0 (full vocabulary sampling) combined with temperature close to 0.0 is functionally equivalent to greedy decoding. Typical production settings use top-p between 0.9 and 0.95. Setting top-p=0.0 or top-p=1.0 are edge cases—the former is unusual (would select the single highest-probability token), the latter disables the filter entirely.
+
+## Related Terms
+
+- [[glossary/sampling-parameters|Sampling Parameters]] — the temperature, top-k, and top-p settings that control output randomness
+- [[glossary/temperature|Temperature]] — the scaling factor that controls how peaked or flat the token probability distribution is
+- [[glossary/top-k|Top-k Sampling]] — the sampling strategy that restricts token selection to the K most probable candidates
+- [[glossary/greedy-decoding|Greedy Decoding]] — the simplest decoding strategy that always picks the highest-probability next token
+- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry
