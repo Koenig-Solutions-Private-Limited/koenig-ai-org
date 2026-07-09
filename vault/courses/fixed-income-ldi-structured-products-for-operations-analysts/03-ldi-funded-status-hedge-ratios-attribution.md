@@ -2,7 +2,7 @@
 title: "LDI Funds: Funded Status, Hedge Ratios, and Liability-Relative Performance Attribution"
 chapter: 3
 course: fixed-income-ldi-structured-products-for-operations-analysts
-status: draft
+status: g0-passed
 date: 2026-07-09
 agent: chapter-author-3
 type: course-draft
@@ -15,21 +15,51 @@ tags:
   - bpv
   - liability-relative
 quiz:
-  - question: "A pension plan has MVA of £500m and PVL of £550m. What is the funded ratio?"
-    answer: "90.9% (500 ÷ 550 × 100). The plan is underfunded by £50m."
-    topic: "Funded status, duration gap, BPV, and hedge ratio calculations"
+  - question: "A pension plan has MVA of £500m and PVL of £550m. What is its funded ratio?"
+    options:
+      - "90.9% — assets divided by liabilities, scaled to percent"
+      - "110.0% — liabilities divided by assets, scaled to percent"
+      - "91.7% — funded status divided by total plan liabilities, adjusted"
+      - "80.0% — net assets after deficit divided by gross asset value"
+    correct_idx: 0
+    explanation: "Funded ratio = MVA ÷ PVL × 100 = 500 ÷ 550 × 100 = 90.9%. The common error is inverting the fraction (PVL ÷ MVA = 110.0%), which falsely implies surplus; the plan is in deficit at 90.9%."
+    section_anchor: "1-funded-status-the-balance-sheet-view"
   - question: "Why do LDI funds use a liability-relative benchmark rather than a standard bond index?"
-    answer: "Because the fund's goal is to pay future benefits, not maximise total return. A plan can outperform its bond index while its funded status deteriorates if liabilities rise faster than assets. Risk for a pension plan is funded-status volatility, not tracking error against an index."
-    topic: "Why LDI funds benchmark against liabilities rather than only a market index"
-  - question: "A pension enters a receive-fixed interest rate swap on £200m notional with a duration of 14 years. BPV_A (physical assets) is £400,000. What is the new total BPV_A and revised hedge ratio if BPV_L is £990,000?"
-    answer: "BPV_swap = 14 × £200m × 0.0001 = £280,000. Total BPV_A = £400k + £280k = £680k. New hedge ratio = £680k ÷ £990k = 68.7%, up from 40.4%."
-    topic: "Effect of a receive-fixed swap overlay on the interest rate hedge ratio"
-  - question: "An LDI portfolio returned +3% in a quarter while liabilities rose 5%. What does each benchmark show, and what actually happened to funded status?"
-    answer: "Asset-only: manager outperformed (assuming the market index returned less than 3%). Liability-relative: the fund underperformed by 2 percentage points. Funded status deteriorated — the plan became more underfunded even though the asset portfolio gained."
-    topic: "Asset-only versus liability-relative performance commentary"
-  - question: "After a 50 bp gilt rally, a pension's BPV_L grows from £990k to £1,079k while BPV_A grows from £400k to £416k. What happens to the hedge ratio, and why?"
-    answer: "Hedge ratio falls from 40.4% to 38.6% (£416k ÷ £1,079k). It falls because liability duration exceeds asset duration, so PVL rises faster than MVA, growing BPV_L faster than BPV_A. This is passive drift — no trading occurred."
-    topic: "Explaining hedge-ratio movement after a gilt rally"
+    options:
+      - "Because the plan's goal is meeting future obligations, not maximising total return"
+      - "Because LDI funds are prohibited from holding equities and must benchmark to bonds"
+      - "Because liability-relative benchmarks consistently generate higher absolute returns than bond indices"
+      - "Because regulators require DB plans to outperform a government bond index annually"
+    correct_idx: 0
+    explanation: "The fund's purpose is paying future benefits, not beating a market index. A plan can outperform its bond index while funded status deteriorates if liabilities rise faster than assets — funded-status volatility is the real risk."
+    section_anchor: "5-liability-relative-vs-asset-only-benchmark"
+  - question: "A pension adds a receive-fixed swap on £200m notional, 14-year duration; physical BPV_A is £400k, BPV_L is £990k. What is the revised hedge ratio?"
+    options:
+      - "68.7% — swap BPV of £280k raises total BPV_A to £680k"
+      - "42.4% — swap BPV of £20k raises total BPV_A to £420k"
+      - "40.4% — hedge ratio unchanged as the swap only settles at maturity"
+      - "54.5% — swap BPV of £140k raises total BPV_A to £540k"
+    correct_idx: 0
+    explanation: "BPV_swap = 14 × £200m × 0.0001 = £280k. Total BPV_A = £400k + £280k = £680k; hedge ratio = £680k ÷ £990k = 68.7%. The typical error is omitting the duration multiplier, giving only £20k swap BPV."
+    section_anchor: "4-receive-fixed-swap-overlay"
+  - question: "An LDI portfolio returned +3% in a quarter while liabilities rose 5%. What does each benchmark show?"
+    options:
+      - "Asset-only may show outperformance; liability-relative shows -2 pp shortfall; funded status fell"
+      - "Both benchmarks show outperformance because the asset portfolio delivered a positive return"
+      - "Liability-relative shows underperformance, but funded status improved since assets returned 3%"
+      - "Both benchmarks show underperformance because liabilities rose faster than any asset return"
+    correct_idx: 0
+    explanation: "Asset-only compares +3% to a market index — possible outperformance. Liability-relative return = R_A - R_L = 3% - 5% = -2 pp, and funded status worsened even as assets gained. The two benchmarks can give opposite verdicts."
+    section_anchor: "5-liability-relative-vs-asset-only-benchmark"
+  - question: "After a 50 bp gilt rally, BPV_L grows from £990k to £1,079k while BPV_A grows from £400k to £416k. What happens to the hedge ratio?"
+    options:
+      - "Falls from 40.4% to 38.6% through passive drift — no trading caused this change"
+      - "Rises from 40.4% to 42.0% because only BPV_A changed while BPV_L stays fixed"
+      - "Stays at 40.4% because the hedge ratio only moves when new trades are executed"
+      - "Falls from 40.4% to 38.6% because the manager deliberately reduced hedge exposure"
+    correct_idx: 0
+    explanation: "Hedge ratio = £416k ÷ £1,079k = 38.6%, down from 40.4%. Because D_L > D_A, BPV_L grows faster than BPV_A when yields fall — passive drift, not a trading decision. This distinction is critical for accurate operations commentary."
+    section_anchor: "3-hedge-ratio-and-the-glidepath"
 ---
 
 ## Chapter 3: LDI Funds — Funded Status, Hedge Ratios, and Liability-Relative Performance Attribution
