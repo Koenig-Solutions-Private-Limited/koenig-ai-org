@@ -30,7 +30,7 @@ faq:
   - question: "Is Antigravity CLI open source like Gemini CLI was?"
     answer: "No. Antigravity CLI ships as a closed-source binary only. The github.com/google-antigravity/antigravity-cli repository contains only a README, CHANGELOG.md, and a demo GIF. Gemini CLI (github.com/google-gemini/gemini-cli) remains on GitHub under Apache 2.0 and receives enterprise bug and security fixes, but it no longer serves consumer users as of June 18, 2026."
   - question: "Are Enterprise users of Gemini CLI required to migrate by June 18, 2026?"
-    answer: "No. Enterprise Standard and Enterprise licence holders retain full Gemini CLI access and are not affected by the June 18 cutoff. The cutoff applied to free-tier, Google AI Pro, and AI Ultra subscribers. Gemini Code Assist for GitHub also stopped accepting new installations on June 18, with existing requests winding down in subsequent weeks."
+    answer: "No. Enterprise Standard and Enterprise licence holders retain full Gemini CLI access and are not affected by the June 18 cutoff. The cutoff applied to free-tier, Google AI Pro, and AI Ultra subscribers. Gemini Code Assist for GitHub also stopped accepting new installations on June 18, with existing requests winding down in subsequent weeks. Source: https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/"
 original_data: false
 last_updated: 2026-07-06
 hero_image:
@@ -72,7 +72,7 @@ The cutoff affected:
 - **Google AI Pro and AI Ultra subscribers** — hard cutoff June 18
 - **Gemini Code Assist for GitHub** — no new installations after June 18; existing requests wound down in subsequent weeks
 
-It did **not** affect Enterprise Standard or Enterprise licence holders, who retain full Gemini CLI access. [Google's announcement](https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/) framed the move as product focus: "we can serve you best by pouring our energy into a single product built for today's multi-agent reality." The developer community's reaction was pointed — the announcement received 209 downvotes on [GitHub discussions](https://github.com/google-gemini/gemini-cli/discussions/27274), overwhelmingly because Gemini CLI was Apache 2.0 and [Antigravity CLI ships as a closed-source binary](https://github.com/google-antigravity/antigravity-cli).
+It did **not** affect Enterprise Standard or Enterprise licence holders, who retain full Gemini CLI access. [Google's announcement](https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/) framed the move as product focus: "we can serve you best by pouring our energy into a single product built for today's multi-agent reality." The developer community's reaction was pointed — the announcement showed 293 downvotes on [GitHub discussions](https://github.com/google-gemini/gemini-cli/discussions/27274) when rechecked on July 9, 2026, overwhelmingly because Gemini CLI was Apache 2.0 and [Antigravity CLI ships as a closed-source binary](https://github.com/google-antigravity/antigravity-cli).
 
 The `google-gemini/gemini-cli` repository remains on GitHub under Apache 2.0 and continues to receive enterprise bug and security fixes. For everyone else, it is effectively archived.
 
@@ -80,7 +80,7 @@ One clarification worth making: the [Gemini API changelog](https://ai.google.dev
 
 ## What Antigravity CLI Actually Is (and the Version Scheme That Will Confuse You)
 
-Antigravity CLI is not a renamed Gemini CLI. It is a distinct product built in Go (Gemini CLI was TypeScript/Node.js), with a different licensing model, session architecture, and command surface. [The New Stack's headless test](https://thenewstack.io/gemini-cli-antigravity-replacement) confirmed that Gemini CLI in non-interactive mode could not complete file-write tasks — a limitation Antigravity CLI does not share. Google's own blog acknowledges ["there won't be 1:1 feature parity right out of the gate"](https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/), so treat this as a migration to a different tool, not an upgrade of the same one.
+Antigravity CLI is not a renamed Gemini CLI. It is a distinct product built in Go (Gemini CLI was TypeScript/Node.js), with a different licensing model, session architecture, and command surface. [The New Stack's headless test](https://thenewstack.io/gemini-cli-antigravity-replacement) confirmed that Gemini CLI in non-interactive mode could not complete file-write tasks — a limitation Antigravity CLI does not share. Google's own blog acknowledges ["there won't be 1:1 feature parity right out of the gate"](https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/), so treat this as a migration to a different [[glossary/agent-harness|agent harness]], not an upgrade of the same one.
 
 | Dimension | Gemini CLI | Antigravity CLI |
 |---|---|---|
@@ -94,7 +94,7 @@ The version scheme matters because the Antigravity product line uses two separat
 
 ## The 5-Step Migration Scaffold
 
-The [official migration guide](https://antigravity.google/docs/gcli-migration) covers these steps. This version surfaces the failure modes the docs bury.
+Google's announcement links an Antigravity migration guide, but `https://antigravity.google/docs/gcli-migration` returned HTTP 200 with no extractable body when rechecked on July 9, 2026. The scaffold below therefore uses the accessible Google announcement, the public Antigravity CLI repository, the CLI changelog, and implementation reports rather than treating the unavailable page as source evidence.
 
 **Step 1: Install**
 
@@ -130,7 +130,7 @@ Verify each plugin individually. Community reports indicate occasional incomplet
 
 **Step 4: Update MCP config (silent failure if skipped)**
 
-If you have MCP servers configured, the config key changed from `url` to `serverUrl`. No error is thrown on the wrong key — the server silently does not connect. Also move standalone config to a new file path.
+If you have [[glossary/mcp|MCP]] servers configured, the config key changed from `url` to `serverUrl`. No error is thrown on the wrong key — the server silently does not connect. Also move standalone config to a new file path.
 
 Before (`~/.gemini/settings.json` inline):
 ```json
