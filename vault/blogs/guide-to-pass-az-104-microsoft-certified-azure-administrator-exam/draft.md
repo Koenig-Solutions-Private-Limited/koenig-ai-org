@@ -18,6 +18,7 @@ learning_objectives:
 whats_new:
   - AZ-104 domain map table showing all five skill areas with topic coverage and current weights
 description: "A complete guide to passing AZ-104 Microsoft Certified Azure Administrator — exam domain map with weights, an 8-week study sequence, common failure points, and exam logistics from the official skills outline."
+seo_description: "Pass AZ-104 with the updated 5-domain map (April 2026), an 8-week sequence ordered by weight, common failure points, and key CLI commands."
 faq:
   - question: "What are the five exam domains for AZ-104 and which carries the most weight?"
     answer: "The five AZ-104 domains are: Manage Azure Identities and Governance (20–25%), Implement and Manage Storage (15–20%), Deploy and Manage Azure Compute Resources (20–25%), Implement and Manage Virtual Networking (15–20%), and Monitor and Maintain Azure Resources (10–15%). Identity and compute are tied for the highest weight at 20–25%, as confirmed by the official Microsoft study guide [2]. Always verify current weights before booking — Microsoft updates exam content periodically."
@@ -35,7 +36,7 @@ last_updated: 2026-07-09
 hero_image:
   url: /img/blogs/guide-to-pass-az-104-microsoft-certified-azure-administrator-exam/hero.png
   alt: "AZ-104 exam domain map showing five skill areas with percentage weights from identities and governance to compute, networking, storage, and monitoring"
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 7
 sources:
   - "https://learn.microsoft.com/en-us/credentials/certifications/azure-administrator/"
