@@ -25,6 +25,34 @@ sources:
   - https://datatracker.ietf.org/doc/html/draft-ietf-oauth-v2-1-15
   - https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/
   - https://datatracker.ietf.org/doc/html/rfc8414
+quiz:
+  - question: "What is the most significant change OAuth 2.1 makes relative to OAuth 2.0 that affects MCP server implementations?"
+    options:
+      - "OAuth 2.1 adds device-flow grant support as mandatory, replacing implicit grant for all browser-based clients"
+      - "OAuth 2.1 makes PKCE mandatory for all grant types and removes the implicit grant entirely"
+      - "OAuth 2.1 requires JSON Web Encryption (JWE) for all tokens, replacing plain JWT bearer tokens"
+      - "OAuth 2.1 changes the token endpoint URL format to include the server's `.well-known` base path"
+    correct_idx: 1
+    explanation: "OAuth 2.1 consolidates best-practice security from RFC 6749 and related BCP documents: it mandates PKCE (Proof Key for Code Exchange) for all authorization code flows and removes the implicit grant and resource-owner password-credentials grant, which were vulnerable to token interception and phishing."
+    section_anchor: oauth-21-what-changed-and-why-it-matters
+  - question: "Why is a plain bearer token insufficient for MCP gateway deployments even when transmitted over TLS?"
+    options:
+      - "Bearer tokens cannot encode the user's OAuth scopes in a format that MCP gateways can parse for RBAC"
+      - "TLS only protects the transport layer; a bearer token stolen from memory or logs can be replayed by an attacker"
+      - "Bearer tokens expire too quickly for MCP sessions, which can last hours without a token refresh opportunity"
+      - "MCP gateways already enforce mutual TLS with client certificates, making plain bearer tokens architecturally redundant and spec non-compliant"
+    correct_idx: 1
+    explanation: "Bearer tokens are credentials in themselves — possession equals access. Prompt injection attacks can leak tokens into tool call arguments, and log aggregators can capture `Authorization` headers. DPoP (RFC 9449) binds the token to the client's private key so a stolen token is useless without the matching key."
+    section_anchor: bearer-tokens-and-why-theyre-not-enough
+  - question: "When a DPoP-enabled MCP server receives a `tools/call` request, what must it verify in addition to the access token's signature and expiry?"
+    options:
+      - "That the access token's `aud` claim matches the server's registered client ID in the authorization server"
+      - "That the DPoP proof JWT's `ath` claim matches the SHA-256 hash of the access token in the Authorization header"
+      - "That the request's HTTP method matches the `htu` claim inside the DPoP proof JWT sent in the header"
+      - "That the DPoP proof JWT's `iat` timestamp is within the system clock skew tolerance of the token's `nbf` claim"
+    correct_idx: 1
+    explanation: "DPoP proof validation requires checking that the `ath` (access token hash) claim in the DPoP proof JWT equals SHA-256(base64url(access_token)). This binding ensures the proof cannot be reused with a different token, and the token cannot be used without the matching proof."
+    section_anchor: dpop-how-token-binding-works
 ---
 
 # OAuth 2.1 + DPoP — production auth for MCP servers

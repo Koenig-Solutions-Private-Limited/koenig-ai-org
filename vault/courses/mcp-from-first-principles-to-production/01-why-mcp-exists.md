@@ -27,6 +27,34 @@ tags:
   - lsp
   - architecture
   - vendor/anthropic
+quiz:
+  - question: "Before MCP, a team building 4 LLM applications that each needed access to 6 tools had to maintain how many bespoke integration adapters?"
+    options:
+      - "10 adapters — one per app plus one per tool, collapsed by a shared abstraction layer most teams already had"
+      - "24 adapters — every app required its own custom adapter for each individual tool with no shared layer"
+      - "6 adapters — one per tool, reused freely across all apps because tools expose a common REST interface"
+      - "4 adapters — one per application, since each app connected once to a central tool-registry service"
+    correct_idx: 1
+    explanation: "The N×M problem means N apps × M tools = N×M adapters. 4 apps × 6 tools = 24. MCP resolves this to N+M (4 clients + 6 servers = 10 implementations) by inserting a shared protocol layer."
+    section_anchor: the-nxm-integration-problem
+  - question: "Which historical protocol did MCP's authors explicitly cite as proof that a shared wire protocol could tame a fragmented ecosystem?"
+    options:
+      - "gRPC — Google's binary RPC protocol that unified microservice communication across polyglot teams"
+      - "WebSocket — the full-duplex browser protocol that replaced long-polling in real-time applications"
+      - "LSP (Language Server Protocol) — Microsoft's protocol that replaced N×M IDE-language pairs with N+M implementations"
+      - "OpenAPI — the REST description format that standardised HTTP API documentation and code generation"
+    correct_idx: 2
+    explanation: "MCP is architecturally modelled on the Language Server Protocol (LSP), which solved the same N×M problem in developer tooling. Before LSP, every IDE needed a bespoke plugin for every language. MCP applies the same insight to LLM-tool integrations."
+    section_anchor: the-lsp-lineage-a-protocol-that-solved-this-before
+  - question: "Which capability does the chapter explicitly call out as something MCP deliberately does NOT address?"
+    options:
+      - "Structured context injection into LLM inference calls from well-defined data sources and tools"
+      - "Newline-delimited JSON-RPC message framing over a stdio pipe between host and server processes"
+      - "Agent-to-agent communication, multi-step task scheduling, and long-running workflow orchestration between agents"
+      - "Capability negotiation between client and server at protocol initialization time"
+    correct_idx: 2
+    explanation: "MCP is a narrow protocol for standardised context injection into LLM inference — it deliberately excludes agent orchestration, task scheduling, and multi-agent coordination. Understanding this narrowness is what makes MCP powerful: it solves one problem precisely rather than trying to be general-purpose middleware."
+    section_anchor: what-mcp-deliberately-does-not-solve
 ---
 
 # Why MCP exists — the design problem it actually solves

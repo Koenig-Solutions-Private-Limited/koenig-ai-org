@@ -26,6 +26,34 @@ hands_on_exercise: "Deploy the Chapter 4 auth-enabled server behind a gateway (m
 sources:
   - https://spec.modelcontextprotocol.io/
   - https://blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/
+quiz:
+  - question: "What is the primary architectural advantage of placing an MCP gateway between clients and upstream servers?"
+    options:
+      - "It eliminates the need for OAuth 2.1 on individual servers by terminating all auth at the server process level"
+      - "It centralises DPoP validation, RBAC enforcement, rate limiting, and audit logging without modifying individual servers"
+      - "It compresses JSON-RPC messages in transit to reduce network bandwidth consumption on high-throughput multi-user MCP deployments"
+      - "It enables servers to maintain session state across requests by forwarding sticky session cookies to clients"
+    correct_idx: 1
+    explanation: "An MCP gateway is a reverse proxy that validates DPoP tokens once at the edge, enforces RBAC scopes, applies rate limits, and writes audit log entries — none of which need to live inside individual server implementations. Servers remain stateless and focused on their tool logic."
+    section_anchor: gateway-topology-what-goes-where
+  - question: "A user with `tools:read` scope attempts to call a write tool on an RBAC-configured MCP gateway. What should the gateway return?"
+    options:
+      - "A JSON-RPC error with code -32603 (Internal Error) since the tool execution failed at the server level"
+      - "A 403 Forbidden at the HTTP transport layer before the request reaches the upstream MCP server"
+      - "A 401 Unauthorized with a WWW-Authenticate header prompting the client to re-authenticate with wider scope"
+      - "A JSON-RPC result with an empty response body, silently dropping the request to avoid leaking policy details"
+    correct_idx: 1
+    explanation: "The gateway enforces RBAC at the HTTP transport layer before forwarding. A `tools:read` scope cannot call write tools; the correct response is 403 Forbidden. A 401 would mean the token is invalid, not that the scope is insufficient. The upstream MCP server never sees the request."
+    section_anchor: rbac-scopes-tools-and-the-least-privilege-rule
+  - question: "Why does the chapter recommend JSON Lines (JSONL) as the audit log format rather than structured XML or a relational table?"
+    options:
+      - "JSONL is the format mandated by SOC 2 Type II controls for application-layer audit trails in cloud deployments"
+      - "JSONL is streamable, grep-able, and directly ingestible by every major observability backend without a schema migration"
+      - "JSONL compresses 60% better than XML under gzip, reducing log storage costs on high-throughput MCP deployments"
+      - "JSONL avoids schema versioning conflicts that break downstream pipelines when new audit fields are added to MCP"
+    correct_idx: 1
+    explanation: "JSON Lines writes one JSON object per newline — making logs streamable (tail -f works), grep-able (jq or grep on a field), and directly ingestible by Loki, Datadog, Splunk, and CloudWatch without a schema. SOC 2 specifies what must be logged (who, what, when, result), not the format."
+    section_anchor: structured-audit-logging-for-soc-2
 ---
 
 # Gateways, audit logs, and shipping to a 1,000-user team

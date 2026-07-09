@@ -36,6 +36,34 @@ references:
     url: https://json-schema.org/specification
   - title: "RFC 6570 — URI Template (IETF)"
     url: https://www.rfc-editor.org/rfc/rfc6570
+quiz:
+  - question: "A developer wants to expose a GitHub integration that lets the model READ the contents of a file in a repository. Which MCP primitive is correct?"
+    options:
+      - "Tool — because reading a file requires a network call to the GitHub API, and all network I/O belongs in Tools"
+      - "Resource — because reading file content is a read-only, app-controlled operation that matches the Resource's ownership and initiation model"
+      - "Prompt — because the file path is a user-specified argument, and Prompts handle user-initiated parameter input"
+      - "Tool — because MCP Resources cannot represent dynamic content; they are limited to static embedded text blobs"
+    correct_idx: 1
+    explanation: "Resources are the correct primitive for read-only data identified by URI. The model requests the data but the app controls what is returned and how it is fetched. Tools are for model-initiated operations with side effects. Using a Tool for a read-only fetch wastes tokens and muddies the side-effect contract."
+    section_anchor: resources--what-the-model-reads
+  - question: "According to the chapter's decision rule, which question most directly determines whether an integration requirement belongs in a Tool vs. a Resource?"
+    options:
+      - "How large is the payload? Resources handle payloads under 1 MB; Tools handle larger or streaming responses"
+      - "Who initiates the call and does it have side effects? Model-initiated with side effects = Tool; app-controlled read-only = Resource"
+      - "Is the data structured or unstructured? Structured JSON data goes in Resources; unstructured text goes in Tools"
+      - "How frequently is it called? High-frequency operations belong in Resources for caching; low-frequency in Tools"
+    correct_idx: 1
+    explanation: "The decision rule is: who initiates, who controls, what mutates. Tools are model-initiated and may have side effects. Resources are app-controlled and read-only. Prompts are user-initiated templates. Payload size, data format, and call frequency are not the determining factors."
+    section_anchor: the-decision-rule
+  - question: "What makes MCP Prompts distinct from both Tools and Resources in terms of who initiates the call?"
+    options:
+      - "Prompts are initiated by the server at fixed schedule intervals, making them the only push-model primitive in MCP"
+      - "Prompts are initiated by the user explicitly selecting them, not by the model autonomously deciding to invoke one"
+      - "Prompts are initiated by the host application on startup to pre-load commonly needed context into the model"
+      - "Prompts are initiated by the model the same way as Tools, but restricted to read-only operations only"
+    correct_idx: 1
+    explanation: "Prompts are user-initiated: a human explicitly selects a Prompt template (e.g., from a menu), and the MCP client renders it into a message sequence with the supplied arguments. The model does not autonomously invoke Prompts — that autonomy belongs to Tools."
+    section_anchor: prompts--what-the-user-selects
 ---
 
 # Tools, Resources, Prompts — the three primitives and the decision rule
