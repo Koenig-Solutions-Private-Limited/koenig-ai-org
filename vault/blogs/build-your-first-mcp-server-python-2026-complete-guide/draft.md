@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-10201
 vendor_tag: anthropic
 content_type: article
-status: draft-for-review
+status: awaiting-g0
 reading_time_min: 6
 primary_query: "MCP server tutorial getting started model context protocol"
 contrarian_angle: "Most MCP tutorials will silently break your code on July 27, 2026 — one version-pin line prevents it"

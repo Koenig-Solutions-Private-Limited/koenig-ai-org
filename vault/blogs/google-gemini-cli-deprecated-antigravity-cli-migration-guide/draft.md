@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-10220
 vendor_tag: google
 content_type: article
-status: draft-for-review
+status: awaiting-g0
 reading_time_min: 6
 primary_query: "google gemini cli deprecated migrate antigravity cli 2026"
 contrarian_angle: "The agents→agent plural rename and the MCP url→serverUrl silent failure are the real CI/CD killers — not the binary rename everyone talks about"

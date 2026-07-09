@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-10295
 vendor_tag: openai
 content_type: article
-status: draft-for-review
+status: awaiting-g0
 reading_time_min: 6
 primary_query: "openai model shutdown July 2026 migration guide"
 contrarian_angle: "The July wave is not the hardest outage risk; October's legacy-family shutdown exposes hidden fallbacks, fine-tunes, and stale routing configs."

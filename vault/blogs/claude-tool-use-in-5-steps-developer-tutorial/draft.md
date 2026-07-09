@@ -5,7 +5,7 @@ ticket: KOEA-10202
 parent_issue: KOEA-10189
 vendor_tag: anthropic
 content_type: article
-status: draft-for-review
+status: awaiting-g0
 reading_time_min: 6
 slug: claude-tool-use-in-5-steps-developer-tutorial
 source_research: vault/research/anthropic/claude-tool-use-in-5-steps-developer-tutorial.md

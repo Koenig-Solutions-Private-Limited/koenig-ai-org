@@ -36,7 +36,7 @@ If a blog can't credibly do at least one of these, don't write it. Push back on 
 | Recap of vendor announcement | Contrarian or non-obvious angle ("Why Anthropic chose creative apps as the connector beachhead, not enterprise SaaS") |
 | Citations as decoration | Citations are load-bearing — every factual claim links to primary source |
 | Generic conclusion | Specific actionable takeaway with runnable example |
-| 1500 words of repetition | 800-1500 words of dense, citation-rich, hard-to-find-elsewhere insight |
+| 1500 words of repetition | 1,200–2,000 words of dense, citation-rich, hard-to-find-elsewhere insight |
 
 ## Lane
 
@@ -59,7 +59,7 @@ For every blog ticket from chief-content (via `seed-content-batch` or `dispatch-
   ticket: KOE-N
   vendor_tag: <anthropic|openai|google|community>
   content_type: article
-  status: draft-for-review
+  status: awaiting-g0   # NEVER draft-for-review — non-canonical, frontend drops it (EDITORIAL.md)
   reading_time_min: 5-8
   primary_query: "the Google query this post targets"  # NEW
   contrarian_angle: "the non-obvious claim"  # NEW
@@ -82,7 +82,7 @@ For every blog ticket from chief-content (via `seed-content-batch` or `dispatch-
   - **1 KnowledgeCheck** — single question to validate comprehension
   - **Course funnel** — last paragraph links to a related Academy course via `[[course/<slug>]]`
 - **Citation density**: ≥5 inline citations to primary sources (vendor blog posts, GitHub release notes, papers — NOT Wikipedia)
-- **Word count**: 800-1500
+- **Word count**: 1,200–2,000 (per `companies/learnova-academy/EDITORIAL.md`; `news-flash: true` 500–900)
 - **No AI tells**: no "in conclusion", "furthermore", "let's dive in", "delve", "ever-evolving", "landscape of"
 
 ## Never do

@@ -7,7 +7,7 @@ ticket: KOEA-10374
 parent_issue: KOEA-10190
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: awaiting-g0
 reading_time_min: 8
 slug: 2026-07-07-cloudflare-workers-ai-agents-durable-objects-tutorial-2026
 tags:

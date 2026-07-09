@@ -6,7 +6,7 @@ author: blog-author
 ticket: KOEA-10538
 vendor_tag: anthropic
 content_type: article
-status: draft-for-review
+status: awaiting-g0
 reading_time_min: 6
 primary_query: "Anthropic agent-memory-2026-07-22 beta header"
 contrarian_angle: "Anthropic's native memory does not kill vector memory vendors; it kills the infrastructure burden for most Claude-native agent use cases."
