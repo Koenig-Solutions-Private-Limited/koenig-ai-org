@@ -26,7 +26,8 @@ sources:
   - https://medium.com/@virtualik/building-mcp-servers-with-fastmcp-7-mistakes-worth-avoiding-07f81f693250
   - https://www.firecrawl.dev/blog/fastmcp-tutorial-building-mcp-servers-python
   - https://www.practical-devsecops.com/mcp-security-vulnerabilities
-  - https://machinelearningmastery.com/building-a-simple-mcp-server-in-python
+  - https://modelcontextprotocol.io/docs/getting-started/intro
+  - https://developers.openai.com/api/docs/guides/tools-connectors-mcp
   - https://northflank.com/blog/how-to-build-and-deploy-a-model-context-protocol-mcp-server
 positions:
   - id: mcp-as-interoperability-moat
@@ -45,15 +46,15 @@ learning_objectives:
   - "Apply the three minimum security rules before connecting any server to external data"
 faq:
   - question: "Why is my MCP server not showing up in Claude Desktop?"
-    answer: "Three common causes: (1) you used a relative path instead of an absolute path in `claude_desktop_config.json` — the config silently ignores relative paths; (2) you edited the config but only reloaded Claude Desktop instead of doing a full quit-and-relaunch; (3) the config key is `mcpServers` not `servers` — a typo here causes silent failure. Check all three before debugging further."
+    answer: "Three common causes: (1) you used a relative path instead of an absolute path in `claude_desktop_config.json` — the config silently ignores relative paths; (2) you edited the config but only reloaded Claude Desktop instead of doing a full quit-and-relaunch; (3) the config key is `mcpServers` not `servers` — a typo here causes silent failure. Check the official local-server quickstart before debugging further: https://modelcontextprotocol.io/quickstart/server"
   - question: "Is FastMCP official or a third-party library?"
-    answer: "There are two different packages sharing the FastMCP name in 2026. The official one ships inside the `mcp` package from Anthropic's Python SDK repo — import it with `from mcp.server.fastmcp import FastMCP`. A separate third-party `fastmcp` package on PyPI (version 3.0, released January 2026) adds OpenTelemetry, granular auth, and component versioning. For beginners, use the official SDK package. Production teams can evaluate the third-party package once they understand the baseline."
+    answer: "There are two different packages sharing the FastMCP name in 2026. The official one ships inside the `mcp` package from the Model Context Protocol Python SDK repo — import it with `from mcp.server.fastmcp import FastMCP` as shown in https://github.com/modelcontextprotocol/python-sdk. A separate third-party `fastmcp` package adds its own production framework surface; Firecrawl's tutorial covers that ecosystem at https://www.firecrawl.dev/blog/fastmcp-tutorial-building-mcp-servers-python."
   - question: "Can I use MCP with OpenAI models, not just Claude?"
-    answer: "Yes. MCP is a provider-neutral open protocol. Claude Desktop and Cursor are the two most common MCP client hosts, but any application can implement the MCP client spec. OpenAI's agents SDK added MCP tool support in 2026, and the protocol is designed to work across models and frameworks. The server you build here will work with any compliant MCP client."
+    answer: "Yes. MCP is a provider-neutral open protocol: the official intro says MCP connects AI applications such as Claude or ChatGPT to external systems, and names broad ecosystem support across clients and servers: https://modelcontextprotocol.io/docs/getting-started/intro. OpenAI also documents MCP connectors and remote MCP servers in its API docs at https://developers.openai.com/api/docs/guides/tools-connectors-mcp."
   - question: "What happens to my server code when MCP SDK v2 ships on July 27, 2026?"
-    answer: "If you follow this guide's version pin (`mcp>=1.27,<2`), nothing breaks — pip will keep you on the last v1 stable release. If you omit the upper bound and auto-upgrade, v2 introduces breaking API changes documented in the official migration guide at `py.sdk.modelcontextprotocol.io/v2/migration/`. The safest path: pin now, then upgrade deliberately after reading the migration guide."
+    answer: "If you follow this guide's version pin (`mcp>=1.27,<2`), nothing breaks — pip will keep you on the last v1 stable release. If you omit the upper bound and auto-upgrade, v2 introduces breaking API changes documented by the official SDK repo and migration guide: https://github.com/modelcontextprotocol/python-sdk and https://py.sdk.modelcontextprotocol.io/v2/migration/. The safest path is to pin now, then upgrade deliberately."
 original_data: false
-last_updated: 2026-07-06
+last_updated: 2026-07-09
 hero_image:
   url: /img/blogs/build-your-first-mcp-server-python-2026-complete-guide/hero.png
   alt: "Diagram showing the MCP architecture: a host application connecting to a local Python MCP server via stdio, with tool calls flowing from the LLM through the client to the server"
@@ -224,6 +225,25 @@ For remote servers using Streamable HTTP transport (`mcp.run(transport="streamab
 
 ## Knowledge Check
 
+**Question:** Which practice is safest before connecting an MCP server to real data?
+
+A. Expose every internal API as a tool.
+
+B. Keep tools minimal, log invocations, and pass secrets through host config.
+
+C. Use `print()` for debugging stdout.
+
+<details>
+<summary>Answer</summary>
+
+B. MCP tools are action surfaces, so least privilege and audit logs matter. For stdio servers, stdout is reserved for JSON-RPC; logs go to stderr and secrets belong in config, not code.
+
+</details>
+
+---
+
+## Knowledge Check
+
 **Question:** You've built a stdio MCP server and it connects in the MCP Inspector, but it doesn't appear in Claude Desktop after you restart the app. You checked the config path and it's correct. What are the two most likely causes?
 
 <details>
@@ -248,7 +268,7 @@ Both, confusingly. The official FastMCP ships inside the `mcp` package from Anth
 
 **Can I use my MCP server with OpenAI models, not just Claude?**
 
-Yes — MCP is a provider-neutral open protocol. Claude Desktop and Cursor are common hosts, but OpenAI's agent SDK added MCP tool support in 2026. Any compliant MCP client can call your server. [Machine Learning Mastery's Python MCP tutorial](https://machinelearningmastery.com/building-a-simple-mcp-server-in-python) (February 2026) demonstrates this pattern.
+Yes — MCP is a provider-neutral open protocol. The official MCP intro describes MCP as an open-source standard for connecting AI applications, including Claude and ChatGPT, to external systems; OpenAI also documents remote MCP servers in its API docs. Any compliant MCP client can call your server. [source: modelcontextprotocol.io/docs/getting-started/intro](https://modelcontextprotocol.io/docs/getting-started/intro), [source: developers.openai.com/api/docs/guides/tools-connectors-mcp](https://developers.openai.com/api/docs/guides/tools-connectors-mcp)
 
 **What happens to my server when SDK v2 ships July 27, 2026?**
 
