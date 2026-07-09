@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 # Generic NotebookLM chapter-asset batch (course-gen v3 producer tool).
 # Usage: notebooklm-batch-chapters.sh <course-slug> <NN-chslug> [<NN-chslug> ...]
 #   (max 3 chapters per run — single Google account etiquette)
@@ -6,7 +6,7 @@
 # frontmatter source URLs), async kickoff of the full artifact set, 60s poll,
 # download, easy→hard quiz serialization, then upload-chapter-assets.mjs.
 set -u
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="/paperclip/bin:/paperclip/.local/bin:$HOME/.local/bin:$PATH"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 COURSE="$1"; shift
 CHAPTERS=("$@")
@@ -21,13 +21,19 @@ AUDIENCE=$(grep -m1 '^target_audience:' "$VAULT/outline.md" | sed 's/^target_aud
 typeset -A NB
 for CH in "${CHAPTERS[@]}"; do
   mkdir -p "$WORK/$CH"
-  TITLE=$(grep -m1 '^title:' "$VAULT/$CH.md" | sed 's/^title: *//; s/^"//; s/"$//')
+  # Prefer nested vault/courses/<course>/<chapter>/chapter.md; fall back to flat <chapter>.md
+  if [ -f "$VAULT/$CH/chapter.md" ]; then
+    CH_MD="$VAULT/$CH/chapter.md"
+  else
+    CH_MD="$VAULT/$CH.md"
+  fi
+  TITLE=$(grep -m1 '^title:' "$CH_MD" | sed 's/^title: *//; s/^"//; s/"$//')
   J=$(notebooklm create "$COURSE — $CH" --json 2>>"$LOG")
   ID=$(echo "$J" | python3 -c "import sys,json;d=json.load(sys.stdin);print(d.get('id') or d.get('notebook_id') or d.get('notebook',{}).get('id') or '')" 2>/dev/null)
   [ -z "$ID" ] && { log "FATAL $CH notebook create"; continue; }
   NB[$CH]=$ID
   log "$CH notebook $ID"
-  notebooklm source add "$VAULT/$CH.md" --title "$TITLE" -n "$ID" >> "$LOG" 2>&1
+  notebooklm source add "$CH_MD" --title "$TITLE" -n "$ID" >> "$LOG" 2>&1
   notebooklm source add "$VAULT/outline.md" --title "Course outline" -n "$ID" >> "$LOG" 2>&1
   DOSSIER="$ROOT/vault/research/courses/$COURSE/$CH.md"
   [ -f "$DOSSIER" ] && notebooklm source add "$DOSSIER" --title "Research dossier" -n "$ID" >> "$LOG" 2>&1
@@ -40,7 +46,7 @@ if m:
     for line in m.group(1).strip().split('\n'):
         u = line.strip().lstrip('- ').strip().strip('\"')
         if u.startswith('http'): print(u)
-" "$VAULT/$CH.md" | head -6 > "$WORK/$CH.urls"
+" "$CH_MD" | head -6 > "$WORK/$CH.urls"
   while read -r URL; do
     [ -n "$URL" ] && notebooklm source add "$URL" -n "$ID" >> "$LOG" 2>&1
   done < "$WORK/$CH.urls"
@@ -113,7 +119,8 @@ done
 
 # Upload everything that arrived (video best-effort) + write sidecars
 for CH in "${CHAPTERS[@]}"; do
-  TITLE=$(grep -m1 '^title:' "$VAULT/$CH.md" | sed 's/^title: *//; s/^"//; s/"$//')
+  if [ -f "$VAULT/$CH/chapter.md" ]; then UP_MD="$VAULT/$CH/chapter.md"; else UP_MD="$VAULT/$CH.md"; fi
+  TITLE=$(grep -m1 '^title:' "$UP_MD" | sed 's/^title: *//; s/^"//; s/"$//')
   node "$ROOT/scripts/upload-chapter-assets.mjs" --course "$COURSE" --chapter "$CH" \
     --dir "$WORK/$CH" --notebook "${NB[$CH]:-}" --title "$TITLE" >> "$LOG" 2>&1 && log "$CH: uploaded + sidecar"
 done

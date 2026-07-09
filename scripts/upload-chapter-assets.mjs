@@ -67,8 +67,14 @@ function readPngDimensions(path) {
   return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
 }
 
+function resolveChapterMd(courseSlug, chapterId) {
+  const nested = join(ROOT, "vault", "courses", courseSlug, chapterId, "chapter.md");
+  if (existsSync(nested)) return nested;
+  return join(ROOT, "vault", "courses", courseSlug, `${chapterId}.md`);
+}
+
 function chapterH2Headings(courseSlug, chapterId) {
-  const mdPath = join(ROOT, "vault", "courses", courseSlug, `${chapterId}.md`);
+  const mdPath = resolveChapterMd(courseSlug, chapterId);
   if (!existsSync(mdPath)) return [];
   const raw = readFileSync(mdPath, "utf8");
   const body = raw.replace(/^---[\s\S]*?---\n?/, "");
@@ -271,7 +277,7 @@ const sidecar = {
   generated_at: new Date().toISOString(),
   generated_by: "notebooklm-py via upload-chapter-assets.mjs",
   ...(args.notebook ? { notebook_id: args.notebook } : {}),
-  source_file: `vault/courses/${args.course}/${args.chapter}.md`,
+  source_file: resolveChapterMd(args.course, args.chapter).replace(ROOT + "/", ""),
   assets: { ...(existing.assets ?? {}), ...assets },
   asset_metadata: {
     ...(existing.asset_metadata ?? {}),
