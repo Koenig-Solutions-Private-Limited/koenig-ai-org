@@ -42,6 +42,7 @@ sources:
   - "https://gcc.gnu.org/onlinedocs/gcc-15.2.0/gcc/Instrumentation-Options.html"
   - "https://clang.llvm.org/docs/AddressSanitizer.html"
   - "https://clang.llvm.org/docs/MemorySanitizer.html"
+  - "https://clang.llvm.org/docs/ThreadSanitizer.html"
   - "https://valgrind.org/docs/manual/mc-manual.html"
   - "https://www.gnu.org/software/libc/manual/html_node/Internal-Probes.html"
 references:
@@ -70,10 +71,14 @@ references:
     url: "https://clang.llvm.org/docs/MemorySanitizer.html"
     retrieved: 2026-07-09
   - n: 7
+    title: "Clang — ThreadSanitizer Documentation"
+    url: "https://clang.llvm.org/docs/ThreadSanitizer.html"
+    retrieved: 2026-07-09
+  - n: 8
     title: "Valgrind — Memcheck Manual"
     url: "https://valgrind.org/docs/manual/mc-manual.html"
     retrieved: 2026-07-09
-  - n: 8
+  - n: 9
     title: "GNU C Library Manual — Internal Probes"
     url: "https://www.gnu.org/software/libc/manual/html_node/Internal-Probes.html"
     retrieved: 2026-07-09
@@ -178,7 +183,7 @@ Stack allocation is automatic and tied to scope; heap allocation is explicit and
 | Allocation | Automatic (variable enters scope) | Explicit (`malloc`/`calloc`) |
 | Deallocation | Automatic (variable leaves scope) | Explicit (`free`) |
 | Lifetime | Tied to function frame | Until `free()` or process exit |
-| Size limit | Small (typically 1–8 MB) | Large (limited by virtual memory) |
+| Size limit | Platform and process dependent | Limited by address space, overcommit policy, and allocator behavior |
 | Speed | Fast (pointer decrement) | Slower (allocator bookkeeping) |
 | Failure mode | Stack overflow (silent UB or crash) | Returns `NULL` on failure [3] |
 
@@ -199,15 +204,17 @@ p = tmp;
 
 ### What are common memory errors in C and how do you detect them?
 
-1. **Buffer overflow** — writing past the end of an array. Detected by AddressSanitizer (`-fsanitize=address`) [4][5] and Valgrind Memcheck [7].
+1. **Buffer overflow** — writing past the end of an array. Detected by AddressSanitizer (`-fsanitize=address`) [4][5] and Valgrind Memcheck [8].
 
 2. **Use-after-free** — accessing memory after `free()`. Also detected by AddressSanitizer; produces undefined behaviour, often with no immediate crash and corruption later [5].
 
 3. **Double free** — calling `free()` on the same pointer twice. Undefined behaviour; often corrupts the allocator's internal structures.
 
-4. **Memory leak** — allocated memory never freed. Detected by Valgrind (`--leak-check=full`) [7] or LeakSanitizer.
+4. **Memory leak** — allocated memory never freed. Detected by Valgrind (`--leak-check=full`) [8] or LeakSanitizer.
 
 5. **Uninitialised read** — reading a variable before assignment. Stack variables are not zeroed. Detected by MemorySanitizer (`-fsanitize=memory`) [6].
+
+6. **Data race** — two threads access the same memory location, at least one access writes, and the program has no synchronization. ThreadSanitizer instruments C and C++ binaries with `-fsanitize=thread` to report these races at runtime [7].
 
 ```c
 // Classic use-after-free
@@ -263,7 +270,7 @@ Common UB triggers:
 - Accessing memory out of bounds
 - Violating strict aliasing rules
 
-One interview pattern is a snippet that "works on my machine" until optimization changes the result. The answer should not be "the compiler is buggy." It should be "the source invoked UB, so the optimizer is allowed to reason from impossible assumptions." That distinction is why C security reviews use both compiler warnings and runtime instrumentation: GCC's sanitizer flags instrument memory operations for out-of-bounds and use-after-free checks [4], while Valgrind's Memcheck runs the binary under a shadow-memory engine that reports invalid reads, invalid writes, and leaks [7].
+One interview pattern is a snippet that "works on my machine" until optimization changes the result. The answer should not be "the compiler is buggy." It should be "the source invoked UB, so the optimizer is allowed to reason from impossible assumptions." That distinction is why C security reviews use both compiler warnings and runtime instrumentation: GCC's sanitizer flags instrument memory operations for out-of-bounds and use-after-free checks [4], while Valgrind's Memcheck runs the binary under a shadow-memory engine that reports invalid reads, invalid writes, and leaks [8].
 
 ### What is the difference between `==` and `=` in a condition?
 
@@ -287,7 +294,7 @@ Three practices that separate candidates who pass from those who don't:
 
 1. **Write code on paper.** Interviewers expect you to trace through pointer operations without IDE assistance. Practice pointer arithmetic on paper until it is automatic.
 
-2. **Know your tools.** Mentioning Valgrind [7], AddressSanitizer [5], MemorySanitizer [6], and GDB by name signals production experience, not just academic knowledge. If the interviewer gives you an allocator-heavy bug, name ASan first for fast local repros, Valgrind Memcheck for leak and invalid-access reports, and glibc probes when you need allocator visibility in a GNU libc environment [8].
+2. **Know your tools.** Mentioning Valgrind [8], AddressSanitizer [5], MemorySanitizer [6], ThreadSanitizer [7], and GDB by name signals production experience, not just academic knowledge. If the interviewer gives you an allocator-heavy bug, name ASan first for fast local repros, Valgrind Memcheck for leak and invalid-access reports, and glibc probes when you need allocator visibility in a GNU libc environment [9].
 
 3. **Predict undefined behaviour before being asked.** When shown code with a potential buffer overflow or use-after-free, identify it proactively — don't wait to be told it is a bug.
 
@@ -303,4 +310,4 @@ Three practices that separate candidates who pass from those who don't:
   explanation="AddressSanitizer (ASan) detects use-after-free, buffer overflows, and heap corruption at runtime by instrumenting memory accesses. Valgrind with --leak-check=full detects memory leaks. MemorySanitizer detects reads of uninitialised memory. GCC warning flags catch static issues at compile time but cannot catch runtime memory errors."
 />
 
-If this is part of interview preparation for systems or security work, continue with [[course/secure-coding-with-claude]]; the same habits used here, especially naming the failure mode and validating it with tooling, transfer directly to code review and vulnerability triage.
+If this is part of interview preparation for systems or security work, continue with [[course/secure-coding-with-claude]] and [[course/ai-agent-security-for-developers]]; the same habits used here, especially naming the failure mode and validating it with tooling, transfer directly to code review, vulnerability triage, and sandbox design.
