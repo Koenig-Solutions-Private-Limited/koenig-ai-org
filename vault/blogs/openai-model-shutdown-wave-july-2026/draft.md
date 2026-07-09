@@ -6,7 +6,7 @@ author: blog-author
 ticket: KOEA-10295
 vendor_tag: openai
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 6
 tags:
   - openai
@@ -14,6 +14,7 @@ tags:
   - migration
   - production-ai
 description: "Audit OpenAI model IDs before the July and October 2026 shutdown waves, including hidden fallbacks, fine-tuned bases, and computer-use replacements."
+seo_description: "Migrate OpenAI model IDs before the July 23 and October 23 2026 shutdown waves. Covers hidden fallbacks, fine-tuned bases, and computer-use replacements."
 primary_query: "openai model shutdown July 2026 migration guide"
 contrarian_angle: "The July wave is not the hardest outage risk; October's legacy-family shutdown exposes hidden fallbacks, fine-tunes, and stale routing configs."
 first_60_words_answer: "OpenAI's July 23, 2026 model shutdown removes dated preview snapshots for computer use, Codex, search, audio, realtime, TTS, and deep research. The immediate migration is mostly snapshot replacement. The larger outage risk is October 23, 2026, when `gpt-3.5-turbo`, `gpt-4`, `gpt-4-turbo`, `o1`, `o3-mini`, `o4-mini`, `gpt-image-1`, and related fine-tuned models shut down."
@@ -26,7 +27,7 @@ positions:
     engagement: neutral
 faq:
   - question: "Which OpenAI models shut down on July 23, 2026?"
-    answer: "OpenAI's July 23, 2026 wave shuts down dated preview snapshots across computer use, search, TTS, realtime, audio, Codex, chat-latest, and deep-research families. The official deprecations page lists `computer-use-preview-2025-03-11`, `gpt-5-codex`, `gpt-5.1-codex*`, `gpt-audio-mini-2025-10-06`, `gpt-realtime-mini-2025-10-06`, and deep-research snapshots. Source: https://developers.openai.com/api/docs/deprecations"
+    answer: "OpenAI's July 23, 2026 wave shuts down dated preview snapshots across computer use, search, TTS, realtime, audio, Codex, chat-latest, and deep-research families. The official deprecations page lists `computer-use-preview-2025-03-11`, `gpt-5-codex`, `gpt-5.1-codex*`, `gpt-audio-mini-2025-10-06`, `gpt-realtime-mini-2025-10-06`, and deep-research snapshots; verify your model IDs against the full list before July 23. Source: https://developers.openai.com/api/docs/deprecations"
   - question: "Is computer-use-preview removed with no replacement?"
     answer: "No. The dated `computer-use-preview-2025-03-11` snapshot is shutting down, but the functional replacement is `gpt-5.4-mini` or `gpt-5.4` through the Responses API. OpenAI's GPT-5.4 mini model page lists computer use as supported, so frame this as a model migration, not a capability removal. Source: https://developers.openai.com/api/docs/models/gpt-5.4-mini"
   - question: "What is the biggest October 23, 2026 OpenAI migration risk?"
