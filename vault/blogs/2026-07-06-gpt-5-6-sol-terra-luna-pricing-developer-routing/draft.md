@@ -4,7 +4,7 @@ author: vardaan-koenig
 ticket: KOEA-10181
 vendor_tag: openai
 content_type: article
-status: draft
+status: awaiting-g0
 reading_time_min: 6
 primary_query: "GPT-5.6 API pricing"
 contrarian_angle: "Sol Ultra exists as an API parameter with no published pricing. OpenAI is reserving the price anchor — meaning the model that tops the leaderboard has undefined cost. Teams budgeting around GPT-5.6 today are building on a price-unstable foundation."
