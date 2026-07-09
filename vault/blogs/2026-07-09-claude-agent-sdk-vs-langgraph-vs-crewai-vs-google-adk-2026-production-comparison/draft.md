@@ -4,7 +4,7 @@ author: blog-author
 ticket: KOEA-10772
 vendor_tag: community
 content_type: article
-status: draft-for-review
+status: awaiting-g0
 reading_time_min: 8-10
 primary_query: "claude agent sdk vs langgraph vs crewai vs google adk"
 contrarian_angle: "The winner isn't the most feature-rich framework — it's the one whose ownership model matches your production failure mode. Rankings by feature count are benchmark theater."
