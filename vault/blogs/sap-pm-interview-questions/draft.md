@@ -18,6 +18,7 @@ learning_objectives:
 whats_new:
   - Sequence diagram of the SAP PM maintenance workflow from notification to work order to confirmation/closure
 description: "SAP PM interview questions and answers covering the maintenance workflow, master data objects, order types, TECO vs CLSD status, preventive maintenance, and module integration — with a sequence diagram and transaction code reference."
+seo_description: "Prepare for SAP PM interviews with answers on maintenance workflow, master data, order types, TECO vs CLSD status, transaction codes, and module integration."
 faq:
   - question: "What is the difference between a notification and a work order in SAP PM?"
     answer: "A notification (created via IW24 or IW21) documents a problem, damage, or maintenance request without authorising any work or costs. It is the first step in corrective maintenance and triggers planner review. A work order (created via IW31) authorises the actual maintenance work, assigns operations, materials, cost centres, and work centres, and tracks actual hours and costs through confirmation [3]. Notifications can be created without leading to a work order; not all work orders originate from a notification."
@@ -35,7 +36,7 @@ last_updated: 2026-07-09
 hero_image:
   url: /img/blogs/sap-pm-interview-questions/hero.png
   alt: "SAP PM maintenance workflow sequence diagram from technician notification through work order release to TECO and CLSD closure"
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 7
 sources:
   - "https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/5f2f8b1f44a64d7b8c699ac3f000cdb5/b07dea20c61447588080e24af24e9dc5.html"
