@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: fixed-income-ldi-structured-products-for-operations-analysts
 title: "Credit Spreads, Yield Curves, and the Reporting Metrics That Come From Them"
-status: draft
+status: g0-passed
 duration_min: 12
 vendor_tag: Fixed Income / Investment Operations
 learning_objectives:
