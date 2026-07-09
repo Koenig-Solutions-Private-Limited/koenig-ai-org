@@ -9,6 +9,8 @@
   "source_file": "vault/courses/gemini-enterprise-agents/06-observability.md",
   "assets": {
     "audio_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/gemini-enterprise-agents/06-observability/audio.mp3",
+    "audio_url_status": "stale-pending-reupload",
+    "local_audio_path": "vault/courses/gemini-enterprise-agents/ch06-audio.mp3",
     "slide_deck_url": "https://pub-675bca74c969409ca9bf905eabf6ff24.r2.dev/courses/gemini-enterprise-agents/06-observability/slide-deck.pdf",
     "slides_url": "/courses/gemini-enterprise-agents/06-observability-slides.pptx"
   },
@@ -16,7 +18,19 @@
     "audio": {
       "size_bytes": 44529186,
       "format": "mp3",
-      "produced_via": "notebooklm-py generate audio"
+      "produced_via": "notebooklm-py generate audio",
+      "note": "NotebookLM audio pre-dates KOEA-2633 chapter revision; stale"
+    },
+    "audio_kokoro_rerun": {
+      "size_bytes": 21563564,
+      "format": "mp3",
+      "duration_sec": 1347,
+      "bitrate_kbps": 128,
+      "lufs": -16,
+      "produced_via": "kokoro-onnx v0.5.0 (int8 ONNX model, 18 chunks)",
+      "local_path": "vault/courses/gemini-enterprise-agents/ch06-audio.mp3",
+      "produced_at": "2026-07-09T18:13:00Z",
+      "ticket": "KOEA-10737"
     },
     "slide_deck_pdf": {
       "size_bytes": 13592836,
@@ -25,7 +39,7 @@
     }
   },
   "verification": {
-    "publish_state": "ready",
-    "r2_urls_status_200": "verified at upload"
+    "publish_state": "audio-rerun-local-only",
+    "r2_urls_status_200": "verified at upload (2026-05-28); audio needs reupload after KOEA-2633 chapter revision"
   }
 }
