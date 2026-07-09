@@ -79,6 +79,8 @@ The October 23 wave is the larger production risk because it removes the model f
 
 The dangerous files are rarely named `openai-models.ts`. They are eval fixtures, LangChain defaults, notebooks, queue workers, incident fallbacks, retry middleware, old fine-tune manifests, and cost-optimized "cheap model" branches. Search for exact strings and family aliases, then partials such as `gpt-3.5`, `gpt-4-turbo`, `o1`, `o3-mini`, `o4-mini`, `ft-`, `babbage`, and `davinci`.
 
+A concrete failure mode: your primary completion route targets `gpt-4.1`, which is still live, but your fallback handler on connection timeout was written two years ago to retry on `gpt-3.5-turbo`. On October 24, the primary succeeds, the fallback returns `model_not_found`, and your error-rate SLO trips because the handler now hard-errors instead of recovering. The fix is not to route around the exception — it is to promote the fallback to a current model ID before the shutdown date.
+
 Fine-tunes need a separate plan. A fine-tuned model tied to a retiring base does not magically become a fine-tuned replacement on the new base. Budget time for re-training, eval comparison, and rollout behind a flag. The key distinction in [[glossary/fine-tuning]] is that you are migrating learned behavior, not just swapping an inference endpoint.
 
 <RunPromptCell
@@ -97,7 +99,7 @@ Image generation has a similar trap. The research synthesis cites a December 1 c
 
 ## Ship a Model-Lifecycle Harness Before the Next Shutdown
 
-The durable fix is not a spreadsheet of replacement names. It is a model-lifecycle harness: model IDs in config, owner-assigned deprecation checks, eval suites for every production route, and release gates that compare behavior before and after a model change. Keep aliases and dated snapshots separate, flag every fine-tuned base model, and make OpenAI's deprecations page part of release ops.
+The durable fix is not a spreadsheet of replacement names. It is a model-lifecycle harness: model IDs in config, owner-assigned deprecation checks, eval suites for every production route, and release gates that compare behavior before and after a model change. Keep aliases and dated snapshots separate, flag every fine-tuned base model, and make OpenAI's deprecations page part of release ops. A quarterly review cadence is the minimum; monthly is better for organizations with fine-tuned models, since retraining on a new base typically needs six to eight weeks of eval time before a production rollout is safe.
 
 <KnowledgeCheck
   question="Why is October 23, 2026 the bigger production risk than July 23 for many OpenAI users?"
