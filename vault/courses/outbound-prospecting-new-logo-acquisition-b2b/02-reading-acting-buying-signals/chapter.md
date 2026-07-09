@@ -1,6 +1,8 @@
 ---
 chapter_num: 2
+chapter: 2
 course_slug: outbound-prospecting-new-logo-acquisition-b2b
+slug: 02-reading-acting-buying-signals
 title: "Reading and Acting on Buying Signals Before Your Competitor Does"
 status: g3-passed
 duration_min: 10
@@ -142,7 +144,7 @@ Your Tier 1 account list from Chapter 1 gave you ICP fit scores. This chapter ad
 
 Score Signal Recency as: 5 = trigger in last 7 days; 4 = last 14 days; 3 = last 30 days; 2 = last 60 days; 1 = no active signal.
 
-An account with ICP Fit 5 and no current signal scores 5. An account with ICP Fit 3 and a job-change alert from three days ago scores 15 — and gets your attention this week. Perfect firmographic fit without a live signal is a nurture account. [TOPO.io's B2B prospecting strategy guide](https://www.topo.io/blog/b2b-prospecting-101-icp-signals-strategy) validates this directly: high signal strength should override modest ICP fit when a buying window is open.
+An account with ICP Fit 5 but no signal scores 5. An account with ICP Fit 3 and a 3-day-old alert scores 15 — and gets your attention this week. Perfect firmographic fit without a live signal is a nurture account — signal strength overrides ICP fit when a buying window is open ([TOPO.io, 2026](https://www.topo.io/blog/b2b-prospecting-101-icp-signals-strategy)).
 
 Rank your Tier 1 accounts by Priority Score descending. Your top 10 are this week's list.
 
@@ -158,18 +160,15 @@ Fifty emails sent is a prospecting input. A meeting booked is a prospecting resu
 
 You need both. [OutboundSalesPro's SDR metrics guide](https://outboundsalespro.com/sales-development-metrics/) is explicit: activity metrics diagnose effort breakdowns; outcome metrics diagnose quality breakdowns. Tracking only activity creates the illusion of progress. Tracking only outcomes gives no early warning when execution breaks down upstream.
 
-Week-1 baseline: 30 activity touches, ≥2 positive replies (6.7% outcome rate with signal-personalized messaging). Zero replies on 60 touches means the hook is the problem, not volume.
+Week-1 baseline: 30 activity touches, ≥2 positive replies. Zero replies on 60 touches means the hook is the problem, not volume.
 
 ## Hands-On Exercise — Your 10-Account Signal Shortlist
 
-**Success criteria:** Signal monitoring is live for all Tier 1 accounts; scored spreadsheet ranks accounts by Priority Score; top-5 accounts each have a trigger and a one-sentence hook; week-1 targets are set.
+1. **Monitor:** Enable LinkedIn Sales Navigator Job Change and Headcount Growth alerts for all Tier 1 accounts; set three Google Alerts per account to "As it happens."
+2. **Score:** ICP Fit (1–5) × Signal Recency (5=trigger within 7 days; 1=no signal). Rank descending — top 10 are this week's list.
+3. **Hook:** Write one trigger-to-implication sentence per top-5 account.
+4. **Baseline:** Log week-1 targets: 30 touches, ≥2 positive replies.
 
-**Step 1 — Configure monitoring (20 min):** In LinkedIn Sales Navigator, save Tier 1 accounts and enable Headcount Growth and Job Change alerts; create three Google Alerts per account (`"[Company Name]" hiring`, compliance, announcement) set to "As it happens."
+**Success criteria:** Accounts monitored, Priority Score ranking complete, one hook per top-5 account, baseline logged.
 
-**Step 2 — Score all accounts (15 min):** Add Signal Recency to Chapter 1 ICP Fit scores, multiply for Priority Score, rank descending; top 10 are this week's list.
-
-**Step 3 — Write one hook per top-5 account (10 min):** One sentence: trigger + hook. Example: "InfraStack: 18 DevOps postings + AWS migration news → cloud onboarding certification hook."
-
-**Step 4 — Set your baseline (5 min):** Add Activity and Outcome columns; week-1 targets: 30 touches, ≥2 positive replies.
-
-With your shortlist scored and hooks written, Chapter 3 covers what to put in the message. Continue with [[03-crafting-signal-triggered-outreach-sequences|Crafting Signal-Triggered Outreach Sequences Across Email and LinkedIn]].
+Continue with [[03-crafting-signal-triggered-outreach-sequences|Crafting Signal-Triggered Outreach Sequences Across Email and LinkedIn]].

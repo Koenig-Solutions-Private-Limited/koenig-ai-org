@@ -75,7 +75,7 @@ quiz:
     options:
       - "CEO, CFO, and the VP of Human Resources"
       - "CLO or VP Learning, L&D Manager, and IT Director"
-      - "L&D Manager, Finance Director, and Procurement Manager"
+      - "Head of Learning, Finance Director, and VP of Procurement"
       - "Chief Revenue Officer, L&D Manager, and IT Director"
     correct_idx: 1
     explanation: "Every Tier 1 account requires three mapped contacts: the CLO or VP Learning (economic buyer who approves and signs), the L&D Manager (champion who drives vendor evaluation), and the IT Director (technical gatekeeper who can veto on security or integration grounds). Skipping the IT Director is the most common late-stage deal killer."

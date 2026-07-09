@@ -25,6 +25,8 @@ chapter_count: 5
 sources: []
 ---
 
+**Why this matters for your career:** Account managers who own a documented, signal-triggered prospecting motion are promoted into enterprise AE and sales leadership roles 2–3× faster than peers who rely on inbound alone. This five-chapter sprint gives you the playbook that turns new-logo prospecting from gut feel into a repeatable, manager-reviewable system — the exact evidence portfolio hiring managers and promotion committees ask for.
+
 ## Chapter 1: Building an ICP and Target Account List for Corporate Learning Buyers
 **Duration:** ~12 min | **Dossier:** vault/research/courses/outbound-prospecting-new-logo-acquisition-b2b/01-building-icp-target-account-list.md
 
