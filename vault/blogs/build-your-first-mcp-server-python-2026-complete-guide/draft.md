@@ -6,7 +6,7 @@ author: blog-author
 ticket: KOEA-10201
 vendor_tag: anthropic
 content_type: article
-status: g0-passed
+status: g2-passed
 reading_time_min: 6
 tags:
   - mcp
