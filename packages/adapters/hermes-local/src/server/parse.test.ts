@@ -3,6 +3,7 @@ import {
   isHermesUnknownSessionError,
   parseHermesQuietStdout,
   parseHermesSessionExport,
+  selectHermesSessionLogDiagnostic,
 } from "./parse.js";
 
 describe("parseHermesQuietStdout", () => {
@@ -115,5 +116,26 @@ describe("isHermesUnknownSessionError", () => {
 
   it("ignores unrelated stderr", () => {
     expect(isHermesUnknownSessionError("", "openrouter rate limit")).toBe(false);
+  });
+});
+
+describe("selectHermesSessionLogDiagnostic", () => {
+  it("returns the newest sanitized line for the matching Hermes session", () => {
+    const log = [
+      "2026-05-13 13:12:01,740 ERROR [20260513_121610_40e237] root: Non-retryable client error: Error code: 401 - {'error': {'message': 'User not found.', 'code': 401}}",
+      "2026-05-13 13:12:04,067 WARNING agent.auxiliary_client: resolve_provider_client: openrouter requested but OpenRouter credential pool has no usable entries",
+      "2026-05-13 13:12:04,273 ERROR [20260513_121610_40e237] root: api_key=sk-secretvalue Non-retryable client error: Error code: 401 - {'error': {'message': 'User not found.', 'code': 401}}",
+    ].join("\n");
+
+    expect(selectHermesSessionLogDiagnostic(log, "20260513_121610_40e237")).toBe(
+      "2026-05-13 13:12:04,273 ERROR [20260513_121610_40e237] root: api_key=[REDACTED] Non-retryable client error: Error code: 401 - {'error': {'message': 'User not found.', 'code': 401}}",
+    );
+  });
+
+  it("ignores unrelated log lines", () => {
+    const log =
+      "2026-05-13 13:12:01,740 ERROR [different-session] root: Error code: 401\n";
+
+    expect(selectHermesSessionLogDiagnostic(log, "20260513_121610_40e237")).toBe("");
   });
 });
