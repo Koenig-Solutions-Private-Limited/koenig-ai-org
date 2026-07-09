@@ -36,6 +36,9 @@ PROD_URL="https://academy.kspl.tech"
 # academy.koenig-solutions.com. Domain split, 2026-06-12.
 CAREER_GH_DISPATCH_REPO="Koenig-Solutions-Private-Limited/koenig-career-academy"
 CAREER_PROD_URL="https://academy.koenig-solutions.com"
+# Path to the koenig-career-academy scripts directory (KOEA-10929 validator gate).
+# Override via env var when the workspace lives at a non-standard path.
+CAREER_ACADEMY_SCRIPTS="${CAREER_ACADEMY_SCRIPTS:-/paperclip/instances/default/workspaces/koenig-career-academy/scripts}"
 # IndexNow (organic academy only) — key is public/non-secret, served at keyLocation.
 INDEXNOW_HOST="academy.kspl.tech"
 INDEXNOW_KEY="e295e26297adb46e2256b70ef90df085"
@@ -767,6 +770,23 @@ else
   while IFS=$'\t' read -r ISSUE_ID SLUG; do
     TRACK="$(track_for_slug "$SLUG")"
     DISPATCH_REPO="$(dispatch_repo_for_track "$TRACK")"
+    # Career-track: run the chapter validator before dispatch (KOEA-10929).
+    # Fails closed: if the validator is missing or fails, skip dispatch and leave
+    # publish_state=g4-approved so the next run retries once content is fixed.
+    if [[ "$TRACK" == "career" ]]; then
+      CAREER_VALIDATOR="$CAREER_ACADEMY_SCRIPTS/validate-course-chapters.mjs"
+      if [[ ! -f "$CAREER_VALIDATOR" ]]; then
+        log "Phase 1: career validator not found at $CAREER_VALIDATOR — skipping Career dispatch (fail closed)"
+        continue
+      fi
+      log "Phase 1: running career validator for slug=$SLUG"
+      if ! KOENIG_VAULT_ROOT="$REPO_ROOT/vault" \
+           node "$CAREER_VALIDATOR" --slug "$SLUG" >> "$LOG" 2>&1; then
+        log "Phase 1: career validator FAILED for slug=$SLUG — skipping dispatch (g4-approved unchanged)"
+        continue
+      fi
+      log "Phase 1: career validator PASSED for slug=$SLUG"
+    fi
     log "Phase 1: dispatching publish-ready for issue=$ISSUE_ID slug=$SLUG track=$TRACK repo=$DISPATCH_REPO"
     DISPATCH_HTTP="$(curl -s -o /dev/null -w "%{http_code}" -X POST \
       "https://api.github.com/repos/$DISPATCH_REPO/dispatches" \
