@@ -6,7 +6,7 @@
 # frontmatter source URLs), async kickoff of the full artifact set, 60s poll,
 # download, easy→hard quiz serialization, then upload-chapter-assets.mjs.
 set -u
-export PATH="/paperclip/bin:/paperclip/.local/bin:$HOME/.local/bin:$PATH"
+export PATH="/paperclip/.local/venvs/notebooklm/bin:/paperclip/bin:/paperclip/.local/bin:$HOME/.local/bin:$PATH"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 COURSE="$1"; shift
 CHAPTERS=("$@")
