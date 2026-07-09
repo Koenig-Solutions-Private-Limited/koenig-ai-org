@@ -27,9 +27,9 @@ Upstream paths to **leave alone**: `cli/`, `server/`, `ui/`, `packages/`, `evals
 3. **CLI-maximalist.** Prefer terminal-driven workflows. `browser-use` is the default browser automation.
 4. **Newer/innovative > established** when quality is comparable. Surface the tradeoff.
 5. **Obsidian is the knowledge interface.** All agent narrative output goes to `vault/` as markdown (frontmatter + tags + `[[wikilinks]]`).
-6. **Two-agent content chain.** Content Author → Content Reviewer → G3 → G4 (human). Never publish from a single agent.
+6. **Two-agent content chain.** Author → Content Reviewer (G0) → G2 → CEO (G3). **Blogs auto-publish at G3 PASS** (policy 2026-05-01, board-reaffirmed 2026-07-09); human G4 ONLY for new-course first publish, pricing/commercial claims, legal/brand-sensitive content, partner/customer mentions. Never publish from a single agent. Word counts + status vocabulary: `companies/learnova-academy/EDITORIAL.md`.
 7. **Anonymous-by-default for the Academy.** Optional Convex email-OTP only.
-8. **G4 = three approval channels.** Email magic-link + Slack/Teams button + Paperclip UI queue, all surfaced.
+8. **Board oversight = daily publish digest** (Editor in Chief routine, 13:00 UTC) + the Paperclip approvals queue, which is for board DECISIONS only — never notifications, dependency blocks, or routine assignment requests.
 
 ## Stack
 
