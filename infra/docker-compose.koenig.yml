@@ -306,6 +306,21 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  kokoro:
+    # 2026-07-09 board fix — Kokoro TTS runtime for Slide + Audio Producer.
+    # Agents call http://koenig-kokoro:8880/v1 (OpenAI-compatible audio/speech API).
+    # Host-side checks: http://localhost:8881/v1/models
+    image: ghcr.io/remsky/kokoro-fastapi-cpu:latest
+    container_name: koenig-kokoro
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8881:8880"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 volumes:
   paperclip-pgdata:
     name: paperclip-pgdata

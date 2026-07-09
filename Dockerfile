@@ -58,7 +58,7 @@ COPY --chown=node:node --from=build /app /app
 # Koenig customization 2026-05-01: add chromium + lighthouse + Playwright for QA Verifier (KOEA-251)
 RUN npm install --global --omit=dev @anthropic-ai/claude-code@latest @openai/codex@latest opencode-ai lighthouse playwright \
   && apt-get update \
-  && apt-get install -y --no-install-recommends openssh-client jq chromium fonts-liberation libnss3 libasound2t64 python3-pip python3-venv bubblewrap \
+  && apt-get install -y --no-install-recommends openssh-client jq ffmpeg chromium fonts-liberation libnss3 libasound2t64 python3-pip python3-venv bubblewrap \
   && rm -rf /var/lib/apt/lists/* \
   && mkdir -p /paperclip \
   && chown node:node /paperclip
