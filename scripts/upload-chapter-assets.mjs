@@ -243,6 +243,30 @@ if (Object.keys(assets).length === 0) {
   process.exit(1);
 }
 
+// Derive video duration when ffprobe is available.
+const videoArtifactPath = join(args.dir, "video.mp4");
+if (assets.video_url && existsSync(videoArtifactPath) && hasCli("ffprobe")) {
+  try {
+    const probe = execSync(
+      `ffprobe -v quiet -print_format json -show_format "${videoArtifactPath}"`,
+      { encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] },
+    );
+    const durationSec = JSON.parse(probe)?.format?.duration;
+    const durationInt = Math.round(parseFloat(durationSec));
+    if (Number.isFinite(durationInt) && durationInt > 0) {
+      assets.video_duration_seconds = durationInt;
+      if (meta.video) {
+        meta.video.duration_seconds = durationInt;
+      } else {
+        meta.video = { duration_seconds: durationInt };
+      }
+      console.log(`video duration: ${durationInt}s`);
+    }
+  } catch {
+    console.warn("ffprobe failed — video duration not captured; continuing");
+  }
+}
+
 let slideManifest = { slides: [], slideImagesMeta: null };
 const slideDeckPath = join(args.dir, "slide-deck.pdf");
 const hasSlideDeck = existsSync(slideDeckPath) && statSync(slideDeckPath).size > 0;

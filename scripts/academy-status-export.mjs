@@ -89,19 +89,30 @@ for (const slug of readdirSync(VAULT)) {
     const prefix = f.replace(/\.md$/, "");
     const metaPath = join(dir, prefix, "chapter-meta.json");
     let assets = {};
+    let assetMeta = {};
     if (existsSync(metaPath)) {
       try {
-        assets = JSON.parse(readFileSync(metaPath, "utf8")).assets ?? {};
+        const sidecar = JSON.parse(readFileSync(metaPath, "utf8"));
+        assets = sidecar.assets ?? {};
+        assetMeta = sidecar.asset_metadata ?? {};
       } catch {
         assets = {};
+        assetMeta = {};
       }
     }
     const status = readFileSync(join(dir, f), "utf8").match(/^status:\s*(\S+)/m)?.[1] ?? "?";
+    const videoDuration =
+      typeof assets.video_duration_seconds === "number"
+        ? assets.video_duration_seconds
+        : typeof assetMeta?.video?.duration_seconds === "number"
+          ? assetMeta.video.duration_seconds
+          : undefined;
     return {
       file: prefix,
       status,
       assets: Object.fromEntries(ASSET_KEYS.map((k) => [k.replace("_url", ""), Boolean(assets[k])])),
       asset_count: ASSET_KEYS.filter((k) => assets[k]).length,
+      ...(videoDuration !== undefined ? { video_duration_seconds: videoDuration } : {}),
     };
   });
   const courseTrack = fm("course_track") ?? null;
