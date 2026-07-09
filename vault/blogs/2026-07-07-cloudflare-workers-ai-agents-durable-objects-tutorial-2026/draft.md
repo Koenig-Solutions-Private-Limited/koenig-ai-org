@@ -184,6 +184,17 @@ Do not overclaim this as a sourced 5x or 10x speedup. The grounded claim is arch
 
 The same logic applies to AI Gateway. It is useful because it puts provider routing, caching, rate limits, and LLM observability at the gateway layer. Cloudflare says AI Gateway can track metrics such as requests and provider behavior; the gap is full agent trace correlation, which still needs your own request IDs across Worker, Durable Object, Workflow, and model call ([AI Gateway docs](https://developers.cloudflare.com/ai-gateway/)).
 
+## KnowledgeCheck
+
+**You are building a Workers AI agent that needs to write user-generated artifacts and make them publicly downloadable. Which approach is preferred?**
+
+A. Store every artifact in Durable Object SQLite and return the object ID.
+B. Store the artifact in R2 through an R2 binding, then keep only the key or metadata in Durable Object state.
+C. Store the artifact in D1 because SQL rows are easier to query.
+D. Expose a public HTTP tool endpoint that writes to R2 with an API token in the prompt.
+
+**Answer: B.** R2 is the better home for large generated artifacts, while the Durable Object should keep session state, metadata, and pointers. The binding keeps Cloudflare-managed storage access inside the Worker instead of turning artifact writes into a public tool endpoint.
+
 ## Add MCP Only Where the Tool Contract Needs to Travel
 
 MCP is valuable when your tool surface must be callable from Claude Desktop, Cursor, another agent, or a future client you do not control. It is unnecessary overhead for a private D1 binding that only this Worker should call.
