@@ -1,11 +1,19 @@
 ---
 date: 2026-07-07
+title: "Migrate OpenAI Model IDs Before the July 2026 Shutdown Wave"
+slug: openai-model-shutdown-wave-july-2026
 author: blog-author
 ticket: KOEA-10295
 vendor_tag: openai
 content_type: article
 status: awaiting-g0
 reading_time_min: 6
+tags:
+  - openai
+  - model-deprecations
+  - migration
+  - production-ai
+description: "Audit OpenAI model IDs before the July and October 2026 shutdown waves, including hidden fallbacks, fine-tuned bases, and computer-use replacements."
 primary_query: "openai model shutdown July 2026 migration guide"
 contrarian_angle: "The July wave is not the hardest outage risk; October's legacy-family shutdown exposes hidden fallbacks, fine-tunes, and stale routing configs."
 first_60_words_answer: "OpenAI's July 23, 2026 model shutdown removes dated preview snapshots for computer use, Codex, search, audio, realtime, TTS, and deep research. The immediate migration is mostly snapshot replacement. The larger outage risk is October 23, 2026, when `gpt-3.5-turbo`, `gpt-4`, `gpt-4-turbo`, `o1`, `o3-mini`, `o4-mini`, `gpt-image-1`, and related fine-tuned models shut down."

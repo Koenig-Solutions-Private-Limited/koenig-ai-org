@@ -1,5 +1,6 @@
 ---
 date: 2026-07-06
+title: "Use Claude Tool Use in 5 Steps to Call Real Functions in 2026"
 author: blog-author
 ticket: KOEA-10202
 parent_issue: KOEA-10189
@@ -8,6 +9,12 @@ content_type: article
 status: awaiting-g0
 reading_time_min: 6
 slug: claude-tool-use-in-5-steps-developer-tutorial
+tags:
+  - claude
+  - tool-use
+  - anthropic-api
+  - tutorial
+description: "Implement Claude tool use in five steps, avoid the Sonnet 5 sampling-parameter trap, and return tool_result blocks correctly for production API calls."
 source_research: vault/research/anthropic/claude-tool-use-in-5-steps-developer-tutorial.md
 primary_query: "Claude tool use tutorial guide API"
 first_60_words_answer: "Claude tool use lets your code execute real functions — database queries, API calls, web lookups — by following a deterministic 5-step loop: define a JSON Schema tool, send it with your request, detect stop_reason: 'tool_use', run the function locally and return a tool_result block, then receive Claude's final natural-language answer. The loop is identical across all current models."

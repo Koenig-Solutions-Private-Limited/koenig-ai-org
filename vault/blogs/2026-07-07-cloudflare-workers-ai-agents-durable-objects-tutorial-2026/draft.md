@@ -157,6 +157,12 @@ export default {
 
 This example deliberately keeps memory small: last 20 turns in Durable Object storage. For documents, transcripts, or artifacts, move large blobs to R2 and keep only pointers or summaries in the Durable Object. Cloudflare's R2 pitch is object storage without typical cloud egress fees, which makes it a natural backing store for agent files and generated artifacts ([R2 pricing](https://developers.cloudflare.com/r2/pricing/)).
 
+<RunPromptCell
+  model="claude-sonnet-5"
+  prompt="Review this Cloudflare Workers agent design: per-user chat memory in a Durable Object, generated PDFs in R2, queue-based follow-up jobs, and Workers AI for responses. Return the correct binding/state split and one production observability check."
+  expectedOutput="Keep per-user chat memory and routing identity in the Durable Object; write generated PDFs to R2 through an R2 binding; dispatch long-running follow-up jobs through Queues; call Workers AI through its binding; and verify logs or trace IDs connect Worker, Durable Object, queue, and model calls."
+/>
+
 ## Use Bindings as the Default Tool Surface
 
 For Cloudflare-native resources, a binding is usually the right tool primitive. D1, R2, KV, Queues, Workers AI, AI Gateway, Browser Rendering, and Durable Objects are declared in config and exposed to code as `env.*`. The Flue Agents SDK launch post makes the security point directly: bindings grant capabilities without putting credentials into agent-generated code ([Flue Agents SDK](https://blog.cloudflare.com/agents-platform-flue-sdk/)).
@@ -184,16 +190,17 @@ Do not overclaim this as a sourced 5x or 10x speedup. The grounded claim is arch
 
 The same logic applies to AI Gateway. It is useful because it puts provider routing, caching, rate limits, and LLM observability at the gateway layer. Cloudflare says AI Gateway can track metrics such as requests and provider behavior; the gap is full agent trace correlation, which still needs your own request IDs across Worker, Durable Object, Workflow, and model call ([AI Gateway docs](https://developers.cloudflare.com/ai-gateway/)).
 
-## KnowledgeCheck
-
-**You are building a Workers AI agent that needs to write user-generated artifacts and make them publicly downloadable. Which approach is preferred?**
-
-A. Store every artifact in Durable Object SQLite and return the object ID.
-B. Store the artifact in R2 through an R2 binding, then keep only the key or metadata in Durable Object state.
-C. Store the artifact in D1 because SQL rows are easier to query.
-D. Expose a public HTTP tool endpoint that writes to R2 with an API token in the prompt.
-
-**Answer: B.** R2 is the better home for large generated artifacts, while the Durable Object should keep session state, metadata, and pointers. The binding keeps Cloudflare-managed storage access inside the Worker instead of turning artifact writes into a public tool endpoint.
+<KnowledgeCheck
+  question="You are building a Workers AI agent that needs to write user-generated artifacts and make them publicly downloadable. Which approach is preferred?"
+  options={[
+    "Store every artifact in Durable Object SQLite and return the object ID.",
+    "Store the artifact in R2 through an R2 binding, then keep only the key or metadata in Durable Object state.",
+    "Store the artifact in D1 because SQL rows are easier to query.",
+    "Expose a public HTTP tool endpoint that writes to R2 with an API token in the prompt."
+  ]}
+  correctIdx={1}
+  explanation="R2 is the better home for large generated artifacts, while the Durable Object should keep session state, metadata, and pointers. The binding keeps Cloudflare-managed storage access inside the Worker instead of turning artifact writes into a public tool endpoint."
+/>
 
 ## Add MCP Only Where the Tool Contract Needs to Travel
 

@@ -10,7 +10,12 @@ status: awaiting-g0
 reading_time_min: 6
 primary_query: "Anthropic agent-memory-2026-07-22 beta header"
 contrarian_angle: "Anthropic's native memory does not kill vector memory vendors; it kills the infrastructure burden for most Claude-native agent use cases."
-seo_description: "What Anthropic's agent-memory-2026-07-22 beta header signals before July 22: SDK evidence, memory-store limits, audit controls, and where Mem0 or Zep still win."
+description: "What Anthropic's agent-memory-2026-07-22 beta header signals before July 22: SDK evidence, memory-store limits, audit controls, and where Mem0 or Zep still win."
+tags:
+  - anthropic
+  - agent-memory
+  - managed-agents
+  - claude
 positions:
   - id: stance:ai-vendor-news-opinionated
     engagement: defends

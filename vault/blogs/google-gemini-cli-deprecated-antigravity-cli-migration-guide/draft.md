@@ -1,11 +1,19 @@
 ---
 date: 2026-07-06
+title: "Google Killed Gemini CLI in 2026: Your Complete Antigravity CLI Migration Guide"
+slug: google-gemini-cli-deprecated-antigravity-cli-migration-guide
 author: blog-author
 ticket: KOEA-10220
 vendor_tag: google
 content_type: article
 status: awaiting-g0
 reading_time_min: 6
+tags:
+  - google
+  - gemini-cli
+  - antigravity-cli
+  - migration
+description: "Migrate from deprecated Gemini CLI to Antigravity CLI with the command, MCP config, plugin, and CI changes that prevent silent workflow failures."
 primary_query: "google gemini cli deprecated migrate antigravity cli 2026"
 contrarian_angle: "The agents→agent plural rename and the MCP url→serverUrl silent failure are the real CI/CD killers — not the binary rename everyone talks about"
 first_60_words_answer: "On June 18, 2026, Google shut off Gemini CLI for all free, AI Pro, and AI Ultra users. The official replacement is Antigravity CLI (agy), announced at Google I/O on May 19, 2026. Migration takes five steps. Two have silent failure modes that break CI/CD without throwing an error: the agents→agent plural rename and the MCP url→serverUrl key change."
