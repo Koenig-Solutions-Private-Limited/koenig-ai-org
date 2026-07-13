@@ -36,13 +36,13 @@ last_updated: 2026-07-09
 hero_image:
   url: /img/blogs/windows-powershell-path/hero.png
   alt: "Sequence diagram showing Windows PATH resolution in PowerShell: HKLM system PATH and HKCU user PATH merging into the session environment block"
-status: g0-passed
-reading_time_min: 6
+status: draft-for-review
+reading_time_min: 8
 sources:
   - "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_environment_variables"
   - "https://learn.microsoft.com/en-us/windows/win32/procthread/environment-variables"
   - "https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-string-substitutions"
-  - "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_environment_providers"
+  - "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_environment_provider"
   - "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/get-command"
   - "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_registry_provider"
 references:
@@ -60,8 +60,8 @@ references:
     retrieved: 2026-07-08
   - n: 4
     title: "PowerShell — About Environment Providers"
-    url: "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_environment_providers"
-    retrieved: 2026-07-09
+    url: "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_environment_provider"
+    retrieved: 2026-07-13
   - n: 5
     title: "PowerShell — Get-Command"
     url: "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/get-command"
@@ -85,6 +85,10 @@ C:\Windows\System32;C:\Windows;C:\Program Files\Git\bin;C:\Users\You\AppData\Loc
 ```
 
 PowerShell inherits PATH from two sources: the **system-wide** PATH (set in `HKLM` registry, applies to all users) and the **user-level** PATH (set in `HKCU` registry, applies to the current user). Windows merges them — user PATH is appended to system PATH — before exposing the combined result as `$env:PATH` inside your session.
+
+That means PATH is not a database of installed programs. It is only a search list. If `C:\Tools` contains `ripgrep.exe` but `C:\Tools` is not in PATH, typing `ripgrep` fails even though the file exists. If you run `C:\Tools\ripgrep.exe` with the full path, PATH is bypassed entirely. The common mistake is reinstalling a tool when the real problem is that the directory containing the executable was never added to either user PATH or machine PATH.
+
+The order matters as much as the contents. If two directories contain `python.exe`, the first matching directory in the merged PATH wins. A user-level Python installed under `C:\Users\You\AppData\Local\Programs\Python` can beat, or lose to, an older system-level Python depending on the final merged order. PowerShell's `Get-Command` is the fastest way to prove which executable actually wins because it resolves the command the way the shell will resolve it [5].
 
 ## How Windows Resolves a PowerShell Command
 
@@ -116,6 +120,19 @@ sequenceDiagram
 *Figure 1 — Windows PATH resolution sequence in PowerShell. System PATH loads first from the HKLM registry hive; user PATH loads from HKCU and is appended. PowerShell searches each directory in the merged list in order. The first match wins.*
 
 **Key behaviour**: the session's `$env:PATH` is a snapshot taken when the PowerShell process started. Changes you make in another session (including via System Properties) are not visible until you open a new PowerShell window — unless you reload the variable explicitly.
+
+## PowerShell Checks Shell Commands Before PATH
+
+PATH is only one layer of PowerShell command resolution. Before PowerShell launches an external executable from PATH, it can resolve built-in command types such as aliases, functions, cmdlets, scripts, and applications. That is why `Get-Command` is more useful than manually reading `$env:PATH`: it reports the actual command type and source PowerShell will use [5].
+
+For example, `where` in PowerShell may not behave like `where.exe` in `cmd.exe` because PowerShell has its own aliases and command discovery rules. When you need the external Windows executable, call it explicitly as `where.exe`. When you need to know whether a name is an alias, function, cmdlet, or external application, run:
+
+```powershell
+Get-Command where -All
+Get-Command python -All
+```
+
+The `-All` flag is useful for shadowing bugs. It shows every command PowerShell can find with that name, not just the winner. If an old `node.exe` appears before the version you just installed, the fix is not "repair Node"; it is to move, remove, or correct the earlier PATH entry.
 
 ## How to View Your Current PATH
 
@@ -202,6 +219,54 @@ $env:PATH.Length
 # If > 2000, audit and remove stale directories
 $env:PATH -split ';' | Where-Object { -not (Test-Path $_) }
 ```
+
+**Problem: PATH contains duplicates**
+```powershell
+$env:PATH -split ';' |
+  Where-Object { $_ } |
+  Group-Object |
+  Where-Object Count -gt 1 |
+  Select-Object Count, Name
+```
+
+Duplicates usually do not break command resolution, but they make PATH harder to reason about and waste space in the environment block. Remove duplicate entries from the user or machine scope that actually owns them instead of editing only `$env:PATH`, because `$env:PATH` changes disappear when the current process exits [1].
+
+Stale entries are more important than duplicates. A deleted tool directory near the front of PATH forces every command lookup to test a location that can never match, and a stale entry can hide the real issue when a later installer adds the correct directory. A quick health check is to split PATH, drop empty strings, and test each directory:
+
+```powershell
+$env:PATH -split ';' |
+  Where-Object { $_ } |
+  Where-Object { -not (Test-Path $_) }
+```
+
+If this returns old SDK folders, deleted package-manager directories, or typoed paths, remove them from the user or machine scope where they are stored. That keeps the permanent PATH shorter, easier to audit, and less likely to hit older tools that still impose practical length limits.
+
+**Problem: a directory contains spaces**
+```powershell
+[Environment]::SetEnvironmentVariable(
+  'PATH',
+  "$([Environment]::GetEnvironmentVariable('PATH','User'));C:\Program Files\My Tool\bin",
+  'User'
+)
+```
+
+Do not wrap PATH entries in quotes just because the directory has spaces. PATH is split on semicolons, not spaces. Quoting the directory can become part of the stored value and cause tool lookup bugs in programs that do not normalize entries the same way PowerShell does.
+
+## Virtual Environments Change PATH Temporarily
+
+Python virtual environments, Conda environments, Node version managers, and similar tools usually work by prepending a tool-specific directory to the current process PATH. That is intentional. Activating a Python virtual environment does not rewrite your permanent user PATH; it changes the current shell session so `python` resolves to the environment-local interpreter first.
+
+You can see the effect directly:
+
+```powershell
+Get-Command python | Select-Object -ExpandProperty Source
+.\.venv\Scripts\Activate.ps1
+Get-Command python | Select-Object -ExpandProperty Source
+```
+
+Before activation, `python` may resolve to the Windows Store shim, a system install, or a user install. After activation, it should resolve under `.\.venv\Scripts\python.exe`. When you close the terminal or deactivate the environment, that temporary PATH prefix goes away because it was process-scoped, not registry-scoped [1].
+
+This is also why "fixing" virtual environment PATH changes by writing `.venv\Scripts` into your permanent user PATH is usually wrong. It makes one project's interpreter leak into unrelated shells. Treat project environments as session-local state: activate them when you work in the project, then let the activation script manage the PATH prefix.
 
 <KnowledgeCheck
   question="What PowerShell command tells you exactly which executable file will run when you type `python`?"
