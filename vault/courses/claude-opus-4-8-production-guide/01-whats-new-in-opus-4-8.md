@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: claude-opus-4-8-production-guide
 title: "What's new in Opus 4.8 vs 4.7"
-status: draft-for-review
+status: g0-blocked
 author: course-author
 agent_drafted_by: course-author
 ticket: KOEA-7191
