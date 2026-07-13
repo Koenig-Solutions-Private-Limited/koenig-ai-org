@@ -2,7 +2,7 @@
 chapter_num: 6
 course_slug: ai-agent-security-for-developers
 title: "Observe failures, rehearse incidents, and make retries safe"
-status: awaiting-g0
+status: g0-blocked
 author: course-author
 learning_objectives:
   - "Emit structured audit events for tool calls, approvals, denied actions, sandbox/network decisions, and retries."

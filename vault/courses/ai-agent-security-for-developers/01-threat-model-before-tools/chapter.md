@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: ai-agent-security-for-developers
 title: "Build the threat model before the agent gets tools"
-status: awaiting-g0
+status: g0-blocked
 author: course-author
 learning_objectives:
   - "Distinguish prompt injection, indirect prompt injection, tool-output poisoning, workspace poisoning, exfiltration, and unintended actions with one concrete example each."

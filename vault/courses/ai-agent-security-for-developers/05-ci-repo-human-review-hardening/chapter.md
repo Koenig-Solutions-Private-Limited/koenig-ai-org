@@ -2,7 +2,7 @@
 chapter_num: 5
 course_slug: ai-agent-security-for-developers
 title: "Harden agents in CI, repos, and human-review workflows"
-status: awaiting-g0
+status: g0-blocked
 author: course-author
 learning_objectives:
   - "Distinguish trusted and untrusted CI inputs, including collaborator branches, fork PRs, issue comments, dependency files, and repo-local config."

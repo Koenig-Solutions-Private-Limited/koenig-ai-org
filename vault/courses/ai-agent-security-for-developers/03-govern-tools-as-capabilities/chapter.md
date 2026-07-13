@@ -2,7 +2,7 @@
 chapter_num: 3
 course_slug: ai-agent-security-for-developers
 title: "Govern tools like capabilities, not helper functions"
-status: awaiting-g0
+status: g0-blocked
 author: course-author
 learning_objectives:
   - "Classify tools by capability: read-only, local mutation, remote mutation, network access, credential access, and shell/code execution."

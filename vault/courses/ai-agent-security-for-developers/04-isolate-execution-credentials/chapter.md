@@ -2,7 +2,7 @@
 chapter_num: 4
 course_slug: ai-agent-security-for-developers
 title: "Isolate execution and keep credentials out of the sandbox"
-status: awaiting-g0
+status: g0-blocked
 author: course-author
 learning_objectives:
   - "Compare local terminal, hosted container, IDE, CI, and cloud VM execution topologies by filesystem, network, credential, and review risk."

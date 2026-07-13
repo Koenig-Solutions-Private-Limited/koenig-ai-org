@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: ai-agent-security-for-developers
 title: "Stop untrusted text from becoming privileged instructions"
-status: awaiting-g0
+status: g0-blocked
 author: course-author
 learning_objectives:
   - "Separate trusted instructions, user goals, retrieved content, tool output, and generated intermediate state in an agent data-flow diagram."
