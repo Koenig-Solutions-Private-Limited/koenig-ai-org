@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: claude-opus-4-8-production-guide
 title: "What's new in Opus 4.8 vs 4.7"
-status: g0-blocked
+status: awaiting-g0
 author: course-author
 agent_drafted_by: course-author
 ticket: KOEA-7191
@@ -47,9 +47,9 @@ This chapter maps every material change so you can make an informed upgrade deci
 
 Context window: 1,000,000 tokens. Maximum output: 128,000 tokens. Knowledge cutoff: January 2026. Standard pricing: $5 per million input tokens, $25 per million output tokens. These four numbers are identical to Opus 4.7.[^1] If your use case depends on any of them, 4.8 is a drop-in swap on those dimensions.
 
-The tokenizer is also unchanged between 4.7 and 4.8.[^3] If you migrated from Opus 4.6 and absorbed the 0–35% tokenizer inflation in the 4.7 migration, you will not pay it again when moving to 4.8. Teams still on 4.6 who jump directly to 4.8 should model that inflation before committing.
+The tokenizer is also unchanged between 4.7 and 4.8.[^3] If you migrated from Opus 4.6 and absorbed any tokenizer changes in the 4.7 migration, you will not pay them again when moving to 4.8. Teams still on 4.6 who jump directly to 4.8 should measure their token counts on a representative sample before committing.[^3]
 
-Model ID: `claude-opus-4-8`. Everything else in your API calls stays the same.
+Model ID: `claude-opus-4-8`. Everything else in your API calls stays the same. For a full breakdown of what changed between Opus 4.6 and 4.7, see [[courses/claude-opus-47-from-zero]].
 
 ## The benchmark picture
 
@@ -75,6 +75,13 @@ Three patterns stand out.
 
 **Computer use is now a credible production option.** OSWorld-Verified 83.4% and an independently reported 84% on Online-Mind2Web (browser automation) represent the strongest computer-use scores currently available from any generally available model.[^6] Anthropic shipped Dynamic Workflows the same day — that is not a coincidence. A model that can reliably navigate browser interfaces is the prerequisite for a workflows orchestrator that spawns subagents against those interfaces.
 
+<KnowledgeCheck
+  question="Your team runs an autonomous coding agent in production. Which Opus 4.8 benchmark result is most directly relevant to your expected reliability improvement?"
+  options={["SWE-bench Verified: 87.6% → 88.6%", "SWE-bench Pro: 64.3% → 69.2%", "Terminal-Bench 2.1: 66.1% → 74.6%", "OSWorld-Verified: 82.3% → 83.4%"]}
+  correctIdx={1}
+  explanation="SWE-bench Pro measures end-to-end autonomous coding without scaffolding — the model must find the fix, write the patch, and pass tests independently. The 4.9-point jump from 64.3% to 69.2% directly predicts fewer failed runs in production coding agents. SWE-bench Verified is a simpler task; Terminal-Bench and OSWorld measure CLI and computer-use performance respectively."
+/>
+
 ## The honesty shift
 
 This is the change that deserves the most attention and gets the least coverage.
@@ -86,6 +93,13 @@ What this means operationally: the model will more often tell you it is stuck, f
 For production systems that currently rely on human review to catch model errors, this reduces the inspection burden. It does not eliminate it — the model still makes mistakes — but a system that tells you when it is uncertain is fundamentally more tractable to operate than one that presents guesses as conclusions.
 
 The flip side: if your prompts are calibrated to Opus 4.7's confidence level, Opus 4.8 may produce more hedging in places where you previously got clean outputs. That is not a regression, but it is a behavioral change that warrants testing.
+
+<KnowledgeCheck
+  question="A team calibrated their review pipeline to Opus 4.7's confidence level. After upgrading to Opus 4.8, they notice the model hedges in places that previously produced clean outputs. This is best described as:"
+  options={["A regression — the model quality has dropped", "A behavioral change that warrants prompt testing, but is not a quality regression", "A hallucination rate increase caused by the model being less certain", "A known issue Anthropic will patch in a future release"]}
+  correctIdx={1}
+  explanation="Opus 4.8's honesty improvement means it flags uncertainty more often than 4.7 — intentionally. Opus 4.7 was more likely to present guesses as conclusions. Teams whose prompts were calibrated to 4.7's confidence level may see more hedging. This is a behavioral change, not a quality regression, but it warrants testing against your evaluation suite before committing."
+/>
 
 ## The three new API capabilities
 
@@ -99,7 +113,7 @@ The canonical example from Anthropic: "Claude Code with Opus 4.8 can now carry o
 
 **How to trigger it**: In Claude Code, include the word "workflow" in your prompt, or turn on the `ultracode` setting. The orchestrator writes an orchestration script, spawns workers, runs them in parallel, and merges results before responding.[^8]
 
-**What it does not do**: It does not reduce your token cost — you pay for every subagent's context. A 100-subagent workflow with 10K tokens per agent is 1M tokens of input. Budget guardrails before you trigger it are not optional.
+**What it does not do**: It does not reduce your token cost — you pay for every subagent's context. A 100-subagent workflow with 10K tokens per agent is 1M tokens of input. Budget guardrails before you trigger it are not optional. For patterns on wiring agents and MCP servers into production pipelines, see [[courses/production-agents-claude-agent-sdk-mcp-connector]].
 
 ### 2. Mid-conversation system messages
 
@@ -129,6 +143,13 @@ In claude.ai, these map to the new "extra" and "max" effort dial. In Claude Code
 
 Default effort (`high`) on Opus 4.8 uses a similar token count to Opus 4.7's default while performing better on most tasks.[^10] Moving to `xhigh` or `max` will increase output token spend; measure on a representative sample before committing to a tier.
 
+<KnowledgeCheck
+  question="You want to insert new permission rules mid-task in a long-running Opus 4.8 agent loop without breaking your existing prompt cache hits. Which approach does the Messages API now support?"
+  options={["Route the update through a user turn with a special prefix marker", "Add a second top-level system prompt using a new dedicated API field", "Insert a role: \"system\" message inside the messages array after a user turn", "Start a new conversation — mid-task system updates require a fresh session"]}
+  correctIdx={2}
+  explanation="Opus 4.8's Messages API accepts role: \"system\" entries inside the messages array, not just at the top level. Placing these after a user turn lets you update permissions, token budgets, or tool access mid-session. Earlier cached turns remain cached; only the new system message and subsequent turns are billed at the full input rate."
+/>
+
 ## The regression you need to know about
 
 The system card reports that Opus 4.8 scores 9.6% on the Gray Swan prompt-injection benchmark, compared to 6.0% for Opus 4.7.[^11] That is a 60% relative increase in susceptibility.
@@ -156,6 +177,27 @@ The practical guidance from the system card: if you are running an agentic pipel
 - Your primary workload is CLI/terminal automation and you need to beat GPT-5.5's 78.2% on Terminal-Bench 2.1. Opus 4.8 scores 74.6%.[^1]
 - Most of your workload belongs on Sonnet 4.6 anyway. Sonnet covers roughly 80% of everyday tasks well at $3/$15 per million tokens — 40% cheaper than Opus 4.8 standard.[^10] Use Opus where autonomous reasoning, code quality, or financial/legal accuracy is what you are paying for.
 
+<KnowledgeCheck
+  question="A developer processes user-uploaded PDFs through an Opus 4.8 agent that can execute code snippets found in the documents. Which system card finding most directly affects their threat model?"
+  options={["The SWE-bench Pro improvement means fewer code-parsing errors in uploaded files", "The prompt-injection rate increased from 6.0% to 9.6% on the Gray Swan benchmark", "Fast mode is unavailable for document-processing pipelines on Enterprise plans", "The January 2026 knowledge cutoff may miss newer PDF specification updates"]}
+  correctIdx={1}
+  explanation="Processing user-uploaded documents with executable content is a high injection-risk environment. Opus 4.8's Gray Swan prompt-injection rate rose from 6.0% (Opus 4.7) to 9.6% — a 60% relative increase. Anthropic's deployed safeguards apply to the Claude Code browser-use stack, not the raw Messages API. A pipeline processing untrusted content inherits the base rate and must implement its own mitigations before migration."
+/>
+
+## FAQ
+
+**Does Opus 4.8 still support the `budget_tokens` parameter for extended thinking?**
+
+No. Anthropic deprecated `budget_tokens` with Opus 4.8 — passing it now returns a 400 error.[^10] The replacement is the `output_config.effort` field, which accepts five levels: `low`, `medium`, `high`, `xhigh`, and `max`. The model uses adaptive thinking, deciding its reasoning depth dynamically based on the effort setting and task complexity rather than a fixed token cap. Default effort (`high`) produces similar output quality to Opus 4.7's default; `xhigh` and `max` trade latency for deeper reasoning on hard problems.
+
+**Is the tokenizer different from Opus 4.7? Will my per-request costs change when migrating?**
+
+The tokenizer is unchanged between Opus 4.7 and 4.8.[^3] Standard pricing is identical at $5/$25 per million input/output tokens. The most significant per-request cost change is the prompt cache minimum dropping from 4,096 tokens to 1,024 tokens — short system prompts that previously could not benefit from caching now qualify.[^1] Teams running agent loops with system prompts shorter than 4,096 tokens should re-evaluate their cache strategy; the economics improve meaningfully at the lower threshold.
+
+**What plan do I need to use Dynamic Workflows, and is it on by default?**
+
+Dynamic Workflows requires an Enterprise, Team, or Max plan.[^8] On Team and Max plans it is enabled by default. On Enterprise plans it is off by default — your administrator must enable it in Claude Code settings. The feature is in research preview as of the Opus 4.8 launch, meaning the API surface may change. Before building production architecture around Dynamic Workflows, review Anthropic's current documentation for any updates to the orchestrator-worker design or the `ultracode` trigger syntax.[^1]
+
 ## Hands-on exercise
 
 Run a five-prompt evaluation harness across `claude-opus-4-7` and `claude-opus-4-8`:
@@ -176,6 +218,8 @@ Run a five-prompt evaluation harness across `claude-opus-4-7` and `claude-opus-4
 **Decision rule:** If 4.8 scores equal or better on prompts 1–4 for your task mix, and prompt 5 is acceptable given your deployment environment, migrate. If prompt 5 compliance is higher than your risk tolerance for your injection-risk environment, implement the Claude Code browser-use safeguard stack before migrating.
 
 Time: approximately 30 minutes to run, 10 minutes to score.
+
+Next: [[02-pricing-and-economics]] — model your real per-task cost across standard, fast, and batch modes before committing to Opus 4.8 at scale.
 
 [^1]: Anthropic — Introducing Claude Opus 4.8 — https://www.anthropic.com/news/claude-opus-4-8 · retrieved 2026-06-02
 [^2]: Simon Willison — Claude Opus 4.8: "a modest but tangible improvement" — https://simonwillison.net/2026/May/28/claude-opus-4-8 · retrieved 2026-06-02
