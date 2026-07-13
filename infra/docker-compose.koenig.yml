@@ -136,8 +136,10 @@ services:
     # user.max_user_namespaces raises the nested-namespace limit (0 by default in linuxkit).
     security_opt:
       - seccomp:unconfined
-    sysctls:
-      user.max_user_namespaces: "15000"
+    # sysctls user.max_user_namespaces removed 2026-07-13: current Docker Desktop
+    # runc rejects it ("not in a separate kernel namespace") and the container
+    # cannot start. If codex bwrap sandboxing regresses, set it VM-wide instead:
+    # docker run --privileged --rm alpine sysctl -w user.max_user_namespaces=15000
     depends_on:
       db:
         condition: service_healthy
