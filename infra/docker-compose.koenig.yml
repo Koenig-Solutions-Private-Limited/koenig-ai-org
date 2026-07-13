@@ -94,7 +94,7 @@ services:
       # instead of silent SIGKILL. Default V8 cap is ~1.7GB, was likely the
       # actual cause of the SIGKILL crash loop on 2026-05-01 03:00 UTC peak.
       # V4.1 (2026-05-02): bumped 3072 → 4096 to match the 4g → 6g cgroup bump.
-      NODE_OPTIONS: "--max-old-space-size=4096"
+      NODE_OPTIONS: "--max-old-space-size=5120"
     env_file:
       - ../.env.koenig
     volumes:
@@ -158,7 +158,7 @@ services:
     # → process_lost cascade. 6 GB gives breathing room. Also bumps Node heap
     # 3072 → 4096 above. Requires `docker compose up -d --force-recreate paperclip`
     # to take effect.
-    mem_limit: 6g
+    mem_limit: 8g  # 6g caused silent kills 2026-07-13 while draining the outage backlog (node heap + claude CLI children)
     mem_reservation: 1g
     logging:
       driver: json-file

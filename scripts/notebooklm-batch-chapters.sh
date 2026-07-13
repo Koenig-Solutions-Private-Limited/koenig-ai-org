@@ -17,7 +17,7 @@ for CH in "${CHAPTERS[@]}"; do
   case "$CH" in *[[:space:]]*)
     echo "ERROR: chapter arg '$CH' contains whitespace — pass each chapter as its own argument"; exit 1;;
   esac
-  [ -f "$ROOT/vault/courses/$COURSE/$CH.md" ] || { echo "ERROR: no such chapter file: vault/courses/$COURSE/$CH.md"; exit 1; }
+  [ -f "$ROOT/vault/courses/$COURSE/$CH/chapter.md" ] || [ -f "$ROOT/vault/courses/$COURSE/$CH.md" ] || { echo "ERROR: no chapter file found at vault/courses/$COURSE/$CH/chapter.md or vault/courses/$COURSE/$CH.md"; exit 1; }
 done
 WORK="/tmp/nlm-batch-$COURSE-$$"
 LOG="$WORK/batch.log"
