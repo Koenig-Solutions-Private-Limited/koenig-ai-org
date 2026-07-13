@@ -32,11 +32,11 @@ positions:
   - id: stance:ai-credential-files-underprotected
     engagement: neutral
 first_60_words_answer: "When you type `python` in PowerShell and press Enter, Windows doesn't search your entire hard drive. It looks through a list of directories called PATH, in order, and runs the first executable it finds with that name. Understanding how PATH is structured — and how PowerShell reads and modifies it — eliminates a category of 'command not found' errors that stump most Windows users."
-last_updated: 2026-07-09
+last_updated: 2026-07-13
 hero_image:
   url: /img/blogs/windows-powershell-path/hero.png
   alt: "Sequence diagram showing Windows PATH resolution in PowerShell: HKLM system PATH and HKCU user PATH merging into the session environment block"
-status: draft-for-review
+status: g0-passed
 reading_time_min: 8
 sources:
   - "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_environment_variables"

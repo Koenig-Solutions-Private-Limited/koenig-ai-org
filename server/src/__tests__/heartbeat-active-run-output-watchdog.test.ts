@@ -546,4 +546,89 @@ describeEmbeddedPostgres("active-run output watchdog", () => {
     });
     expect(decision.createdByRunId).toBe(managerRunId);
   });
+
+  it("suppresses stale-run alert when source issue reaches terminal status", async () => {
+    const now = new Date();
+    const companyId = randomUUID();
+    const coderId = randomUUID();
+    const sourceIssueId = randomUUID();
+    const runId = randomUUID();
+
+    // Set up company, agent, and source issue
+    await db.insert(companies).values({ id: companyId, name: "Test", issuePrefixOverride: "TEST" });
+    await db.insert(agents).values({
+      id: coderId,
+      companyId,
+      name: "Test Coder",
+      role: "worker",
+      status: "active",
+      urlKey: "test-coder",
+    });
+    await db.insert(issues).values({
+      id: sourceIssueId,
+      companyId,
+      identifier: "TEST-1",
+      title: "Test Issue",
+      status: "in_progress",
+      priority: "medium",
+      projectId: null,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    // Create stale run that references the source issue
+    const ageMs = ACTIVE_RUN_OUTPUT_SUSPICION_THRESHOLD_MS + 60_000;
+    await db.insert(heartbeatRuns).values({
+      id: runId,
+      companyId,
+      agentId: coderId,
+      status: "running",
+      invocationSource: "assignment",
+      triggerDetail: "system",
+      startedAt: new Date(now.getTime() - ageMs),
+      processStartedAt: new Date(now.getTime() - ageMs),
+      lastOutputAt: new Date(now.getTime() - ageMs),
+      lastOutputSeq: 1,
+      lastOutputStream: "stdout",
+      contextSnapshot: JSON.stringify({ issueId: sourceIssueId }),
+      logBytes: 0,
+    });
+
+    const heartbeat = heartbeatService(db);
+
+    // First scan: should create evaluation issue
+    const firstScan = await heartbeat.scanSilentActiveRuns({ now, companyId });
+    expect(firstScan.created).toBe(1);
+    expect(firstScan.suppressed).toBe(0);
+    const evaluationIssueId = firstScan.evaluationIssueIds[0];
+    expect(evaluationIssueId).toBeTruthy();
+
+    // Verify evaluation issue is open
+    const [evaluation] = await db
+      .select()
+      .from(issues)
+      .where(eq(issues.id, evaluationIssueId))
+      .limit(1);
+    expect(evaluation?.status).toBe("todo");
+
+    // Mark source issue as done
+    await db
+      .update(issues)
+      .set({ status: "done", updatedAt: new Date() })
+      .where(eq(issues.id, sourceIssueId));
+
+    // Second scan: should suppress alert and close evaluation
+    const secondScan = await heartbeat.scanSilentActiveRuns({ now, companyId });
+    expect(secondScan.suppressed).toBe(1);
+    expect(secondScan.created).toBe(0);
+    expect(secondScan.existing).toBe(0);
+
+    // Verify evaluation issue was closed
+    const [closedEvaluation] = await db
+      .select()
+      .from(issues)
+      .where(eq(issues.id, evaluationIssueId))
+      .limit(1);
+    expect(closedEvaluation?.status).toBe("done");
+  });
 });

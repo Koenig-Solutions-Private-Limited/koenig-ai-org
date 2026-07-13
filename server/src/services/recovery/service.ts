@@ -996,6 +996,20 @@ export function recoveryService(db: Db, deps: { enqueueWakeup: RecoveryWakeup })
     const runningAgent = await getAgent(input.run.agentId);
     if (!runningAgent || runningAgent.companyId !== input.run.companyId) return { kind: "skipped" as const };
     const sourceIssue = await resolveStaleRunSourceIssue(input.run);
+    // Suppress alert if source issue reached terminal status — the run is orphaned but the work is done
+    if (sourceIssue && ["done", "cancelled"].includes(sourceIssue.status)) {
+      const existing = await findOpenStaleRunEvaluation(input.run.companyId, input.run.id);
+      if (existing && !["done", "cancelled"].includes(existing.status)) {
+        await issuesSvc.update(existing.id, { status: "done" });
+        await issuesSvc.addComment(existing.id, [
+          "Source issue reached terminal status — suppressing further stale-run alerts.",
+          "",
+          `- Source issue: ${sourceIssue.identifier ?? sourceIssue.id}`,
+          `- Source status: ${sourceIssue.status}`,
+        ].join("\n"), { runId: input.run.id });
+      }
+      return { kind: "suppressed" as const };
+    }
     const prefix = await getCompanyIssuePrefix(input.run.companyId);
     const evidence = await collectStaleRunEvidence({
       run: input.run,
@@ -1140,6 +1154,7 @@ export function recoveryService(db: Db, deps: { enqueueWakeup: RecoveryWakeup })
       existing: 0,
       escalated: 0,
       snoozed: 0,
+      suppressed: 0,
       skipped: 0,
       evaluationIssueIds: [] as string[],
     };
@@ -1153,6 +1168,7 @@ export function recoveryService(db: Db, deps: { enqueueWakeup: RecoveryWakeup })
       if (outcome.kind === "created") result.created += 1;
       else if (outcome.kind === "existing") result.existing += 1;
       else if (outcome.kind === "escalated") result.escalated += 1;
+      else if (outcome.kind === "suppressed") result.suppressed += 1;
       else result.skipped += 1;
       if ("evaluationIssueId" in outcome && outcome.evaluationIssueId) {
         result.evaluationIssueIds.push(outcome.evaluationIssueId);
