@@ -1079,6 +1079,11 @@ export function recoveryService(db: Db, deps: { enqueueWakeup: RecoveryWakeup })
         result.snoozed += 1;
         continue;
       }
+      const sourceIssue = await resolveStaleRunSourceIssue(run);
+      if (sourceIssue && ["done", "cancelled"].includes(sourceIssue.status)) {
+        result.skipped += 1;
+        continue;
+      }
       const outcome = await createOrUpdateStaleRunEvaluation({ run, now });
       if (outcome.kind === "created") result.created += 1;
       else if (outcome.kind === "existing") result.existing += 1;

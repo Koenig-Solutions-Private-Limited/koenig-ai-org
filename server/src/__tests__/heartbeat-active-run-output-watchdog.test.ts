@@ -546,4 +546,60 @@ describeEmbeddedPostgres("active-run output watchdog", () => {
     });
     expect(decision.createdByRunId).toBe(managerRunId);
   });
+
+  it("skips stale runs whose source issue is already terminal (cancelled or done)", async () => {
+    const now = new Date("2026-04-22T20:00:00.000Z");
+    const { companyId, issueId } = await seedRunningRun({
+      now,
+      ageMs: ACTIVE_RUN_OUTPUT_CRITICAL_THRESHOLD_MS + 60_000,
+    });
+    const heartbeat = heartbeatService(db);
+
+    // Cancel the source issue to simulate it being reaped
+    await db
+      .update(issues)
+      .set({ status: "cancelled", updatedAt: now })
+      .where(eq(issues.id, issueId));
+
+    const result = await heartbeat.scanSilentActiveRuns({ now, companyId });
+
+    // Should skip the run instead of creating an evaluation
+    expect(result.skipped).toBe(1);
+    expect(result.created).toBe(0);
+    expect(result.existing).toBe(0);
+    expect(result.escalated).toBe(0);
+
+    // Verify no evaluation issue was created for this run
+    const evaluations = await db
+      .select()
+      .from(issues)
+      .where(
+        and(
+          eq(issues.companyId, companyId),
+          eq(issues.originKind, "stale_active_run_evaluation"),
+        ),
+      );
+    expect(evaluations).toHaveLength(0);
+  });
+
+  it("skips stale runs whose source issue is done", async () => {
+    const now = new Date("2026-04-22T20:00:00.000Z");
+    const { companyId, issueId } = await seedRunningRun({
+      now,
+      ageMs: ACTIVE_RUN_OUTPUT_SUSPICION_THRESHOLD_MS + 60_000,
+    });
+    const heartbeat = heartbeatService(db);
+
+    // Mark the source issue as done
+    await db
+      .update(issues)
+      .set({ status: "done", updatedAt: now })
+      .where(eq(issues.id, issueId));
+
+    const result = await heartbeat.scanSilentActiveRuns({ now, companyId });
+
+    // Should skip the run instead of creating an evaluation
+    expect(result.skipped).toBe(1);
+    expect(result.created).toBe(0);
+  });
 });
