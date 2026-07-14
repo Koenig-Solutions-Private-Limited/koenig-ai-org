@@ -8,7 +8,7 @@ slug: 2026-07-14-how-to-get-into-cybersecurity-with-no-experience
 tags: ["cybersecurity career", "career change", "entry-level cybersecurity", "SOC analyst", "GRC"]
 blog_track: career
 content_type: article
-status: awaiting-g0
+status: g0-blocked
 reading_time_min: 7
 primary_query: "how to get into cybersecurity with no experience"
 first_60_words_answer: "To get into cybersecurity with no experience in 2026, build basic IT and networking skills, choose one entry route, earn one beginner-friendly credential, practice in labs, and apply for SOC analyst, IT support with security duties, or GRC assistant roles."
