@@ -83,6 +83,7 @@ Check (each item is BLOCK-level if missing):
 - [ ] OG-friendly first 60 chars of intro
 - [ ] Reading-time pill in frontmatter
 - [ ] **Author resolves to a Person or Organization in `src/lib/authors.ts`** (NOT an agent slug like `content-author`)
+- [ ] **`vault/authors/<slug>.md` exists and is complete**: after confirming the `author:` slug, verify `vault/authors/<slug>.md` exists and contains all 5 required E-E-A-T fields (`jobTitle`, `bio`, `knowsAbout`, `worksFor`, `sameAs`) — each non-empty. Use the raw `author:` frontmatter slug (not the app's canonical fallback). **BLOCK if file absent OR any field empty/missing.**
 - [ ] Frontmatter complete (date, author, agent_drafted_by, vendor_tag, content_type, learning_objectives, status, sources)
 
 Score: 5/5 if all. Subtract 1 per missing. <4 → BLOCK.
@@ -136,6 +137,11 @@ CITATIONS (BLOCK)
 
 REFERENCES (BLOCK)
 - `## References` footer is absent — add numbered `[1]`, `[2]`… section before handoff.
+
+AUTHOR PAGE (BLOCK)
+- `vault/authors/some-new-person.md` not found. Create the author file before publishing.
+  OR
+- `vault/authors/some-author.md` exists but missing required fields: knowsAbout, sameAs.
 
 STRUCTURE (<n> blockers)
 - H1 reads "Claude Connectors Guide" — answer-first preferred. Suggest: "How to use Claude's 7 connectors in 10 minutes".

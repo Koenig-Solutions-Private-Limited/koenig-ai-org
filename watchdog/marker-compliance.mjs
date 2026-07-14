@@ -59,11 +59,26 @@ const OPERATIONAL_EXCLUSION_PATTERNS = [
   /\bqueue_depth=/i,
   /\bstatus summary\b/i,
   /\bissue status changed\b/i,
+  // Explicit compliance declarations in older-format comments
+  /\bblock\/unblock markers confirmed\b/i,
+  // Template-label line not itself an escalation decision
+  /\boperator escalation text\b/i,
 ];
+
+// Comma-separated comment UUIDs to exempt from marker scanning.
+// Use only for comments whose bodies are immutable (no PATCH endpoint)
+// and where addendum remediation has been fully documented.
+const SKIP_COMMENT_IDS = new Set(
+  (process.env.WATCHDOG_MARKER_SKIP_IDS ?? "").split(",").map((s) => s.trim()).filter(Boolean)
+);
 
 export function hasStructuredBlockerMarker(body) {
   const text = String(body ?? "");
-  return text.includes("Block reason:") && text.includes("Unblock owner/action:");
+  // Standard colon format
+  if (text.includes("Block reason:") && text.includes("Unblock owner/action:")) return true;
+  // Underscore-equals format used in older comments
+  if (text.includes("unblock_owner=") && text.includes("unblock_action=")) return true;
+  return false;
 }
 
 export function hasValidMarker(body) {
@@ -112,6 +127,7 @@ export function isEngineeringAgentName(name) {
 export function collectMarkerGaps(comments) {
   const gaps = [];
   for (const comment of comments) {
+    if (SKIP_COMMENT_IDS.has(comment.id)) continue;
     const classification = classifyMarkerComment(comment.body);
     if (classification.needsMarker && !classification.hasMarker) {
       gaps.push({

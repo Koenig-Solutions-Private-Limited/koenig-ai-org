@@ -2,7 +2,7 @@
 chapter_num: 4
 course_slug: ai-agent-security-for-developers
 title: "Isolate execution and keep credentials out of the sandbox"
-status: g0-blocked
+status: awaiting-g0
 author: course-author
 learning_objectives:
   - "Compare local terminal, hosted container, IDE, CI, and cloud VM execution topologies by filesystem, network, credential, and review risk."
@@ -18,11 +18,11 @@ first_60_words_answer: "Sandbox AI agent execution by constraining the filesyste
 positions: []
 faq:
   - question: "Why are environment variables dangerous for AI agent credentials?"
-    answer: "Any shell command the agent can execute — directly or via a tool — can read every environment variable in the process. A model processing malicious text that says 'echo $OPENAI_API_KEY' can exfiltrate the key if it has a shell tool available, or if it generates code that a downstream executor runs. The fix is to strip credentials from the environment before the agent process starts and proxy all credential usage through a host mediator with a narrow, auditable API."
+    answer: "Any shell command the agent can execute — directly or via a tool — can read every environment variable in the process. A model processing malicious text that says 'echo $OPENAI_API_KEY' can exfiltrate the key if it has a shell tool available, or if it generates code that a downstream executor runs. The fix is to strip credentials from the environment before the agent process starts and proxy all credential usage through a host mediator with a narrow, auditable API. ([CWE-798](https://cwe.mitre.org/data/definitions/798.html))"
   - question: "What is credential proxying in the context of AI agents?"
-    answer: "Credential proxying means the agent never holds a raw API key or token. Instead, it calls a host-side action — 'post_github_comment' rather than 'make HTTP request with Bearer token X'. The host mediator holds the credential, validates the agent's request against the current policy, performs the action, and returns only the result. The agent cannot reconstruct the credential from the result, and the mediator can log every use."
+    answer: "Credential proxying means the agent never holds a raw API key or token. Instead, it calls a host-side action — 'post_github_comment' rather than 'make HTTP request with Bearer token X'. The host mediator holds the credential, validates the agent's request against the current policy, performs the action, and returns only the result. The agent cannot reconstruct the credential from the result, and the mediator can log every use. ([AWS IAM best practices](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html))"
   - question: "What execution topology is safest for agents processing untrusted input?"
-    answer: "Hosted containers with no persistent filesystem, allowlisted egress only, and credentials injected as short-lived tokens at task start are the safest commonly available topology. Cloud VMs with network firewalls offer comparable isolation but higher cost. Local terminal and IDE sandboxes are the weakest — they share the user's filesystem and credential store. CI runners are strong on isolation but vary widely by provider on network policy defaults."
+    answer: "Hosted containers with no persistent filesystem, allowlisted egress only, and credentials injected as short-lived tokens at task start are the safest commonly available topology. Cloud VMs with network firewalls offer comparable isolation but higher cost. Local terminal and IDE sandboxes are the weakest — they share the user's filesystem and credential store. CI runners are strong on isolation but vary widely by provider on network policy defaults. ([Claude Code sandboxing](https://www.anthropic.com/engineering/claude-code-sandboxing))"
 inline_assets:
   - type: diagram
     path: ./img/diagram-1.png

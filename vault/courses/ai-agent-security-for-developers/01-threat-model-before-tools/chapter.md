@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: ai-agent-security-for-developers
 title: "Build the threat model before the agent gets tools"
-status: g0-blocked
+status: awaiting-g0
 author: course-author
 learning_objectives:
   - "Distinguish prompt injection, indirect prompt injection, tool-output poisoning, workspace poisoning, exfiltration, and unintended actions with one concrete example each."
@@ -18,11 +18,11 @@ first_60_words_answer: "Threat-model an AI agent before adding tools by mapping 
 positions: []
 faq:
   - question: "What is the difference between prompt injection and indirect prompt injection?"
-    answer: "Direct prompt injection arrives in a message the user or developer sends to the model. Indirect prompt injection hides in data the agent retrieves from the environment — a file, a web page, an issue body — and the model reads it as if it were instruction."
+    answer: "Direct prompt injection arrives in a message the user or developer sends to the model. Indirect prompt injection hides in data the agent retrieves from the environment — a file, a web page, an issue body — and the model reads it as if it were instruction. ([Indirect Prompt Injection paper](https://arxiv.org/abs/2302.12173))"
   - question: "What is blast-radius reduction for AI agents?"
-    answer: "Blast-radius reduction limits the damage any single compromised action can cause. For agents this means minimal credential scopes, read-only defaults where possible, per-tool approval gates for destructive actions, and sandboxed execution environments so a rogue tool call cannot reach production resources."
+    answer: "Blast-radius reduction limits the damage any single compromised action can cause. For agents this means minimal credential scopes, read-only defaults where possible, per-tool approval gates for destructive actions, and sandboxed execution environments so a rogue tool call cannot reach production resources. ([NIST AI RMF](https://doi.org/10.6028/NIST.AI.100-1))"
   - question: "What is a risk register for an AI agent?"
-    answer: "A risk register is a structured table that lists every input source, every tool, every credential, every write path, and the trust boundaries between them. Each row names a threat, assigns a likelihood and impact, and records the control that mitigates it. You build it before wiring tools, not after."
+    answer: "A risk register is a structured table that lists every input source, every tool, every credential, every write path, and the trust boundaries between them. Each row names a threat, assigns a likelihood and impact, and records the control that mitigates it. You build it before wiring tools, not after. ([OWASP LLM Top 10](https://owasp.org/www-project-top-10-for-large-language-model-applications/))"
 inline_assets:
   - type: diagram
     path: ./img/diagram-1.png
@@ -33,7 +33,7 @@ sources:
   - https://owasp.org/www-project-top-10-for-large-language-model-applications/
   - https://simonwillison.net/2023/Apr/14/worst-that-could-happen/
   - https://www.anthropic.com/research/building-effective-agents
-  - https://modelcontextprotocol.io/specification/2025-03-26/server/security
+  - https://modelcontextprotocol.io/specification
   - https://github.com/mitre-atlas/atlas-data/blob/main/data/techniques/AML.T0051.yaml
   - https://doi.org/10.6028/NIST.AI.100-1
   - https://cwe.mitre.org/data/definitions/20.html

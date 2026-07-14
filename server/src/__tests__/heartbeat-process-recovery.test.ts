@@ -634,6 +634,79 @@ describeEmbeddedPostgres("heartbeat orphaned process recovery", () => {
     return { companyId, agentId, issueId };
   }
 
+  async function seedRecoverLostExecutionFixture(input: {
+    runStatus: "running" | "queued" | "failed";
+  }) {
+    const companyId = randomUUID();
+    const agentId = randomUUID();
+    const runId = randomUUID();
+    const wakeupRequestId = randomUUID();
+    const issueId = randomUUID();
+    const now = new Date("2026-03-19T00:00:00.000Z");
+    const issuePrefix = `T${companyId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
+
+    await db.insert(companies).values({
+      id: companyId,
+      name: "Paperclip",
+      issuePrefix,
+      requireBoardApprovalForNewAgents: false,
+    });
+
+    await db.insert(agents).values({
+      id: agentId,
+      companyId,
+      name: "CodexCoder",
+      role: "engineer",
+      status: "running",
+      adapterType: "codex_local",
+      adapterConfig: {},
+      runtimeConfig: {},
+      permissions: {},
+    });
+
+    await db.insert(agentWakeupRequests).values({
+      id: wakeupRequestId,
+      companyId,
+      agentId,
+      source: "assignment",
+      triggerDetail: "system",
+      reason: "issue_assigned",
+      payload: { issueId },
+      status: "claimed",
+      runId,
+      claimedAt: now,
+    });
+
+    await db.insert(heartbeatRuns).values({
+      id: runId,
+      companyId,
+      agentId,
+      invocationSource: "assignment",
+      triggerDetail: "system",
+      status: input.runStatus,
+      wakeupRequestId,
+      contextSnapshot: { issueId },
+      startedAt: now,
+      updatedAt: now,
+    });
+
+    await db.insert(issues).values({
+      id: issueId,
+      companyId,
+      title: "Recover lost execution run",
+      status: "in_progress",
+      priority: "medium",
+      assigneeAgentId: agentId,
+      checkoutRunId: runId,
+      executionRunId: runId,
+      issueNumber: 1,
+      identifier: `${issuePrefix}-1`,
+      startedAt: now,
+    });
+
+    return { companyId, agentId, runId, wakeupRequestId, issueId };
+  }
+
   async function expectStrandedRecoveryArtifacts(input: {
     companyId: string;
     agentId: string;
