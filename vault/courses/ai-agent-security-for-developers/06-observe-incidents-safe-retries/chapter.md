@@ -2,7 +2,7 @@
 chapter_num: 6
 course_slug: ai-agent-security-for-developers
 title: "Observe failures, rehearse incidents, and make retries safe"
-status: awaiting-g0
+status: g0-passed
 author: course-author
 learning_objectives:
   - "Emit structured audit events for tool calls, approvals, denied actions, sandbox/network decisions, and retries."
@@ -27,7 +27,7 @@ inline_assets:
   - type: diagram
     path: ./img/diagram-1.png
     alt: "Audit event flow diagram showing tool_call, approval_required, action_denied, retry_attempted, and final_outcome events flowing from the agent harness into the append-only audit log, with trace spans linking related events"
-last_updated: 2026-06-10
+last_updated: 2026-07-14
 sources:
   - https://www.anthropic.com/research/trustworthy-agents
   - https://www.anthropic.com/engineering/claude-code-auto-mode

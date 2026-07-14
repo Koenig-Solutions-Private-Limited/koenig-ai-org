@@ -2,7 +2,7 @@
 chapter_num: 3
 course_slug: ai-agent-security-for-developers
 title: "Govern tools like capabilities, not helper functions"
-status: awaiting-g0
+status: g0-passed
 author: course-author
 learning_objectives:
   - "Classify tools by capability: read-only, local mutation, remote mutation, network access, credential access, and shell/code execution."
@@ -27,7 +27,7 @@ inline_assets:
   - type: diagram
     path: ./img/diagram-1.png
     alt: "Capability classification pyramid showing six tool classes from read-only at the base to shell execution at the apex, with approval tiers overlaid"
-last_updated: 2026-06-10
+last_updated: 2026-07-14
 sources:
   - https://openai.com/index/designing-agents-to-resist-prompt-injection/
   - https://www.anthropic.com/engineering/claude-code-sandboxing
