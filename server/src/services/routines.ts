@@ -1702,7 +1702,11 @@ export function routineService(
               // Use date_trunc to ms precision: JS Date has ms resolution but DB may store
               // sub-ms (microsecond) timestamps via now(), causing equality to silently fail
               // and the trigger to be skipped forever. Comparing truncated values guarantees a match.
-              sql`date_trunc('milliseconds', ${routineTriggers.nextRunAt}) = date_trunc('milliseconds', ${row.trigger.nextRunAt}::timestamptz)`,
+              // NOTE: the Date must be serialized to a string here — passing a raw
+              // JS Date through sql`` with an inline ::timestamptz cast makes the
+              // postgres driver call Buffer.byteLength(Date) and throw on EVERY
+              // scheduler tick (company-wide routine outage, 2026-07-13/14).
+              sql`date_trunc('milliseconds', ${routineTriggers.nextRunAt}) = date_trunc('milliseconds', ${row.trigger.nextRunAt.toISOString()}::timestamptz)`,
             ),
           )
           .returning({ id: routineTriggers.id })
