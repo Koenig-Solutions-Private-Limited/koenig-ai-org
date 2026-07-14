@@ -122,7 +122,7 @@ Generated intermediate state is the sneakiest injection vector in multi-step pip
 
 ## The dangerous pattern: f-string injection
 
-The most common way developers introduce prompt injection vulnerabilities is through Python f-strings or string concatenation that places untrusted variables directly into the instruction context.
+The most common way developers introduce [[glossary/prompt-injection|prompt injection]] vulnerabilities is through Python f-strings or string concatenation that places untrusted variables directly into the instruction context.
 
 ```python
 # ANTI-PATTERN: f-string injection
@@ -690,7 +690,7 @@ Write three pytest tests:
 
 You can now draw a clear data-flow diagram for an agent pipeline, name the five data classes and their trust levels, and build a two-phase pipeline with Pydantic schema validation and injection fixtures.
 
-Chapter 3 takes this further: it covers **credential scoping and minimal-permission tool design** — ensuring that even if your structural controls fail, a compromised tool call cannot reach resources beyond its narrow permitted scope. You will implement fine-grained GitHub token scoping, audit MCP server manifests for scope creep, and design tool interfaces that are hard to misuse.
+Chapter 3 takes this further: it covers **credential scoping and [[glossary/least-privilege|minimal-permission]] tool design** — ensuring that even if your structural controls fail, a compromised tool call cannot reach resources beyond its narrow permitted scope. You will implement fine-grained GitHub token scoping, audit MCP server manifests for scope creep, and design tool interfaces that are hard to misuse.
 
 ---
 

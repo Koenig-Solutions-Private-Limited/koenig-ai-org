@@ -33,7 +33,7 @@ sources:
   - https://owasp.org/www-project-top-10-for-large-language-model-applications/
   - https://simonwillison.net/2023/Apr/14/worst-that-could-happen/
   - https://www.anthropic.com/research/building-effective-agents
-  - https://modelcontextprotocol.io/specification/2025-03-26/server/security
+  - https://modelcontextprotocol.io/specification
   - https://github.com/mitre-atlas/atlas-data/blob/main/data/techniques/AML.T0051.yaml
   - https://doi.org/10.6028/NIST.AI.100-1
   - https://cwe.mitre.org/data/definitions/20.html

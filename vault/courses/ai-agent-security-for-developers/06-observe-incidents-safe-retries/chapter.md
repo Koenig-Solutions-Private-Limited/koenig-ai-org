@@ -194,7 +194,7 @@ When the agent starts a task, you open a root span. Each tool call opens a child
 
 ## Idempotency keys: the foundation of safe retries
 
-An idempotency key is a deterministic identifier that uniquely represents "this specific action on this specific target with this specific content." Before executing any mutating tool call, the harness checks whether a completed action with this key already exists. If it does, the harness returns the previous result without re-executing the action.[^3]
+An [[glossary/idempotency|idempotency key]] is a deterministic identifier that uniquely represents "this specific action on this specific target with this specific content." Before executing any mutating tool call, the harness checks whether a completed action with this key already exists. If it does, the harness returns the previous result without re-executing the action.[^3]
 
 Idempotency keys must be deterministic — the same logical action must produce the same key every time — and they must be scoped tightly enough that different actions produce different keys.
 
@@ -455,7 +455,7 @@ A trace review is a structured scan of an agent's audit log after execution. The
 
 ### Pattern 2: The injection fingerprint
 
-**Signature**: A `tool_call` event has an `input_hash` that matches a known injection payload hash, or the `reason` field on an `action_denied` event contains phrases like "override", "ignore previous", "new instructions", or "system:".
+**Signature**: A `tool_call` event has an `input_hash` that matches a known [[glossary/prompt-injection|injection]] payload hash, or the `reason` field on an `action_denied` event contains phrases like "override", "ignore previous", "new instructions", or "system:".
 
 **Why it matters**: When injection attempts fail (the tool call is denied), the denial event records evidence of the attempt. When they partially succeed (the agent calls a different tool than intended), the input hash lets you correlate the suspicious input across events.
 

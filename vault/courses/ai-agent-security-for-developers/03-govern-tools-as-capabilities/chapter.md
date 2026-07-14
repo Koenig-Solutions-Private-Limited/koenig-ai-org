@@ -32,7 +32,7 @@ sources:
   - https://openai.com/index/designing-agents-to-resist-prompt-injection/
   - https://www.anthropic.com/engineering/claude-code-sandboxing
   - https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/sandbox.md
-  - https://modelcontextprotocol.io/specification/2025-11-05/server/tools
+  - https://modelcontextprotocol.io/specification
   - https://owasp.org/www-project-top-10-for-large-language-model-applications/
   - https://github.com/mitre-atlas/atlas-data/blob/main/data/techniques/AML.T0051.yaml
   - https://doi.org/10.6028/NIST.SP.800-53r5
@@ -545,7 +545,7 @@ Chapter 4 moves down the stack: we will isolate the execution environment itself
 
 [^2]: Anthropic's Claude Code sandboxing post describes how capability-based tool restriction is the primary mechanism for limiting blast radius in coding agents. See https://www.anthropic.com/engineering/claude-code-sandboxing
 
-[^3]: The "fetch then inject" pattern — where a read-only network tool retrieves additional adversarial instructions — is documented in the MCP threat model. A network-access tool that fetches attacker-controlled URLs effectively upgrades a single injection into a multi-step attack chain. See https://modelcontextprotocol.io/specification/2025-11-05/server/tools
+[^3]: The "fetch then inject" pattern — where a read-only network tool retrieves additional adversarial instructions — is documented in the MCP threat model. A network-access tool that fetches attacker-controlled URLs effectively upgrades a single injection into a multi-step attack chain. See https://modelcontextprotocol.io/specification
 
 [^4]: OWASP, "OWASP Top 10 for LLM Applications 2025," LLM07: System Prompt Leakage / Insecure Plugin Design, 2024. https://owasp.org/www-project-top-10-for-large-language-model-applications/ — LLM07 documents the pattern of overly broad tool grants enabling injection-driven exploitation; minimising the tool list is its primary mitigation.
 

@@ -146,7 +146,7 @@ permissions:
 
 For an agent job that reads a PR and posts a review comment, this is the complete required set. Adding `contents: write` allows branch pushes. Adding `statuses: write` allows commit status updates. Every additional permission expands the blast radius if the agent's actions are influenced by injection.
 
-The principle is identical to what you applied to tool allowlists in Chapter 3 and credential scopes in Chapter 4: grant exactly what is needed for the declared task, and no more.
+The principle is identical to what you applied to tool allowlists in Chapter 3 and credential scopes in Chapter 4: grant exactly what is needed for the declared task, and no more ([[glossary/least-privilege|principle of least privilege]]).
 
 For a read-only analysis job with no write-back:
 
