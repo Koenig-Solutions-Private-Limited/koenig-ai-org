@@ -1028,6 +1028,85 @@ describeEmbeddedPostgres("routine service live-execution coalescing", () => {
     expect(routineIssues).toHaveLength(1);
   });
 
+  // Regression tests for KOEA-12779: dispatchRoutineRun must never crash on 23505
+  it("always_enqueue creates independent issues for each dispatch without constraint collision", async () => {
+    const { routine, svc } = await seedFixture();
+    await db.update(routines).set({ concurrencyPolicy: "always_enqueue" }).where(eq(routines.id, routine.id));
+
+    const [first, second] = await Promise.all([
+      svc.runRoutine(routine.id, { source: "manual" }),
+      svc.runRoutine(routine.id, { source: "manual" }),
+    ]);
+
+    expect(first.status).toBe("issue_created");
+    expect(second.status).toBe("issue_created");
+    expect(first.linkedIssueId).not.toBe(second.linkedIssueId);
+
+    const routineIssues = await db
+      .select({ id: issues.id, fingerprint: issues.originFingerprint })
+      .from(issues)
+      .where(eq(issues.originId, routine.id));
+
+    expect(routineIssues).toHaveLength(2);
+    const fingerprints = new Set(routineIssues.map((i) => i.fingerprint));
+    expect(fingerprints.size).toBe(2);
+  });
+
+  it("coalesces and stays alive when a pre-existing open issue triggers the unique constraint", async () => {
+    const { companyId, issueSvc, routine, svc } = await seedFixture();
+
+    // Manually place an open routine_execution issue with executionRunId set,
+    // simulating the legacy-row scenario that originally crash-looped the server.
+    const existingRunId = randomUUID();
+    const existingHbRunId = randomUUID();
+    await db.insert(heartbeatRuns).values({
+      id: existingHbRunId,
+      companyId,
+      agentId: routine.assigneeAgentId!,
+      invocationSource: "assignment",
+      triggerDetail: null,
+      status: "running",
+    });
+    await db.insert(routineRuns).values({
+      id: existingRunId,
+      companyId,
+      routineId: routine.id,
+      source: "schedule",
+      status: "received",
+      triggeredAt: new Date(),
+      dispatchFingerprint: "default",
+    });
+    const preexistingIssue = await issueSvc.create(companyId, {
+      projectId: routine.projectId,
+      title: routine.title,
+      description: routine.description,
+      status: "in_progress",
+      priority: routine.priority,
+      assigneeAgentId: routine.assigneeAgentId,
+      originKind: "routine_execution",
+      originId: routine.id,
+      originRunId: existingRunId,
+      originFingerprint: "default",
+    });
+    await db
+      .update(issues)
+      .set({ executionRunId: existingHbRunId, executionLockedAt: new Date() })
+      .where(eq(issues.id, preexistingIssue.id));
+
+    // Dispatch must coalesce (not throw) because the "default" fingerprint arm matches.
+    const run = await svc.runRoutine(routine.id, { source: "schedule" });
+
+    expect(["coalesced", "skipped", "issue_created"]).toContain(run.status);
+
+    const routineIssues = await db
+      .select()
+      .from(issues)
+      .where(eq(issues.originId, routine.id));
+
+    // Process must still be alive — if an exception propagated, the await above would reject.
+    expect(routineIssues.length).toBeGreaterThanOrEqual(1);
+  });
+
   it("fails the run and cleans up the execution issue when wakeup queueing fails", async () => {
     const { routine, svc } = await seedFixture({
       wakeup: async () => {

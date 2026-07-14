@@ -954,6 +954,11 @@ export function routineService(
           return updated ?? createdRun;
         }
 
+        // always_enqueue must never share a fingerprint across concurrent issues: embed the run id
+        // so each dispatch creates a uniquely-keyed issue and never trips the partial unique index.
+        const issueOriginFingerprint = input.routine.concurrencyPolicy === "always_enqueue"
+          ? `${dispatchFingerprint}:${createdRun.id}`
+          : dispatchFingerprint;
         try {
           createdIssue = await issueSvc.create(input.routine.companyId, {
             projectId,
@@ -969,7 +974,7 @@ export function routineService(
             originKind: "routine_execution",
             originId: input.routine.id,
             originRunId: createdRun.id,
-            originFingerprint: dispatchFingerprint,
+            originFingerprint: issueOriginFingerprint,
             executionWorkspaceId: input.executionWorkspaceId ?? null,
             executionWorkspacePreference: input.executionWorkspacePreference ?? null,
             executionWorkspaceSettings: input.executionWorkspaceSettings ?? null,
@@ -982,12 +987,29 @@ export function routineService(
             (error as { code?: string }).code === "23505" &&
             "constraint" in error &&
             (error as { constraint?: string }).constraint === "issues_open_routine_execution_uq";
-          if (!isOpenExecutionConflict || input.routine.concurrencyPolicy === "always_enqueue") {
+          if (!isOpenExecutionConflict) {
             throw error;
           }
 
+          // Coalesce into the existing open issue. For always_enqueue this path is theoretically
+          // unreachable (unique fingerprint above), but we must never re-throw 23505 unchecked.
           const existingIssue = await findOpenExecutionIssue(input.routine, txDb, dispatchFingerprint);
-          if (!existingIssue) throw error;
+          if (!existingIssue) {
+            // No matching issue to coalesce with — fail the run gracefully rather than crashing.
+            const failed = await finalizeRun(createdRun.id, {
+              status: "failed",
+              failureReason: "issues_open_routine_execution_uq constraint: no coalesceable issue found",
+              completedAt: triggeredAt,
+            }, txDb);
+            await updateRoutineTouchedState({
+              routineId: input.routine.id,
+              triggerId: input.trigger?.id ?? null,
+              triggeredAt,
+              status: "failed",
+              nextRunAt,
+            }, txDb);
+            return failed ?? createdRun;
+          }
           const status = input.routine.concurrencyPolicy === "skip_if_active" ? "skipped" : "coalesced";
           if (manualRunnerUserId) {
             await touchIssueForUserInbox(txDb, {
