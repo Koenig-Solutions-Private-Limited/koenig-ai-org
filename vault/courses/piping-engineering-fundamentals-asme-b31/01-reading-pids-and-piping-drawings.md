@@ -2,7 +2,9 @@
 chapter_num: 1
 course_slug: piping-engineering-fundamentals-asme-b31
 title: "Reading P&IDs and Piping Drawings: Extracting Engineering Intent from Plant Documentation"
-status: awaiting-g0
+status: g0-passed
+g0_review_date: 2026-07-14
+g0_reviewer: Content Reviewer (KOEA-9352)
 duration_min: 12
 vendor_tag: ISA / PIP PIC001
 learning_objectives:
