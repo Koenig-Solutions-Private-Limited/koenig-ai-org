@@ -47,6 +47,7 @@ import { parseCron, validateCron } from "./cron.js";
 import { heartbeatService } from "./heartbeat.js";
 import { queueIssueAssignmentWakeup, type IssueAssignmentWakeupDeps } from "./issue-assignment-wakeup.js";
 import { logActivity } from "./activity-log.js";
+import { budgetService } from "./budgets.js";
 import type { PluginWorkerManager } from "./plugin-worker-manager.js";
 
 const OPEN_ISSUE_STATUSES = ["backlog", "todo", "in_progress", "in_review", "blocked"];
@@ -368,6 +369,7 @@ export function routineService(
 ) {
   const issueSvc = issueService(db);
   const secretsSvc = secretService(db);
+  const budgets = budgetService(db);
   const heartbeat = deps.heartbeat ?? heartbeatService(db, {
     pluginWorkerManager: deps.pluginWorkerManager,
   });
@@ -395,17 +397,32 @@ export function routineService(
     return routine;
   }
 
-  async function assertAssignableAgent(companyId: string, agentId: string | null | undefined) {
+  async function assertAssignableAgent(
+    companyId: string,
+    agentId: string | null | undefined,
+    projectId?: string | null,
+  ) {
     if (!agentId) return;
     const agent = await db
-      .select({ id: agents.id, companyId: agents.companyId, status: agents.status })
+      .select({ id: agents.id, companyId: agents.companyId, status: agents.status, pauseReason: agents.pauseReason })
       .from(agents)
       .where(eq(agents.id, agentId))
       .then((rows) => rows[0] ?? null);
     if (!agent) throw notFound("Assignee agent not found");
     if (agent.companyId !== companyId) throw unprocessable("Assignee must belong to same company");
-    if (agent.status === "pending_approval") throw conflict("Cannot assign routines to pending approval agents");
-    if (agent.status === "terminated") throw conflict("Cannot assign routines to terminated agents");
+    if (agent.status === "paused" && agent.pauseReason === "budget") {
+      throw conflict("Agent is paused because its budget hard-stop was reached");
+    }
+    if (
+      agent.status === "paused" ||
+      agent.status === "error" ||
+      agent.status === "pending_approval" ||
+      agent.status === "terminated"
+    ) {
+      throw conflict(`Agent is ineligible for routine assignment (status: ${agent.status})`);
+    }
+    const block = await budgets.getInvocationBlock(companyId, agentId, { projectId: projectId ?? null });
+    if (block) throw conflict(block.reason);
   }
 
   async function assertProject(companyId: string, projectId: string | null | undefined) {
@@ -717,30 +734,6 @@ export function routineService(
       .then((rows) => rows[0]?.issues ?? null);
   }
 
-  async function findOpenExecutionIssue(
-    routine: typeof routines.$inferSelect,
-    executor: Db = db,
-    dispatchFingerprint?: string | null,
-  ) {
-    const fingerprintCondition = routineExecutionFingerprintCondition(dispatchFingerprint);
-    return executor
-      .select()
-      .from(issues)
-      .where(
-        and(
-          eq(issues.companyId, routine.companyId),
-          eq(issues.originKind, "routine_execution"),
-          eq(issues.originId, routine.id),
-          inArray(issues.status, OPEN_ISSUE_STATUSES),
-          isNull(issues.hiddenAt),
-          ...(fingerprintCondition ? [fingerprintCondition] : []),
-        ),
-      )
-      .orderBy(desc(issues.updatedAt), desc(issues.createdAt))
-      .limit(1)
-      .then((rows) => rows[0] ?? null);
-  }
-
   async function finalizeRun(runId: string, patch: Partial<typeof routineRuns.$inferInsert>, executor: Db = db) {
     return executor
       .update(routineRuns)
@@ -926,7 +919,7 @@ export function routineService(
 
       let createdIssue: Awaited<ReturnType<typeof issueSvc.create>> | null = null;
       try {
-        const activeIssue = await findOpenExecutionIssue(input.routine, txDb, dispatchFingerprint);
+        const activeIssue = await findLiveExecutionIssue(input.routine, txDb, dispatchFingerprint);
         if (activeIssue && input.routine.concurrencyPolicy !== "always_enqueue") {
           const status = input.routine.concurrencyPolicy === "skip_if_active" ? "skipped" : "coalesced";
           if (manualRunnerUserId) {
@@ -955,6 +948,10 @@ export function routineService(
         }
 
         try {
+          // Guard: reject ineligible resolved assignee before creating any execution issue.
+          // Throwing here is caught by the outer catch, which finalizes the run as failed.
+          await assertAssignableAgent(input.routine.companyId, assigneeAgentId, projectId);
+
           createdIssue = await issueSvc.create(input.routine.companyId, {
             projectId,
             goalId: input.routine.goalId,
@@ -986,7 +983,7 @@ export function routineService(
             throw error;
           }
 
-          const existingIssue = await findOpenExecutionIssue(input.routine, txDb, dispatchFingerprint);
+          const existingIssue = await findLiveExecutionIssue(input.routine, txDb, dispatchFingerprint);
           if (!existingIssue) throw error;
           const status = input.routine.concurrencyPolicy === "skip_if_active" ? "skipped" : "coalesced";
           if (manualRunnerUserId) {
@@ -1222,7 +1219,7 @@ export function routineService(
 
     create: async (companyId: string, input: CreateRoutine, actor: Actor): Promise<Routine> => {
       await assertProject(companyId, input.projectId ?? null);
-      await assertAssignableAgent(companyId, input.assigneeAgentId ?? null);
+      await assertAssignableAgent(companyId, input.assigneeAgentId ?? null, input.projectId ?? null);
       if (input.goalId) await assertGoal(companyId, input.goalId);
       if (input.parentIssueId) await assertParentIssue(companyId, input.parentIssueId);
       const variables = syncRoutineVariablesWithTemplate(
@@ -1274,7 +1271,7 @@ export function routineService(
         patch.variables === undefined ? existing.variables : sanitizeRoutineVariableInputs(patch.variables),
       );
       if (patch.projectId !== undefined) await assertProject(existing.companyId, nextProjectId);
-      if (patch.assigneeAgentId !== undefined) await assertAssignableAgent(existing.companyId, nextAssigneeAgentId);
+      if (patch.assigneeAgentId !== undefined) await assertAssignableAgent(existing.companyId, nextAssigneeAgentId, nextProjectId);
       if (patch.goalId) await assertGoal(existing.companyId, patch.goalId);
       if (patch.parentIssueId) await assertParentIssue(existing.companyId, patch.parentIssueId);
       assertRoutineVariableDefinitions(nextVariables);
@@ -1471,7 +1468,11 @@ export function routineService(
       if (!routine) throw notFound("Routine not found");
       if (routine.status === "archived") throw conflict("Routine is archived");
       await assertProject(routine.companyId, input.projectId ?? null);
-      await assertAssignableAgent(routine.companyId, input.assigneeAgentId ?? null);
+      await assertAssignableAgent(
+        routine.companyId,
+        input.assigneeAgentId ?? null,
+        input.projectId ?? routine.projectId ?? null,
+      );
       const trigger = input.triggerId ? await getTriggerById(input.triggerId) : null;
       if (trigger && trigger.routineId !== routine.id) throw forbidden("Trigger does not belong to routine");
       if (trigger && !trigger.enabled) throw conflict("Routine trigger is not active");

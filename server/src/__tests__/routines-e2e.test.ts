@@ -7,8 +7,10 @@ import {
   activityLog,
   agentWakeupRequests,
   agents,
+  budgetPolicies,
   companies,
   companyMemberships,
+  costEvents,
   createDb,
   executionWorkspaces,
   heartbeatRunEvents,
@@ -416,6 +418,155 @@ describeEmbeddedPostgres("routine routes end-to-end", () => {
       projectId,
       assigneeAgentId: agentId,
     });
+  });
+
+  it("rejects create with a paused assignee", async () => {
+    const { companyId, projectId, userId } = await seedFixture();
+    const app = await createApp({
+      type: "board",
+      userId,
+      source: "session",
+      isInstanceAdmin: false,
+      companyIds: [companyId],
+    });
+
+    // Insert a paused agent.
+    const pausedAgentId = randomUUID();
+    await db.insert(agents).values({
+      id: pausedAgentId,
+      companyId,
+      name: "PausedAgent",
+      role: "engineer",
+      status: "paused",
+      adapterType: "codex_local",
+      adapterConfig: {},
+      runtimeConfig: {},
+      permissions: {},
+    });
+
+    const createRes = await request(app)
+      .post(`/api/companies/${companyId}/routines`)
+      .send({
+        projectId,
+        title: "Ineligible routine",
+        assigneeAgentId: pausedAgentId,
+        priority: "medium",
+        concurrencyPolicy: "always_enqueue",
+        catchUpPolicy: "skip_missed",
+      });
+
+    expect(createRes.status).toBe(409);
+  });
+
+  it("rejects update when re-assigning to a paused agent", async () => {
+    const { companyId, agentId, projectId, userId } = await seedFixture();
+    const app = await createApp({
+      type: "board",
+      userId,
+      source: "session",
+      isInstanceAdmin: false,
+      companyIds: [companyId],
+    });
+
+    const createRes = await request(app)
+      .post(`/api/companies/${companyId}/routines`)
+      .send({
+        projectId,
+        title: "Good routine",
+        assigneeAgentId: agentId,
+        priority: "medium",
+        concurrencyPolicy: "always_enqueue",
+        catchUpPolicy: "skip_missed",
+      });
+    expect([200, 201]).toContain(createRes.status);
+
+    // Pause the agent after creation.
+    await db.update(agents).set({ status: "paused" }).where(eq(agents.id, agentId));
+
+    const updateRes = await request(app)
+      .patch(`/api/routines/${createRes.body.id}`)
+      .send({ assigneeAgentId: agentId });
+
+    expect(updateRes.status).toBe(409);
+  });
+
+  it("returns 409 for manual run with an ineligible override assignee", async () => {
+    const { companyId, agentId, projectId, userId } = await seedFixture();
+    const app = await createApp({
+      type: "board",
+      userId,
+      source: "session",
+      isInstanceAdmin: false,
+      companyIds: [companyId],
+    });
+
+    const createRes = await request(app)
+      .post(`/api/companies/${companyId}/routines`)
+      .send({
+        projectId,
+        title: "Routine with override",
+        assigneeAgentId: agentId,
+        priority: "medium",
+        concurrencyPolicy: "always_enqueue",
+        catchUpPolicy: "skip_missed",
+      });
+    expect([200, 201]).toContain(createRes.status);
+
+    // Insert a paused agent as the override.
+    const pausedId = randomUUID();
+    await db.insert(agents).values({
+      id: pausedId,
+      companyId,
+      name: "PausedOverride",
+      role: "engineer",
+      status: "paused",
+      adapterType: "codex_local",
+      adapterConfig: {},
+      runtimeConfig: {},
+      permissions: {},
+    });
+
+    const runRes = await request(app)
+      .post(`/api/routines/${createRes.body.id}/run`)
+      .send({ source: "manual", assigneeAgentId: pausedId, projectId });
+
+    expect(runRes.status).toBe(409);
+  });
+
+  it("returns 202 with status=failed when the default assignee is ineligible at dispatch time", async () => {
+    const { companyId, agentId, projectId, userId } = await seedFixture();
+    const app = await createApp({
+      type: "board",
+      userId,
+      source: "session",
+      isInstanceAdmin: false,
+      companyIds: [companyId],
+    });
+
+    const createRes = await request(app)
+      .post(`/api/companies/${companyId}/routines`)
+      .send({
+        projectId,
+        title: "Will fail at dispatch",
+        assigneeAgentId: agentId,
+        priority: "medium",
+        concurrencyPolicy: "always_enqueue",
+        catchUpPolicy: "skip_missed",
+      });
+    expect([200, 201]).toContain(createRes.status);
+
+    // Pause the default assignee after the routine is created.
+    await db.update(agents).set({ status: "error" }).where(eq(agents.id, agentId));
+
+    const runRes = await postRoutineRun(app, createRes.body.id, { source: "manual" });
+
+    expect(runRes.status).toBe(202);
+    expect(runRes.body.status).toBe("failed");
+    expect(runRes.body.linkedIssueId ?? null).toBeNull();
+    expect(runRes.body.failureReason).toMatch(/ineligible.*error/i);
+
+    const createdIssues = await db.select({ id: issues.id }).from(issues).where(eq(issues.originId, createRes.body.id));
+    expect(createdIssues).toHaveLength(0);
   });
 
   it("persists execution workspace selections from manual routine runs", async () => {
