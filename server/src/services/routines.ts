@@ -959,6 +959,7 @@ export function routineService(
         const issueOriginFingerprint = input.routine.concurrencyPolicy === "always_enqueue"
           ? `${dispatchFingerprint}:${createdRun.id}`
           : dispatchFingerprint;
+        await txDb.execute(sql`savepoint sp_issue_create`);
         try {
           createdIssue = await issueSvc.create(input.routine.companyId, {
             projectId,
@@ -979,7 +980,10 @@ export function routineService(
             executionWorkspacePreference: input.executionWorkspacePreference ?? null,
             executionWorkspaceSettings: input.executionWorkspaceSettings ?? null,
           });
+          await txDb.execute(sql`release savepoint sp_issue_create`);
         } catch (error) {
+          await txDb.execute(sql`rollback to savepoint sp_issue_create`);
+          await txDb.execute(sql`release savepoint sp_issue_create`);
           const isOpenExecutionConflict =
             !!error &&
             typeof error === "object" &&
