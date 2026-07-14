@@ -13,11 +13,3 @@ The main weakness is local optimality. Committing to the highest-probability tok
 In practice, temperature=0 in modern APIs implements greedy-equivalent decoding. For most agentic tasks—tool calls, structured output, JSON generation—temperature=0 is the recommended setting. The model's capabilities at zero temperature are so high for these structured tasks that sampling variance provides no benefit while complicating reproducibility.
 
 **Claude Sonnet 5 caveat**: Sonnet 5 rejects any non-default value for temperature, top_p, or top_k and returns HTTP 400. For Sonnet 5, omit the temperature parameter entirely — its default output is already greedy-equivalent for structured tasks. Use prompt structure, tool schemas, or output format constraints to achieve determinism instead of setting temperature=0.
-
-## Related Terms
-
-- [[glossary/beam-search|Beam Search]] — a decoding strategy that maintains multiple candidate sequences in parallel
-- [[glossary/sampling-parameters|Sampling Parameters]] — the temperature, top-k, and top-p settings that control output randomness
-- [[glossary/temperature|Temperature]] — the scaling factor that controls how peaked or flat the token probability distribution is
-- [[glossary/top-p|Top-p (Nucleus Sampling)]] — the nucleus sampling strategy that selects from the smallest set covering cumulative probability p
-- [[courses/claude-tool-use-from-zero|Course: Claude Tool Use from Zero]] — hands-on practice with the concepts covered in this entry
