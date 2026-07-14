@@ -85,6 +85,9 @@ async function loadState(agentId) {
       lastErrorState: false,
       lastCostSnapshot: 0,
       circuitBreakerEscalatedAt: null,
+      // adapter_failed cascade detection (KOEA-8154)
+      errorConsecutiveTicks: 0,
+      errorCascadeAlertedAt: null,
     };
   }
 }
@@ -302,21 +305,95 @@ async function alert(msg) {
   // TODO: email via Resend when RESEND_API_KEY is wired
 }
 
+// KOEA-8154: credential pre-flight — check Claude OAuth token validity every 30 min.
+// Reads ~/.claude/.credentials.json (or /paperclip/.claude/.credentials.json if bind-mounted).
+// Alerts via Telegram before an agent run fails with adapter_failed.
+const CRED_CHECK_INTERVAL_MS = Number(process.env.WATCHDOG_CRED_CHECK_INTERVAL_MS ?? 30 * 60 * 1000);
+const CRED_PATHS = [
+  "/paperclip/.claude/.credentials.json",
+  `${process.env.HOME ?? "/root"}/.claude/.credentials.json`,
+];
+let lastCredCheckAt = 0;
+let lastCredAlertAt = 0;
+
+async function checkClaudeCredentials() {
+  const now = Date.now();
+  if (now - lastCredCheckAt < CRED_CHECK_INTERVAL_MS) return;
+  lastCredCheckAt = now;
+
+  for (const credPath of CRED_PATHS) {
+    try {
+      const raw = await fs.readFile(credPath, "utf8");
+      const cred = JSON.parse(raw);
+      const token = cred?.oauth_token?.access_token ?? cred?.access_token ?? null;
+      const expiresAt = cred?.oauth_token?.expires_at ?? cred?.expires_at ?? null;
+
+      if (!token) {
+        // Token missing — high risk of adapter_failed cascade
+        if (now - lastCredAlertAt > 2 * 60 * 60 * 1000) {
+          lastCredAlertAt = now;
+          await alert(
+            `⚠️ *Claude credential check*: no access_token in ${credPath}.\n` +
+            `Agents using claude_local will fail with adapter_failed. Rotate credentials.`
+          );
+        }
+        return;
+      }
+
+      if (expiresAt) {
+        const expiresMs = new Date(expiresAt).getTime();
+        const minsLeft = Math.floor((expiresMs - now) / 60000);
+        if (minsLeft < 30) {
+          if (now - lastCredAlertAt > 60 * 60 * 1000) {
+            lastCredAlertAt = now;
+            await alert(
+              `⚠️ *Claude OAuth token expiring in ${minsLeft} min* (${credPath}).\n` +
+              `Agents will begin failing with adapter_failed. Re-auth before expiry.`
+            );
+          }
+        }
+      }
+      return; // read first available file successfully
+    } catch {
+      // file not found or unreadable — try next
+    }
+  }
+}
+
 async function checkAgent(agent) {
   // Skip non-actionable shapes (e.g., archived agents from companies.<id>.agents listings)
   if (!agent || !agent.id) return;
   const state = await loadState(agent.id);
-  // Error state alert — fires once on transition to error, not every tick
+  // Error state alert — fires once on transition to error, not every tick.
+  // KOEA-8154: also tracks consecutive error ticks for cascade detection.
   const wasError = state.lastErrorState === true;
   const isError = agent.status === "error";
   state.lastErrorState = isError;
-  if (isError && !wasError) {
-    await alert(`🔴 Agent ${agent.urlKey ?? agent.id} (${agent.name ?? "unknown"}) entered error state — manual reset required`);
-  }
   if (isError) {
+    state.errorConsecutiveTicks = (state.errorConsecutiveTicks ?? 0) + 1;
+    if (!wasError) {
+      await alert(`🔴 Agent ${agent.urlKey ?? agent.id} (${agent.name ?? "unknown"}) entered error state — manual reset required`);
+    } else if (state.errorConsecutiveTicks >= 3) {
+      // 3+ consecutive error ticks = 30+ min of continuous adapter failure.
+      // Check if we've already alerted in this window (within last 2h) to avoid spam.
+      const lastAlertMs = state.errorCascadeAlertedAt
+        ? Date.now() - new Date(state.errorCascadeAlertedAt).getTime()
+        : Infinity;
+      if (lastAlertMs > 2 * 60 * 60 * 1000) {
+        state.errorCascadeAlertedAt = new Date().toISOString();
+        await alert(
+          `🚨 *ADAPTER CASCADE RISK* — Agent ${agent.urlKey ?? agent.id} (${agent.name ?? "unknown"})\n` +
+          `Error state for ${state.errorConsecutiveTicks} consecutive watchdog ticks (${state.errorConsecutiveTicks * Math.round(INTERVAL_MS / 60000)} min).\n` +
+          `Likely cause: expired OAuth token or rotated API key (see KOEA-8154).\n` +
+          `Recovery tickets may be piling up. Check Paperclip issue queue.\n` +
+          `Action: rotate credentials via KOEA agent config, then PATCH agent status=active.`
+        );
+      }
+    }
     await saveState(agent.id, state);
     return;
   }
+  state.errorConsecutiveTicks = 0;
 
   if (state.paused || agent.status === "paused") {
     state.paused = true;
@@ -419,6 +496,7 @@ async function checkAgent(agent) {
 
 async function tick() {
   try {
+    await checkClaudeCredentials(); // KOEA-8154: pre-flight credential check
     const agents = await fetchAgents();
     await Promise.all(agents.map(checkAgent));
     const marker = await checkMarkerCompliance(agents);
