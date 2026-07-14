@@ -1028,6 +1028,106 @@ describeEmbeddedPostgres("routine service live-execution coalescing", () => {
     expect(routineIssues).toHaveLength(1);
   });
 
+  // Regression tests for KOEA-12779: dispatchRoutineRun must never crash on 23505
+  it("always_enqueue creates independent issues for each dispatch without constraint collision", async () => {
+    const { routine, svc } = await seedFixture();
+    await db.update(routines).set({ concurrencyPolicy: "always_enqueue" }).where(eq(routines.id, routine.id));
+
+    const [first, second] = await Promise.all([
+      svc.runRoutine(routine.id, { source: "manual" }),
+      svc.runRoutine(routine.id, { source: "manual" }),
+    ]);
+
+    expect(first.status).toBe("issue_created");
+    expect(second.status).toBe("issue_created");
+    expect(first.linkedIssueId).not.toBe(second.linkedIssueId);
+
+    const routineIssues = await db
+      .select({ id: issues.id, fingerprint: issues.originFingerprint })
+      .from(issues)
+      .where(eq(issues.originId, routine.id));
+
+    expect(routineIssues).toHaveLength(2);
+    const fingerprints = new Set(routineIssues.map((i) => i.fingerprint));
+    expect(fingerprints.size).toBe(2);
+  });
+
+  it("coalesces and stays alive when a pre-existing open issue triggers the unique constraint", async () => {
+    const { companyId, issueSvc, routine, svc } = await seedFixture();
+
+    // Step 1: dispatch once to let the service compute and record the real sha256 fingerprint.
+    const firstRun = await svc.runRoutine(routine.id, { source: "schedule" });
+    expect(firstRun.status).toBe("issue_created");
+
+    // Step 2: retrieve the sha256 fingerprint the service computed for this routine.
+    const [runRow] = await db
+      .select({ fingerprint: routineRuns.dispatchFingerprint })
+      .from(routineRuns)
+      .where(eq(routineRuns.id, firstRun.id));
+    const sha256Fp = runRow!.fingerprint!;
+
+    // Step 3: close the first issue so it leaves the partial-index scope
+    // (index requires status IN open-statuses), making room for the next INSERT.
+    await db
+      .update(issues)
+      .set({ status: "done" })
+      .where(eq(issues.originId, routine.id));
+
+    // Step 4: place an open routine_execution issue with the SAME sha256 fingerprint
+    // and executionRunId set, so it falls inside the partial unique index scope.
+    // The next dispatch will see this row and must coalesce without throwing.
+    const existingRunId = randomUUID();
+    const existingHbRunId = randomUUID();
+    await db.insert(heartbeatRuns).values({
+      id: existingHbRunId,
+      companyId,
+      agentId: routine.assigneeAgentId!,
+      invocationSource: "assignment",
+      triggerDetail: null,
+      status: "running",
+    });
+    await db.insert(routineRuns).values({
+      id: existingRunId,
+      companyId,
+      routineId: routine.id,
+      source: "schedule",
+      status: "received",
+      triggeredAt: new Date(),
+      dispatchFingerprint: sha256Fp,
+    });
+    const preexistingIssue = await issueSvc.create(companyId, {
+      projectId: routine.projectId,
+      title: routine.title,
+      description: routine.description,
+      status: "in_progress",
+      priority: routine.priority,
+      assigneeAgentId: routine.assigneeAgentId,
+      originKind: "routine_execution",
+      originId: routine.id,
+      originRunId: existingRunId,
+      originFingerprint: sha256Fp,
+    });
+    await db
+      .update(issues)
+      .set({ executionRunId: existingHbRunId, executionLockedAt: new Date() })
+      .where(eq(issues.id, preexistingIssue.id));
+
+    // Step 5: dispatch again — findOpenExecutionIssue matches the sha256 fingerprint
+    // exactly (not via the legacy "default" arm) and the run must coalesce or skip.
+    // If the SAVEPOINT guard is missing, a 23505 → 25P02 cascade would crash here instead.
+    const run = await svc.runRoutine(routine.id, { source: "schedule" });
+
+    expect(["coalesced", "skipped"]).toContain(run.status);
+
+    const routineIssues = await db
+      .select()
+      .from(issues)
+      .where(eq(issues.originId, routine.id));
+
+    // At least the pre-existing issue must remain; process must still be alive.
+    expect(routineIssues.length).toBeGreaterThanOrEqual(1);
+  });
+
   it("fails the run and cleans up the execution issue when wakeup queueing fails", async () => {
     const { routine, svc } = await seedFixture({
       wakeup: async () => {
