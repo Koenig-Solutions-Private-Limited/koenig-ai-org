@@ -4,6 +4,7 @@ author: koenig-ai-academy
 ticket: KOEA-10750
 vendor_tag: microsoft
 content_type: article
+blog_track: career
 title: "Choose the Microsoft Certification Roadmap in 2026: Fundamentals to Expert"
 slug: 2026-07-08-microsoft-certification-roadmap-fundamentals-expert
 tags:
@@ -28,14 +29,16 @@ faq:
     answer: "Yes. Microsoft's DP-203 study guide says Exam DP-203 retired on March 31, 2025 [7]. For data engineering, the current replacement path is Microsoft Certified: Fabric Data Engineer Associate, which uses Exam DP-700 and targets data engineering solutions in Microsoft Fabric [8]."
   - question: "How long are Microsoft certifications valid?"
     answer: "Microsoft role-based certifications generally renew annually through Microsoft Learn renewal assessments rather than by re-sitting the original proctored exam. Microsoft says associate, expert, and specialty certifications expire annually, while renewal assessments are free and available through Microsoft Learn when eligible [7]."
-positions: []
+positions:
+  - id: stance:ai-vendor-news-opinionated
+    engagement: refines
 first_60_words_answer: "The Microsoft certification roadmap in 2026 is: pick a Fundamentals exam, choose an active Associate credential in the same role family, then pursue Expert only after checking current Microsoft Learn prerequisites. Do not follow old DP-203 roadmaps; DP-203 retired on March 31, 2025, and DP-700 is the current Fabric data engineering path."
 original_data: false
-last_updated: 2026-07-09
+last_updated: 2026-07-14
 hero_image:
   url: /img/blogs/2026-07-08-microsoft-certification-roadmap-fundamentals-expert/hero.png
   alt: "Microsoft certification roadmap diagram showing Fundamentals, Associate, and Expert paths with retired DP-203 replaced by DP-700"
-status: g2-passed
+status: awaiting-g0
 reading_time_min: 7
 sources:
   - "https://learn.microsoft.com/en-us/credentials/browse/"
@@ -48,6 +51,7 @@ sources:
   - "https://learn.microsoft.com/en-us/credentials/certifications/fabric-data-engineer-associate/"
   - "https://techcommunity.microsoft.com/blog/skills-hub-blog/the-ai-job-boom-is-here-are-you-ready-to-showcase-your-skills/4494128"
   - "https://learn.microsoft.com/en-us/credentials/certifications/fabric-data-engineer-associate/renew/"
+  - "https://learn.microsoft.com/en-us/credentials/certifications/exams/ms-102/"
 references:
   - n: 1
     title: "Microsoft — Browse All Certifications"
@@ -89,6 +93,10 @@ references:
     title: "Microsoft — Fabric Data Engineer Associate renewal"
     url: "https://learn.microsoft.com/en-us/credentials/certifications/fabric-data-engineer-associate/renew/"
     retrieved: 2026-07-09
+  - n: 11
+    title: "Microsoft — Exam MS-102: Microsoft 365 Administrator"
+    url: "https://learn.microsoft.com/en-us/credentials/certifications/exams/ms-102/"
+    retrieved: 2026-07-14
 ---
 
 # Choose the Microsoft Certification Roadmap in 2026: Fundamentals to Expert
@@ -136,7 +144,7 @@ Before you pay for AZ-204 or AZ-500, check Microsoft's retirement page on the sa
 
 ## Budget and timeline should drive the path
 
-The practical cost model is simple: plan for one proctored exam fee per credential attempt, then add time for practice tests and hands-on labs. Microsoft exam prices vary by country and exam, but many role-based exams are commonly listed around the USD 165 range in the United States when scheduled through the Microsoft/Pearson VUE flow. Verify the exact fee on the exam page before booking because regional taxes, offers, and voucher programs can change the checkout price [1].
+The practical cost model is simple: plan for one proctored exam fee per credential attempt, then add time for practice tests and hands-on labs. Use USD 165 as a United States planning placeholder only when the target exam page shows that price; for example, Microsoft's MS-102 exam page lists $165 USD and says pricing is country- or region-based, subject to change, excludes taxes, and may not reflect promotions or reduced pricing [11]. Verify the exact checkout fee on the exam page before booking.
 
 Use this timeline if you are choosing a path from scratch:
 
