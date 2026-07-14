@@ -2,7 +2,7 @@
 chapter_num: 4
 course_slug: ai-agent-security-for-developers
 title: "Isolate execution and keep credentials out of the sandbox"
-status: awaiting-g0
+status: g0-passed
 author: course-author
 learning_objectives:
   - "Compare local terminal, hosted container, IDE, CI, and cloud VM execution topologies by filesystem, network, credential, and review risk."
@@ -27,7 +27,7 @@ inline_assets:
   - type: diagram
     path: ./img/diagram-1.png
     alt: "Execution topology comparison grid showing five environments (local terminal, hosted container, IDE sandbox, CI runner, cloud VM) rated across four risk dimensions: filesystem, network, credential, and review risk"
-last_updated: 2026-06-10
+last_updated: 2026-07-14
 sources:
   - https://www.anthropic.com/engineering/claude-code-sandboxing
   - https://openai.com/index/running-codex-safely/

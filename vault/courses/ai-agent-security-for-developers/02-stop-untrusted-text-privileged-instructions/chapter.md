@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: ai-agent-security-for-developers
 title: "Stop untrusted text from becoming privileged instructions"
-status: awaiting-g0
+status: g0-passed
 author: course-author
 learning_objectives:
   - "Separate trusted instructions, user goals, retrieved content, tool output, and generated intermediate state in an agent data-flow diagram."
@@ -27,7 +27,7 @@ inline_assets:
   - type: diagram
     path: ./img/diagram-1.png
     alt: "Agent data-flow diagram showing five data classes — trusted instructions, user goals, retrieved content, tool output, and generated intermediate state — with arrows indicating where each enters the context window and which validation gates sit before tool dispatch"
-last_updated: 2026-06-10
+last_updated: 2026-07-14
 sources:
   - https://arxiv.org/abs/2302.12173
   - https://owasp.org/www-project-top-10-for-large-language-model-applications/

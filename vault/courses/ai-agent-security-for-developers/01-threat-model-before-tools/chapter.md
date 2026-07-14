@@ -2,7 +2,7 @@
 chapter_num: 1
 course_slug: ai-agent-security-for-developers
 title: "Build the threat model before the agent gets tools"
-status: awaiting-g0
+status: g0-passed
 author: course-author
 learning_objectives:
   - "Distinguish prompt injection, indirect prompt injection, tool-output poisoning, workspace poisoning, exfiltration, and unintended actions with one concrete example each."
@@ -27,7 +27,7 @@ inline_assets:
   - type: diagram
     path: ./img/diagram-1.png
     alt: "Four-layer security map showing model, harness, tools, and environment layers with trust boundaries, data flows, and example controls at each layer for a repository assistant agent"
-last_updated: 2026-06-10
+last_updated: 2026-07-14
 sources:
   - https://arxiv.org/abs/2302.12173
   - https://owasp.org/www-project-top-10-for-large-language-model-applications/

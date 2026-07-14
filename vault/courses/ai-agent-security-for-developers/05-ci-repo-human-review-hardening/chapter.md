@@ -2,7 +2,7 @@
 chapter_num: 5
 course_slug: ai-agent-security-for-developers
 title: "Harden agents in CI, repos, and human-review workflows"
-status: awaiting-g0
+status: g0-passed
 author: course-author
 learning_objectives:
   - "Distinguish trusted and untrusted CI inputs, including collaborator branches, fork PRs, issue comments, dependency files, and repo-local config."
@@ -27,7 +27,7 @@ inline_assets:
   - type: diagram
     path: ./img/diagram-1.png
     alt: "CI trust tier diagram showing trusted maintainer branch, untrusted fork PR, and issue comment inputs mapped to token permissions and agent tool allowlists"
-last_updated: 2026-06-10
+last_updated: 2026-07-14
 sources:
   - https://www.anthropic.com/research/trustworthy-agents
   - https://www.anthropic.com/engineering/claude-code-auto-mode
