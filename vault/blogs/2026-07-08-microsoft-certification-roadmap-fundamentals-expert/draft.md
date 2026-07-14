@@ -38,7 +38,7 @@ last_updated: 2026-07-14
 hero_image:
   url: /img/blogs/2026-07-08-microsoft-certification-roadmap-fundamentals-expert/hero.png
   alt: "Microsoft certification roadmap diagram showing Fundamentals, Associate, and Expert paths with retired DP-203 replaced by DP-700"
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 7
 sources:
   - "https://learn.microsoft.com/en-us/credentials/browse/"
