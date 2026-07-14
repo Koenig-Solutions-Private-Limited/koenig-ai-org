@@ -1,11 +1,15 @@
 ---
 date: 2026-07-09
 author: koenig-ai-academy
-ticket: KOEA-13103
+ticket: KOEA-13107
 blog_track: career
 vendor_tag: community
 content_type: article
-status: g0-blocked
+status: awaiting-g0
+title: "Choose Your 2026 Agent Framework by Production Failure Mode, Not Feature Count"
+description: "Claude Agent SDK, LangGraph 1.0, CrewAI, and Google ADK compared by production failure mode — pick the framework that prevents your specific risk, not the one with the most features."
+slug: "2026-07-09-claude-agent-sdk-vs-langgraph-vs-crewai-vs-google-adk-2026-production-comparison"
+tags: ["claude-agent-sdk", "langgraph", "crewai", "google-adk", "ai-agents"]
 reading_time_min: 8-10
 primary_query: "claude agent sdk vs langgraph vs crewai vs google adk"
 seo_description: "Claude Agent SDK vs LangGraph vs CrewAI vs Google ADK compared by production failure mode — choose the framework that prevents your specific risk."
@@ -19,14 +23,14 @@ positions:
     engagement: defends
   - id: mcp-as-interoperability-moat
     engagement: defends
-first_60_words_answer: "In 2026, Claude Agent SDK leads on time-to-first-working-agent with batteries-included tools and MCP wiring. LangGraph 1.0 leads on durable stateful orchestration for long-running agents. CrewAI leads on multi-agent workflow formalisation. Google ADK leads on enterprise GCP deployment lifecycle. No single framework wins all four axes — the right pick depends on which production failure mode you are trying to prevent."
+first_60_words_answer: "In 2026, Claude Agent SDK leads on time-to-first-working-agent with batteries-included tools and native MCP wiring. LangGraph 1.0 leads on durable stateful orchestration for agents that must survive process restarts. CrewAI leads on formalised multi-agent workflow control. Google ADK leads on enterprise GCP deployment lifecycle. No single framework wins all four axes — the right pick depends on which production failure mode you are trying to prevent."
 faq:
   - question: "Is Claude Agent SDK production-ready in 2026?"
     answer: "Yes. Claude Agent SDK ships built-in tools (Read, Write, Bash, WebSearch), session management, MCP integration, and permission hooks — the same internals that power Claude Code. It is production-ready for teams building Claude-native agents that need fast time-to-first-tool. It lacks LangGraph's durable execution checkpointing for tasks that must survive multi-hour process restarts. Source: https://code.claude.com/docs/en/agent-sdk/typescript (retrieved 2026-07-14)"
   - question: "What is LangGraph 1.0 best at in 2026?"
     answer: "LangGraph 1.0 excels at durable, long-running stateful agents with human-in-the-loop interrupts, checkpoint persistence, and explicit state graph definitions. It is the correct choice when your agent must pause mid-task awaiting human approval or survive process restarts across hours or days. Source: https://docs.langchain.com/oss/python/langgraph/overview (retrieved 2026-07-14)"
   - question: "How does Google ADK differ from LangGraph for production teams?"
-    answer: "Google ADK adds a first-party deployment path (Cloud Run, GKE), built-in eval tooling, and a managed runtime on top of orchestration primitives. LangGraph focuses on the orchestration runtime itself. ADK is the right choice when your team is on GCP and needs a build-to-scale lifecycle — not just a local development framework. Nokia's enterprise deployment runs on ADK 1.0 on GKE. Source: https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/adk (retrieved 2026-07-14)"
+    answer: "Google ADK adds a first-party deployment path through Agent Runtime, Cloud Run, or Google Kubernetes Engine, plus built-in evaluation tooling for execution trajectories. LangGraph focuses on durable orchestration itself. ADK is the right choice when your team is on GCP and needs a build-to-scale lifecycle — not just a local development framework. Source: https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/adk (retrieved 2026-07-14)"
   - question: "Does multi-agent orchestration with these frameworks cost more?"
     answer: "Yes, significantly. A 5–30x token multiplier applies to multi-agent setups versus equivalent single-agent tasks. Framework selection does not eliminate this cost — it determines whether the extra cost is visible and budgeted. All four frameworks can produce multi-agent systems; none automatically makes them cheap. Source: https://iternal.ai/token-usage-guide (retrieved 2026-07-14)"
   - question: "Which framework has the best audit trail for enterprise compliance?"
@@ -42,7 +46,6 @@ sources:
   - https://docs.crewai.com/en/introduction
   - https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/adk
   - https://platform.claude.com/docs/en/docs/build-with-claude/tool-use
-  - https://alicelabs.ai
   - https://iternal.ai/token-usage-guide
 whats_new:
   - "Selecting an agent framework by feature count is benchmark theater — match it to your production failure mode instead"
@@ -56,7 +59,7 @@ learning_objectives:
 
 In 2026, Claude Agent SDK leads on time-to-first-working-agent with batteries-included tools and native MCP wiring. LangGraph 1.0 leads on durable stateful orchestration for agents that must survive process restarts. CrewAI leads on formalised multi-agent workflow control. Google ADK leads on enterprise GCP deployment lifecycle. No single framework wins all four axes — the right pick depends on which production failure mode you are trying to prevent.
 
-Here is the frame most comparisons get wrong: they rank these frameworks by feature count or third-party benchmark score. [Alicelabs.ai's 2026 production-readiness ranking](https://alicelabs.ai) (retrieved 2026-07-14) puts Claude Agent SDK at #2 behind LangGraph 1.0, and that ranking is defensible — but only if you ask *why*. The answer is not "LangGraph has more features." The answer is that LangGraph 1.0 solves the hardest unsolved problem in production agents: durable execution under process failure. Feature count is benchmark theater. The decisive question is: **what do you want the framework to own, and what production failure mode does that prevent?**
+Here is the frame most comparisons get wrong: they rank these frameworks by feature count or third-party benchmark score. That misses the actual production decision. LangGraph 1.0 is strongest when failure recovery and long-running state are the risk. Claude Agent SDK is strongest when tool execution, MCP wiring, and time-to-first-working-agent are the risk. Feature count is benchmark theater. The decisive question is: **what do you want the framework to own, and what production failure mode does that prevent?**
 
 ## The Four Frameworks, Four Ownership Models
 
@@ -68,13 +71,13 @@ These frameworks are not competing to do the same thing better. They are solving
 
 **CrewAI** [docs](https://docs.crewai.com/en/introduction) (retrieved 2026-07-14) describe it as a *workflow-first multi-agent framework* built around two primitives: **Flows** (state management + event-driven control) and **Crews** (autonomous agent teams delegated subtasks). CrewAI owns: *formalised multi-agent workflow definition and crew-level autonomy boundaries.* It does not own: *durable execution or deployment infrastructure.*
 
-**Google ADK** [docs](https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/adk) (retrieved 2026-07-14) describe it as an *enterprise agent framework with a first-party GCP scale path*. ADK provides the orchestration primitives (workflow agents, dynamic routing, multi-agent composition) plus eval tooling and a managed runtime path to Cloud Run and GKE. Nokia's enterprise agent deployment runs on "ADK 1.0 using Gemini Enterprise Agent Platform, on standard GKE + Cloud Storage" — a concrete production signal. ADK owns: *build-to-scale lifecycle on GCP.* It does not own: *provider-agnostic model wiring.*
+**Google ADK** [docs](https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/adk) (retrieved 2026-07-14) describe it as an *enterprise agent framework with a first-party GCP scale path*. ADK provides orchestration primitives, multi-agent composition, evaluation tools, and a documented path to run agents locally or scale them with Agent Runtime, Cloud Run, or Google Kubernetes Engine. ADK owns: *build-to-scale lifecycle on GCP.* It does not own: *provider-agnostic model wiring.*
 
 ## Claude Agent SDK: When Time-to-First-Tool Is the Constraint
 
 If your team needs to ship a working, tool-using agent in hours rather than days, Claude Agent SDK wins. The built-in tool surface in [`tool-use` docs](https://platform.claude.com/docs/en/docs/build-with-claude/tool-use) (retrieved 2026-07-14) eliminates the wiring tax that frameworks like LangGraph impose. You call a model, it returns tool use blocks, you run the tools — and the SDK handles the loop.
 
-The production-readiness evidence for alicelabs.ai's #2 ranking is tractable: the SDK ships with the same agent loop that powers Claude Code, a production product rather than a demo surface. The tool permission model — with explicit `client tools` (your code executes) vs `server tools` (Anthropic's infrastructure executes) — provides a concrete audit boundary that many framework comparisons ignore.
+The production-readiness evidence is tractable: the SDK ships with the same agent loop that powers Claude Code, and Anthropic's docs distinguish the Agent SDK from the raw client SDK because the Agent SDK handles the agent loop and tool execution for you. The tool permission model provides a concrete audit boundary that many framework comparisons ignore.
 
 Where Claude Agent SDK falls short for enterprise is durable execution. If your agent runs a five-step task and the process crashes at step three, the SDK does not automatically replay from step three. Sessions can be resumed explicitly, but you own the checkpoint logic. For tasks measured in minutes, this is rarely a problem. For tasks measured in hours or days, it is the production failure mode the SDK does not prevent.
 
@@ -90,7 +93,7 @@ The MCP integration is the underrated differentiator. A Claude Agent SDK agent t
 
 ## LangGraph 1.0: When Your Agent Must Survive Process Failure
 
-LangGraph's #1 ranking on alicelabs.ai for production-readiness is earned on one specific axis: it is the only framework in this group that makes durable execution a first-class primitive rather than something you bolt on.
+LangGraph earns its production argument on one specific axis: it is the only framework in this group that makes durable execution a first-class primitive rather than something you bolt on.
 
 The state graph model is deliberately low-level. You define nodes (units of work) and edges (transitions), and LangGraph's runtime handles checkpoint persistence, human-in-the-loop interrupt points, and streaming output. An agent that must pause for three days awaiting human approval and then resume exactly where it left off is a solved problem in LangGraph. It is an unsolved problem you must implement yourself in every other framework here.
 
@@ -114,7 +117,7 @@ The production evidence for CrewAI is thinner than for LangGraph or Claude Agent
 
 ## Google ADK: When You Are Shipping to GCP Enterprise
 
-Google ADK's distinguishing feature is not its agent primitives — those are available in all four frameworks. It is the deployment lifecycle: a credible, documented path from local ADK agent development to Cloud Run to GKE with managed scaling, eval tooling, and Cloud Logging integration. Nokia running ADK 1.0 on GKE with Cloud Storage is not a case study — it is the ADK deployment model working as specified.
+Google ADK's distinguishing feature is not its agent primitives — those are available in all four frameworks. It is the deployment lifecycle: a credible, documented path from local ADK agent development to Agent Runtime, Cloud Run, or Google Kubernetes Engine with managed scaling and evaluation tooling.
 
 For teams already on GCP with Gemini API access, ADK eliminates the infrastructure-wiring tax that LangGraph imposes. You get orchestration primitives, a multi-agent composition model, dynamic routing, and a deployment runtime in one package. The cost is Gemini lock-in at the model layer and GCP lock-in at the infrastructure layer. For teams not on GCP, ADK is the wrong choice.
 
@@ -150,41 +153,30 @@ For SOC 2 or GDPR compliance, LangGraph's checkpoints or ADK's Cloud Logging int
 ## Runnable Example: Claude Agent SDK Agent in TypeScript
 
 ```typescript
-import Anthropic from "@anthropic-ai/sdk";
-
-const client = new Anthropic();
+import { query } from "@anthropic-ai/claude-agent-sdk";
 
 async function runFileAuditAgent(targetDir: string) {
-  const response = await client.beta.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 4096,
-    tools: [
-      {
-        type: "bash_20250124",
-        name: "bash",
-      },
-      {
-        type: "text_editor_20250429",
-        name: "str_replace_based_edit_tool",
-      },
-    ],
-    messages: [
-      {
-        role: "user",
-        content: `Audit ${targetDir} for TODO comments and produce a markdown report.`,
-      },
-    ],
-    betas: ["computer-use-2025-01-24"],
-  });
-
-  return response;
+  for await (const message of query({
+    prompt: `Audit ${targetDir} for TODO comments and write a short markdown report.`,
+    options: {
+      allowedTools: ["Read", "Grep", "Write"],
+      maxTurns: 8,
+    },
+  })) {
+    if ("result" in message) {
+      console.log(message.result);
+    }
+  }
 }
 
-// Expected: structured tool_use blocks for bash + file edit, then a final text block with the markdown report.
-runFileAuditAgent("./src").then((r) => console.log(r.content));
+// Expected: Claude reads files, searches for TODO comments, and writes a report.
+runFileAuditAgent("./src").catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
 ```
 
-The agent uses Anthropic's `bash` and `str_replace_based_edit_tool` server tools — execution happens on Anthropic's infrastructure, not yours, which provides a sandboxed boundary by construction. Swap the tool array for client tools if you need local execution.
+This uses the actual Claude Agent SDK entry point: `query()` from `@anthropic-ai/claude-agent-sdk`. Anthropic's TypeScript reference describes `query()` as the primary SDK function for streaming Claude Code messages, with built-in tools such as `Read`, `Write`, `Glob`, and `Grep` available through `allowedTools` (retrieved 2026-07-14).
 
 ---
 
@@ -196,7 +188,7 @@ The agent uses Anthropic's `bash` and `str_replace_based_edit_tool` server tools
 
 ## Which Framework for Academy Courses
 
-If you want to go from zero to a production agent running on Claude today, the Koenig AI Academy's **[[course/claude-agent-sdk-zero-to-production]]** course covers the Claude Agent SDK end-to-end: built-in tools, MCP wiring, session management, permission hooks, and subagent patterns. The course is the fastest path to the framework that ranked #2 on alicelabs.ai for production-readiness — and the one where Academy's Claude-native depth is the differentiator that framework documentation alone cannot replace.
+If you want to go from zero to a production agent running on Claude today, the Koenig AI Academy's **[[course/claude-agent-sdk-zero-to-production]]** course covers the Claude Agent SDK end-to-end: built-in tools, MCP wiring, session management, permission hooks, and subagent patterns. The course is the fastest path to the framework where Academy's Claude-native depth is the differentiator that framework documentation alone cannot replace.
 
 For teams who need the durable orchestration story, the **[[course/multi-agent-orchestration-a2a]]** course covers how to combine LangGraph's stateful execution model with cross-agent protocols. And for GCP-native deployment, **[[course/gemini-enterprise-agents]]** covers ADK from local development through GKE scale.
 
