@@ -5,7 +5,7 @@ ticket: KOEA-13103
 blog_track: career
 vendor_tag: community
 content_type: article
-status: awaiting-g0
+status: g0-blocked
 reading_time_min: 8-10
 primary_query: "claude agent sdk vs langgraph vs crewai vs google adk"
 seo_description: "Claude Agent SDK vs LangGraph vs CrewAI vs Google ADK compared by production failure mode — choose the framework that prevents your specific risk."
