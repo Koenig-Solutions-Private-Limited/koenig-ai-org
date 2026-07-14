@@ -22,11 +22,6 @@ slug: claude-security-beta-devsecops
 tags: [anthropic, devsecops, security, claude-security, opus-4-7, vulnerability-scanning]
 excerpt: "Claude Security beta ships with scan-to-patch in a single sitting — but the real story is Anthropic's Opus 4.7 embed into six major security platforms, building a DevSecOps moat most commentary missed."
 seo_description: "Claude Security beta matters less as a scanner than as an Opus 4.7 DevSecOps wedge across CrowdStrike, Wiz, Palo Alto, and enterprise security workflows."
-faq:
-  - question: "What does Claude Security beta provide for enterprise security teams?"
-    answer: "Claude Security provides zero-integration vulnerability scanning that finds bugs, explains them, and generates targeted patches in a single session — reducing what previously took days of engineer/security back-and-forth to one sitting."
-  - question: "How does Claude Security compare to existing SAST and DAST tools?"
-    answer: "Claude Security complements rather than replaces tools like Semgrep or Checkmarx. It excels at scan-to-patch in one session but currently lacks the rule customization and policy-as-code features governance-focused platforms provide."
 ---
 
 # Why Claude Security's partner moat matters more than its scanner
@@ -72,27 +67,3 @@ Two concrete shifts for practitioners:
 1. **Triaging becomes a single-session activity instead of a multi-day loop.** Today, a SAST finding goes to the security team, who writes it up, sends it to engineering, who reproduces it, then writes a fix. Claude Security collapses that into one sitting — scan, explain, patch. If your mean-time-to-remediate is measured in days, this is a 10× improvement on the human-handoff portion of the cycle.
 
 2. **Your existing security vendors now embed a frontier model you did not choose.** If CrowdStrike or Wiz is in your stack, Opus 4.7's security reasoning is already on your roadmap. Evaluate it on the same criteria you would any model integration: data handling, inference latency, confidence calibration, and auditability.
-
-## Try it now
-
-If you have a Claude Enterprise account:
-
-```bash
-# Open claude.ai/security or use the sidebar
-# Point at a repo and start a scan
-# Review findings with confidence ratings
-# Apply targeted patches via Claude Code on the Web
-```
-
-Expected output: vulnerability list with severity confidence, reproduction steps, and a generated patch per finding — all in a single session.
-
----
-
-**Knowledge Check:** Your organization uses CrowdStrike for endpoint detection and Semgrep for SAST. Claude Security ships with Opus 4.7 embeds into CrowdStrike. Which of these changes first — your SAST tool or your endpoint detection workflow?
-
-<details>
-<summary>Answer</summary>
-Your endpoint detection workflow. CrowdStrike will ship Opus 4.7 capabilities into a product you already run, meaning Anthropic's model enters your stack through an existing vendor relationship rather than a new tool evaluation. Your SAST tool (Semgrep) faces no immediate displacement — Claude Security lacks the governance and CI/CD integration to replace it today.
-</details>
-
-If this analysis is useful, the [[course/picking-a-frontier-model-2026-q2]] course covers how to evaluate frontier model integrations across your security and development stack with hands-on benchmarks.
