@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { spawn, type ChildProcess } from "node:child_process";
 import { and, eq, or, inArray } from "drizzle-orm";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
@@ -89,6 +90,16 @@ function isPidAlive(pid: number | null | undefined) {
   if (typeof pid !== "number" || !Number.isInteger(pid) || pid <= 0) return false;
   try {
     process.kill(pid, 0);
+    // On Linux, kill(pid, 0) returns 0 for zombie processes; treat zombies as dead
+    if (process.platform === "linux") {
+      try {
+        const stat = readFileSync(`/proc/${pid}/stat`, "utf8");
+        const afterParen = stat.lastIndexOf(")");
+        if (afterParen !== -1 && stat[afterParen + 2] === "Z") return false;
+      } catch {
+        return false;
+      }
+    }
     return true;
   } catch {
     return false;

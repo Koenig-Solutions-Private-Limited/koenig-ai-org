@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
+import { readdirSync, readFileSync } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
@@ -215,6 +216,16 @@ export function isPidAlive(pid: number) {
   if (!Number.isInteger(pid) || pid <= 0) return false;
   try {
     process.kill(pid, 0);
+    // On Linux, kill(pid, 0) returns 0 for zombie processes; treat zombies as dead
+    if (process.platform === "linux") {
+      try {
+        const stat = readFileSync(`/proc/${pid}/stat`, "utf8");
+        const afterParen = stat.lastIndexOf(")");
+        if (afterParen !== -1 && stat[afterParen + 2] === "Z") return false;
+      } catch {
+        return false;
+      }
+    }
     return true;
   } catch {
     return false;
@@ -224,6 +235,31 @@ export function isPidAlive(pid: number) {
 export function isProcessGroupAlive(processGroupId: number | null | undefined) {
   if (process.platform === "win32") return false;
   if (typeof processGroupId !== "number" || !Number.isInteger(processGroupId) || processGroupId <= 0) return false;
+  // On Linux, kill(-pgid, 0) returns 0 even when the group contains only zombies;
+  // enumerate /proc to verify at least one non-zombie member belongs to this group
+  if (process.platform === "linux") {
+    try {
+      const entries = readdirSync("/proc");
+      const hasLiveMember = entries.some((entry) => {
+        const pid = Number(entry);
+        if (!Number.isFinite(pid) || pid <= 0) return false;
+        try {
+          const stat = readFileSync(`/proc/${pid}/stat`, "utf8");
+          const afterParen = stat.lastIndexOf(")");
+          if (afterParen === -1) return false;
+          const fields = stat.slice(afterParen + 2).split(" ");
+          const state = fields[0];
+          const pgrp = Number(fields[2]);
+          return pgrp === processGroupId && state !== "Z";
+        } catch {
+          return false;
+        }
+      });
+      return hasLiveMember;
+    } catch {
+      // Fall through to kill-based check if /proc is unavailable
+    }
+  }
   try {
     process.kill(-processGroupId, 0);
     return true;

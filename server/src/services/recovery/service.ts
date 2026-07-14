@@ -942,7 +942,10 @@ export function recoveryService(db: Db, deps: { enqueueWakeup: RecoveryWakeup })
 
   function isUniqueStrandedIssueRecoveryConflict(error: unknown) {
     if (!error || typeof error !== "object") return false;
-    const maybe = error as { code?: string; constraint?: string; message?: string };
+    // Drizzle wraps Postgres errors in DrizzleQueryError; actual code/constraint are on .cause
+    const root = (error as { cause?: unknown }).cause ?? error;
+    if (!root || typeof root !== "object") return false;
+    const maybe = root as { code?: string; constraint?: string; message?: string };
     return maybe.code === "23505" &&
       (
         maybe.constraint === "issues_active_stranded_issue_recovery_uq" ||
