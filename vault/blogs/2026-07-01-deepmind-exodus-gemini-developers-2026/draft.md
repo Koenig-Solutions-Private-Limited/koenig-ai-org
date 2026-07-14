@@ -7,7 +7,7 @@ content_type: article
 status: draft-for-review
 reading_time_min: 5
 primary_query: "deepmind exodus what developers betting on gemini should do 2026"
-first_60_words_answer: "Developers betting on Gemini should not abandon Google's platform but must add provider abstraction now. Six senior DeepMind researchers — including Transformer co-inventor Noam Shazeer and Nobel laureate John Jumper — moved to OpenAI and Anthropic between February and June 2026, erasing $269B from Alphabet's market cap. Three of those five chose Anthropic."
+first_60_words_answer: "Developers betting on Gemini should not abandon Google's platform but must add provider abstraction now. Five senior DeepMind researchers — including Transformer co-inventor Noam Shazeer and Nobel laureate John Jumper — moved to OpenAI and Anthropic between February and June 2026, sending Alphabet stock down 7.2% intraday on June 23. Three of those five chose Anthropic."
 contrarian_angle: "Google is not collapsing — Gemini Flash is the cheapest frontier model per token and TPU infrastructure is irreplaceable. The risk is developer concentration: hard-wired Vertex AI dependencies now bet on a model roadmap shaped by a team that just lost five of its most decorated contributors."
 positions:
   - id: stance:ai-vendor-news-opinionated
@@ -29,12 +29,12 @@ sources:
 whats_new:
   - "Three of five departing DeepMind researchers landed at Anthropic — the people who built AlphaFold are now accelerating Claude"
 learning_objectives:
-  - "Name the six researchers who departed DeepMind and where they went"
+  - "Name the five researchers who departed DeepMind and where they went"
   - "Explain what the Sergey Brin coding-automation gap reveals about Google's execution risk"
   - "Apply a multi-vendor hedging approach to reduce Gemini dependency in a production AI stack"
 faq:
   - question: "Why did so many DeepMind researchers leave Google in 2026?"
-    answer: "Six senior researchers left between February and June 2026. D.A. Davidson analyst Gil Luria identified a structural incentive asymmetry: Anthropic and OpenAI can promise less bureaucracy and a more AGI-focused mission than Google can offer at its scale. Yahoo Finance (retrieved July 2026) quotes Luria: 'There is so much demand for limited AI research talent that the frontier AI research labs are willing to do whatever it takes to add them.' When researchers capable of defining the frontier choose where to work, that choice is a leading indicator, not a lagging one."
+    answer: "Five senior researchers left between February and June 2026. D.A. Davidson analyst Gil Luria identified a structural incentive asymmetry: Anthropic and OpenAI can promise less bureaucracy and a more AGI-focused mission than Google can offer at its scale. Yahoo Finance (retrieved July 2026) quotes Luria: 'There is so much demand for limited AI research talent that the frontier AI research labs are willing to do whatever it takes to add them.' When researchers capable of defining the frontier choose where to work, that choice is a leading indicator, not a lagging one."
   - question: "Should developers stop using Gemini after the DeepMind exodus?"
     answer: "No. Gemini 3.5 Flash reached general availability in May 2026 and remains cost-competitive at roughly $0.075/1K tokens — cheaper than Claude Sonnet per token. Google's TPU infrastructure and Search/Workspace distribution are durable assets no startup replicates at scale. The recommended response is not abandonment but multi-vendor optionality: build provider abstraction into your AI call layer so you can route between Gemini, Claude, and OpenAI without rewriting prompt logic."
   - question: "What was the Sergey Brin coding-automation memo about?"
@@ -45,12 +45,12 @@ original_data: false
 last_updated: 2026-07-01
 hero_image:
   url: /img/blogs/deepmind-exodus-gemini-developers-2026/hero.png
-  alt: "Timeline graphic showing six DeepMind researcher departures between February and June 2026 alongside a declining Alphabet stock chart"
+  alt: "Timeline graphic showing five DeepMind researcher departures between February and June 2026 alongside a declining Alphabet stock chart"
 ---
 
-# DeepMind's Exodus, $269 Billion Erased: What Developers Betting on Gemini Should Do Now
+# DeepMind's Exodus: What Developers Betting on Gemini Should Do Now
 
-Developers betting on Gemini should not abandon Google's platform but must add provider abstraction now. Six senior Google DeepMind researchers — including Transformer co-inventor Noam Shazeer and Nobel laureate John Jumper — moved to OpenAI and Anthropic between February and June 2026, erasing $269 billion from Alphabet's market cap. Three of those five chose Anthropic, where they are now building Claude.
+Developers betting on Gemini should not abandon Google's platform but must add provider abstraction now. Five senior Google DeepMind researchers — including Transformer co-inventor Noam Shazeer and Nobel laureate John Jumper — moved to OpenAI and Anthropic between February and June 2026, sending Alphabet's stock down 7.2% intraday on June 23. Three of those five chose Anthropic, where they are now building Claude.
 
 The talent story is real. The conclusion most developers are drawing from it is wrong.
 
@@ -68,7 +68,7 @@ The departures cluster around a five-month window and cover distinct technical d
 
 [Reuters confirmed](https://www.reuters.com/technology/googles-gemini-co-lead-noam-shazeer-join-openai-2026-06-18/) Shazeer returned to Google via a $2.7B licensing deal less than two years ago, only to depart for OpenAI on June 18. [CNBC quoted](https://www.cnbc.com/2026/06/19/john-jumper-to-leave-google-deepmind-for-anthropic.html) Jumper's own departure post verbatim: "After nearly nine years, I have decided to leave Google DeepMind and join Anthropic." Alphabet stock fell as much as [7.2% intraday on June 23](https://www.bloomberg.com/news/articles/2026-06-22/alphabet-shares-drop-after-second-ai-star-departs-for-a-rival) — Bloomberg's steepest intraday drop since February 2026.
 
-![Timeline graphic showing six DeepMind researcher departures between February and June 2026 alongside a declining Alphabet stock chart](/img/blogs/deepmind-exodus-gemini-developers-2026/hero.png)
+![Timeline graphic showing five DeepMind researcher departures between February and June 2026 alongside a declining Alphabet stock chart](/img/blogs/deepmind-exodus-gemini-developers-2026/hero.png)
 
 ## The Brin Memo: An Execution Gap, Not Just a Talent Gap
 
