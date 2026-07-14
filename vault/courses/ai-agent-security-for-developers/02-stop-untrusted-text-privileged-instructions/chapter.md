@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: ai-agent-security-for-developers
 title: "Stop untrusted text from becoming privileged instructions"
-status: g0-blocked
+status: awaiting-g0
 author: course-author
 learning_objectives:
   - "Separate trusted instructions, user goals, retrieved content, tool output, and generated intermediate state in an agent data-flow diagram."
@@ -18,11 +18,11 @@ first_60_words_answer: "Prevent prompt injection in AI agent tool calls by separ
 positions: []
 faq:
   - question: "What is the prompt hierarchy and why does it matter for security?"
-    answer: "The prompt hierarchy is the ordered set of message roles — system/developer, user, and tool — that an LLM processes. Each role carries different implicit authority. Placing untrusted text in the system role or concatenating it into user instructions without separation is the root cause of most prompt injection vulnerabilities in agent pipelines."
+    answer: "The prompt hierarchy is the ordered set of message roles — system/developer, user, and tool — that an LLM processes. Each role carries different implicit authority. Placing untrusted text in the system role or concatenating it into user instructions without separation is the root cause of most prompt injection vulnerabilities in agent pipelines. ([OWASP LLM Top 10](https://owasp.org/www-project-top-10-for-large-language-model-applications/))"
   - question: "What is the quoted-data pattern for prompt injection prevention?"
-    answer: "The quoted-data pattern places untrusted content inside a clearly delimited block — XML tags, triple backticks, or a JSON string — that is separate from the instruction context. The instruction tells the model what to do with the data; the data block holds the untrusted content. This makes it structurally harder for injected text to masquerade as an instruction."
+    answer: "The quoted-data pattern places untrusted content inside a clearly delimited block — XML tags, triple backticks, or a JSON string — that is separate from the instruction context. The instruction tells the model what to do with the data; the data block holds the untrusted content. This makes it structurally harder for injected text to masquerade as an instruction. ([Anthropic tool use docs](https://docs.anthropic.com/en/docs/build-with-claude/tool-use))"
   - question: "What is an injection fixture and how is it used in testing?"
-    answer: "An injection fixture is a test input that contains a known prompt injection payload — typically a phrase like 'Ignore previous instructions and...' followed by an unauthorized action. You run the fixture through your hardened pipeline and assert that no write tool call is made. A passing fixture test proves your structural controls held against that specific attack pattern."
+    answer: "An injection fixture is a test input that contains a known prompt injection payload — typically a phrase like 'Ignore previous instructions and...' followed by an unauthorized action. You run the fixture through your hardened pipeline and assert that no write tool call is made. A passing fixture test proves your structural controls held against that specific attack pattern. ([Indirect Prompt Injection paper](https://arxiv.org/abs/2302.12173))"
 inline_assets:
   - type: diagram
     path: ./img/diagram-1.png

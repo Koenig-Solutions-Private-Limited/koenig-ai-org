@@ -2,7 +2,7 @@
 chapter_num: 5
 course_slug: ai-agent-security-for-developers
 title: "Harden agents in CI, repos, and human-review workflows"
-status: g0-blocked
+status: awaiting-g0
 author: course-author
 learning_objectives:
   - "Distinguish trusted and untrusted CI inputs, including collaborator branches, fork PRs, issue comments, dependency files, and repo-local config."
@@ -18,11 +18,11 @@ first_60_words_answer: "To securely run AI agents in GitHub Actions CI in 2026: 
 positions: []
 faq:
   - question: "What is the difference between pull_request and pull_request_target in GitHub Actions?"
-    answer: "pull_request runs in the fork's security context with read-only repository access. pull_request_target runs in the base repository's security context and has access to repository secrets — making it dangerous for untrusted fork PRs because any code in the fork can execute with your secrets."
+    answer: "pull_request runs in the fork's security context with read-only repository access. pull_request_target runs in the base repository's security context and has access to repository secrets — making it dangerous for untrusted fork PRs because any code in the fork can execute with your secrets. ([Gemini CLI trust guidance](https://raw.githubusercontent.com/google-github-actions/run-gemini-cli/v0.1.22/docs/trust-guidance.md))"
   - question: "How do I prevent a fork PR from poisoning my agent's repo-local config?"
-    answer: "Checkout only the base branch before running the agent, or pass --no-local-config (or equivalent) flags to disable workspace config file loading. Never checkout the fork's files in a workflow step that runs with elevated GITHUB_TOKEN permissions."
+    answer: "Checkout only the base branch before running the agent, or pass --no-local-config (or equivalent) flags to disable workspace config file loading. For untrusted fork PRs, run analysis in a read-only workflow and route any write-back through a separate human-approved step. Never checkout the fork's files in a workflow step that runs with elevated GITHUB_TOKEN permissions. ([Gemini CLI trust guidance](https://raw.githubusercontent.com/google-github-actions/run-gemini-cli/v0.1.22/docs/trust-guidance.md))"
   - question: "What is approval fatigue and how does it harm agent security?"
-    answer: "Approval fatigue occurs when humans are asked to approve too many low-risk actions. The result is rubber-stamp behavior: reviewers click approve without reading. Fix it by reserving approval gates exclusively for high-impact actions and making each approval surface just the information needed to make the decision."
+    answer: "Approval fatigue occurs when humans are asked to approve too many low-risk actions. The result is rubber-stamp behavior: reviewers click approve without reading. Fix it by reserving approval gates exclusively for high-impact actions and making each approval surface just the information needed to make the decision. ([Trustworthy agents](https://www.anthropic.com/research/trustworthy-agents))"
 inline_assets:
   - type: diagram
     path: ./img/diagram-1.png

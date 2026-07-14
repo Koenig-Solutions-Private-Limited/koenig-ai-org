@@ -2,7 +2,7 @@
 chapter_num: 6
 course_slug: ai-agent-security-for-developers
 title: "Observe failures, rehearse incidents, and make retries safe"
-status: g0-blocked
+status: awaiting-g0
 author: course-author
 learning_objectives:
   - "Emit structured audit events for tool calls, approvals, denied actions, sandbox/network decisions, and retries."
@@ -18,11 +18,11 @@ first_60_words_answer: "To add audit logging and safe retries to AI agents: emit
 positions: []
 faq:
   - question: "What fields should every agent audit log entry include?"
-    answer: "At minimum: event_type, tool_name, input_hash (not raw input, to avoid logging secrets), decision (allow/deny/require_approval), reason, timestamp (ISO 8601 UTC), idempotency_key, retry_count, and span_id for trace correlation. Raw tool inputs should be stored in a separate append-only store with access controls, not in the main audit stream."
+    answer: "At minimum: event_type, tool_name, input_hash (not raw input, to avoid logging secrets), decision (allow/deny/require_approval), reason, timestamp (ISO 8601 UTC), idempotency_key, retry_count, and span_id for trace correlation. Raw tool inputs should be stored in a separate append-only store with access controls, not in the main audit stream. ([OpenTelemetry observability primer](https://opentelemetry.io/docs/concepts/observability-primer/))"
   - question: "How do idempotency keys prevent duplicate mutations during retries?"
-    answer: "Before executing a mutating tool call, the agent generates a deterministic idempotency key from the action type, target, and content hash. Before each retry, it checks whether an entry with that key already exists in the completed-actions store. If it does, the retry is skipped and the previous result is returned. This prevents duplicate PRs, duplicate comments, and duplicate API calls even if the agent crashes mid-execution."
+    answer: "Before executing a mutating tool call, the agent generates a deterministic idempotency key from the action type, target, and content hash. Before each retry, it checks whether an entry with that key already exists in the completed-actions store. If it does, the retry is skipped and the previous result is returned. This prevents duplicate PRs, duplicate comments, and duplicate API calls even if the agent crashes mid-execution. ([OpenAI agent-builder safety](https://developers.openai.com/api/docs/guides/agent-builder-safety))"
   - question: "What is the difference between a retry budget and a retry limit?"
-    answer: "A retry limit is a raw count (retry up to N times). A retry budget is a limit coupled with backoff, a budget-exhaustion behavior, and scope constraints. A retry budget specifies: max attempts, backoff strategy, what to do when exhausted (halt and alert vs. degrade gracefully), and which action categories the budget applies to. Read-only retries may have a higher budget than mutating retries."
+    answer: "A retry limit is a raw count (retry up to N times). A retry budget is a limit coupled with backoff, a budget-exhaustion behavior, and scope constraints. A retry budget specifies: max attempts, backoff strategy, what to do when exhausted (halt and alert vs. degrade gracefully), and which action categories the budget applies to. Read-only retries may have a higher budget than mutating retries. ([Trustworthy agents](https://www.anthropic.com/research/trustworthy-agents))"
 inline_assets:
   - type: diagram
     path: ./img/diagram-1.png

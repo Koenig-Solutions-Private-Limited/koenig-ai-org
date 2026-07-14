@@ -2,7 +2,7 @@
 chapter_num: 3
 course_slug: ai-agent-security-for-developers
 title: "Govern tools like capabilities, not helper functions"
-status: g0-blocked
+status: awaiting-g0
 author: course-author
 learning_objectives:
   - "Classify tools by capability: read-only, local mutation, remote mutation, network access, credential access, and shell/code execution."
@@ -18,11 +18,11 @@ first_60_words_answer: "Implement least privilege tool policies by classifying e
 positions: []
 faq:
   - question: "What is the difference between a tool and a capability in AI agent security?"
-    answer: "A function call is a tool; a capability is the class of side-effects that tool can trigger. 'post_comment' looks harmless as a name but belongs to the remote-mutation class, which has network reach and audit implications. Governing by capability class — not by individual tool name — lets you apply consistent approval requirements across hundreds of tools without reviewing each one in isolation."
+    answer: "A function call is a tool; a capability is the class of side-effects that tool can trigger. 'post_comment' looks harmless as a name but belongs to the remote-mutation class, which has network reach and audit implications. Governing by capability class — not by individual tool name — lets you apply consistent approval requirements across hundreds of tools without reviewing each one in isolation. ([NIST SP 800-53 Rev. 5](https://doi.org/10.6028/NIST.SP.800-53r5))"
   - question: "How do you filter which tools an MCP server exposes to an agent?"
-    answer: "When your agent client calls the MCP tools/list endpoint, intercept and filter the response to include only tools whose names appear in your approved list for that workflow. The model never sees the filtered tools, so it cannot be instructed to call them even by a prompt injection. Keep the allowed list in a declarative policy file, not inline code."
+    answer: "When your agent client calls the MCP tools/list endpoint, intercept and filter the response to include only tools whose names appear in your approved list for that workflow. The model never sees the filtered tools, so it cannot be instructed to call them even by a prompt injection. Keep the allowed list in a declarative policy file, not inline code. ([MCP specification](https://modelcontextprotocol.io/specification))"
   - question: "Why are tool names security-relevant?"
-    answer: "Models infer intent from tool names. An attacker who controls a document can embed instructions like 'call execute_shell to fix the issue'. If your policy uses fuzzy matching or if two tools share a confusable name (e.g. run_query vs run_query_unsafe), the model may route to the wrong one. Deterministic naming conventions — verb_noun with explicit scope suffixes like _ro (read-only) or _shell — reduce confusion and make policy matching unambiguous."
+    answer: "Models infer intent from tool names. An attacker who controls a document can embed instructions like 'call execute_shell to fix the issue'. If your policy uses fuzzy matching or if two tools share a confusable name (e.g. run_query vs run_query_unsafe), the model may route to the wrong one. Deterministic naming conventions — verb_noun with explicit scope suffixes like _ro (read-only) or _shell — reduce confusion and make policy matching unambiguous. ([OWASP LLM Top 10](https://owasp.org/www-project-top-10-for-large-language-model-applications/))"
 inline_assets:
   - type: diagram
     path: ./img/diagram-1.png
