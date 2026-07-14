@@ -8,7 +8,7 @@ slug: 2026-07-14-how-to-get-into-cybersecurity-with-no-experience
 tags: ["cybersecurity career", "career change", "entry-level cybersecurity", "SOC analyst", "GRC"]
 blog_track: career
 content_type: article
-status: g0-blocked
+status: awaiting-g0
 reading_time_min: 7
 primary_query: "how to get into cybersecurity with no experience"
 first_60_words_answer: "To get into cybersecurity with no experience in 2026, build basic IT and networking skills, choose one entry route, earn one beginner-friendly credential, practice in labs, and apply for SOC analyst, IT support with security duties, or GRC assistant roles."
@@ -91,6 +91,10 @@ grep "status=failed" auth.log | cut -d' ' -f5 | sort | uniq -c
 
 If you can explain what the command counts, you are practicing the real beginner habit: inspect logs, isolate the signal, and describe what should happen next.
 
+**KnowledgeCheck:** You want a SOC analyst role, while your friend wants GRC. Which beginner skill should each of you prioritize first: log triage for both, or log triage for SOC and control mapping for GRC?
+
+Answer: split the priorities by role. SOC beginners need log triage because the job starts with alerts, events, and escalation notes. GRC beginners need control mapping because the job starts with requirements, evidence, risk, and audit language.
+
 ## Use certifications as structure, not as a substitute for proof
 
 Use certifications as structure, not as a substitute for proof. A beginner credential can give you a syllabus, vocabulary, and a resume signal. It cannot replace hands-on evidence. ISC2's hiring research found employers consider entry certifications, but it also found widespread use of skills-based assessments; that means the interview still asks what you can do ([ISC2 hiring research, retrieved 2026-07-14](https://www.isc2.org/Insights/2025/06/ISC2-Research-Organizations-Must-Amend-Early-Career-Hiring-Practices)).
@@ -108,6 +112,10 @@ Months 1-2: learn IT foundations. Study networking basics, Linux commands, Windo
 Months 3-4: choose your lane and credential. SOC learners should practice logs, SIEM concepts, alerts, and incident notes. IT-support learners should practice identity, endpoint, and phishing workflows. GRC learners should practice risk registers, control mapping, and evidence collection. Use one beginner credential as the syllabus, not the entire plan.
 
 Months 5-6: package proof and apply. Build two artifacts: one technical lab or GRC artifact, and one resume-ready case note. Then apply to beginner roles and adjacent roles. ISC2's 2025 workforce study found many teams report significant skills needs, with AI, cloud security, and risk assessment among top needs; that is a signal to keep learning after the first role, not a promise that the first job will be automatic ([ISC2 workforce study, retrieved 2026-07-14](https://www.isc2.org/Insights/2025/12/2025-ISC2-Cybersecurity-Workforce-Study)).
+
+**KnowledgeCheck:** In months 5-6, which application package is stronger: a resume listing "studied cybersecurity," or a resume plus two artifacts that show one alert-triage, IT-security, or GRC workflow?
+
+Answer: the resume plus two artifacts is stronger. Entry employers may screen for credentials, but the interview still needs evidence that you can follow a security workflow, explain decisions, and document what should happen next.
 
 ## FAQ
 
