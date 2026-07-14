@@ -4,7 +4,7 @@ author: koenig-ai-academy
 ticket: KOEA-12815
 blog_track: career
 content_type: article
-status: awaiting-g0
+status: g0-blocked
 reading_time_min: 8
 primary_query: "skills needed for data analyst job"
 first_60_words_answer: "The skills needed for a data analyst job in 2026 are SQL, spreadsheets, one BI tool such as Tableau or Power BI, statistics fundamentals, Python or R, business communication, and AI literacy."
