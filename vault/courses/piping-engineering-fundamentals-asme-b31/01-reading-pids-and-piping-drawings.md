@@ -2,12 +2,7 @@
 chapter_num: 1
 course_slug: piping-engineering-fundamentals-asme-b31
 title: "Reading P&IDs and Piping Drawings: Extracting Engineering Intent from Plant Documentation"
-status: g0-blocked
-g0_review_date: 2026-06-30
-g0_reviewer: QA Verifier (reassigned from Content Reviewer)
-g0_blockers:
-  - "Word budget exceeded: 1,850 words measured vs 800–1,200 spec (54% over); trim required"
-  - "Source unavailability: ANSI Blog ISA 5.1 URL returns 403 Forbidden; replace with ISA direct or InstruNexus"
+status: awaiting-g0
 duration_min: 12
 vendor_tag: ISA / PIP PIC001
 learning_objectives:
@@ -16,8 +11,8 @@ learning_objectives:
   - "Cross-check a P&ID revision against a matching isometric for consistency in line numbers, valve tags, instrument taps, and spec breaks"
   - "Identify the documentation gaps that block a pipe stress input sheet from being populated"
 sources:
-  - url: "https://blog.ansi.org/ansi/ansi-isa-5-1-2024-instrumentation-symbols/"
-    title: "ANSI/ISA-5.1-2024: Instrumentation Symbols & Identification — The ANSI Blog"
+  - url: "https://www.isa.org/standards-and-publications/isa-standards/isa-standards-committees/isa5-1"
+    title: "ISA-5.1: Instrumentation Symbols and Identification — ISA (International Society of Automation)"
   - url: "https://pip.org/disciplines/pid-and-process/"
     title: "Piping and Instrumentation Diagram Standards — PIP (Process Industry Practices)"
   - url: "https://arvengtraining.com/en/pipeline-codification-in-pids/"
@@ -117,7 +112,7 @@ There is no cross-company default for line designation format or fluid service c
 
 ## Reading Instrument Tags
 
-Instrument tags on a P&ID follow [ANSI/ISA-5.1-2024](https://blog.ansi.org/ansi/ansi-isa-5-1-2024-instrumentation-symbols/), the governing standard for process-plant instrumentation symbols. Each tag encodes three elements: a **measured-variable letter** (F = Flow, T = Temperature, P = Pressure, L = Level), one or more **function letters** (I = Indicate, C = Control, T = Transmit, H = High alarm), and a **loop number** shared by all instruments in that control loop. The tag `FIC-2042` decodes as Flow Indicating Controller, Loop 2042.
+Instrument tags on a P&ID follow [ANSI/ISA-5.1-2024](https://www.isa.org/standards-and-publications/isa-standards/isa-standards-committees/isa5-1), the governing standard for process-plant instrumentation symbols. Each tag encodes three elements: a **measured-variable letter** (F = Flow, T = Temperature, P = Pressure, L = Level), one or more **function letters** (I = Indicate, C = Control, T = Transmit, H = High alarm), and a **loop number** shared by all instruments in that control loop. The tag `FIC-2042` decodes as Flow Indicating Controller, Loop 2042.
 
 The **bubble shape** encodes where the logic lives: a plain circle is a field-mounted discrete instrument; a circle inside a square is a DCS function; a hexagon signals a computer or advanced control function; a diamond inside a square indicates a PLC. The line drawn through the bubble center adds physical location: no line means field-accessible; a solid line means primary control panel; a dashed line means behind-panel inaccessible. Misreading the bubble type leads to I/O hardware misassignment, a class of error typically discovered at factory acceptance testing rather than at drawing review.
 
