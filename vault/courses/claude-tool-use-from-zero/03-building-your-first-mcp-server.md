@@ -182,32 +182,14 @@ In production, log the detailed exception server-side and return the minimal use
   model="claude-sonnet-4-6"
   tools={["course-file-browser"]}
   prompt="Use the file browser tool to list the top-level files in the demo project. Do not read file contents."
-  expectedOutput={`Claude should call:
-
-list_project_files({
-  "root_label": "demo",
-  "relative_path": "."
-})
-
-Expected result:
-[
-  {"name":"package.json","type":"file"},
-  {"name":"src","type":"directory"},
-  {"name":"README.md","type":"file"}
-]
-
-Claude should summarize the project structure without inventing file contents.`}
+  expectedOutput="Claude should call:\n\nlist_project_files({\n  \"root_label\": \"demo\",\n  \"relative_path\": \".\"\n})\n\nExpected result:\n[\n  {\"name\":\"package.json\",\"type\":\"file\"},\n  {\"name\":\"src\",\"type\":\"directory\"},\n  {\"name\":\"README.md\",\"type\":\"file\"}\n]\n\nClaude should summarize the project structure without inventing file contents."
 />
 
 <RunPromptCell
   model="claude-sonnet-4-6"
   tools={["course-file-browser"]}
   prompt="Try to list ../ so I can see what is outside the demo project."
-  expectedOutput={`The server should reject the request with a controlled error such as:
-
-Path escapes approved root.
-
-Claude should explain that the connector is restricted to the approved demo project root and ask for a path inside that root.`}
+  expectedOutput="The server should reject the request with a controlled error such as:\n\nPath escapes approved root.\n\nClaude should explain that the connector is restricted to the approved demo project root and ask for a path inside that root."
 />
 
 <KnowledgeCheck

@@ -149,19 +149,7 @@ This wrapper gives every tool a consistent event shape. Consistency is what make
   model="claude-sonnet-4-6"
   tools={["course-file-browser"]}
   prompt="Use list_project_files to list the demo project root. Then explain which log fields should appear for this call."
-  expectedOutput={`Claude calls list_project_files({"root_label":"demo","relative_path":"."}).
-
-The server should emit a structured log similar to:
-{
-  "event": "mcp.tool.completed",
-  "request_id": "generated-id",
-  "tool_name": "list_project_files",
-  "input_summary": {"root_label":"demo","relative_path":"."},
-  "success": true,
-  "duration_ms": 12
-}
-
-Claude should explain that request_id, tool_name, sanitized input, success, and duration make the call debuggable.`}
+  expectedOutput="Claude calls list_project_files({\"root_label\":\"demo\",\"relative_path\":\".\"}).\n\nThe server should emit a structured log similar to:\n{\n  \"event\": \"mcp.tool.completed\",\n  \"request_id\": \"generated-id\",\n  \"tool_name\": \"list_project_files\",\n  \"input_summary\": {\"root_label\":\"demo\",\"relative_path\":\".\"},\n  \"success\": true,\n  \"duration_ms\": 12\n}\n\nClaude should explain that request_id, tool_name, sanitized input, success, and duration make the call debuggable."
 />
 
 ## Audit examples
@@ -194,20 +182,7 @@ That event tells a reviewer what happened without dumping private payment detail
 <RunPromptCell
   model="claude-sonnet-4-6"
   prompt="Design an audit event for a tool named redact_contract(document_id, redaction_policy). Include fields useful to a compliance reviewer but avoid logging document text."
-  expectedOutput={`A good audit event:
-{
-  "event": "audit.connector.action_completed",
-  "connector": "legal-redaction",
-  "tool_name": "redact_contract",
-  "actor": "user_or_agent_id",
-  "document_id": "contract_123",
-  "redaction_policy": "pii-v1",
-  "authorization": "allowed",
-  "success": true,
-  "timestamp": "2026-05-14T12:00:00Z"
-}
-
-It avoids logging document text while preserving actor, target, policy, authorization, and outcome.`}
+  expectedOutput="A good audit event:\n{\n  \"event\": \"audit.connector.action_completed\",\n  \"connector\": \"legal-redaction\",\n  \"tool_name\": \"redact_contract\",\n  \"actor\": \"user_or_agent_id\",\n  \"document_id\": \"contract_123\",\n  \"redaction_policy\": \"pii-v1\",\n  \"authorization\": \"allowed\",\n  \"success\": true,\n  \"timestamp\": \"2026-05-14T12:00:00Z\"\n}\n\nIt avoids logging document text while preserving actor, target, policy, authorization, and outcome."
 />
 
 <KnowledgeCheck

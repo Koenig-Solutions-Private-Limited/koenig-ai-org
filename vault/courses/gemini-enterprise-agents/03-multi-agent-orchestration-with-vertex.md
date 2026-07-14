@@ -258,29 +258,7 @@ adk web research_pipeline/
   model="gemini-pro-latest"
   tools={["transfer_to_agent", "search_knowledge_base"]}
   prompt="Tell me about Gemini Enterprise Agent Platform: when it launched, how to install it, and what Memory Bank does."
-  expectedOutput={`I'll break this into three specific questions.
-
-**Sub-question 1**: When did GEAP launch?
-[transfer_to_agent: retriever]
-→ "GEAP reached general availability on 23 April 2026."
-
-**Sub-question 2**: How do I install the ADK?
-[transfer_to_agent: retriever]
-→ "Install the Agent Development Kit with: pip install google-adk"
-
-**Sub-question 3**: What does Memory Bank do?
-[transfer_to_agent: retriever]
-→ "Memory Bank stores long-term cross-session context as distilled Memory Profiles, enabling agents to recall user preferences and history across conversations."
-
----
-
-Here's what I found:
-
-**Gemini Enterprise Agent Platform** launched on **23 April 2026** (GA). 
-
-To get started, install the ADK: \`pip install google-adk\`
-
-**Memory Bank** provides long-term cross-session memory — instead of rebuilding context from raw conversation history, it stores distilled "Memory Profiles" so agents can recall what they need at low latency.`}
+  expectedOutput="I'll break this into three specific questions.\n\n**Sub-question 1**: When did GEAP launch?\n[transfer_to_agent: retriever]\n→ \"GEAP reached general availability on 23 April 2026.\"\n\n**Sub-question 2**: How do I install the ADK?\n[transfer_to_agent: retriever]\n→ \"Install the Agent Development Kit with: pip install google-adk\"\n\n**Sub-question 3**: What does Memory Bank do?\n[transfer_to_agent: retriever]\n→ \"Memory Bank stores long-term cross-session context as distilled Memory Profiles, enabling agents to recall user preferences and history across conversations.\"\n\n---\n\nHere's what I found:\n\n**Gemini Enterprise Agent Platform** launched on **23 April 2026** (GA). \n\nTo get started, install the ADK: `pip install google-adk`\n\n**Memory Bank** provides long-term cross-session memory — instead of rebuilding context from raw conversation history, it stores distilled \"Memory Profiles\" so agents can recall what they need at low latency."
 />
 
 <KnowledgeCheck
@@ -377,17 +355,7 @@ Each node is clickable in the GCP console — inspect exact inputs and outputs o
   model="gemini-pro-latest"
   tools={["transfer_to_agent", "search_knowledge_base"]}
   prompt="What is the Agent Registry and why does it matter for production multi-agent systems?"
-  expectedOutput={`[transfer_to_agent: retriever]
-message: "What is Agent Registry and what is its purpose?"
-
-→ "Agent Registry is a centralized catalogue of approved tools, agents, and capabilities. Agents discover sub-agents by name via Registry rather than hardcoded imports."
-
-**Agent Registry** is GEAP's centralized catalogue of agents and tools. In practice, it matters because it separates *discovery* from *implementation*: your Planner agent doesn't import the Retriever — it asks Registry for an agent named 'retriever'. 
-
-This means:
-- **Versioning**: Update the Retriever without touching the Planner's code
-- **Governance**: The Registry owner controls which agents are visible to which callers
-- **Auditability**: Registry logs show exactly which agents called which sub-agents`}
+  expectedOutput="[transfer_to_agent: retriever]\nmessage: \"What is Agent Registry and what is its purpose?\"\n\n→ \"Agent Registry is a centralized catalogue of approved tools, agents, and capabilities. Agents discover sub-agents by name via Registry rather than hardcoded imports.\"\n\n**Agent Registry** is GEAP's centralized catalogue of agents and tools. In practice, it matters because it separates *discovery* from *implementation*: your Planner agent doesn't import the Retriever — it asks Registry for an agent named 'retriever'. \n\nThis means:\n- **Versioning**: Update the Retriever without touching the Planner's code\n- **Governance**: The Registry owner controls which agents are visible to which callers\n- **Auditability**: Registry logs show exactly which agents called which sub-agents"
 />
 
 <KnowledgeCheck

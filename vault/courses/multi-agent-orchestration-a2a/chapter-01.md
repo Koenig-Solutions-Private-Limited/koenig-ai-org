@@ -175,9 +175,7 @@ This means an A2A network evolves without flag-day upgrades. Older agents refuse
 
 <RunPromptCell
   model="claude-sonnet-4-6"
-  prompt={`You are an A2A client agent. Write a minimal JSON-RPC 2.0 sendMessage payload to delegate this task to a specialist agent: "Summarize the Q3 procurement section of the attached report and flag any line items over $50k." 
-
-Include: jsonrpc version, method name, params with a message object containing role (ROLE_USER), a parts array with one text Part holding the task description, a contextId (use a UUID placeholder), and a messageId.`}
+  prompt="You are an A2A client agent. Write a minimal JSON-RPC 2.0 sendMessage payload to delegate this task to a specialist agent: \"Summarize the Q3 procurement section of the attached report and flag any line items over $50k.\" \n\nInclude: jsonrpc version, method name, params with a message object containing role (ROLE_USER), a parts array with one text Part holding the task description, a contextId (use a UUID placeholder), and a messageId."
   expectedOutput='{"jsonrpc":"2.0","method":"sendMessage","params":{"message":{"role":"ROLE_USER","messageId":"<uuid>","contextId":"<uuid>","parts":[{"text":"Summarize the Q3 procurement section of the attached report and flag any line items over $50k."}]}}}'
 />
 

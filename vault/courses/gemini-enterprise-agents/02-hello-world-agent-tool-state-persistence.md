@@ -239,20 +239,7 @@ Open `http://localhost:8000`. You should see a chat interface with your `budget_
   model="gemini-flash-latest"
   tools={["log_expense", "get_expense_summary"]}
   prompt="I spent $12.50 on lunch and $4 on coffee this morning. How much have I spent on food today?"
-  expectedOutput={`I'll log both of those for you.
-
-[tool_call: log_expense]
-{"amount": 12.50, "category": "food", "note": "lunch"}
-→ "Logged: $12.50 on food (lunch)"
-
-[tool_call: log_expense]
-{"amount": 4.00, "category": "food", "note": "coffee"}
-→ "Logged: $4.00 on food (coffee)"
-
-[tool_call: get_expense_summary]
-→ "Expense summary:\n  food: $16.50\n  Total: $16.50"
-
-You've spent **$16.50 on food** so far today — $12.50 on lunch and $4.00 on coffee.`}
+  expectedOutput="I'll log both of those for you.\n\n[tool_call: log_expense]\n{\"amount\": 12.50, \"category\": \"food\", \"note\": \"lunch\"}\n→ \"Logged: $12.50 on food (lunch)\"\n\n[tool_call: log_expense]\n{\"amount\": 4.00, \"category\": \"food\", \"note\": \"coffee\"}\n→ \"Logged: $4.00 on food (coffee)\"\n\n[tool_call: get_expense_summary]\n→ \"Expense summary:\n  food: $16.50\n  Total: $16.50\"\n\nYou've spent **$16.50 on food** so far today — $12.50 on lunch and $4.00 on coffee."
 />
 
 The agent correctly identifies two separate expenses from one message, calls `log_expense` twice, then calls `get_expense_summary` to answer the question. This multi-step tool use happens automatically — you did not write any routing logic.
@@ -418,14 +405,7 @@ Everything else stays the same. Your tool code, your agent instruction, your too
   model="gemini-flash-latest"
   tools={["log_expense", "get_expense_summary"]}
   prompt="I spent $85 on groceries yesterday. What's my total food spend this month?"
-  expectedOutput={`[tool_call: log_expense]
-{"amount": 85.00, "category": "food", "note": "groceries"}
-→ "Logged: $85.00 on food (groceries)"
-
-[tool_call: get_expense_summary]
-→ "Expense summary:\n  food: $101.50\n  Total: $101.50"
-
-I've logged your $85.00 grocery run. Your total food spend this month is **$101.50** — that's the $12.50 lunch, $4.00 coffee, and today's $85.00 groceries.`}
+  expectedOutput="[tool_call: log_expense]\n{\"amount\": 85.00, \"category\": \"food\", \"note\": \"groceries\"}\n→ \"Logged: $85.00 on food (groceries)\"\n\n[tool_call: get_expense_summary]\n→ \"Expense summary:\n  food: $101.50\n  Total: $101.50\"\n\nI've logged your $85.00 grocery run. Your total food spend this month is **$101.50** — that's the $12.50 lunch, $4.00 coffee, and today's $85.00 groceries."
 />
 
 <KnowledgeCheck

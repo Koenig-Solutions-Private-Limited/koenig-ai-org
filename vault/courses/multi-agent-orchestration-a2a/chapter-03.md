@@ -354,15 +354,7 @@ uvicorn registry:app --port 8001 --reload
 
 <RunPromptCell
   model="claude-sonnet-4-6"
-  prompt={`You are an A2A orchestrator agent. Generate a complete OASF record (as a JSON object) for a "Financial News Researcher" agent with the following properties:
-- uid: did:agntcy:finresearch-001
-- Endpoint: http://localhost:8002 with A2A agent-card URL
-- Two skills: news.fetch.financial (fetches financial news from RSS/web) and news.summarize.earnings (summarizes earnings call transcripts)
-- Input modes: text/plain for both skills
-- Output modes: application/json for news.fetch.financial; text/markdown for news.summarize.earnings
-- Auth: api_key scheme
-
-Output only valid JSON.`}
+  prompt="You are an A2A orchestrator agent. Generate a complete OASF record (as a JSON object) for a \"Financial News Researcher\" agent with the following properties:\n- uid: did:agntcy:finresearch-001\n- Endpoint: http://localhost:8002 with A2A agent-card URL\n- Two skills: news.fetch.financial (fetches financial news from RSS/web) and news.summarize.earnings (summarizes earnings call transcripts)\n- Input modes: text/plain for both skills\n- Output modes: application/json for news.fetch.financial; text/markdown for news.summarize.earnings\n- Auth: api_key scheme\n\nOutput only valid JSON."
   expectedOutput='{"uid":"did:agntcy:finresearch-001","name":"FinancialNewsResearcher","description":"Fetches and summarizes financial news from RSS feeds and earnings call transcripts.","version":"1.0.0","endpoints":[{"type":"a2a","url":"http://localhost:8002","agent_card_url":"http://localhost:8002/.well-known/agent-card.json"}],"skills":[{"id":"news.fetch.financial","name":"Financial News Fetch","description":"Fetches financial news from RSS feeds and financial news APIs.","input_modes":["text/plain"],"output_modes":["application/json"]},{"id":"news.summarize.earnings","name":"Earnings Call Summarizer","description":"Summarizes earnings call transcripts into structured key-point narratives.","input_modes":["text/plain"],"output_modes":["text/markdown"]}],"auth":{"schemes":["api_key"]}}'
 />
 
@@ -496,12 +488,7 @@ P2P gossip discovery is eventually consistent. An agent that just registered wil
 
 <RunPromptCell
   model="claude-sonnet-4-6"
-  prompt={`You are an A2A orchestrator. You have just queried a local AGNTCY registry and received the following two candidate agents for the skill 'nlp.sentiment.financial':
-
-Agent A: {"name": "SentimentAnalystPro", "uid": "did:agntcy:sap-v2", "declared_latency_p50_ms": 800, "declared_success_rate": 0.97, "cost_per_task_usd": 0.04}
-Agent B: {"name": "QuickSentiment", "uid": "did:agntcy:qs-v1", "declared_latency_p50_ms": 200, "declared_success_rate": 0.88, "cost_per_task_usd": 0.01}
-
-You need to analyze quarterly earnings sentiment across 50 transcripts (high accuracy required). Which agent should you hire and why? Write a 3-sentence justification that references the specific metrics and explains the tradeoff.`}
+  prompt="You are an A2A orchestrator. You have just queried a local AGNTCY registry and received the following two candidate agents for the skill 'nlp.sentiment.financial':\n\nAgent A: {\"name\": \"SentimentAnalystPro\", \"uid\": \"did:agntcy:sap-v2\", \"declared_latency_p50_ms\": 800, \"declared_success_rate\": 0.97, \"cost_per_task_usd\": 0.04}\nAgent B: {\"name\": \"QuickSentiment\", \"uid\": \"did:agntcy:qs-v1\", \"declared_latency_p50_ms\": 200, \"declared_success_rate\": 0.88, \"cost_per_task_usd\": 0.01}\n\nYou need to analyze quarterly earnings sentiment across 50 transcripts (high accuracy required). Which agent should you hire and why? Write a 3-sentence justification that references the specific metrics and explains the tradeoff."
   expectedOutput="SentimentAnalystPro (Agent A) is the better choice for high-accuracy batch analysis. Its 0.97 success rate is significantly higher than QuickSentiment's 0.88, which translates to roughly 5 fewer failures per 50 transcripts — important when earnings sentiment errors could influence financial decisions. The 4× cost difference ($2.00 vs. $0.50 total) is acceptable given the accuracy requirement and the higher operational cost of re-running failed tasks."
 />
 

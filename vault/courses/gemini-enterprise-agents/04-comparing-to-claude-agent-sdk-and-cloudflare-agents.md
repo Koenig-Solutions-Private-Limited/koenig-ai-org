@@ -327,21 +327,7 @@ Use this framework when you are choosing a platform for a new agent workload.
   model="claude-sonnet-4-6"
   tools={[]}
   prompt="I'm building a compliance monitoring agent for a fintech company. It needs to: flag unusual transactions, retain 90 days of alert history per user, run continuously on GCP (we're all-in on GCP), and produce audit logs for regulators. Which platform — GEAP, Claude SDK, or Cloudflare Agents — is the right fit, and why?"
-  expectedOutput={`**Recommendation: GEAP**
-
-This workload is a strong GEAP match for four reasons:
-
-1. **You're already on GCP**: Data and compute stay in one cloud, no egress costs or cross-cloud IAM complexity.
-
-2. **Compliance is table stakes**: Agent Identity gives you cryptographic audit trails per agent invocation. Security Command Center integration means your regulators can audit agent activity through tools they already know. Building equivalent compliance infrastructure on Claude SDK would take months.
-
-3. **Anomaly detection is built in**: Agent Anomaly Detection uses statistical models + LLM-as-judge to flag unusual agent reasoning — which maps naturally onto your unusual-transaction detection use case.
-
-4. **90-day alert history**: Memory Bank and Agent Sessions handle cross-session retention within GCP's data residency guarantees. Your 90-day window is a configuration, not a database schema you build.
-
-**What you'd lose**: If you ever leave GCP, the audit trail and anomaly detection live in GCP services. Build your GEAP tool logic to be portable (pure Python functions with no GCP API calls inside them) and you mitigate this risk significantly.
-
-**Claude SDK would apply if** reasoning quality on ambiguous transaction patterns were the primary constraint — Claude Opus 4.7 may outperform Gemini 3.1 Pro on nuanced edge cases. You could use both: GEAP for orchestration, governance, and state, with a Claude Opus sub-agent for the high-stakes flagging decisions.`}
+  expectedOutput="**Recommendation: GEAP**\n\nThis workload is a strong GEAP match for four reasons:\n\n1. **You're already on GCP**: Data and compute stay in one cloud, no egress costs or cross-cloud IAM complexity.\n\n2. **Compliance is table stakes**: Agent Identity gives you cryptographic audit trails per agent invocation. Security Command Center integration means your regulators can audit agent activity through tools they already know. Building equivalent compliance infrastructure on Claude SDK would take months.\n\n3. **Anomaly detection is built in**: Agent Anomaly Detection uses statistical models + LLM-as-judge to flag unusual agent reasoning — which maps naturally onto your unusual-transaction detection use case.\n\n4. **90-day alert history**: Memory Bank and Agent Sessions handle cross-session retention within GCP's data residency guarantees. Your 90-day window is a configuration, not a database schema you build.\n\n**What you'd lose**: If you ever leave GCP, the audit trail and anomaly detection live in GCP services. Build your GEAP tool logic to be portable (pure Python functions with no GCP API calls inside them) and you mitigate this risk significantly.\n\n**Claude SDK would apply if** reasoning quality on ambiguous transaction patterns were the primary constraint — Claude Opus 4.7 may outperform Gemini 3.1 Pro on nuanced edge cases. You could use both: GEAP for orchestration, governance, and state, with a Claude Opus sub-agent for the high-stakes flagging decisions."
 />
 
 ---

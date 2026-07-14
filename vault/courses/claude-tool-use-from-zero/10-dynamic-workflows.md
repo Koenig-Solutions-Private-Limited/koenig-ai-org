@@ -215,31 +215,7 @@ Heterogeneous fan-out is useful when the analysis dimensions are genuinely indep
 <RunPromptCell
   model="claude-sonnet-4-6"
   prompt="I want to audit a Python monorepo with 80 files. Some files need security analysis, some need performance review, and some need both. Design a fan-out orchestration strategy. Consider: how do I route files to the right agents? What shape should the checkpoint store take? How do I avoid running redundant agents?"
-  expectedOutput={`Fan-out strategy for a mixed-audit monorepo:
-
-1. **Classification pass (single agent, sequential)**
-   Run one fast classification agent first: read file names + top-level imports, return a JSON map of {file_path: ["security", "perf"]} tags. Cost: ~1 agent × 80 short reads. Time: ~30s.
-
-2. **Parallel audit agents (fan-out)**
-   From the classification map, build two lists: security_files, perf_files. Files needing both appear in both lists. Spawn two independent thread pools: one for security agents, one for perf agents. Max 20 workers each. Each agent receives one file and its assigned role.
-
-3. **Checkpoint store shape**
-   {
-     "run_id": "audit-2026-05-31-a1b2",
-     "files": {
-       "src/payments.py": {
-         "security": { "status": "done", "findings": [...] },
-         "perf":     { "status": "done", "findings": [...] }
-       },
-       "src/models.py": {
-         "security": { "status": "done", "findings": [...] },
-         "perf":     { "status": "pending" }
-       }
-     }
-   }
-
-4. **Deduplication**
-   Track each (file, role) pair. If the run crashes and you resume, skip pairs where status == "done". This is idempotent fan-out.`}
+  expectedOutput="Fan-out strategy for a mixed-audit monorepo:\n\n1. **Classification pass (single agent, sequential)**\n   Run one fast classification agent first: read file names + top-level imports, return a JSON map of {file_path: [\"security\", \"perf\"]} tags. Cost: ~1 agent × 80 short reads. Time: ~30s.\n\n2. **Parallel audit agents (fan-out)**\n   From the classification map, build two lists: security_files, perf_files. Files needing both appear in both lists. Spawn two independent thread pools: one for security agents, one for perf agents. Max 20 workers each. Each agent receives one file and its assigned role.\n\n3. **Checkpoint store shape**\n   {\n     \"run_id\": \"audit-2026-05-31-a1b2\",\n     \"files\": {\n       \"src/payments.py\": {\n         \"security\": { \"status\": \"done\", \"findings\": [...] },\n         \"perf\":     { \"status\": \"done\", \"findings\": [...] }\n       },\n       \"src/models.py\": {\n         \"security\": { \"status\": \"done\", \"findings\": [...] },\n         \"perf\":     { \"status\": \"pending\" }\n       }\n     }\n   }\n\n4. **Deduplication**\n   Track each (file, role) pair. If the run crashes and you resume, skip pairs where status == \"done\". This is idempotent fan-out."
 />
 
 ## Token budget math
@@ -406,32 +382,7 @@ The orchestrator should expose the `rejected` list to the caller. Silent omissio
 <RunPromptCell
   model="claude-sonnet-4-6"
   prompt="An orchestration script fanned out to 20 sub-agents. Two returned empty output (timeout), one returned valid JSON with an unexpected extra field 'confidence_score' not in the agreed schema, and one returned a Python traceback instead of JSON. How should the verification layer handle each case? What should the orchestrator report?"
-  expectedOutput={`Handle each case explicitly:
-
-**Empty output (2 agents — timeouts)**
-Mark these as status: "failed", reason: "empty output / timeout". Do NOT silently drop them. Log which files were skipped. Depending on tolerance: either re-queue these specific files with a longer timeout, or surface them in the final report as "unanalyzed".
-
-**Extra schema field ('confidence_score')**
-This is a schema evolution case, not a failure. If the field is not required by your contract, accept the result and strip or preserve the extra field based on policy. Do not reject valid outputs for forward-compatible additions. Log the unexpected field for schema tracking.
-
-**Python traceback instead of JSON**
-This is a hard failure. The sub-agent crashed before producing output. Mark status: "failed", reason: "agent error — non-JSON output". Log the traceback for debugging. Do not attempt to parse it as a finding.
-
-**Orchestrator report**
-Always include a summary:
-{
-  "total_files": 20,
-  "verified": 17,
-  "failed": {
-    "timeout": 2,
-    "agent_error": 1
-  },
-  "warnings": {
-    "schema_drift": 1
-  }
-}
-
-Never present 17/20 as "complete". The 3 failures are load-bearing gaps in coverage.`}
+  expectedOutput="Handle each case explicitly:\n\n**Empty output (2 agents — timeouts)**\nMark these as status: \"failed\", reason: \"empty output / timeout\". Do NOT silently drop them. Log which files were skipped. Depending on tolerance: either re-queue these specific files with a longer timeout, or surface them in the final report as \"unanalyzed\".\n\n**Extra schema field ('confidence_score')**\nThis is a schema evolution case, not a failure. If the field is not required by your contract, accept the result and strip or preserve the extra field based on policy. Do not reject valid outputs for forward-compatible additions. Log the unexpected field for schema tracking.\n\n**Python traceback instead of JSON**\nThis is a hard failure. The sub-agent crashed before producing output. Mark status: \"failed\", reason: \"agent error — non-JSON output\". Log the traceback for debugging. Do not attempt to parse it as a finding.\n\n**Orchestrator report**\nAlways include a summary:\n{\n  \"total_files\": 20,\n  \"verified\": 17,\n  \"failed\": {\n    \"timeout\": 2,\n    \"agent_error\": 1\n  },\n  \"warnings\": {\n    \"schema_drift\": 1\n  }\n}\n\nNever present 17/20 as \"complete\". The 3 failures are load-bearing gaps in coverage."
 />
 
 ## Rollback patterns

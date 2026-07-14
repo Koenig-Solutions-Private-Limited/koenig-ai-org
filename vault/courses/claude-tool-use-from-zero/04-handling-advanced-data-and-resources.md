@@ -139,21 +139,7 @@ Your server can expose this as a resource instead of a broad file-read tool. The
   model="claude-sonnet-4-6"
   tools={["course-file-browser"]}
   prompt="Read the company refund policy resource for en-US and summarize the refund window, receipt requirement, and exceptions."
-  expectedOutput={`Claude should request the resource URI:
-
-company-config://policies/refund/en-US
-
-Expected resource content:
-{
-  "policy": "refund",
-  "locale": "en-US",
-  "window_days": 30,
-  "requires_receipt": true,
-  "exceptions": ["downloaded digital goods", "custom services"]
-}
-
-Claude should summarize:
-The en-US refund policy allows refunds within 30 days, requires a receipt, and excludes downloaded digital goods and custom services.`}
+  expectedOutput="Claude should request the resource URI:\n\ncompany-config://policies/refund/en-US\n\nExpected resource content:\n{\n  \"policy\": \"refund\",\n  \"locale\": \"en-US\",\n  \"window_days\": 30,\n  \"requires_receipt\": true,\n  \"exceptions\": [\"downloaded digital goods\", \"custom services\"]\n}\n\nClaude should summarize:\nThe en-US refund policy allows refunds within 30 days, requires a receipt, and excludes downloaded digital goods and custom services."
 />
 
 ## Handling binary and large data
@@ -176,18 +162,7 @@ The goal is not "Claude sees everything." The goal is "Claude sees the right con
 <RunPromptCell
   model="claude-sonnet-4-6"
   prompt="I have a 90-page vendor contract. Design MCP resources and tools so Claude can answer payment-term questions without loading the entire PDF into context."
-  expectedOutput={`A good design:
-
-Resources:
-- contract://vendor-123/metadata
-- contract://vendor-123/sections/payment-terms
-- contract://vendor-123/sections/termination
-
-Tools:
-- search_contract(contract_id, query)
-- extract_clause(contract_id, clause_type)
-
-This keeps context targeted. Claude can read metadata, then the payment terms section, and only call extraction when needed.`}
+  expectedOutput="A good design:\n\nResources:\n- contract://vendor-123/metadata\n- contract://vendor-123/sections/payment-terms\n- contract://vendor-123/sections/termination\n\nTools:\n- search_contract(contract_id, query)\n- extract_clause(contract_id, clause_type)\n\nThis keeps context targeted. Claude can read metadata, then the payment terms section, and only call extraction when needed."
 />
 
 <KnowledgeCheck

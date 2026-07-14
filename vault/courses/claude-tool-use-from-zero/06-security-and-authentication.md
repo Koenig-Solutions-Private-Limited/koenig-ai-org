@@ -147,13 +147,7 @@ The exact context object depends on your transport and host. The pattern is stab
 <RunPromptCell
   model="claude-sonnet-4-6"
   prompt="A connector has tools read_invoice, draft_invoice_reminder, and send_invoice_reminder. Assign read/write/approval requirements for each using least privilege."
-  expectedOutput={`A least-privilege design:
-
-- read_invoice: requires invoice:read. No human approval if read-only and scoped.
-- draft_invoice_reminder: requires invoice:read and email:draft. No external send; approval optional.
-- send_invoice_reminder: requires invoice:read and email:send, plus human approval before sending.
-
-The write-capable external action has the strongest gate.`}
+  expectedOutput="A least-privilege design:\n\n- read_invoice: requires invoice:read. No human approval if read-only and scoped.\n- draft_invoice_reminder: requires invoice:read and email:draft. No external send; approval optional.\n- send_invoice_reminder: requires invoice:read and email:send, plus human approval before sending.\n\nThe write-capable external action has the strongest gate."
 />
 
 ## Human-in-the-loop approval
@@ -186,19 +180,7 @@ Claude can explain the draft, but your application should require a user click o
 <RunPromptCell
   model="claude-sonnet-4-6"
   prompt="Design the result object for a tool that prepares, but does not send, payroll reminder emails. Include enough data for human review."
-  expectedOutput={`A safe result:
-{
-  "status": "awaiting_approval",
-  "action": "send_payroll_reminders",
-  "approval_id": "approval_2026_05_14_001",
-  "reminder_count": 3,
-  "recipients": [
-    {"vendor_id":"vendor_17","email":"masked@example.test","amount_due":"USD 420.00"}
-  ],
-  "preview_available": true
-}
-
-The tool prepares the action and creates an approval record. It does not send messages automatically.`}
+  expectedOutput="A safe result:\n{\n  \"status\": \"awaiting_approval\",\n  \"action\": \"send_payroll_reminders\",\n  \"approval_id\": \"approval_2026_05_14_001\",\n  \"reminder_count\": 3,\n  \"recipients\": [\n    {\"vendor_id\":\"vendor_17\",\"email\":\"masked@example.test\",\"amount_due\":\"USD 420.00\"}\n  ],\n  \"preview_available\": true\n}\n\nThe tool prepares the action and creates an approval record. It does not send messages automatically."
 />
 
 <KnowledgeCheck

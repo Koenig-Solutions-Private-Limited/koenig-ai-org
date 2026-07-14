@@ -93,17 +93,7 @@ Here is the smallest useful stock-price tool. It uses a fake in-memory price tab
 <RunPromptCell
   model="claude-sonnet-4-6"
   prompt="You have a tool named get_stock_price that accepts {ticker: string}. Use it to answer: What is the current price of KOENIG?"
-  expectedOutput={`Claude should return a tool request similar to:
-
-[tool_use]
-name: get_stock_price
-input: {"ticker":"KOENIG"}
-
-After your host returns the tool result:
-{"ticker":"KOENIG","price":42.15,"currency":"USD","as_of":"2026-05-14T12:00:00Z"}
-
-Claude can answer:
-KOENIG is trading at 42.15 USD as of 2026-05-14T12:00:00Z.`}
+  expectedOutput="Claude should return a tool request similar to:\n\n[tool_use]\nname: get_stock_price\ninput: {\"ticker\":\"KOENIG\"}\n\nAfter your host returns the tool result:\n{\"ticker\":\"KOENIG\",\"price\":42.15,\"currency\":\"USD\",\"as_of\":\"2026-05-14T12:00:00Z\"}\n\nClaude can answer:\nKOENIG is trading at 42.15 USD as of 2026-05-14T12:00:00Z."
 />
 
 The important phrase is "your host returns." Claude does not know the price. The model selected the tool and filled the arguments; your program supplied the facts.
@@ -215,14 +205,7 @@ The third failure is treating model output as trusted JSON. Even when using tool
 <RunPromptCell
   model="claude-sonnet-4-6"
   prompt="I am designing a first Claude tool for a finance assistant. Compare these tool names and tell me which is safer: run_sql(query), get_customer_balance(customer_id), or update_account(anything). Explain the operational risk."
-  expectedOutput={`The safer first tool is get_customer_balance(customer_id).
-
-Why:
-- It is narrow and business-specific.
-- Its input is constrained to a customer identifier.
-- It sounds read-only, which makes review and logging easier.
-
-run_sql(query) is too powerful because it exposes a general database primitive. update_account(anything) is vague and write-capable, so it needs a much stronger schema, authorization check, and human approval step.`}
+  expectedOutput="The safer first tool is get_customer_balance(customer_id).\n\nWhy:\n- It is narrow and business-specific.\n- Its input is constrained to a customer identifier.\n- It sounds read-only, which makes review and logging easier.\n\nrun_sql(query) is too powerful because it exposes a general database primitive. update_account(anything) is vague and write-capable, so it needs a much stronger schema, authorization check, and human approval step."
 />
 
 <KnowledgeCheck

@@ -242,50 +242,8 @@ You can mix Part types freely in a single message. An orchestrator can send a te
 
 <RunPromptCell
   model="claude-sonnet-4-6"
-  prompt={`You are an A2A client agent building a sendMessage payload to delegate a sentiment analysis task to a specialist agent.
-
-Write the complete, valid JSON for a sendMessage JSON-RPC 2.0 call with:
-- jsonrpc: "2.0"
-- method: "sendMessage"
-- id: "req-001"
-- params.message.role: "ROLE_USER"
-- params.message.messageId: a placeholder UUID
-- params.message.contextId: a different placeholder UUID
-- params.message.parts: one TextPart with the instruction "Analyze the sentiment of the attached earnings call transcript. Return a JSON array where each item has: quote (string), sentiment_score (float -1.0 to 1.0), and category (enum: positive, negative, neutral)." and one FilePart where file.name is "q3-2026-earnings.txt", file.mimeType is "text/plain", and file.bytes is the string "BASE64_ENCODED_TRANSCRIPT"
-- params.configuration.acceptedOutputModes: ["text", "data"]
-- params.configuration.returnImmediately: true
-
-Format the JSON cleanly with proper indentation.`}
-  expectedOutput={`{
-  "jsonrpc": "2.0",
-  "method": "sendMessage",
-  "id": "req-001",
-  "params": {
-    "message": {
-      "role": "ROLE_USER",
-      "messageId": "msg-11111111-2222-3333-4444-555555555555",
-      "contextId": "ctx-aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
-      "parts": [
-        {
-          "kind": "text",
-          "text": "Analyze the sentiment of the attached earnings call transcript. Return a JSON array where each item has: quote (string), sentiment_score (float -1.0 to 1.0), and category (enum: positive, negative, neutral)."
-        },
-        {
-          "kind": "file",
-          "file": {
-            "name": "q3-2026-earnings.txt",
-            "mimeType": "text/plain",
-            "bytes": "BASE64_ENCODED_TRANSCRIPT"
-          }
-        }
-      ]
-    },
-    "configuration": {
-      "acceptedOutputModes": ["text", "data"],
-      "returnImmediately": true
-    }
-  }
-}`}
+  prompt="You are an A2A client agent building a sendMessage payload to delegate a sentiment analysis task to a specialist agent.\n\nWrite the complete, valid JSON for a sendMessage JSON-RPC 2.0 call with:\n- jsonrpc: \"2.0\"\n- method: \"sendMessage\"\n- id: \"req-001\"\n- params.message.role: \"ROLE_USER\"\n- params.message.messageId: a placeholder UUID\n- params.message.contextId: a different placeholder UUID\n- params.message.parts: one TextPart with the instruction \"Analyze the sentiment of the attached earnings call transcript. Return a JSON array where each item has: quote (string), sentiment_score (float -1.0 to 1.0), and category (enum: positive, negative, neutral).\" and one FilePart where file.name is \"q3-2026-earnings.txt\", file.mimeType is \"text/plain\", and file.bytes is the string \"BASE64_ENCODED_TRANSCRIPT\"\n- params.configuration.acceptedOutputModes: [\"text\", \"data\"]\n- params.configuration.returnImmediately: true\n\nFormat the JSON cleanly with proper indentation."
+  expectedOutput="{\n  \"jsonrpc\": \"2.0\",\n  \"method\": \"sendMessage\",\n  \"id\": \"req-001\",\n  \"params\": {\n    \"message\": {\n      \"role\": \"ROLE_USER\",\n      \"messageId\": \"msg-11111111-2222-3333-4444-555555555555\",\n      \"contextId\": \"ctx-aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\",\n      \"parts\": [\n        {\n          \"kind\": \"text\",\n          \"text\": \"Analyze the sentiment of the attached earnings call transcript. Return a JSON array where each item has: quote (string), sentiment_score (float -1.0 to 1.0), and category (enum: positive, negative, neutral).\"\n        },\n        {\n          \"kind\": \"file\",\n          \"file\": {\n            \"name\": \"q3-2026-earnings.txt\",\n            \"mimeType\": \"text/plain\",\n            \"bytes\": \"BASE64_ENCODED_TRANSCRIPT\"\n          }\n        }\n      ]\n    },\n    \"configuration\": {\n      \"acceptedOutputModes\": [\"text\", \"data\"],\n      \"returnImmediately\": true\n    }\n  }\n}"
 />
 
 ---
@@ -488,34 +446,8 @@ Notice several design decisions:
 
 <RunPromptCell
   model="claude-sonnet-4-6"
-  prompt={`You are designing an A2A AgentCard for a specialist "Financial Document Summarizer" agent with these capabilities:
-- Summarizes annual reports, 10-K filings, and earnings releases
-- Extracts key financial metrics: revenue, EBITDA, net income, guidance
-- Outputs either a structured JSON summary or a human-readable executive brief (Markdown)
-- Accepts text and file inputs (PDF or plain text)
-- Does NOT perform sentiment analysis or make investment recommendations
-
-Write the complete skills array for this agent's AgentCard, following the A2A specification.
-Include exactly two skills: one for structured JSON metric extraction, one for executive brief generation.
-For each skill, write a description that a discovery registry could use to match capability queries.`}
-  expectedOutput={`[
-  {
-    "id": "financial-metrics-extraction",
-    "name": "Financial Metrics Extraction",
-    "description": "Extracts key financial metrics from annual reports, 10-K filings, and earnings releases. Returns structured JSON with revenue, EBITDA, net income, EPS, and forward guidance figures for the current and prior reporting periods. Accepts PDF or plain text input. Does not perform sentiment analysis or investment recommendations.",
-    "inputModes": ["text", "file"],
-    "outputModes": ["data"],
-    "tags": ["finance", "10-K", "annual-report", "earnings", "metrics", "extraction"]
-  },
-  {
-    "id": "executive-brief-generation",
-    "name": "Executive Brief Generation",
-    "description": "Generates a concise Markdown executive brief (500-800 words) from annual reports, 10-K filings, or earnings releases. Covers business highlights, financial performance, risks, and key takeaways. Suitable for board summaries and investor communications. Accepts PDF or plain text. Does not include investment recommendations.",
-    "inputModes": ["text", "file"],
-    "outputModes": ["text"],
-    "tags": ["finance", "summary", "executive-brief", "annual-report", "earnings", "reporting"]
-  }
-]`}
+  prompt="You are designing an A2A AgentCard for a specialist \"Financial Document Summarizer\" agent with these capabilities:\n- Summarizes annual reports, 10-K filings, and earnings releases\n- Extracts key financial metrics: revenue, EBITDA, net income, guidance\n- Outputs either a structured JSON summary or a human-readable executive brief (Markdown)\n- Accepts text and file inputs (PDF or plain text)\n- Does NOT perform sentiment analysis or make investment recommendations\n\nWrite the complete skills array for this agent's AgentCard, following the A2A specification.\nInclude exactly two skills: one for structured JSON metric extraction, one for executive brief generation.\nFor each skill, write a description that a discovery registry could use to match capability queries."
+  expectedOutput="[\n  {\n    \"id\": \"financial-metrics-extraction\",\n    \"name\": \"Financial Metrics Extraction\",\n    \"description\": \"Extracts key financial metrics from annual reports, 10-K filings, and earnings releases. Returns structured JSON with revenue, EBITDA, net income, EPS, and forward guidance figures for the current and prior reporting periods. Accepts PDF or plain text input. Does not perform sentiment analysis or investment recommendations.\",\n    \"inputModes\": [\"text\", \"file\"],\n    \"outputModes\": [\"data\"],\n    \"tags\": [\"finance\", \"10-K\", \"annual-report\", \"earnings\", \"metrics\", \"extraction\"]\n  },\n  {\n    \"id\": \"executive-brief-generation\",\n    \"name\": \"Executive Brief Generation\",\n    \"description\": \"Generates a concise Markdown executive brief (500-800 words) from annual reports, 10-K filings, or earnings releases. Covers business highlights, financial performance, risks, and key takeaways. Suitable for board summaries and investor communications. Accepts PDF or plain text. Does not include investment recommendations.\",\n    \"inputModes\": [\"text\", \"file\"],\n    \"outputModes\": [\"text\"],\n    \"tags\": [\"finance\", \"summary\", \"executive-brief\", \"annual-report\", \"earnings\", \"reporting\"]\n  }\n]"
 />
 
 ---

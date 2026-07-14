@@ -152,16 +152,7 @@ Each stage has different risk. Matching is read-heavy. Drafting is reversible. S
 <RunPromptCell
   model="claude-sonnet-4-6"
   prompt="Design MCP tools for a Payroll Assistant that reconciles PayPal settlements against an invoice ledger. Keep reconciliation separate from customer-facing email."
-  expectedOutput={`Suggested tools:
-
-- list_invoice_ledger(date_range): read ledger entries.
-- list_payment_settlements(date_range): read settlement records.
-- propose_settlement_matches(date_range): returns matched and unmatched records.
-- draft_missing_payment_reminders(reconciliation_run_id): drafts reminder emails.
-- request_reminder_send_approval(reconciliation_run_id): creates an approval package.
-- send_approved_reminders(approval_id): sends only after approval.
-
-This separates read, draft, approval, and send phases.`}
+  expectedOutput="Suggested tools:\n\n- list_invoice_ledger(date_range): read ledger entries.\n- list_payment_settlements(date_range): read settlement records.\n- propose_settlement_matches(date_range): returns matched and unmatched records.\n- draft_missing_payment_reminders(reconciliation_run_id): drafts reminder emails.\n- request_reminder_send_approval(reconciliation_run_id): creates an approval package.\n- send_approved_reminders(approval_id): sends only after approval.\n\nThis separates read, draft, approval, and send phases."
 />
 
 ## Approval state
@@ -209,15 +200,7 @@ But the connector should not silently update every customer record. If your orga
 <RunPromptCell
   model="claude-sonnet-4-6"
   prompt="A CRM update will trigger an automated customer success sequence. Should the Payroll Assistant write the CRM stage directly after finding a missing payment? Explain the safer connector design."
-  expectedOutput={`No. If the CRM stage triggers an automated customer-facing sequence, the update is effectively an external action.
-
-Safer design:
-- propose_crm_updates(reconciliation_run_id)
-- show affected accounts and stage changes
-- require human approval
-- apply_approved_crm_updates(approval_id)
-
-This keeps automation behind an explicit approval gate.`}
+  expectedOutput="No. If the CRM stage triggers an automated customer-facing sequence, the update is effectively an external action.\n\nSafer design:\n- propose_crm_updates(reconciliation_run_id)\n- show affected accounts and stage changes\n- require human approval\n- apply_approved_crm_updates(approval_id)\n\nThis keeps automation behind an explicit approval gate."
 />
 
 ## Capstone architecture

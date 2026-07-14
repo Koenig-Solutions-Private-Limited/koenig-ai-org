@@ -155,12 +155,8 @@ The most common mistake is to write prompts that skip straight from the brief to
 
 <RunPromptCell
   model="claude-sonnet-4-6"
-  prompt={`You are helping me plan a Claude creative-connector workflow before I connect any live app.
-
-Brief: Create a 10-second product-launch visual loop for a premium desk lamp. The team may use Blender for a simple 3D scene and Adobe for creativity for still/video finishing. The final approval must stay with the creative director.
-
-Create a workflow map with five columns: host, connector/server, tool action, resource/file state, checkpoint. Do not propose destructive edits. Mark any live connector outputs as TODO: verify with QA.`}
-  expectedOutput={`A table with advice steps first, then bounded connector actions such as inspecting a Blender scene, drafting a non-destructive scene-change script, preparing export variants, and documenting checkpoints. Live app results should be marked "TODO: verify with QA" because the prompt has not actually run against Blender or Adobe.`}
+  prompt="You are helping me plan a Claude creative-connector workflow before I connect any live app.\n\nBrief: Create a 10-second product-launch visual loop for a premium desk lamp. The team may use Blender for a simple 3D scene and Adobe for creativity for still/video finishing. The final approval must stay with the creative director.\n\nCreate a workflow map with five columns: host, connector/server, tool action, resource/file state, checkpoint. Do not propose destructive edits. Mark any live connector outputs as TODO: verify with QA."
+  expectedOutput="A table with advice steps first, then bounded connector actions such as inspecting a Blender scene, drafting a non-destructive scene-change script, preparing export variants, and documenting checkpoints. Live app results should be marked \"TODO: verify with QA\" because the prompt has not actually run against Blender or Adobe."
 />
 
 ```takeaways
@@ -223,17 +219,8 @@ This is especially important because Anthropic presents connectors as a way for 
 
 <RunPromptCell
   model="claude-sonnet-4-6"
-  prompt={`Rewrite this unsafe connector prompt into a production-safe prompt.
-
-Unsafe prompt: "Open my Blender scene and make the product look more cinematic. Then export a preview."
-
-Constraints:
-- Claude may inspect the scene and propose changes.
-- Claude may draft Python but must not execute it until reviewed.
-- Any export must come from a duplicate file.
-- The creative director approves final look.
-- Mark any app-specific result as TODO: verify with QA.`}
-  expectedOutput={`A safer prompt that asks Claude to inspect the scene first, summarize current lighting/camera/material state, propose 2-3 non-destructive changes, draft Python with comments, wait for approval before execution, use a duplicate file for exports, and mark live results as TODO: verify with QA.`}
+  prompt="Rewrite this unsafe connector prompt into a production-safe prompt.\n\nUnsafe prompt: \"Open my Blender scene and make the product look more cinematic. Then export a preview.\"\n\nConstraints:\n- Claude may inspect the scene and propose changes.\n- Claude may draft Python but must not execute it until reviewed.\n- Any export must come from a duplicate file.\n- The creative director approves final look.\n- Mark any app-specific result as TODO: verify with QA."
+  expectedOutput="A safer prompt that asks Claude to inspect the scene first, summarize current lighting/camera/material state, propose 2-3 non-destructive changes, draft Python with comments, wait for approval before execution, use a duplicate file for exports, and mark live results as TODO: verify with QA."
 />
 
 ```takeaways

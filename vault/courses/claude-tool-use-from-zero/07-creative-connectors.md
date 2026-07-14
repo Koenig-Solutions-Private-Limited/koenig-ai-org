@@ -161,24 +161,7 @@ The safest first call is read-only: ask Claude to describe what's currently in t
   model="claude-sonnet-4-6"
   tools={["blender"]}
   prompt="Using the Blender connector, tell me how many objects are in the current scene and list their names and types."
-  expectedOutput={`I'll check the current Blender scene for you.
-
-[tool_call: blender.execute_python]
-\`\`\`python
-import bpy
-objects = [(obj.name, obj.type) for obj in bpy.context.scene.objects]
-print(f"Object count: {len(objects)}")
-for name, typ in objects:
-    print(f"  {name}: {typ}")
-\`\`\`
-
-Result:
-Object count: 3
-  Camera: CAMERA
-  Light: LIGHT
-  Cube: MESH
-
-The scene contains 3 objects: a default Camera, a Point Light, and the default startup Cube (a MESH type).`}
+  expectedOutput="I'll check the current Blender scene for you.\n\n[tool_call: blender.execute_python]\n```python\nimport bpy\nobjects = [(obj.name, obj.type) for obj in bpy.context.scene.objects]\nprint(f\"Object count: {len(objects)}\")\nfor name, typ in objects:\n    print(f\"  {name}: {typ}\")\n```\n\nResult:\nObject count: 3\n  Camera: CAMERA\n  Light: LIGHT\n  Cube: MESH\n\nThe scene contains 3 objects: a default Camera, a Point Light, and the default startup Cube (a MESH type)."
 />
 
 Notice the pattern: Claude wrote `bpy` Python, the MCP server ran it inside Blender, and the stdout came back as the tool result.
@@ -207,48 +190,7 @@ Now for the main event. Give Claude a creative brief and let it author the full 
   model="claude-sonnet-4-6"
   tools={["blender"]}
   prompt="I want to create a generative wave pattern in Blender: a 10×10 grid of cubes where each cube's Z-scale is determined by a sine wave based on its distance from the centre. Clear the scene first (keep the camera and light), then build the grid. Name the collection 'WaveGrid'."
-  expectedOutput={`I'll build that for you. First I'll clear any existing mesh objects, then generate the wave grid.
-
-[tool_call: blender.execute_python]
-\`\`\`python
-import bpy
-import math
-
-# Clear existing meshes (keep camera and light)
-bpy.ops.object.select_all(action='DESELECT')
-for obj in bpy.context.scene.objects:
-    if obj.type == 'MESH':
-        obj.select_set(True)
-bpy.ops.object.delete()
-
-# Create collection
-wave_coll = bpy.data.collections.new("WaveGrid")
-bpy.context.scene.collection.children.link(wave_coll)
-
-GRID = 10
-SPACING = 1.5
-MAX_HEIGHT = 2.0
-
-for row in range(GRID):
-    for col in range(GRID):
-        x = (col - GRID / 2) * SPACING
-        y = (row - GRID / 2) * SPACING
-        dist = math.sqrt(x**2 + y**2)
-        z_scale = 0.2 + (MAX_HEIGHT * (0.5 + 0.5 * math.sin(dist - 0)))
-
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(x, y, 0))
-        obj = bpy.context.active_object
-        obj.name = f"WaveCube_{row}_{col}"
-        obj.scale.z = z_scale
-        wave_coll.objects.link(obj)
-        bpy.context.scene.collection.objects.unlink(obj)
-
-print(f"WaveGrid built: {GRID*GRID} cubes in collection 'WaveGrid'")
-\`\`\`
-
-Result: WaveGrid built: 100 cubes in collection 'WaveGrid'
-
-Your wave scene is ready. You should see a 10×10 grid with cubes rising and falling in concentric rings from the centre.`}
+  expectedOutput="I'll build that for you. First I'll clear any existing mesh objects, then generate the wave grid.\n\n[tool_call: blender.execute_python]\n```python\nimport bpy\nimport math\n\n# Clear existing meshes (keep camera and light)\nbpy.ops.object.select_all(action='DESELECT')\nfor obj in bpy.context.scene.objects:\n    if obj.type == 'MESH':\n        obj.select_set(True)\nbpy.ops.object.delete()\n\n# Create collection\nwave_coll = bpy.data.collections.new(\"WaveGrid\")\nbpy.context.scene.collection.children.link(wave_coll)\n\nGRID = 10\nSPACING = 1.5\nMAX_HEIGHT = 2.0\n\nfor row in range(GRID):\n    for col in range(GRID):\n        x = (col - GRID / 2) * SPACING\n        y = (row - GRID / 2) * SPACING\n        dist = math.sqrt(x**2 + y**2)\n        z_scale = 0.2 + (MAX_HEIGHT * (0.5 + 0.5 * math.sin(dist - 0)))\n\n        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(x, y, 0))\n        obj = bpy.context.active_object\n        obj.name = f\"WaveCube_{row}_{col}\"\n        obj.scale.z = z_scale\n        wave_coll.objects.link(obj)\n        bpy.context.scene.collection.objects.unlink(obj)\n\nprint(f\"WaveGrid built: {GRID*GRID} cubes in collection 'WaveGrid'\")\n```\n\nResult: WaveGrid built: 100 cubes in collection 'WaveGrid'\n\nYour wave scene is ready. You should see a 10×10 grid with cubes rising and falling in concentric rings from the centre."
 />
 
 ---
@@ -274,22 +216,7 @@ Each step here is a separate tool call; Claude sequences them automatically base
   model="claude-sonnet-4-6"
   tools={["adobe_creative_cloud"]}
   prompt="Find 'hero-banner.png' in my Adobe for creativity Libraries, apply a 2px Gaussian Blur in Photoshop (use a Smart Object), and export it as a web-optimised JPEG."
-  expectedOutput={`[tool_call: adobe_creative_cloud.search_library_assets]
-{ "name": "hero-banner.png" }
-
-[tool_call: adobe_creative_cloud.open_in_photoshop]
-{ "asset_id": "asset_123" }
-
-[tool_call: adobe_creative_cloud.photoshop_action]
-{ "action": "convert_to_smart_object" }
-
-[tool_call: adobe_creative_cloud.photoshop_action]
-{ "action": "apply_smart_filter", "filter": "Gaussian Blur", "params": { "radius": 2 } }
-
-[tool_call: adobe_creative_cloud.export_asset]
-{ "format": "jpeg", "quality": 80 }
-
-Done. Your blurred banner has been exported.`}
+  expectedOutput="[tool_call: adobe_creative_cloud.search_library_assets]\n{ \"name\": \"hero-banner.png\" }\n\n[tool_call: adobe_creative_cloud.open_in_photoshop]\n{ \"asset_id\": \"asset_123\" }\n\n[tool_call: adobe_creative_cloud.photoshop_action]\n{ \"action\": \"convert_to_smart_object\" }\n\n[tool_call: adobe_creative_cloud.photoshop_action]\n{ \"action\": \"apply_smart_filter\", \"filter\": \"Gaussian Blur\", \"params\": { \"radius\": 2 } }\n\n[tool_call: adobe_creative_cloud.export_asset]\n{ \"format\": \"jpeg\", \"quality\": 80 }\n\nDone. Your blurred banner has been exported."
 />
 
 <KnowledgeCheck

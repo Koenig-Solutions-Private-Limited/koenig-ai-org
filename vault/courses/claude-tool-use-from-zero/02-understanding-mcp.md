@@ -142,11 +142,7 @@ That classification is not academic. It changes safety, UX, and observability. A
 <RunPromptCell
   model="claude-sonnet-4-6"
   prompt="Classify each MCP capability as a tool, resource, or prompt. Use one sentence of reasoning for each: (1) list_unpaid_invoices(customer_id), (2) company://policies/refund-policy, (3) draft_collection_email(customer_id, tone), (4) support://runbooks/password-reset, (5) create_refund(order_id, amount_cents)."
-  expectedOutput={`1. list_unpaid_invoices(customer_id): tool, because it performs a query action against a finance system.
-2. company://policies/refund-policy: resource, because it is read-only context identified by a stable URI.
-3. draft_collection_email(customer_id, tone): prompt, because it is a reusable instruction template for a communication workflow.
-4. support://runbooks/password-reset: resource, because it is a runbook the host can retrieve as context.
-5. create_refund(order_id, amount_cents): tool, because it changes business state and must be invoked with validation and authorization.`}
+  expectedOutput="1. list_unpaid_invoices(customer_id): tool, because it performs a query action against a finance system.\n2. company://policies/refund-policy: resource, because it is read-only context identified by a stable URI.\n3. draft_collection_email(customer_id, tone): prompt, because it is a reusable instruction template for a communication workflow.\n4. support://runbooks/password-reset: resource, because it is a runbook the host can retrieve as context.\n5. create_refund(order_id, amount_cents): tool, because it changes business state and must be invoked with validation and authorization."
 />
 
 Notice that "read-only" does not automatically mean "resource." `list_unpaid_invoices(customer_id)` is read-only from the business user's perspective, but it is still an action because the server must execute a query with arguments. A resource is better when the item is stable enough to identify and retrieve directly.
@@ -307,17 +303,13 @@ In that case, Claude Code does not start a local Node.js process. It connects to
 <RunPromptCell
   model="claude-sonnet-4-6"
   prompt="Read this Claude Code MCP command and explain the host, server, transport, secret handling, and likely discovered capabilities: claude mcp add --transport stdio --env FINANCE_API_KEY=demo finance-demo -- node ./server.js"
-  expectedOutput={`Host: Claude Code.
-Server: the local process started by node ./server.js, registered under the name finance-demo.
-Transport: stdio, because Claude Code communicates with the local process over standard input/output.
-Secret handling: FINANCE_API_KEY=demo is passed to the server process as an environment variable. It should not be written into prompts, source control, or logs.
-Likely discovered capabilities: whatever tools, resources, and prompts the finance-demo MCP server registers, such as invoice lookup tools, finance policy resources, or collection-email prompts.`}
+  expectedOutput="Host: Claude Code.\nServer: the local process started by node ./server.js, registered under the name finance-demo.\nTransport: stdio, because Claude Code communicates with the local process over standard input/output.\nSecret handling: FINANCE_API_KEY=demo is passed to the server process as an environment variable. It should not be written into prompts, source control, or logs.\nLikely discovered capabilities: whatever tools, resources, and prompts the finance-demo MCP server registers, such as invoice lookup tools, finance policy resources, or collection-email prompts."
 />
 
 <RunPromptCell
   model="claude-sonnet-4-6"
   prompt="A team wants to share an MCP server config in a repository. The config points to https://api.example.com/mcp and needs an API key. Recommend a Claude Code scope and explain how to avoid committing the secret."
-  expectedOutput={`Use project scope if the team intentionally wants the server configuration shared through the repository's .mcp.json file. Put the endpoint and non-secret structure in the config, but reference the API key through environment variable expansion or an authentication flow instead of committing the key. Each developer or CI environment should provide its own secret value outside source control.`}
+  expectedOutput="Use project scope if the team intentionally wants the server configuration shared through the repository's .mcp.json file. Put the endpoint and non-secret structure in the config, but reference the API key through environment variable expansion or an authentication flow instead of committing the key. Each developer or CI environment should provide its own secret value outside source control."
 />
 
 ## Capability design checklist
