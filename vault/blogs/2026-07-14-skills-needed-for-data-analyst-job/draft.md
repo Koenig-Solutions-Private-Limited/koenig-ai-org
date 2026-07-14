@@ -2,14 +2,18 @@
 date: 2026-07-14
 author: koenig-ai-academy
 ticket: KOEA-12815
+title: "Skills Needed for a Data Analyst Job in 2026: Learn These 7 First"
+description: "The data analyst skills to learn first in 2026 are SQL, spreadsheets, a BI tool, statistics, Python or R, communication, and AI literacy — here is how to build them in 90 days."
+slug: 2026-07-14-skills-needed-for-data-analyst-job
+tags: ["data analyst", "data analytics skills", "career change", "SQL", "90-day learning plan"]
 blog_track: career
 content_type: article
-status: g0-blocked
+status: draft-for-review
 reading_time_min: 8
 primary_query: "skills needed for data analyst job"
 first_60_words_answer: "The skills needed for a data analyst job in 2026 are SQL, spreadsheets, one BI tool such as Tableau or Power BI, statistics fundamentals, Python or R, business communication, and AI literacy."
 contrarian_angle: "The fastest way into data analytics is not to collect every tool; it is to prove a narrow SQL-spreadsheet-dashboard workflow and add AI literacy without pretending to be a data scientist."
-sources: ["https://365datascience.com/career-advice/data-analyst-job-outlook-2025/", "https://www.getdbt.com/resources/state-of-analytics-engineering-2025", "https://www.linkedin.com/business/talent/blog/learning-and-development/skills-on-the-rise", "https://www.microsoft.com/en-us/worklab/work-trend-index/ai-at-work-is-here-now-comes-the-hard-part", "https://www.weforum.org/publications/the-future-of-jobs-report-2025/", "https://www.coursera.org/professional-certificates/google-data-analytics", "https://learn.microsoft.com/en-us/credentials/certifications/data-analyst-associate/", "https://www.bls.gov/ooh/math/data-scientists.htm"]
+sources: ["https://365datascience.com/career-advice/data-analyst-job-outlook-2025/", "https://www.linkedin.com/business/talent/blog/learning-and-development/skills-on-the-rise", "https://www.microsoft.com/en-us/worklab/work-trend-index/ai-at-work-is-here-now-comes-the-hard-part", "https://www.weforum.org/publications/the-future-of-jobs-report-2025/", "https://www.coursera.org/professional-certificates/google-data-analytics", "https://learn.microsoft.com/en-us/credentials/certifications/data-analyst-associate/", "https://www.bls.gov/ooh/math/data-scientists.htm"]
 whats_new: ["Data analyst hiring in 2026 rewards SQL, spreadsheets, dashboards, communication, and AI literacy more than a scattered pile of tools."]
 learning_objectives: ["Prioritize the six skills employers keep asking for in data analyst roles.", "Separate must-have analyst skills from nice-to-have data science skills.", "Build a 90-day learning plan that produces a portfolio-ready analysis workflow."]
 positions:
@@ -100,7 +104,7 @@ Add a one-page memo to every project: the question, metric definition, finding, 
 
 AI literacy is now expected, but verification is the real skill. LinkedIn named AI literacy the fastest-growing global skill in its 2025 skills report ([LinkedIn, retrieved 2026-07-14](https://www.linkedin.com/business/talent/blog/learning-and-development/skills-on-the-rise)). Microsoft's Work Trend Index reported that many leaders would prefer a less-experienced candidate with AI skills over a more-experienced candidate without them ([Microsoft WorkLab, retrieved 2026-07-14](https://www.microsoft.com/en-us/worklab/work-trend-index/ai-at-work-is-here-now-comes-the-hard-part)).
 
-The useful version is practical: use AI to draft SQL alternatives, document assumptions, explain errors, and generate first-pass chart titles. dbt Labs reported rapid AI adoption inside analytics workflows, including code and documentation use cases ([dbt Labs, retrieved 2026-07-14](https://www.getdbt.com/resources/state-of-analytics-engineering-2025)). Present the checked query, verified result, and decision you can defend.
+The useful version is practical: use AI to draft SQL alternatives, document assumptions, explain errors, and generate first-pass chart titles. Present the checked query, verified result, and decision you can defend.
 
 **KnowledgeCheck:** An AI tool writes a SQL query that "looks right." What are the two checks you should run before using the result in a portfolio or interview?
 
