@@ -8,7 +8,7 @@ slug: 2026-07-14-skills-needed-for-data-analyst-job
 tags: ["data analyst", "data analytics skills", "career change", "SQL", "90-day learning plan"]
 blog_track: career
 content_type: article
-status: draft-for-review
+status: g0-blocked
 reading_time_min: 8
 primary_query: "skills needed for data analyst job"
 first_60_words_answer: "The skills needed for a data analyst job in 2026 are SQL, spreadsheets, one BI tool such as Tableau or Power BI, statistics fundamentals, Python or R, business communication, and AI literacy."
