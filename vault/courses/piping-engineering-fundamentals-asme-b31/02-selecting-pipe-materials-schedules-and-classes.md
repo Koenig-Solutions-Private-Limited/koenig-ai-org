@@ -2,7 +2,7 @@
 chapter_num: 2
 course_slug: piping-engineering-fundamentals-asme-b31
 title: "Selecting Pipe Materials, Schedules, and Piping-Class Specifications to ASME B31.3 (2022/2024 Edition)"
-status: awaiting-g0
+status: g0-blocked
 duration_min: 14
 vendor_tag: ASME B31.3
 learning_objectives:
