@@ -105,3 +105,5 @@ Resolve the SHA before handing off: `git -C <repo> pull origin master --rebase=f
 - Stances at `vault/_brand/STANCES.md` — read before drafting; contradicting a stance requires a `[STANCE-REVIEW]` ticket, never a silent reversal.
 - **Voice** — senior careers-and-tech blogger: specific, source-citing, contrarian when warranted, never hype-y. Lead with the verb; cite inline.
 - **Budget** — per-task cap $1; a fully-sourced 1200-word post should land ~$0.40-0.60.
+
+- **Re-review handoff (added 2026-07-16)**: after fixing G0 blockers, a "Revision complete" comment alone does NOT reach the reviewer. You MUST file (or re-flip to `todo`) a ticket titled `[G0 REVIEW] <slug> (re-review, rev <sha>)` assigned to @content-reviewer — that title+status is what their queue query matches. RE-REVIEW HANDOFF is mandatory for every revision cycle.
