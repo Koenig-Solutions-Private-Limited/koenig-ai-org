@@ -8,7 +8,7 @@ slug: 2026-07-14-skills-needed-for-data-analyst-job
 tags: ["data analyst", "data analytics skills", "career change", "SQL", "90-day learning plan"]
 blog_track: career
 content_type: article
-status: g0-blocked
+status: awaiting-g0
 reading_time_min: 8
 primary_query: "skills needed for data analyst job"
 first_60_words_answer: "The skills needed for a data analyst job in 2026 are SQL, spreadsheets, one BI tool such as Tableau or Power BI, statistics fundamentals, Python or R, business communication, and AI literacy."
@@ -62,6 +62,10 @@ GROUP BY customer_segment
 ORDER BY revenue_change;
 ```
 
+**KnowledgeCheck:** The query shows enterprise revenue rose by 900 while small business revenue fell by 300. What is the one-sentence analyst recommendation?
+
+Answer: investigate why small business revenue dropped before celebrating total growth, because enterprise gains may be masking a segment-specific retention or acquisition problem.
+
 ## Spreadsheets still matter because business teams inspect your work there
 
 Spreadsheets are still a core data analyst skill because they are where many teams review assumptions, spot-check numbers, and share lightweight analysis. The same 2026 posting analysis found Excel in roughly four in ten postings, which is too frequent to treat as a legacy tool ([365 Data Science, retrieved 2026-07-14](https://365datascience.com/career-advice/data-analyst-job-outlook-2025/)).
@@ -70,11 +74,15 @@ The bar is not just `SUM()` and charts. Learn lookup functions, pivot tables, co
 
 This is where many applicants overreach. They add Python notebooks to a resume but cannot explain a spreadsheet reconciliation. For entry analyst work, an auditable spreadsheet can be more convincing than an overbuilt model.
 
+**KnowledgeCheck:** A hiring manager asks you to reconcile a $12,000 discrepancy between two department revenue totals. Which spreadsheet feature should you use first to find the source of the difference, and why?
+
+Answer: use a pivot table or XLOOKUP against a clean reference table first. The goal is not to make a prettier spreadsheet; it is to isolate which row, category, or date bucket created the gap and leave an audit trail another person can inspect.
+
 ## A BI tool proves you can turn analysis into a decision
 
 A BI tool proves you can turn analysis into dashboards and decisions. Tableau and Power BI are the most defensible starting choices: 365 Data Science found both in the top data visualization tools for 2026 postings, with Tableau slightly ahead of Power BI in that dataset ([365 Data Science, retrieved 2026-07-14](https://365datascience.com/career-advice/data-analyst-job-outlook-2025/)).
 
-Do not split your first month across five dashboard products. Pick the tool that appears in the jobs you want, then build one end-to-end project: cleaned data, metric definitions, trend view, segment comparison, and a short recommendation. If your target companies use Microsoft-heavy stacks, Microsoft's PL-300 page signals the Power BI skill set: Power Query, DAX, semantic models, reports, and workspace management ([Microsoft Learn, retrieved 2026-07-14](https://learn.microsoft.com/en-us/credentials/certifications/data-analyst-associate/)).
+Do not split your first month across five dashboard products. Pick the tool that appears in the jobs you want, then build one end-to-end project: cleaned data, metric definitions, trend view, segment comparison, and a short recommendation. If your target companies use Microsoft-heavy stacks, Microsoft's PL-300 page signals the Power BI skill set: Power Query, DAX, semantic models, reports, and workspace management ([Microsoft Learn, retrieved 2026-07-14](https://learn.microsoft.com/en-us/credentials/certifications/data-analyst-associate/)). For analytics practice tied to real acquisition data, [[course/mobile-app-marketing-performance]] is a useful adjacent path because it forces you to connect events, channels, cohorts, and business outcomes.
 
 The portfolio test is simple: can a non-technical manager open your dashboard and understand what changed, why it matters, and what decision you recommend?
 
@@ -83,6 +91,10 @@ The portfolio test is simple: can a non-technical manager open your dashboard an
 Statistics keeps your analysis honest because business decisions often depend on messy, partial, biased data. For a beginner data analyst, start with descriptive statistics, sampling bias, correlation versus causation, outliers, basic probability, and what a metric does and does not prove. Google's Data Analytics Professional Certificate lists data cleaning, analysis, visualization, data ethics, and stakeholder communication, which is the right framing: statistics should improve judgment, not turn every dashboard into a research paper ([Coursera, retrieved 2026-07-14](https://www.coursera.org/professional-certificates/google-data-analytics)).
 
 In interviews, keep it practical. If a chart spikes, ask whether the sample changed. If two metrics move together, avoid claiming one caused the other. If a dashboard excludes missing rows, say so.
+
+**KnowledgeCheck:** Your dashboard shows a 30% spike in daily active users on Wednesday. A colleague says this proves the new feature caused the increase. What is the first question you should ask before agreeing?
+
+Answer: ask what else changed on Wednesday. A spike without a control group, baseline period, release log, or channel mix check is correlation, not causation. Before attributing the increase to the feature, verify whether the sample, campaign traffic, tracking, or rollout timing changed.
 
 ## Python or R helps when analysis needs to be repeatable
 
@@ -114,7 +126,7 @@ Answer: inspect the joins and filters against the business question, then compar
 
 Weeks 1-4: learn SQL and spreadsheets together. Build tiny datasets, write queries, recreate the result in a spreadsheet, and document discrepancies. Your goal is not a certificate badge yet; it is confidence that you can trace a number from raw rows to a business answer.
 
-Weeks 5-8: add one BI tool. Choose Tableau or Power BI by scanning your target postings. Build a dashboard from the same dataset you used for SQL practice. Include metric definitions, filters, and one written recommendation. If you choose Power BI, map your practice topics against PL-300's Power Query, DAX, and report-building areas ([Microsoft Learn, retrieved 2026-07-14](https://learn.microsoft.com/en-us/credentials/certifications/data-analyst-associate/)).
+Weeks 5-8: add one BI tool. Choose Tableau or Power BI by scanning your target postings. Build a dashboard from the same dataset you used for SQL practice. Include metric definitions, filters, and one written recommendation. If you choose Power BI, map your practice topics against PL-300's Power Query, DAX, and report-building areas ([Microsoft Learn, retrieved 2026-07-14](https://learn.microsoft.com/en-us/credentials/certifications/data-analyst-associate/)). If your dataset comes from marketing tags or campaign events, pair the dashboard work with [[course/google-tag-manager-mastery]] so you understand where the raw event fields came from.
 
 Weeks 9-12: add Python or R, then package the project. Use Python for cleaning and repeatability, not complexity theater. Write a short README, record the assumptions you checked, and prepare three interview stories: messy data, stakeholder explanation, and responsible AI use.
 
@@ -122,7 +134,7 @@ Google's certificate covers spreadsheets, SQL, Python, Tableau, and analytical w
 
 ## Technical vs. soft skills belong together in the project
 
-On your resume, split technical skills and business skills so recruiters can scan quickly. In your portfolio, combine them. A hiring manager should see the real analyst chain: clarify the question, clean the data, query it, visualize it, explain caveats, and recommend an action. The World Economic Forum's 2025 jobs report names analytical thinking and AI/big data among major workforce skill themes through 2030, but the durable signal is applied judgment ([WEF, retrieved 2026-07-14](https://www.weforum.org/publications/the-future-of-jobs-report-2025/)).
+On your resume, split technical skills and business skills so recruiters can scan quickly. In your portfolio, combine them. A hiring manager should see the real analyst chain: clarify the question, clean the data, query it, visualize it, explain caveats, and recommend an action. The World Economic Forum's 2025 jobs report names analytical thinking and AI/big data among major workforce skill themes through 2030, but the durable signal is applied judgment ([WEF, retrieved 2026-07-14](https://www.weforum.org/publications/the-future-of-jobs-report-2025/)). For managers building analyst teams, [[course/ppc-team-leadership-analyst-onboarding-and-workflow-design]] shows how those technical and communication skills turn into onboarding, reporting, and accountability routines.
 
 ## FAQ
 
