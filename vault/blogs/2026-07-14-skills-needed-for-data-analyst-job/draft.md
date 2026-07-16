@@ -8,7 +8,8 @@ slug: 2026-07-14-skills-needed-for-data-analyst-job
 tags: ["data analyst", "data analytics skills", "career change", "SQL", "90-day learning plan"]
 blog_track: career
 content_type: article
-status: awaiting-g0
+status: g0-passed
+seo_description: "The data analyst skills to learn first in 2026: SQL, spreadsheets, a BI tool, statistics, Python or R, communication, and AI literacy — build them in 90 days."
 reading_time_min: 8
 primary_query: "skills needed for data analyst job"
 first_60_words_answer: "The skills needed for a data analyst job in 2026 are SQL, spreadsheets, one BI tool such as Tableau or Power BI, statistics fundamentals, Python or R, business communication, and AI literacy."
@@ -25,7 +26,7 @@ faq:
   - {question: "Which certification helps most for a beginner data analyst?", answer: "Pick the certification that matches the tool gap in your target jobs. Google's Data Analytics Professional Certificate is broad and beginner-oriented, while Microsoft's PL-300 is better when Power BI appears in the roles you want. The credential matters less than the portfolio artifact you build while preparing. Sources retrieved 2026-07-14: https://www.coursera.org/professional-certificates/google-data-analytics and https://learn.microsoft.com/en-us/credentials/certifications/data-analyst-associate/."}
   - {question: "Can I learn data analyst skills while working full-time?", answer: "Yes, if you keep the plan narrow. Coursera lists Google's certificate at about 10 hours a week for six months; a 90-day sprint needs roughly double that weekly effort or a smaller scope. For working adults, SQL, spreadsheets, one dashboard, and one portfolio case beat a scattered tool list. Source retrieved 2026-07-14: https://www.coursera.org/professional-certificates/google-data-analytics."}
 original_data: false
-last_updated: 2026-07-14
+last_updated: 2026-07-16
 hero_image: {url: /img/blogs/skills-needed-for-data-analyst-job/hero.png, alt: "Job seeker mapping SQL, spreadsheet, dashboard, statistics, Python, communication, and AI-literacy skills into a 90-day data analyst plan"}
 ---
 
