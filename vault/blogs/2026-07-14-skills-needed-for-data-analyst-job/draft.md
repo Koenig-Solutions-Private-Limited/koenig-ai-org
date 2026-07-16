@@ -8,7 +8,7 @@ slug: 2026-07-14-skills-needed-for-data-analyst-job
 tags: ["data analyst", "data analytics skills", "career change", "SQL", "90-day learning plan"]
 blog_track: career
 content_type: article
-status: g0-passed
+status: g3-passed
 seo_description: "The data analyst skills to learn first in 2026: SQL, spreadsheets, a BI tool, statistics, Python or R, communication, and AI literacy — build them in 90 days."
 reading_time_min: 8
 primary_query: "skills needed for data analyst job"
