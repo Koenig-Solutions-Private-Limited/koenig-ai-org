@@ -13,6 +13,7 @@ coverage/
 data/
 .paperclip/
 .pnpm-store/
+watchdog/.state/
 tmp-*
 cli/tmp/
 
