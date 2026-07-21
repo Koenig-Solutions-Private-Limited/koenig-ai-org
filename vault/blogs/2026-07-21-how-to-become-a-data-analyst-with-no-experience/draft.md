@@ -9,10 +9,10 @@ slug: 2026-07-21-how-to-become-a-data-analyst-with-no-experience
 tags: ["data analyst", "no experience", "career change", "SQL", "career compass"]
 blog_track: career
 content_type: article
-status: g0-blocked
+status: awaiting-g0
 reading_time_min: 8
 primary_query: "how to become a data analyst with no experience"
-first_60_words_answer: "Yes, you can become a data analyst with no experience, but the realistic path is SQL-first skills, a beginner certificate, 2-3 portfolio projects, and applications to entry or adjacent analyst roles over several months to a year or more."
+first_60_words_answer: "Yes, you can become a data analyst with no experience, but the realistic path is SQL-first skills, a beginner certificate, 2-3 portfolio projects, and applications to entry or adjacent analyst roles over several months to a year or more. Start with evidence employers can inspect, not vague interest in data. The uncomfortable part: no degree required does not mean easy."
 contrarian_angle: "No-degree hiring is real in job-posting language, but weak in actual hiring; beginners win by over-proving skills with portfolio evidence, not by trusting degree-optional filters."
 sources: ["https://www.hbs.edu/bigs/joseph-fuller-college-degree-gap", "https://www.naceweb.org/job-market/trends-and-predictions/employer-use-of-skills-based-hiring-practices-grows", "https://www.coursera.org/articles/how-to-become-a-data-analyst", "https://www.coursera.org/professional-certificates/google-data-analytics", "https://learn.microsoft.com/en-us/credentials/certifications/data-analyst-associate/", "https://365datascience.com/career-advice/data-analyst-job-outlook-2025/", "https://365datascience.com/career-advice/how-to-build-a-data-analyst-portfolio/", "https://www.bls.gov/ooh/math/operations-research-analysts.htm", "https://www.bls.gov/ooh/math/data-scientists.htm", "https://www.microsoft.com/en-us/worklab/work-trend-index/ai-at-work-is-here-now-comes-the-hard-part", "https://www.ciodive.com/news/linkedin-top-skills-AI-engineering/813595/", "https://www.linkedin.com/pulse/linkedin-jobs-rise-2026-25-fastest-growing-india-jrtnc"]
 whats_new: ["In 2026, the honest no-experience data analyst roadmap is not no-degree hype; it is SQL-first proof, certificate-backed projects, AI-literacy verification, and side-door roles."]
@@ -71,7 +71,7 @@ For the full skill sequence, use the [data analyst skills map](https://academy.k
 
 The best first certification for a true beginner is a broad data analytics certificate, not a narrow platform exam. Coursera's Google Data Analytics Professional Certificate page says the program is beginner-level, requires no degree or experience, covers spreadsheets, SQL, Python, Tableau, cleaning, visualization, and includes 180+ hours of instruction ([Coursera, retrieved 2026-07-21](https://www.coursera.org/professional-certificates/google-data-analytics)). It also lists completion at about six months at 10 hours per week; that is a realistic planning anchor.
 
-Use the outcome claim carefully. The live page currently says 75% of certificate graduates reported a positive career outcome within six months, based on a 2022 U.S. graduate survey. That is not a job guarantee, and it should not be rewritten as one.
+Use the outcome claim carefully. The live page currently says 82% of certificate graduates reported a positive career outcome within six months, based on a 2022 U.S. graduate survey. That is not a job guarantee, and it should not be rewritten as one.
 
 Move to Microsoft PL-300 after you have Power BI basics and see Power BI in target postings. Microsoft lists PL-300 as intermediate, with Power Query, DAX, modeling, visualization, analysis, management, and security expectations ([Microsoft Learn, retrieved 2026-07-21](https://learn.microsoft.com/en-us/credentials/certifications/data-analyst-associate/)).
 
