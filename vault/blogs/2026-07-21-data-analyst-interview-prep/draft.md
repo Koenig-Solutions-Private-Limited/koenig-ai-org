@@ -156,7 +156,7 @@ You need at least one project you can walk through, even if you do not have a fu
 
 ### Can freshers apply without experience?
 
-Yes, but freshers must replace job history with proof. Use SQL drills, a small dashboard, a case memo, and STAR stories from internships, coursework, club projects, freelancing, or volunteer work. NACE reports employers look for problem-solving, teamwork, and written communication evidence in student resumes ([NACE, retrieved 2026-07-21](https://www.naceweb.org/talent-acquisition/candidate-selection/what-are-employers-looking-for-when-reviewing-college-students-resumes)). In India, recent Naukri JobSpeak reporting also showed year-over-year fresher hiring growth, but that is not a shortcut around demonstrable skills.
+Yes, but freshers must replace job history with proof. Use SQL drills, a small dashboard, a case memo, and STAR stories from internships, coursework, club projects, freelancing, or volunteer work. NACE reports employers look for problem-solving, teamwork, and written communication evidence in student resumes ([NACE, retrieved 2026-07-21](https://www.naceweb.org/talent-acquisition/candidate-selection/what-are-employers-looking-for-when-reviewing-college-students-resumes)). In India, recent Naukri JobSpeak reporting also showed year-over-year fresher hiring growth, but that is not a shortcut around demonstrable skills. If you have not started building that proof yet, back up to the [no-experience roadmap](https://academy.koenig-solutions.com/blog/how-to-become-a-data-analyst-with-no-experience?utm_source=blog&utm_medium=organic&utm_campaign=career-seo-w30&utm_content=data-analyst-interview-prep) before you drill interview rounds.
 
 ## Career funnel: check whether data analytics is your best-fit path
 

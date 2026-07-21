@@ -26,7 +26,7 @@ faq:
   - {question: "Which certification helps most for a beginner data analyst?", answer: "Pick the certification that matches the tool gap in your target jobs. Google's Data Analytics Professional Certificate is broad and beginner-oriented, while Microsoft's PL-300 is better when Power BI appears in the roles you want. The credential matters less than the portfolio artifact you build while preparing. Sources retrieved 2026-07-14: https://www.coursera.org/professional-certificates/google-data-analytics and https://learn.microsoft.com/en-us/credentials/certifications/data-analyst-associate/."}
   - {question: "Can I learn data analyst skills while working full-time?", answer: "Yes, if you keep the plan narrow. Coursera lists Google's certificate at about 10 hours a week for six months; a 90-day sprint needs roughly double that weekly effort or a smaller scope. For working adults, SQL, spreadsheets, one dashboard, and one portfolio case beat a scattered tool list. Source retrieved 2026-07-14: https://www.coursera.org/professional-certificates/google-data-analytics."}
 original_data: false
-last_updated: 2026-07-16
+last_updated: 2026-07-21
 hero_image: {url: /img/blogs/skills-needed-for-data-analyst-job/hero.png, alt: "Job seeker mapping SQL, spreadsheet, dashboard, statistics, Python, communication, and AI-literacy skills into a 90-day data analyst plan"}
 ---
 
@@ -157,7 +157,7 @@ Yes, but you need a realistic weekly schedule. Coursera lists Google's certifica
 
 ## Career funnel: test whether data analytics is your best-fit path
 
-If you are not sure data analytics is your best-fit role, run your profile through [Career Compass](https://academy.koenig-solutions.com/career?utm_source=blog&utm_medium=organic&utm_campaign=career-seo-w29&utm_content=skills-needed-for-data-analyst-job). Upload your CV, compare your current skills against target career paths, and use the gap report to decide whether your next 90 days should focus on data analytics, cybersecurity, cloud, or another track.
+If you are not sure data analytics is your best-fit role, run your profile through [Career Compass](https://academy.koenig-solutions.com/career?utm_source=blog&utm_medium=organic&utm_campaign=career-seo-w29&utm_content=skills-needed-for-data-analyst-job). Upload your CV, compare your current skills against target career paths, and use the gap report to decide whether your next 90 days should focus on data analytics, cybersecurity, cloud, or another track. Starting from zero? Read the [no-experience roadmap](https://academy.koenig-solutions.com/blog/how-to-become-a-data-analyst-with-no-experience?utm_source=blog&utm_medium=organic&utm_campaign=career-seo-w29&utm_content=skills-needed-for-data-analyst-job) first, then come back to this skill order once you have a certificate and first project underway.
 
 For related career learning paths, browse [Career Compass courses](https://academy.koenig-solutions.com/courses?utm_source=blog&utm_medium=organic&utm_campaign=career-seo-w29&utm_content=skills-needed-for-data-analyst-job) after you have your gap report, so the course choice follows your profile instead of a generic trend list.
 
