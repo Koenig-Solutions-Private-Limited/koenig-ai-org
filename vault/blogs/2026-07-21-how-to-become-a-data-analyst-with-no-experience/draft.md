@@ -9,7 +9,7 @@ slug: 2026-07-21-how-to-become-a-data-analyst-with-no-experience
 tags: ["data analyst", "no experience", "career change", "SQL", "career compass"]
 blog_track: career
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 8
 primary_query: "how to become a data analyst with no experience"
 first_60_words_answer: "Yes, you can become a data analyst with no experience, but the realistic path is SQL-first skills, a beginner certificate, 2-3 portfolio projects, and applications to entry or adjacent analyst roles over several months to a year or more. Start with evidence employers can inspect, not vague interest in data. The uncomfortable part: no degree required does not mean easy."
