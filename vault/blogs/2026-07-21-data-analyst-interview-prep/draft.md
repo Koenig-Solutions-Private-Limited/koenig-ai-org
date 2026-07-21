@@ -9,7 +9,7 @@ slug: 2026-07-21-data-analyst-interview-prep
 tags: ["data analyst interview", "data analytics career", "SQL interview", "career change", "interview prep"]
 blog_track: career
 content_type: article
-status: g0-blocked
+status: awaiting-g0
 reading_time_min: 8
 primary_query: "how to prepare for a data analyst interview"
 first_60_words_answer: "To prepare for a data analyst interview, map the 4-6 round loop, drill SQL daily, rehearse one portfolio walkthrough, prepare STAR stories, and use four weeks to practice recruiter, hiring-manager, technical, case, take-home, and behavioral rounds."
@@ -132,7 +132,7 @@ Week 4: polish live technicals. Speak while solving, ask clarifying questions, a
 
 India candidates should prepare for two patterns. Service-company and large IT-services interviews often emphasize aptitude, SQL basics, Excel, communication, trainability, and project explanation. Product-company or analytics-team interviews are more likely to add product metrics, A/B interpretation, dashboard critique, and deeper SQL. Treat this as qualitative routing, not a fixed rule.
 
-The market context supports serious preparation. Economic Times reported Naukri JobSpeak data showing India's white-collar hiring rose 12% year over year in February 2026, fresher hiring rose 17%, and AI/ML hiring grew strongly in the same report ([Economic Times via Naukri JobSpeak, retrieved 2026-07-21](https://m.economictimes.com/jobs/indias-white-collar-hiring-up-12-in-february-it-and-ai-roles-surge-report/articleshow/128960913.cms)). Naukri's March 2026 JobSpeak search result also reported FY26 AI/ML hiring ending at +45%.
+The market context supports serious preparation. Economic Times reported Naukri JobSpeak data showing India's white-collar hiring rose 12% year over year in February 2026, fresher hiring rose 17%, and AI/ML hiring grew strongly in the same report ([Economic Times via Naukri JobSpeak, retrieved 2026-07-21](https://m.economictimes.com/jobs/indias-white-collar-hiring-up-12-in-february-it-and-ai-roles-surge-report/articleshow/128960913.cms)).
 
 For freshers, the best evidence is a compact project package: one SQL file, one dashboard, one memo, and two behavioral stories from college, internship, freelancing, or volunteer work. Avoid pretending a course project was a production job.
 
