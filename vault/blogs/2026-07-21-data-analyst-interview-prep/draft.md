@@ -9,7 +9,7 @@ slug: 2026-07-21-data-analyst-interview-prep
 tags: ["data analyst interview", "data analytics career", "SQL interview", "career change", "interview prep"]
 blog_track: career
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 8
 primary_query: "how to prepare for a data analyst interview"
 first_60_words_answer: "To prepare for a data analyst interview, map the 4-6 round loop, drill SQL daily, rehearse one portfolio walkthrough, prepare STAR stories, and use four weeks to practice recruiter, hiring-manager, technical, case, take-home, and behavioral rounds."
