@@ -9,7 +9,7 @@ slug: 2026-07-22-career-change-to-it-at-30
 tags: ["career change", "IT career", "career compass", "data analytics", "cybersecurity", "cloud"]
 blog_track: career
 content_type: article
-status: g0-blocked
+status: awaiting-g0
 reading_time_min: 7
 primary_query: "career change to IT at 30"
 first_60_words_answer: "Yes, a career change to IT at 30 is realistic: Course Report's most recent industry-wide bootcamp demographics study put the median alumni age at 30, not 22. The winning move in 2026 is not generic IT enthusiasm; it is choosing a specialist path, proving job skills, and using your previous work experience as evidence."
@@ -56,7 +56,11 @@ The honest 2026 picture is split. Broad hiring can feel slow, but specialist ski
 
 For role demand, use occupation-level anchors, not vague hype. BLS projects data scientists at 34% growth from 2024 to 2034 and information security analysts at 29%; IEEE-USA's 2026 summary of BLS data gives the same growth story with unrounded figures for data scientists and security analysts ([BLS data scientists](https://www.bls.gov/ooh/math/data-scientists.htm), [BLS information security analysts](https://www.bls.gov/ooh/computer-and-information-technology/information-security-analysts.htm), [IEEE-USA](https://insight.ieeeusa.org/articles/seven-tech-occupations-poised-for-double-digit-job-growth-by-2034/), retrieved 2026-07-22).
 
-For India-heavy readers, the signal is also mixed. NASSCOM's 2026 strategic review forecasts India's technology sector at $315 billion in FY2026 with 135,000 net new jobs, but Naukri's 2025-26 JobSpeak updates show why broad optimism needs a filter: overall white-collar hiring recovered, while AI/ML and security roles outperformed general IT services hiring ([NASSCOM](https://nasscom.in/knowledge-center/publications/technology-sector-india-strategic-review-2026), [Naukri Dec 2025](https://www.naukri.com/blog/naukri-jobspeak-white-collar-hiring-ends-2025-with-13-growth-in-december-making-oct-dec-the-years-strongest-quarter/), [Naukri FY26 close](https://www.naukri.com/blog/naukri-jobspeak-march-26-records-a-9-rise-in-white-collar-hiring-as-fy26-closes-at-8-the-strongest-job-growth-in-three-years/), retrieved 2026-07-22).
+For India-heavy readers, the signal is also mixed. NASSCOM's 2026 strategic review forecasts India's technology sector at $315 billion in FY2026 with 135,000 net new jobs, but Naukri's 2025-26 JobSpeak updates show why broad optimism needs a filter: overall IT-sector hiring was negative at -6% YoY for part of 2025 before later recovery signals, while AI/ML and security roles outperformed general IT services hiring ([NASSCOM](https://nasscom.in/knowledge-center/publications/technology-sector-india-strategic-review-2026), [Naukri Dec 2025](https://www.naukri.com/blog/naukri-jobspeak-white-collar-hiring-ends-2025-with-13-growth-in-december-making-oct-dec-the-years-strongest-quarter/), [Naukri FY26 close](https://www.naukri.com/blog/naukri-jobspeak-march-26-records-a-9-rise-in-white-collar-hiring-as-fy26-closes-at-8-the-strongest-job-growth-in-three-years/), retrieved 2026-07-22).
+
+**KnowledgeCheck:** Why is a broad "IT is growing" claim weaker than a specialist-lane claim for a 30-year-old switcher?
+
+Strong answer: because the India data shows broad IT-sector hiring was negative for part of 2025 while specialist signals such as AI/ML and security were stronger. A switcher should target the part of the market where demand and proof requirements line up.
 
 Use this rule: pick the lane where your old experience lowers the employer's risk.
 
