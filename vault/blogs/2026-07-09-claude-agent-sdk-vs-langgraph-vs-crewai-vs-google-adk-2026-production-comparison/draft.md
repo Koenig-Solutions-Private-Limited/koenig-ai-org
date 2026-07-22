@@ -5,7 +5,7 @@ ticket: KOEA-13107
 blog_track: career
 vendor_tag: community
 content_type: article
-status: g0-passed
+status: g3-blocked
 title: "Choose Your 2026 Agent Framework by Production Failure Mode, Not Feature Count"
 description: "Claude Agent SDK, LangGraph 1.0, CrewAI, and Google ADK compared by production failure mode — pick the framework that prevents your specific risk, not the one with the most features."
 slug: "2026-07-09-claude-agent-sdk-vs-langgraph-vs-crewai-vs-google-adk-2026-production-comparison"
