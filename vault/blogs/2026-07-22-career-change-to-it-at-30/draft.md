@@ -9,7 +9,7 @@ slug: 2026-07-22-career-change-to-it-at-30
 tags: ["career change", "IT career", "career compass", "data analytics", "cybersecurity", "cloud"]
 blog_track: career
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 7
 primary_query: "career change to IT at 30"
 first_60_words_answer: "Yes, a career change to IT at 30 is realistic: Course Report's most recent industry-wide bootcamp demographics study put the median alumni age at 30, not 22. The winning move in 2026 is not generic IT enthusiasm; it is choosing a specialist path, proving job skills, and using your previous work experience as evidence."
