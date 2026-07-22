@@ -15,7 +15,9 @@
 #         dispatch repo Koenig-Solutions-Private-Limited/koenig-career-academy,
 #         prod URL https://academy.koenig-solutions.com
 #     course_track absent/other → organic academy (current defaults).
-#   BLOG slugs always use the organic academy defaults.
+#   BLOG slugs read vault/blogs/<slug>/draft.md frontmatter `blog_track`.
+#     blog_track == "career"    → Career Compass vertical (same as above).
+#     blog_track absent/other   → organic academy (current defaults).
 #   The chosen dispatch repo is persisted in issue metadata.dispatch_repo at
 #   dispatch time so Phase 2 polls the correct repo even across script versions.
 #
@@ -50,9 +52,10 @@ mkdir -p "$LOG_DIR"
 LOG="$LOG_DIR/publish-action.log"
 cd "$REPO_ROOT"
 
-# Resolve the track for a slug. Course slugs map to vault/courses/<slug>/outline.md;
-# a frontmatter `course_track: career` routes to the Career Compass vertical.
-# Blogs (no such outline) and untracked courses fall through to the organic track.
+# Resolve the track for a slug. Course slugs map to vault/courses/<slug>/outline.md
+# (frontmatter `course_track: career`); blog slugs map to vault/blogs/<slug>/draft.md
+# (frontmatter `blog_track: career`). Either "career" routes to Career Compass.
+# Unmatched slugs fall through to the organic track.
 # Echoes the track name: "career" or "organic".
 track_for_slug() {
   local slug="${1:-}"
@@ -61,6 +64,15 @@ track_for_slug() {
     local track
     track="$(awk -F: '/^course_track:/{gsub(/[ \t"'"'"']/,"",$2); print $2; exit}' "$outline")"
     if [[ "$track" == "career" ]]; then
+      echo "career"
+      return 0
+    fi
+  fi
+  local draft="$REPO_ROOT/vault/blogs/$slug/draft.md"
+  if [[ -n "$slug" && -f "$draft" ]]; then
+    local blog_track
+    blog_track="$(awk -F: '/^blog_track:/{gsub(/[ \t"'"'"']/,"",$2); print $2; exit}' "$draft")"
+    if [[ "$blog_track" == "career" ]]; then
       echo "career"
       return 0
     fi
