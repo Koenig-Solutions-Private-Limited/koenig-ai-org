@@ -9,7 +9,7 @@ slug: 2026-07-25-sql-interview-questions-for-data-analyst
 tags: ["SQL interview questions", "data analyst interview", "data analytics career", "interview prep", "career change"]
 blog_track: career
 content_type: article
-status: awaiting-g0
+status: g0-blocked
 reading_time_min: 8
 primary_query: "sql interview questions for data analyst"
 first_60_words_answer: "SQL interview questions for data analyst roles usually test JOINs, GROUP BY/HAVING, aggregates, window functions, CTEs, subqueries, date functions, CASE, and NULL handling. Expect live coding, timed tests, or take-homes scored on clarifying assumptions, choosing the right pattern, validating output, and explaining why the query answers the business question."
