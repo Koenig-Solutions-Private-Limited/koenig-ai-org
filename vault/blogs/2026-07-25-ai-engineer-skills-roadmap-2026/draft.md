@@ -9,7 +9,7 @@ slug: 2026-07-25-ai-engineer-skills-roadmap-2026
 tags: ["AI engineer skills", "AI engineer roadmap", "career change", "RAG", "LangChain", "MCP"]
 blog_track: career
 content_type: article
-status: g0-blocked
+status: awaiting-g0
 reading_time_min: 7
 primary_query: "ai engineer skills roadmap 2026"
 first_60_words_answer: "The AI engineer skills roadmap for 2026 is: learn Python and machine-learning fundamentals, build LLM and RAG applications, add evaluation and debugging, learn agent frameworks plus MCP, then deploy with cloud, Docker, Kubernetes, monitoring, and security. Employers now list build-with-models skills before train-from-scratch skills."
@@ -18,7 +18,7 @@ sources: ["https://www.linkedin.com/pulse/linkedin-jobs-rise-2026-25-fastest-gro
 whats_new: ["The 2026 AI engineer roadmap should start with building reliable LLM/RAG systems, not with months of from-scratch model training."]
 learning_objectives: ["Order AI engineer skills by current employer demand.", "Build a portfolio project that proves RAG, evaluation, agents, MCP, and deployment skills.", "Avoid outdated AI-engineer advice that overweights model training and underweights reliability."]
 positions:
-  - id: stance:mcp-as-interoperability-moat
+  - id: mcp-as-interoperability-moat
     engagement: defends
   - id: stance:harness-over-model
     engagement: refines
