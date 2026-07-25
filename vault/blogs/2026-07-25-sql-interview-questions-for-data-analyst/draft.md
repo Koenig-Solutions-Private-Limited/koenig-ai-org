@@ -9,12 +9,12 @@ slug: 2026-07-25-sql-interview-questions-for-data-analyst
 tags: ["SQL interview questions", "data analyst interview", "data analytics career", "interview prep", "career change"]
 blog_track: career
 content_type: article
-status: g0-blocked
+status: awaiting-g0
 reading_time_min: 8
 primary_query: "sql interview questions for data analyst"
 first_60_words_answer: "SQL interview questions for data analyst roles usually test JOINs, GROUP BY/HAVING, aggregates, window functions, CTEs, subqueries, date functions, CASE, and NULL handling. Expect live coding, timed tests, or take-homes scored on clarifying assumptions, choosing the right pattern, validating output, and explaining why the query answers the business question."
 contrarian_angle: "The question bank is dead; the evaluation rubric is not. In 2026, interviewers know AI can draft SQL, so they score framing, validation, and explanation as much as syntax."
-sources: ["https://365datascience.com/career-advice/the-data-analyst-job-market/", "https://survey.stackoverflow.co/2025", "https://www.getdbt.com/resources/state-of-analytics-engineering-2026", "https://www.getdbt.com/resources/state-of-analytics-engineering-2025", "https://www.stratascratch.com/blog/sql-interview-questions-you-must-prepare-the-ultimate-guide", "https://www.sqltutorial.org/sql-cheat-sheet/", "https://www.postgresql.org/docs/current/tutorial-window.html", "https://www.indeed.com/career/data-analyst/salaries", "https://www.payscale.com/research/IN/Job=Data_Analyst/Salary"]
+sources: ["https://365datascience.com/career-advice/the-data-analyst-job-market/", "https://survey.stackoverflow.co/2025", "https://www.getdbt.com/resources/state-of-analytics-engineering-2026", "https://www.prnewswire.com/news-releases/ai-is-driving-a-surge-in-data-budgets-according-to-new-report-from-dbt-labs-302429579.html", "https://www.stratascratch.com/blog/sql-interview-questions-you-must-prepare-the-ultimate-guide", "https://www.sqltutorial.org/sql-cheat-sheet/", "https://www.postgresql.org/docs/current/tutorial-window.html", "https://sqlpad.io/tutorial/faang-sql-interview-questions/"]
 whats_new: ["SQL interview prep in 2026 should train judgment: AI can draft queries, but interviews still test whether you can define metrics, choose patterns, and verify results."]
 learning_objectives: ["Identify the 9 SQL concepts data analyst interviews test most often.", "Map common SQL interview prompts to reusable query patterns.", "Explain how to validate AI-assisted SQL before presenting it in an interview."]
 positions:
@@ -37,6 +37,14 @@ SQL interview questions for data analyst roles usually test JOINs, GROUP BY/HAVI
 The non-obvious shift: the question bank is dead; the evaluation rubric is not. SQL is still a hiring filter - 365 Data Science found SQL in 52.9% of 855 relevant US data analyst postings - but AI has changed what "good at SQL" means ([365 Data Science, retrieved 2026-07-25](https://365datascience.com/career-advice/the-data-analyst-job-market/)). Interviewers increasingly test whether you can frame an ambiguous metric, verify output, and defend the query after an AI tool could have drafted it.
 
 ![Data analyst candidate checking SQL joins, window functions, and business assumptions before an interview](/img/blogs/sql-interview-questions-for-data-analyst/hero.png)
+
+## Data analyst SQL interviews use three formats and score four habits
+
+Expect one of three formats: a live browser-coding round with an interviewer watching, a timed online SQL assessment, or a take-home query with a written explanation. SQLPad's interview guide describes those formats and notes that SQL rounds often pair query-writing with interpretation of the result ([SQLPad, retrieved 2026-07-25](https://sqlpad.io/tutorial/faang-sql-interview-questions/)). The scoring rubric is broader than "does the query run." You are judged on problem framing, stated assumptions, readable structure, and debugging when the first result looks wrong. Before typing, clarify the metric, grain, date window, and excluded rows. While typing, use aliases and CTEs that make your logic auditable. After typing, sanity-check row counts and edge cases.
+
+**KnowledgeCheck:** An interviewer says: "Find the top 3 customers by spend last month." Before writing SQL, what two business definitions do you clarify?
+
+Answer: clarify whether "spend" means gross order value, net revenue after refunds, or payments received, and whether "last month" means the previous calendar month, the company's fiscal month, or a rolling 30-day window.
 
 ## JOIN questions test whether you understand the grain of the data
 
@@ -128,7 +136,7 @@ Answer: clarify whether "within seven days" includes the seventh day, whether or
 
 ## 2026 interviews score judgment because AI can draft the query
 
-In 2026, interviewers assume candidates can use AI. dbt Labs' 2026 report says AI-assisted coding is embedded in development workflows and frames analytics engineering around trust, quality, ownership, and governance ([dbt Labs 2026, retrieved 2026-07-25](https://www.getdbt.com/resources/state-of-analytics-engineering-2026)). Its 2025 report found 80% of respondents already used AI in day-to-day workflows ([dbt Labs 2025, retrieved 2026-07-25](https://www.getdbt.com/resources/state-of-analytics-engineering-2025)). Stack Overflow's 2025 survey adds the caution signal: 46% of developers actively distrusted AI output accuracy, while SQL remained one of the most-used languages at 58.6% ([Stack Overflow, retrieved 2026-07-25](https://survey.stackoverflow.co/2025)).
+In 2026, interviewers assume candidates can use AI. dbt Labs' 2026 report says AI-assisted coding is embedded in development workflows and frames analytics engineering around trust, quality, ownership, and governance ([dbt Labs 2026, retrieved 2026-07-25](https://www.getdbt.com/resources/state-of-analytics-engineering-2026)). dbt Labs' 2025 press release reported that 80% of surveyed data practitioners used AI in their daily workflow ([dbt Labs via PRNewswire, retrieved 2026-07-25](https://www.prnewswire.com/news-releases/ai-is-driving-a-surge-in-data-budgets-according-to-new-report-from-dbt-labs-302429579.html)). Stack Overflow's 2025 survey adds the caution signal: 46% of developers actively distrusted AI output accuracy, while SQL remained one of the most-used languages at 58.6% ([Stack Overflow, retrieved 2026-07-25](https://survey.stackoverflow.co/2025)).
 
 So do not say, "I never use AI." Say: "I use AI for a first-pass query or alternative approach, then I verify the join grain, sample rows, NULL behavior, date boundaries, and final metric." That is the modern answer. The interviewer is not only testing whether SQL runs; they are testing whether your result should be trusted.
 
