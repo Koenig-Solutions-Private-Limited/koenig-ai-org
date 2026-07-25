@@ -9,7 +9,7 @@ slug: 2026-07-25-best-certifications-for-data-analyst
 tags: ["data analyst certifications", "data analyst career", "Power BI", "Tableau", "SQL", "career change"]
 blog_track: career
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 7
 primary_query: "best certifications for data analyst"
 first_60_words_answer: "The best certifications for data analyst roles in 2026 are Google Data Analytics or IBM Data Analyst for beginners, Microsoft PL-300 for Power BI jobs, Tableau Certified Data Analyst for Tableau-heavy roles, CompTIA Data+ for vendor-neutral validation, and Databricks Data Analyst Associate or Microsoft DP-600 for cloud analytics paths."
