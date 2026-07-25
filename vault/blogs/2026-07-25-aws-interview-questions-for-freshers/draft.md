@@ -9,7 +9,7 @@ slug: 2026-07-25-aws-interview-questions-for-freshers
 tags: ["AWS interview", "cloud career", "AWS certification", "freshers", "interview prep"]
 blog_track: career
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 8
 primary_query: "aws interview questions for freshers"
 first_60_words_answer: "AWS interview questions for freshers usually test the shared-responsibility model, EC2, S3, IAM, VPC, pricing, and basic scenario judgment. Prep by AWS CLF-C02 weightings: cloud technology and services first, then security, cloud concepts, and billing."
