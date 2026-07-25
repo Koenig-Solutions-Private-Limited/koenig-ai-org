@@ -4,12 +4,12 @@ author: koenig-ai-academy
 ticket: KOEA-13530
 title: "AWS Interview Questions for Freshers in 2026: Topic Map + 4-Week Prep Plan"
 description: "AWS interview questions for freshers usually test shared responsibility, EC2, S3, IAM, VPC, billing, scenario judgment, and STAR stories. Use CLF-C02 weightings to prep by priority."
-seo_description: "AWS interview questions for freshers in 2026: core topics, sample questions, Amazon interview loop, CLF-C02 certification facts, salary caveats, and a 4-week prep plan."
+seo_description: "AWS interview questions for freshers in 2026: core topics, Amazon interview loop, CLF-C02 cert facts, salary caveats, and a 4-week prep plan."
 slug: 2026-07-25-aws-interview-questions-for-freshers
 tags: ["AWS interview", "cloud career", "AWS certification", "freshers", "interview prep"]
 blog_track: career
 content_type: article
-status: g0-blocked
+status: awaiting-g0
 reading_time_min: 8
 primary_query: "aws interview questions for freshers"
 first_60_words_answer: "AWS interview questions for freshers usually test the shared-responsibility model, EC2, S3, IAM, VPC, pricing, and basic scenario judgment. Prep by AWS CLF-C02 weightings: cloud technology and services first, then security, cloud concepts, and billing."
