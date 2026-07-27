@@ -9,7 +9,7 @@ slug: 2026-07-27-azure-administrator-interview-questions
 tags: ["Azure administrator", "AZ-104", "interview questions", "cloud career", "Microsoft certification"]
 blog_track: career
 content_type: article
-status: g0-blocked
+status: awaiting-g0
 reading_time_min: 8
 primary_query: "azure administrator interview questions"
 first_60_words_answer: "Azure administrator interview questions usually test these five AZ-104 areas: identities and governance, storage, compute, virtual networking, and monitoring. In 2026, prepare scenario answers around RBAC scopes, Entra ID, storage redundancy, virtual machines, NSGs, Azure Monitor, backup, cost control, and troubleshooting."
@@ -126,7 +126,7 @@ Answer: check whether the issue is CPU, memory, disk, network, application, or d
 
 ## AZ-104 helps, but the interview still needs proof
 
-AZ-104 is a useful interview spine because Microsoft publishes its role scope, exam duration, 700 passing score, and annual renewal cadence. Microsoft does not publish an official question count, so avoid claiming one. Say the exam gives you a role-aligned study structure, then bring labs that prove you can inspect, configure, and troubleshoot.
+AZ-104 is a useful interview spine because Microsoft publishes its role scope, exam duration, 700 passing score, and annual renewal cadence ([Microsoft AZ-104 study guide, retrieved 2026-07-27](https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/az-104)). Microsoft does not publish an official question count, so avoid claiming one. Say the exam gives you a role-aligned study structure, then bring labs that prove you can inspect, configure, and troubleshoot.
 
 Market context should also stay cautious. Azure remains a major platform: Synergy Research Group reported Microsoft at 21% of the Q1 2026 cloud infrastructure market, behind AWS at 28% and ahead of Google at 14% ([Synergy Research Group, retrieved 2026-07-27](https://www.srgresearch.com/articles/cloud-market-annual-revenue-run-rate-topped-half-a-trillion-dollars-in-q1-as-growth-surge-continues)). Pearson VUE's April 2025 candidate survey says certification helped many respondents with confidence, promotion, salary, and work quality, but that is self-reported survey evidence, not a guarantee ([Pearson VUE, retrieved 2026-07-27](https://www.pearsonvue.com/us/en/about/news/2025/certifications-fuel-the-success-in-the-age-of-ai.html)).
 
