@@ -9,7 +9,7 @@ slug: 2026-07-27-what-jobs-can-i-get-with-aws-certification
 tags: ["AWS certification jobs", "cloud career", "CloudOps", "solutions architect", "career change"]
 blog_track: career
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 7
 primary_query: "what jobs can I get with aws certification"
 first_60_words_answer: "With an AWS certification, you can target cloud support engineer, cloud operations specialist, CloudOps engineer, cloud operator, migration specialist, cloud consultant, cloud engineer, DevOps engineer, solutions architect, and AI-adjacent business or IT roles. Start with support or operations if you are new; treat architect roles as a later destination."
