@@ -9,7 +9,7 @@ slug: 2026-07-27-azure-administrator-interview-questions
 tags: ["Azure administrator", "AZ-104", "interview questions", "cloud career", "Microsoft certification"]
 blog_track: career
 content_type: article
-status: awaiting-g0
+status: g0-blocked
 reading_time_min: 8
 primary_query: "azure administrator interview questions"
 first_60_words_answer: "Azure administrator interview questions usually test these five AZ-104 areas: identities and governance, storage, compute, virtual networking, and monitoring. In 2026, prepare scenario answers around RBAC scopes, Entra ID, storage redundancy, virtual machines, NSGs, Azure Monitor, backup, cost control, and troubleshooting."
