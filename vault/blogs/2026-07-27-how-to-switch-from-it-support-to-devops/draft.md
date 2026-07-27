@@ -129,64 +129,23 @@ Yes, if you label the data honestly. BLS does not track "DevOps engineer" as a s
 
 ## Career funnel: upload your CV before choosing the DevOps path
 
-Before you buy AZ-104, SAA-C03, Terraform Associate 004, KCNA, CKA, AZ-400, or DOP-C02, upload your CV to [Career Compass](https://academy.koenig-solutions.com/career?utm_source=blog&utm_medium=organic&utm_campaign=career-seo-w35&utm_content=how-to-switch-from-it-support-to-devops). The wizard compares your current support proof against cloud, DevOps, cybersecurity, and data tracks, then shows whether your next gap is Linux, cloud, automation, Kubernetes, interview prep, or project evidence.
+Before you buy AZ-104, SAA-C03, Terraform Associate 004, KCNA, CKA, AZ-400, or DOP-C02, upload your CV to [Career Compass](https://academy.koenig-solutions.com/career?utm_source=blog&utm_medium=internal&utm_campaign=career-seo-w35&utm_content=how-to-switch-from-it-support-to-devops). The wizard compares your current support proof against cloud, DevOps, cybersecurity, and data tracks, then shows whether your next gap is Linux, cloud, automation, Kubernetes, interview prep, or project evidence.
 
-If you are comparing routes, read the [cloud engineer skills roadmap](https://academy.koenig-solutions.com/blog/2026-07-27-skills-required-for-cloud-engineer?utm_source=blog&utm_medium=organic&utm_campaign=career-seo-w35&utm_content=how-to-switch-from-it-support-to-devops), the [Azure administrator interview guide](https://academy.koenig-solutions.com/blog/2026-07-27-azure-administrator-interview-questions?utm_source=blog&utm_medium=organic&utm_campaign=career-seo-w35&utm_content=how-to-switch-from-it-support-to-devops), the [AWS certification verdict](https://academy.koenig-solutions.com/blog/2026-07-27-is-aws-certification-worth-it-2026?utm_source=blog&utm_medium=organic&utm_campaign=career-seo-w35&utm_content=how-to-switch-from-it-support-to-devops), and the [career change to IT at 30 guide](https://academy.koenig-solutions.com/blog/2026-07-22-career-change-to-it-at-30?utm_source=blog&utm_medium=organic&utm_campaign=career-seo-w35&utm_content=how-to-switch-from-it-support-to-devops).
+If you are comparing routes, read the [cloud engineer skills roadmap](https://academy.koenig-solutions.com/blog/2026-07-27-skills-required-for-cloud-engineer?utm_source=blog&utm_medium=internal&utm_campaign=career-seo-w35&utm_content=how-to-switch-from-it-support-to-devops), the [Azure administrator interview guide](https://academy.koenig-solutions.com/blog/2026-07-27-azure-administrator-interview-questions?utm_source=blog&utm_medium=internal&utm_campaign=career-seo-w35&utm_content=how-to-switch-from-it-support-to-devops), the [AWS certification verdict](https://academy.koenig-solutions.com/blog/2026-07-27-is-aws-certification-worth-it-2026?utm_source=blog&utm_medium=internal&utm_campaign=career-seo-w35&utm_content=how-to-switch-from-it-support-to-devops), and the [career change to IT at 30 guide](https://academy.koenig-solutions.com/blog/2026-07-22-career-change-to-it-at-30?utm_source=blog&utm_medium=internal&utm_campaign=career-seo-w35&utm_content=how-to-switch-from-it-support-to-devops).
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Article",
-      "headline": "How to Switch from IT Support to DevOps in 2026: A Support-First Roadmap",
-      "datePublished": "2026-07-27",
-      "dateModified": "2026-07-27",
-      "author": {
-        "@type": "Organization",
-        "name": "Koenig AI Academy"
-      },
-      "image": "https://academy.koenig-solutions.com/img/blogs/how-to-switch-from-it-support-to-devops/hero.png",
-      "mainEntityOfPage": "https://academy.koenig-solutions.com/blog/2026-07-27-how-to-switch-from-it-support-to-devops",
-      "description": "To switch from IT support to DevOps in 2026, turn support troubleshooting into automation proof, then add cloud, Terraform, Kubernetes, CI/CD, monitoring, and a staged certification path."
-    },
-    {
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Can I switch from IT support to DevOps without a degree?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, but the switch needs evidence. Computer support entry requirements vary, while DevOps Engineer maps to the software developer occupation in O*NET, a role requiring considerable preparation."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Which certification should IT support people take first for DevOps?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Choose by target cloud. Azure-heavy support workers should usually start with AZ-104. AWS learners can use SAA-C03 or CloudOps Engineer SOA-C03, then add Terraform Associate 004 and Kubernetes."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How long does it take to move from support to DevOps?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Plan in stages, not promises. The path depends on existing Linux, networking, scripting, and cloud skills, plus whether you build an inspectable project."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is DevOps still a good career path in 2026?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, if you label the data honestly. BLS does not track DevOps separately, but the closest O*NET-mapped software developer group has a much stronger outlook than computer support."
-          }
-        }
-      ]
-    }
-  ]
+  "@type": "Article",
+  "headline": "How to Switch from IT Support to DevOps in 2026: A Support-First Roadmap",
+  "datePublished": "2026-07-27",
+  "dateModified": "2026-07-27",
+  "author": {
+    "@type": "Organization",
+    "name": "Koenig AI Academy"
+  },
+  "image": "https://academy.koenig-solutions.com/img/blogs/how-to-switch-from-it-support-to-devops/hero.png",
+  "mainEntityOfPage": "https://academy.koenig-solutions.com/blog/2026-07-27-how-to-switch-from-it-support-to-devops",
+  "description": "To switch from IT support to DevOps in 2026, turn support troubleshooting into automation proof, then add cloud, Terraform, Kubernetes, CI/CD, monitoring, and a staged certification path."
 }
 </script>
