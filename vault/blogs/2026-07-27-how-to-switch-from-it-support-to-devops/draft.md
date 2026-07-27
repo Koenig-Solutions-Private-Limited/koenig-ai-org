@@ -9,7 +9,7 @@ slug: 2026-07-27-how-to-switch-from-it-support-to-devops
 tags: ["DevOps career", "IT support to DevOps", "cloud career", "Kubernetes", "Terraform"]
 blog_track: career
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 8
 primary_query: "how to switch from IT support to devops"
 first_60_words_answer: "To switch from IT support to DevOps, keep your troubleshooting and incident skills, then add Linux, networking, one cloud platform, Git, scripting, Terraform, containers, Kubernetes, CI/CD, monitoring, and one proof project. In 2026, use a staged cert path instead of collecting random badges."
@@ -107,7 +107,7 @@ Keep it small enough to finish. The hiring signal is not scale. The signal is th
 
 Salary context should stay careful. Indeed's US DevOps Engineer page showed an average base salary of $133,203 from 4.1k posting-derived salaries over the past 36 months, updated July 20, 2026 ([Indeed, retrieved 2026-07-27](https://www.indeed.com/career/devops-engineer/salaries)). Treat that as market context, not a promise. The more defensible labor-market story is the BLS contrast: support is projected down 3%, while the closest DevOps-mapped software group is projected up 15% ([BLS support](https://www.bls.gov/ooh/computer-and-information-technology/computer-support-specialists.htm), [BLS software developers](https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm), retrieved 2026-07-27).
 
-DORA's 2025 report is also a useful reality check: it is now framed around AI-assisted software development, and the synthesis notes that adoption has not removed the need for human review and platform discipline ([DORA, retrieved 2026-07-27](https://dora.dev/dora-report-2025/)). DevOps hiring will reward people who can operate systems with AI around them, not people who only claim AI made them faster.
+Google Cloud's DORA research program's 2025 report is also a useful reality check: retitled "State of AI-assisted Software Development," it finds that AI adoption has not removed the need for human review and platform discipline ([Google Cloud's DORA research program, retrieved 2026-07-27](https://dora.dev/dora-report-2025/)). DevOps hiring will reward people who can operate systems with AI around them, not people who only claim AI made them faster.
 
 ## FAQ
 
