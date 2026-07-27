@@ -9,7 +9,7 @@ slug: 2026-07-27-is-aws-certification-worth-it-2026
 tags: ["AWS certification", "cloud career", "certification ROI", "career switch", "CloudOps"]
 blog_track: career
 content_type: article
-status: g0-blocked
+status: awaiting-g0
 reading_time_min: 7
 primary_query: "is aws certification worth it 2026"
 first_60_words_answer: "Yes, AWS certification is worth it in 2026 if you use it as a structured learning path and hiring signal, then back it with hands-on projects. It is not worth it if you expect the badge alone to overcome a senior-skewed market or replace cloud troubleshooting experience."
@@ -95,6 +95,10 @@ Use this map as a decision filter:
 | Data analyst or data engineer track | DEA-C01 | Pipeline, data-store, cost, and quality-check proof |
 | Experienced builder moving into AI systems | MLA-C01 or AIP-C01 | ML deployment, RAG, vector, or agentic-AI implementation proof |
 | Security professional | SCS-C03 | Detection, incident response, and GenAI/ML security notes |
+
+**KnowledgeCheck:** You have one year of helpdesk experience, basic Linux skills, and no deployed cloud project. Which AWS path is stronger: CloudOps Engineer Associate with an incident/runbook project, or Solutions Architect Associate with no project?
+
+Answer: CloudOps Engineer Associate with an incident/runbook project. The certification matches your troubleshooting background, and the project proves operational judgment. Solutions Architect Associate can come later when you can show design tradeoffs, network flow, reliability assumptions, and cost decisions.
 
 Salary context should stay in the background. Indeed's US cloud engineer page listed an average of $135,082, updated July 20, 2026, based on 4.5k salary inputs from postings over the past 36 months ([Indeed, retrieved 2026-07-27](https://www.indeed.com/career/cloud-engineer/salaries)). Glassdoor India showed an AWS Solution Architect typical range around Rs 4.5 lakh to Rs 14.35 lakh, dated June 2026, with sample caveats ([Glassdoor India, retrieved 2026-07-27](https://www.glassdoor.co.in/Salaries/india-aws-solution-architect-salary-SRCH_IL.0,5_IN115_KO6,28.htm)). These are role-market snapshots, not certification outcomes.
 
