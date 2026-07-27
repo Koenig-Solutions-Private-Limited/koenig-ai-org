@@ -9,7 +9,7 @@ slug: 2026-07-27-cybersecurity-analyst-interview-questions
 tags: ["cybersecurity analyst interview questions", "SOC analyst interview", "cybersecurity career", "CySA+", "incident response"]
 blog_track: career
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 8
 primary_query: "cybersecurity analyst interview questions"
 first_60_words_answer: "Cybersecurity analyst interview questions in 2026 test whether you can triage alerts, explain vulnerability risk, handle incidents, and communicate findings. Prepare by practicing answers in four domains: security operations, vulnerability management, incident response, and reporting. The goal is not to memorize lines; it is to show how you think under analyst pressure."
