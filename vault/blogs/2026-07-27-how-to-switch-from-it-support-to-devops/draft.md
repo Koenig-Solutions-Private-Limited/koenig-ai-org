@@ -9,7 +9,7 @@ slug: 2026-07-27-how-to-switch-from-it-support-to-devops
 tags: ["DevOps career", "IT support to DevOps", "cloud career", "Kubernetes", "Terraform"]
 blog_track: career
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 8
 primary_query: "how to switch from IT support to devops"
 first_60_words_answer: "To switch from IT support to DevOps, keep your troubleshooting and incident skills, then add Linux, networking, one cloud platform, Git, scripting, Terraform, containers, Kubernetes, CI/CD, monitoring, and one proof project. In 2026, use a staged cert path instead of collecting random badges."
