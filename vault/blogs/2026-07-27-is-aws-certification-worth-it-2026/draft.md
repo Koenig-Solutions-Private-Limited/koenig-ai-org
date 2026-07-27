@@ -9,7 +9,7 @@ slug: 2026-07-27-is-aws-certification-worth-it-2026
 tags: ["AWS certification", "cloud career", "certification ROI", "career switch", "CloudOps"]
 blog_track: career
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 7
 primary_query: "is aws certification worth it 2026"
 first_60_words_answer: "Yes, AWS certification is worth it in 2026 if you use it as a structured learning path and hiring signal, then back it with hands-on projects. It is not worth it if you expect the badge alone to overcome a senior-skewed market or replace cloud troubleshooting experience."
