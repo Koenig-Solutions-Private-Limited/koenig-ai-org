@@ -9,7 +9,7 @@ slug: 2026-07-27-skills-required-for-cloud-engineer
 tags: ["cloud engineer skills", "cloud career", "cloud certification", "Kubernetes", "Terraform"]
 blog_track: career
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 7
 primary_query: "skills required for cloud engineer"
 first_60_words_answer: "The skills required for a cloud engineer are Linux, networking, cloud platform basics, IAM/security, Kubernetes, infrastructure as code, Python or shell automation, monitoring, troubleshooting, and cost awareness. In 2026, add AI-workload infrastructure and FinOps because cloud teams now expect engineers to run reliable systems and explain spend."
