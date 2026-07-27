@@ -9,7 +9,7 @@ slug: 2026-07-27-how-to-prepare-for-a-technical-interview-with-no-experience
 tags: ["technical interview no experience", "entry level tech interview", "career change to IT", "skills-based hiring", "interview prep"]
 blog_track: career
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 7
 primary_query: "how to prepare for a technical interview with no experience"
 first_60_words_answer: "Prepare for a technical interview with no experience by replacing missing job history with proof: one role-specific project, one entry certification or skills map, live scenario practice, and clear AI-use rules. In 2026, entry-level interviews test how you think, verify, explain, and recover, not whether your resume already looks senior."
