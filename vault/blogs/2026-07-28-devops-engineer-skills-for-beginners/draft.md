@@ -7,7 +7,7 @@ author: koenig-ai-academy
 ticket: KOEA-13632
 blog_track: career
 content_type: article
-status: g0-blocked
+status: draft-for-review
 seo_description: "Beginners should learn DevOps skills in order: Linux, scripting, Git, CI/CD, Docker, Kubernetes basics, one cloud, Terraform, and monitoring."
 tags: ["devops", "career roadmap", "cloud careers", "certifications", "beginner skills"]
 reading_time_min: 7
@@ -23,7 +23,7 @@ sources:
   - https://developer.hashicorp.com/certifications/infrastructure-automation
   - https://aws.amazon.com/blogs/training-and-certification/exam-update-and-new-name-for-operations-certification/
   - https://learn.microsoft.com/en-us/credentials/certifications/devops-engineer/
-  - https://learn.github.com/credentials
+  - https://learn.microsoft.com/en-us/credentials/certifications/github-actions/
   - https://cloud.google.com/blog/products/ai-machine-learning/announcing-the-2025-dora-report
 whats_new: ["In 2026, beginner DevOps advice is out of date unless it reflects the CloudOps rename, Terraform Associate 004, current CKA details, and the AI/platform-engineering shift."]
 learning_objectives:
@@ -92,7 +92,7 @@ curl -fsS http://localhost:8080/health
 
 If that sequence passes, you have proved more than tool familiarity. You have a versioned project, dependency setup, automated tests, an image build, a running container, and a health check. That is the smallest DevOps story worth putting on a resume.
 
-GitHub Actions can be a practical first CI/CD credential because GitHub's credential page lists certification exams at $99 USD, with regional pricing possible ([GitHub Learn, retrieved 2026-07-28](https://learn.github.com/credentials)). But do not buy an exam before you can read a workflow file and explain why it failed. A certificate should label the skill, not substitute for the project.
+GitHub Actions can be a practical first CI/CD credential because Microsoft Learn's GitHub Actions certification page lists the exam at $99 USD, with pricing based on the country or region where it is proctored ([Microsoft Learn, retrieved 2026-07-28](https://learn.microsoft.com/en-us/credentials/certifications/github-actions/)). But do not buy an exam before you can read a workflow file and explain why it failed. A certificate should label the skill, not substitute for the project.
 
 If your path starts from IT support, pair this project with the switch plan in [How to Switch From IT Support to DevOps](/blog/2026-07-27-how-to-switch-from-it-support-to-devops?utm_source=blog&utm_medium=organic&utm_campaign=career-seo-w36&utm_content=devops-engineer-skills-for-beginners). If cloud is the broader target, compare it with [Skills Required for Cloud Engineer Roles](/blog/2026-07-27-skills-required-for-cloud-engineer?utm_source=blog&utm_medium=organic&utm_campaign=career-seo-w36&utm_content=devops-engineer-skills-for-beginners).
 
