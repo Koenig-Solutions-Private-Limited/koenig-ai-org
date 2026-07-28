@@ -7,7 +7,8 @@ author: koenig-ai-academy
 ticket: KOEA-13626
 blog_track: career
 content_type: article
-status: awaiting-g0
+status: g0-passed
+seo_description: "List certifications on your resume with official names, exam codes, expiry dates, and Credly URLs so ATS parsers and recruiters both find them in 2026."
 tags: ["resume writing", "certifications", "ATS", "job search", "career advice"]
 reading_time_min: 7
 primary_query: "how to list certifications on resume"
