@@ -1,10 +1,14 @@
 ---
 date: 2026-07-28
+title: "How to List Certifications on Your Resume in 2026 So ATS and Recruiters See Them"
+description: "Learn how to list certifications on your resume in 2026 using official credential names, exam codes, valid-through dates, and credential URLs that both ATS parsers and human recruiters can read."
+slug: "2026-07-28-how-to-list-certifications-on-resume"
 author: koenig-ai-academy
 ticket: KOEA-13626
 blog_track: career
 content_type: article
 status: awaiting-g0
+tags: ["resume writing", "certifications", "ATS", "job search", "career advice"]
 reading_time_min: 7
 primary_query: "how to list certifications on resume"
 first_60_words_answer: "List certifications on your resume in a dedicated Certifications section, using the official credential name, issuer, exam code when relevant, issue date, expiry or valid-through date, and credential URL. Put a required or role-defining certification in your headline or summary too, so both ATS parsing fields and human skims catch it."
@@ -28,7 +32,7 @@ learning_objectives:
   - "Decide when a certification belongs in the headline, summary, dedicated section, or education block."
   - "Avoid stale ATS and recruiter-skim myths while still making credentials machine-readable."
 positions:
-  - id: stance:harness-over-model
+  - id: stance:ai-vendor-news-opinionated
     engagement: neutral
 faq:
   - question: "Where should certifications go on a resume?"
