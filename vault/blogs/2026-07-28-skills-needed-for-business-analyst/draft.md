@@ -1,10 +1,13 @@
 ---
 date: 2026-07-28
+title: "Skills Needed for a Business Analyst in 2026: Learn the Hybrid Stack First"
+description: "Discover the hybrid skill map business analysts need in 2026, from stakeholder communication and elicitation to SQL, BI dashboards, AI oversight, and the current credential ladder."
+slug: 2026-07-28-skills-needed-for-business-analyst
 author: koenig-ai-academy
 ticket: KOEA-13655
 blog_track: career
 content_type: article
-status: g0-blocked
+status: awaiting-g0
 reading_time_min: 7
 primary_query: "skills needed for business analyst"
 first_60_words_answer: "The skills needed for a business analyst in 2026 are stakeholder communication, requirements elicitation, problem framing, SQL, Excel, BI dashboards, process modeling, critical thinking, and enough AI literacy to validate machine-generated recommendations. The strongest candidates are hybrids: roughly communication-first, but comfortable proving requirements with data."
@@ -22,6 +25,7 @@ faq:
   - {question: "Is PMI-PBA retired?", answer: "No. As of mid-2026, PMI still lists PMI Professional in Business Analysis as an active certification, with eligibility paths based on education, business analysis experience, and contact hours. Treat retirement claims in old forums or recycled listicles as unverified unless PMI itself announces a change. Source: https://www.pmi.org/certifications/business-analysis-pba, retrieved 2026-07-28."}
 original_data: false
 last_updated: 2026-07-28
+tags: ["business analyst", "career", "skills", "BABOK", "certifications"]
 hero_image: {url: /img/blogs/skills-needed-for-business-analyst/hero.png, alt: "Bar chart showing 2026 business analyst adjacent skill signals for communication, SQL, Excel, Python, Tableau, and Power BI"}
 ---
 
@@ -89,9 +93,14 @@ For experienced analysts, IIBA's certification FAQ lists CCBA at 3,750 business 
 
 PMI-PBA is also still active as of mid-2026. PMI continues to publish the Professional in Business Analysis certification page and eligibility paths, so treat retirement rumors as noise until PMI says otherwise ([PMI, retrieved 2026-07-28](https://www.pmi.org/certifications/business-analysis-pba)).
 
+<KnowledgeCheck>
+Question: ECBA eligibility in 2026 requires which of the following?
+Answer: An IIBA account, Code of Conduct acceptance, and Terms and Conditions agreement. The old 21-professional-development-hour eligibility requirement was eliminated by IIBA, so do not use outdated prep-site rules as your credential plan.
+</KnowledgeCheck>
+
 ## Add AI Literacy Because The BA Is Becoming The Human Oversight Layer
 
-Learn enough AI to supervise recommendations, not to outsource judgment. IIBA's 2025 Global State of Business Analysis report says 74% of respondents reported a positive AI impact on their careers, up from 63%, and 76% reported business analysis playing a larger role in strategic decision-making ([IIBA Global State, retrieved 2026-07-28](https://www.iiba.org/business-analysis-blogs/top-5-findings-from-the-2025-global-state-of-business-analysis-report/)).
+Learn enough AI to supervise recommendations, not to outsource judgment. IIBA's 2025 Global State of Business Analysis report says 74% of respondents reported a positive AI impact on their careers, up from 63%, and 76% said business analysis had a growing impact, with 81% reporting formal recognition of the role ([IIBA Global State, retrieved 2026-07-28](https://www.iiba.org/business-analysis-blogs/top-5-findings-from-the-2025-global-state-of-business-analysis-report/)).
 
 IIBA's 2026 trends also frame AI as a strategic decision partner and point to a governance gap: organizations can have available data and still make major decisions without using it ([IIBA trends, retrieved 2026-07-28](https://www.iiba.org/business-analysis-blogs/top-6-business-analysis-trends-to-monitor-in-2026/)). That is BA territory. Your advantage is not prompting a chatbot. It is checking whether the model used the right data, whether the recommendation fits the process, and whether a human owner can defend the decision.
 
