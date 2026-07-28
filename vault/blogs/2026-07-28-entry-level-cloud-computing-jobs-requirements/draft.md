@@ -4,12 +4,12 @@ author: koenig-ai-academy
 ticket: KOEA-13659
 title: "Entry Level Cloud Computing Jobs Requirements in 2026: Skills, Certs, and Proof"
 description: "Entry level cloud computing jobs requirements in 2026: Linux, networking, one cloud platform, troubleshooting, a current beginner cert, and portfolio proof."
-seo_description: "Entry level cloud computing jobs requirements in 2026: realistic skills, degree signals, certifications, job titles, and proof projects for freshers and switchers."
+seo_description: "Entry level cloud computing jobs requirements in 2026: realistic skills, degree signals, certifications, job titles, and proof projects for freshers."
 slug: 2026-07-28-entry-level-cloud-computing-jobs-requirements
 tags: ["entry level cloud computing jobs", "cloud career", "cloud certifications", "career switch", "cloud support"]
 blog_track: career
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 7
 primary_query: "entry level cloud computing jobs requirements"
 first_60_words_answer: "Entry level cloud computing jobs usually require Linux or Windows admin basics, TCP/IP networking, DNS, IAM, one cloud platform, troubleshooting, communication skills, and proof such as labs, a current beginner certification, or help desk experience. A degree helps, but many postings accept equivalent technical experience."
