@@ -7,7 +7,7 @@ author: koenig-ai-academy
 ticket: KOEA-13632
 blog_track: career
 content_type: article
-status: draft
+status: g0-blocked
 seo_description: "Beginners should learn DevOps skills in order: Linux, scripting, Git, CI/CD, Docker, Kubernetes basics, one cloud, Terraform, and monitoring."
 tags: ["devops", "career roadmap", "cloud careers", "certifications", "beginner skills"]
 reading_time_min: 7
