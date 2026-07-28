@@ -9,7 +9,7 @@ slug: 2026-07-28-skills-needed-for-cybersecurity-analyst
 tags: ["cybersecurity analyst skills", "cybersecurity career", "Security+", "NICE Framework", "career roadmap"]
 blog_track: career
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 8
 primary_query: "skills needed for cybersecurity analyst"
 first_60_words_answer: "The skills needed for cybersecurity analyst jobs in 2026 are AI security awareness, cloud security, risk assessment, application security, security engineering, SIEM monitoring, incident response, networking, Linux, scripting, documentation, teamwork, problem-solving, and analytical thinking."
