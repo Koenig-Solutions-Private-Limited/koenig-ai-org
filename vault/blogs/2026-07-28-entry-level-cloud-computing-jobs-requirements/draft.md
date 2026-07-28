@@ -9,7 +9,7 @@ slug: 2026-07-28-entry-level-cloud-computing-jobs-requirements
 tags: ["entry level cloud computing jobs", "cloud career", "cloud certifications", "career switch", "cloud support"]
 blog_track: career
 content_type: article
-status: g0-passed
+status: g3-passed
 reading_time_min: 7
 primary_query: "entry level cloud computing jobs requirements"
 first_60_words_answer: "Entry level cloud computing jobs usually require Linux or Windows admin basics, TCP/IP networking, DNS, IAM, one cloud platform, troubleshooting, communication skills, and proof such as labs, a current beginner certification, or help desk experience. A degree helps, but many postings accept equivalent technical experience."
