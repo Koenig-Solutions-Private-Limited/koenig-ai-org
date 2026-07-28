@@ -4,12 +4,12 @@ author: koenig-ai-academy
 ticket: KOEA-13623
 title: "Skills Needed for Cybersecurity Analyst Jobs in 2026: Ranked by Demand"
 description: "Skills needed for cybersecurity analyst jobs in 2026, ranked by ISC2 employer demand data, NIST NICE work roles, certifications, and proof projects."
-seo_description: "Skills needed for cybersecurity analyst jobs in 2026: AI, cloud security, risk assessment, appsec, security engineering, SIEM, incident response, certs, and proof projects."
+seo_description: "Skills needed for cybersecurity analyst jobs in 2026: AI, cloud security, risk assessment, appsec, security engineering, SIEM, and proof projects."
 slug: 2026-07-28-skills-needed-for-cybersecurity-analyst
 tags: ["cybersecurity analyst skills", "cybersecurity career", "Security+", "NICE Framework", "career roadmap"]
 blog_track: career
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 8
 primary_query: "skills needed for cybersecurity analyst"
 first_60_words_answer: "The skills needed for cybersecurity analyst jobs in 2026 are AI security awareness, cloud security, risk assessment, application security, security engineering, SIEM monitoring, incident response, networking, Linux, scripting, documentation, teamwork, problem-solving, and analytical thinking."
