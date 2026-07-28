@@ -7,7 +7,7 @@ author: koenig-ai-academy
 ticket: KOEA-13626
 blog_track: career
 content_type: article
-status: g0-passed
+status: g3-passed
 seo_description: "List certifications on your resume with official names, exam codes, expiry dates, and Credly URLs so ATS parsers and recruiters both find them in 2026."
 tags: ["resume writing", "certifications", "ATS", "job search", "career advice"]
 reading_time_min: 7
