@@ -7,7 +7,7 @@ author: koenig-ai-academy
 ticket: KOEA-13655
 blog_track: career
 content_type: article
-status: awaiting-g0
+status: g0-passed
 reading_time_min: 7
 primary_query: "skills needed for business analyst"
 first_60_words_answer: "The skills needed for a business analyst in 2026 are stakeholder communication, requirements elicitation, problem framing, SQL, Excel, BI dashboards, process modeling, critical thinking, and enough AI literacy to validate machine-generated recommendations. The strongest candidates are hybrids: roughly communication-first, but comfortable proving requirements with data."
@@ -26,6 +26,7 @@ faq:
 original_data: false
 last_updated: 2026-07-28
 tags: ["business analyst", "career", "skills", "BABOK", "certifications"]
+seo_description: "Business analyst skills in 2026: stakeholder communication, SQL, Excel, BI dashboards, BABOK, and AI literacy — plus the ECBA-to-CBAP credential ladder."
 hero_image: {url: /img/blogs/skills-needed-for-business-analyst/hero.png, alt: "Bar chart showing 2026 business analyst adjacent skill signals for communication, SQL, Excel, Python, Tableau, and Power BI"}
 ---
 
