@@ -7,8 +7,8 @@ author: koenig-ai-academy
 ticket: KOEA-13652
 blog_track: career
 content_type: article
-status: g0-blocked
-seo_description: "Switching from a non-technical career into tech works best when you map transferable skills to one target role, price the first credential, and avoid unaudited bootcamp claims."
+status: awaiting-g0
+seo_description: "Switch to tech in 2026: map transferable skills to one role, price the first credential, and verify bootcamp claims."
 tags: ["career switch", "career compass", "tech careers", "certifications", "no experience"]
 reading_time_min: 7
 primary_query: "non-technical to technical career switch"
