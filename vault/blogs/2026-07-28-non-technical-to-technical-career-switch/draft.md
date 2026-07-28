@@ -7,7 +7,7 @@ author: koenig-ai-academy
 ticket: KOEA-13652
 blog_track: career
 content_type: article
-status: g0-passed
+status: g3-passed
 seo_description: "Switch to tech in 2026: map transferable skills to one role, price the first credential, and verify bootcamp claims."
 tags: ["career switch", "career compass", "tech careers", "certifications", "no experience"]
 reading_time_min: 7
