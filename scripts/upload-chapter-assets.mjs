@@ -33,16 +33,18 @@ function loadS3Sdk() {
     fileURLToPath(import.meta.url),
     "/Users/vardaankoenig/Documents/Paperclip/learnovaBeast/learnova-academy/package.json",
   ].filter(Boolean);
+  let lastErr;
   for (const base of bases) {
     try {
       return createRequire(base)("@aws-sdk/client-s3");
-    } catch {
-      /* try the next location */
+    } catch (err) {
+      lastErr = err; /* try the next location */
     }
   }
   console.error(
     "@aws-sdk/client-s3 not found. Run: npm i --prefix ~/.nlm-upload @aws-sdk/client-s3 " +
-      "and set NLM_AWS_SDK_FROM=~/.nlm-upload",
+      "and set NLM_AWS_SDK_FROM=~/.nlm-upload" +
+      (lastErr ? `\n  last error: ${String(lastErr.message).split("\n")[0]}` : ""),
   );
   process.exit(1);
 }

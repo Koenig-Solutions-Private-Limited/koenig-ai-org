@@ -47,8 +47,11 @@ done
 notebooklm auth check --test >/dev/null 2>&1 || { echo "ERROR: NotebookLM auth check failed — run 'notebooklm login' (or refresh NOTEBOOKLM_AUTH_JSON)"; exit 1; }
 
 WORK="${TMPDIR:-/tmp}"; WORK="${WORK%/}/nlm-batch-$COURSE-$$"
-LOG="$WORK/batch.log"
 mkdir -p "$WORK"
+# Resolve symlinks: macOS $TMPDIR lives under /var -> /private/var, and
+# notebooklm >= 0.8 refuses to upload any path that goes through a symlink.
+WORK=$(cd "$WORK" && pwd -P)
+LOG="$WORK/batch.log"
 log() { echo "[$(date '+%H:%M:%S')] $*" >> "$LOG"; echo "[$(date '+%H:%M:%S')] $*"; }
 VAULT="$ROOT/vault/courses/$COURSE"
 AUDIENCE=$(grep -m1 '^target_audience:' "$VAULT/outline.md" | sed 's/^target_audience: *//; s/^"//; s/"$//' | head -c 200)
@@ -83,7 +86,8 @@ for CH in "${CHAPTERS[@]}"; do
     else
       SID=$(notebooklm source add "$2" -n "$1" --json 2>>"$LOG" | json_field id source_id source.id)
     fi
-    [ -n "$SID" ] && echo "$SID" >> "$WORK/$CH/.sources" || log "$CH: WARN source add failed: $2"
+    if [ -n "$SID" ]; then echo "$SID" >> "$WORK/$CH/.sources"; return 0; fi
+    log "$CH: WARN source add failed: $2 (see $LOG)"; return 1
   }
   # Upload sanitized copies: internal frontmatter (ticket ids, pipeline status,
   # author agent, SEO targeting) otherwise leaks into learner-facing artifacts —
@@ -112,7 +116,11 @@ PY
   mkdir -p "$WORK/$CH/src"
   clean_copy "$CH_MD" "$WORK/$CH/src/chapter.md"
   clean_copy "$VAULT/outline.md" "$WORK/$CH/src/outline.md"
-  add_source "$ID" "$WORK/$CH/src/chapter.md" "$TITLE"
+  # The chapter text is the one source we cannot do without — without it the
+  # artifacts are grounded only in generic web pages. Stop this chapter.
+  add_source "$ID" "$WORK/$CH/src/chapter.md" "$TITLE" || {
+    log "FATAL $CH: chapter source upload failed (notebook $ID left for inspection)"
+    st_set "$CH" notebook ""; continue; }
   add_source "$ID" "$WORK/$CH/src/outline.md" "Course outline"
   DOSSIER="$ROOT/vault/research/courses/$COURSE/$CH.md"
   if [ -f "$DOSSIER" ]; then
