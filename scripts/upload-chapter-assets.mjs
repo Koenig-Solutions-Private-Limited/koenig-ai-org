@@ -21,10 +21,32 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { execSync } from "node:child_process";
 
-const require = createRequire(
-  "/Users/vardaankoenig/Documents/Paperclip/learnovaBeast/learnova-academy/package.json",
-);
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+// Resolve @aws-sdk/client-s3 without a machine-specific path. Order:
+//   1. NLM_AWS_SDK_FROM — any directory whose node_modules has the SDK
+//      (e.g. `npm i --prefix ~/.nlm-upload @aws-sdk/client-s3` then
+//      NLM_AWS_SDK_FROM=~/.nlm-upload)
+//   2. this repo's own node_modules
+//   3. the legacy learnova-academy checkout on the original Mac
+function loadS3Sdk() {
+  const bases = [
+    process.env.NLM_AWS_SDK_FROM && join(process.env.NLM_AWS_SDK_FROM, "package.json"),
+    fileURLToPath(import.meta.url),
+    "/Users/vardaankoenig/Documents/Paperclip/learnovaBeast/learnova-academy/package.json",
+  ].filter(Boolean);
+  for (const base of bases) {
+    try {
+      return createRequire(base)("@aws-sdk/client-s3");
+    } catch {
+      /* try the next location */
+    }
+  }
+  console.error(
+    "@aws-sdk/client-s3 not found. Run: npm i --prefix ~/.nlm-upload @aws-sdk/client-s3 " +
+      "and set NLM_AWS_SDK_FROM=~/.nlm-upload",
+  );
+  process.exit(1);
+}
+const { S3Client, PutObjectCommand } = loadS3Sdk();
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
